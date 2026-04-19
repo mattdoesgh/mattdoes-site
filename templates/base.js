@@ -53,7 +53,7 @@ export function base({ page, body }) {
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>${esc(title)}</title>
-<link rel="stylesheet" href="/_shared.css?v=6" />
+<link rel="stylesheet" href="/_shared.css?v=7" />
 ${page.headExtra || ''}
 </head>
 <body>
