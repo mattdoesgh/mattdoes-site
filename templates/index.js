@@ -80,7 +80,7 @@ export function indexPage({ site, entries }) {
         <span class="s"><span class="n">${counts.journal}</span>journal</span>
         <span class="s"><span class="n">${counts.thoughts}</span>thoughts</span>
         <span class="s"><span class="n">${counts.making}</span>making</span>
-        <span class="s"><span class="n">${scrobbles}</span>scrobbles</span>
+        <span class="s"><span class="n" id="scrobble-count">${scrobbles}</span>scrobbles</span>
       </div>
     </div>
 
@@ -116,6 +116,9 @@ export function indexPage({ site, entries }) {
       navActive: 'all',
       nowPlaying: site.nowPlaying || '',
       footerText: config.footerText ?? '',
+      // Share the /listening/ poller to keep the scrobble counter fresh
+      // between deploys. It no-ops if #listening-rows isn't on the page.
+      bodyScripts: '<script src="/listening-live.js" defer></script>',
     },
     body,
   });
