@@ -69,6 +69,11 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
   const statValue = kind === 'listening'
     ? Number(totalScrobbles || 0).toLocaleString('en-US')
     : String(entries.length);
+  // Live-update hooks: only on /listening/, give the count + rows stable IDs
+  // so listening-live.js can re-render them without a full reload.
+  const statIdAttr = kind === 'listening' ? ' id="scrobble-count"' : '';
+  const rowsOpen   = kind === 'listening' ? '<div id="listening-rows">' : '';
+  const rowsClose  = kind === 'listening' ? '</div>' : '';
 
   // Tag index (only meaningful for article kinds).
   const tagCounts = new Map();
@@ -84,7 +89,7 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
       ${section.who ? `<div class="who">${esc(section.who)}</div>` : ''}
       ${section.bio ? `<div class="bio">${esc(section.bio)}</div>` : ''}
       <div class="stats">
-        <span class="s"><span class="n">${statValue}</span>${statLabel}</span>
+        <span class="s"><span class="n"${statIdAttr}>${statValue}</span>${statLabel}</span>
       </div>
     </div>
 
@@ -112,7 +117,7 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
       <p class="lede">${esc(section.intro)}</p>
     </div>` : ''}
 
-    ${rows}
+    ${rowsOpen}${rows}${rowsClose}
   </section>
 
   <aside class="side-right" aria-label="related">
@@ -132,6 +137,8 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
       navActive: kind,
       nowPlaying: nowPlaying || '',
       footerText: siteConfig.footerText ?? '',
+      // Load the live-update poller only on /listening/.
+      bodyScripts: kind === 'listening' ? '<script src="/listening-live.js" defer></script>' : '',
     },
     body,
   });

@@ -451,7 +451,7 @@ for (let i = 0; i < articles.length; i++) {
 // Section index pages — /journal/, /making/, /listening/
 writePage('/journal/',   listingPage({ siteConfig, kind: 'journal',   entries: journalArticles, nowPlaying: nowPlayingStatus }));
 writePage('/making/',    listingPage({ siteConfig, kind: 'making',    entries: makingArticles,  nowPlaying: nowPlayingStatus }));
-writePage('/listening/', listingPage({ siteConfig, kind: 'listening', entries: listening,       nowPlaying: nowPlayingStatus, totalScrobbles: scrobbleTotal }));
+writePage('/listening/', listingPage({ siteConfig, kind: 'listening', entries: listening.slice(0, siteConfig.lastfm?.limit || 25), nowPlaying: nowPlayingStatus, totalScrobbles: scrobbleTotal }));
 
 // Colophon (get build.js line count for the vanity stat)
 const buildLines = fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').length;

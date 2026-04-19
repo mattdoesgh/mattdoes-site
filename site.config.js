@@ -44,7 +44,7 @@ export const siteConfig = {
   // env vars. The listing page also hides the username from its left rail.
   lastfm: {
     username: '',       // read from LASTFM_USERNAME env var at build time
-    limit:    50,       // how many recent tracks to fetch
+    limit:    25,       // how many recent tracks to render on /listening/
     cacheTtl: 15 * 60,  // seconds — skip network if cache is fresher than this
     showUser: false,    // do not render 'last.fm/<user>' link on /listening/
   },

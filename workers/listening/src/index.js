@@ -1,74 +1,139 @@
-// /api/listening/now — returns what (if anything) is currently scrobbling on
-// Last.fm. Called client-side by /now-playing.js to keep the topbar status
-// pill live between deploys.
+// /api/listening/* — tiny edge Worker reporting Last.fm listening state.
 //
-// Env (wrangler.toml [vars] + secrets):
-//   LASTFM_USERNAME — Last.fm user to query (secret; not shown publicly)
-//   LASTFM_API_KEY  — Last.fm API key (secret)
+// Routes:
+//   GET /api/listening/now      → what (if anything) is currently scrobbling
+//   GET /api/listening/recent   → total scrobble count + the 25 most recent tracks
 //
-// Response shape:
-//   { nowPlaying: true, artist, track, album, link }
-//   { nowPlaying: false }
+// Called client-side by /now-playing.js (topbar pill, all pages) and by
+// /listening-live.js (recent list + counter, /listening/ page only) so both
+// stay fresh between deploys.
+//
+// Env (wrangler secrets):
+//   LASTFM_USERNAME — Last.fm user to query
+//   LASTFM_API_KEY  — Last.fm API key
+//
+// Response shapes:
+//   GET /now    → { nowPlaying: true, artist, track, album, link } | { nowPlaying: false }
+//   GET /recent → { playcount: number, tracks: [{ artist, track, album, link, date, nowPlaying }, ...] }
 //
 // Caching:
-//   Edge-cached for 30s via Cache API so rapid client polls don't hit
-//   Last.fm. Clients can still poll every minute without concern.
+//   Each endpoint is edge-cached via the Cache API so rapid client polls
+//   don't hit Last.fm. /now is short-lived (30s); /recent is a touch longer
+//   (45s) because it's heavier and scrobbles don't change that fast.
 
-const ALLOWED_ORIGIN = 'https://mattdoes.online';
-const EDGE_TTL       = 30;          // seconds at the CF edge
-const CLIENT_TTL     = 30;          // seconds in the browser
-const LASTFM_LIMIT   = 1;           // we only need the most recent track
+const ALLOWED_ORIGIN  = 'https://mattdoes.online';
+const NOW_TTL         = 30;   // /now cache seconds (edge + browser)
+const RECENT_TTL      = 45;   // /recent cache seconds (edge + browser)
+const RECENT_LIMIT    = 25;   // tracks returned by /recent
 
 export default {
   async fetch(request, env, ctx) {
     if (request.method === 'OPTIONS') return corsPreflight();
     if (request.method !== 'GET')     return json({ error: 'method_not_allowed' }, 405);
 
-    // Cache-key is origin-independent so all callers share one cached response.
-    const cacheUrl = new URL(request.url);
-    cacheUrl.search = '';
-    const cacheKey = new Request(cacheUrl.toString(), { method: 'GET' });
-    const cache    = caches.default;
-
-    const cached = await cache.match(cacheKey);
-    if (cached) return withCors(cached);
-
-    if (!env.LASTFM_API_KEY || !env.LASTFM_USERNAME) {
-      return json({ nowPlaying: false, reason: 'not_configured' }, 200, CLIENT_TTL);
-    }
-
-    let payload;
-    try {
-      const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${encodeURIComponent(env.LASTFM_USERNAME)}&api_key=${encodeURIComponent(env.LASTFM_API_KEY)}&format=json&limit=${LASTFM_LIMIT}`;
-      const res = await fetch(url, { cf: { cacheTtl: EDGE_TTL, cacheEverything: true } });
-      if (!res.ok) throw new Error(`lastfm ${res.status}`);
-      const data = await res.json();
-      const raw  = data?.recenttracks?.track || [];
-      const t    = Array.isArray(raw) ? raw[0] : raw;
-
-      if (t && t['@attr']?.nowplaying) {
-        payload = {
-          nowPlaying: true,
-          artist: (t.artist && (t.artist['#text'] || t.artist.name)) || '',
-          track:  t.name || '',
-          album:  (t.album && t.album['#text']) || '',
-          link:   t.url || '',
-        };
-      } else {
-        payload = { nowPlaying: false };
-      }
-    } catch (err) {
-      return json({ nowPlaying: false, error: String(err?.message || err).slice(0, 200) }, 200, CLIENT_TTL);
-    }
-
-    const response = json(payload, 200, CLIENT_TTL);
-    // Stash a clone in the edge cache so the next poller doesn't re-hit Last.fm.
-    ctx.waitUntil(cache.put(cacheKey, response.clone()));
-    return response;
+    const url = new URL(request.url);
+    if (url.pathname.endsWith('/now'))    return handleNow(env, ctx, url);
+    if (url.pathname.endsWith('/recent')) return handleRecent(env, ctx, url);
+    return json({ error: 'not_found' }, 404);
   },
 };
 
-// ── helpers ──────────────────────────────────────────────────────────────
+// ── /now ────────────────────────────────────────────────────────────────
+async function handleNow(env, ctx, reqUrl) {
+  const cacheKey = cacheKeyFor(reqUrl);
+  const cache    = caches.default;
+  const cached   = await cache.match(cacheKey);
+  if (cached) return withCors(cached);
+
+  if (!env.LASTFM_API_KEY || !env.LASTFM_USERNAME) {
+    return json({ nowPlaying: false, reason: 'not_configured' }, 200, NOW_TTL);
+  }
+
+  let payload;
+  try {
+    const api = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${encodeURIComponent(env.LASTFM_USERNAME)}&api_key=${encodeURIComponent(env.LASTFM_API_KEY)}&format=json&limit=1`;
+    const res = await fetch(api, { cf: { cacheTtl: NOW_TTL, cacheEverything: true } });
+    if (!res.ok) throw new Error(`lastfm ${res.status}`);
+    const data = await res.json();
+    const raw  = data?.recenttracks?.track || [];
+    const t    = Array.isArray(raw) ? raw[0] : raw;
+    payload    = (t && t['@attr']?.nowplaying) ? trackToNow(t) : { nowPlaying: false };
+  } catch (err) {
+    return json({ nowPlaying: false, error: short(err) }, 200, NOW_TTL);
+  }
+
+  const response = json(payload, 200, NOW_TTL);
+  ctx.waitUntil(cache.put(cacheKey, response.clone()));
+  return response;
+}
+
+// ── /recent ─────────────────────────────────────────────────────────────
+// One call to user.getrecenttracks is enough: Last.fm returns both the
+// track list and a `@attr.total` field carrying the all-time scrobble
+// count, so we don't need a second user.getinfo round-trip.
+async function handleRecent(env, ctx, reqUrl) {
+  const cacheKey = cacheKeyFor(reqUrl);
+  const cache    = caches.default;
+  const cached   = await cache.match(cacheKey);
+  if (cached) return withCors(cached);
+
+  if (!env.LASTFM_API_KEY || !env.LASTFM_USERNAME) {
+    return json({ playcount: 0, tracks: [], reason: 'not_configured' }, 200, RECENT_TTL);
+  }
+
+  let payload;
+  try {
+    const api = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${encodeURIComponent(env.LASTFM_USERNAME)}&api_key=${encodeURIComponent(env.LASTFM_API_KEY)}&format=json&limit=${RECENT_LIMIT}`;
+    const res = await fetch(api, { cf: { cacheTtl: RECENT_TTL, cacheEverything: true } });
+    if (!res.ok) throw new Error(`lastfm ${res.status}`);
+    const data   = await res.json();
+    const raw    = data?.recenttracks?.track || [];
+    const attr   = data?.recenttracks?.['@attr'] || {};
+    const arr    = Array.isArray(raw) ? raw : [raw];
+    const tracks = arr.map(trackToRow).filter(t => t.artist && t.track).slice(0, RECENT_LIMIT);
+    payload = { playcount: Number(attr.total) || 0, tracks };
+  } catch (err) {
+    return json({ playcount: 0, tracks: [], error: short(err) }, 200, RECENT_TTL);
+  }
+
+  const response = json(payload, 200, RECENT_TTL);
+  ctx.waitUntil(cache.put(cacheKey, response.clone()));
+  return response;
+}
+
+// ── shape helpers ───────────────────────────────────────────────────────
+function trackToNow(t) {
+  return {
+    nowPlaying: true,
+    artist: (t.artist && (t.artist['#text'] || t.artist.name)) || '',
+    track:  t.name || '',
+    album:  (t.album && t.album['#text']) || '',
+    link:   t.url || '',
+  };
+}
+
+function trackToRow(t) {
+  const nowPlaying = Boolean(t['@attr']?.nowplaying);
+  return {
+    artist: (t.artist && (t.artist['#text'] || t.artist.name)) || '',
+    track:  t.name || '',
+    album:  (t.album && t.album['#text']) || '',
+    link:   t.url || '',
+    // `@attr.nowplaying` rows have no date.uts; stamp with now so the
+    // client can still sort and render a year label.
+    date: nowPlaying
+      ? new Date().toISOString()
+      : (t.date?.uts ? new Date(Number(t.date.uts) * 1000).toISOString() : ''),
+    nowPlaying,
+  };
+}
+
+// ── transport helpers ───────────────────────────────────────────────────
+function cacheKeyFor(reqUrl) {
+  const keyUrl = new URL(reqUrl);
+  keyUrl.search = '';
+  return new Request(keyUrl.toString(), { method: 'GET' });
+}
 
 function json(obj, status = 200, ttl = 0) {
   const headers = {
@@ -98,3 +163,5 @@ function corsPreflight() {
     },
   });
 }
+
+function short(err) { return String(err?.message || err).slice(0, 200); }

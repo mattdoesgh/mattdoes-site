@@ -6,7 +6,8 @@ compatibility_date = "2026-04-01"
 # over Pages, so /api/listening/* is handled here instead of returning a 404
 # from the static site.
 routes = [
-  { pattern = "mattdoes.online/api/listening/now", zone_name = "mattdoes.online" }
+  { pattern = "mattdoes.online/api/listening/now",    zone_name = "mattdoes.online" },
+  { pattern = "mattdoes.online/api/listening/recent", zone_name = "mattdoes.online" }
 ]
 
 # No [vars] block — LASTFM_USERNAME and LASTFM_API_KEY are set as secrets via
