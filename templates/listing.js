@@ -59,12 +59,16 @@ function emptyState(kind) {
     </div>`;
 }
 
-export function listingPage({ siteConfig, kind, entries, nowPlaying }) {
+export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobbles }) {
   const section = (siteConfig.sections && siteConfig.sections[kind]) || {};
   const showLastfm = kind === 'listening' && siteConfig.lastfm?.showUser && siteConfig.lastfm?.username;
   const rows = entries.length
     ? entries.map(kind === 'listening' ? listeningRow : articleRow).join('\n')
     : emptyState(kind);
+  const statLabel = kind === 'listening' ? 'scrobbles' : 'posts';
+  const statValue = kind === 'listening'
+    ? Number(totalScrobbles || 0).toLocaleString('en-US')
+    : String(entries.length);
 
   // Tag index (only meaningful for article kinds).
   const tagCounts = new Map();
@@ -80,7 +84,7 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying }) {
       ${section.who ? `<div class="who">${esc(section.who)}</div>` : ''}
       ${section.bio ? `<div class="bio">${esc(section.bio)}</div>` : ''}
       <div class="stats">
-        <span class="s"><span class="n">${entries.length}</span>${kind === 'listening' ? 'logged' : 'posts'}</span>
+        <span class="s"><span class="n">${statValue}</span>${statLabel}</span>
       </div>
     </div>
 

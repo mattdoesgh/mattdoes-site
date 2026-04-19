@@ -62,7 +62,8 @@ export function indexPage({ site, entries }) {
       <div><div class="body" style="color:var(--mute);">Nothing published yet.</div></div>
     </div>`;
 
-  const counts = site.counts || { journal: 0, thoughts: 0, making: 0, listening: 0 };
+  const counts = site.counts || { journal: 0, thoughts: 0, making: 0, listening: 0, scrobbles: 0 };
+  const scrobbles = Number(counts.scrobbles || 0).toLocaleString('en-US');
   const identity = site.identity || {};
   const identityLine = [identity.name, identity.handle].filter(Boolean).join(' · ');
   const links = site.links || [];
@@ -79,7 +80,7 @@ export function indexPage({ site, entries }) {
         <span class="s"><span class="n">${counts.journal}</span>journal</span>
         <span class="s"><span class="n">${counts.thoughts}</span>thoughts</span>
         <span class="s"><span class="n">${counts.making}</span>making</span>
-        <span class="s"><span class="n">${counts.listening}</span>listening</span>
+        <span class="s"><span class="n">${scrobbles}</span>scrobbles</span>
       </div>
     </div>
 

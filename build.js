@@ -31,13 +31,21 @@ const SITE_URL   = process.env.SITE_URL || siteConfig.url || 'https://mattdoes.o
 const t0 = Date.now();
 
 // ── 1. Walk vault & parse frontmatter ───────────────────────────────────
-function walk(dir, out = []) {
+// We skip any *nested* Obsidian vault (a subdir with its own .obsidian/).
+// Without this guard, a sub-vault that mirrors the top-level layout
+// (e.g. MDO/daily/, MDO/notes/) gets walked in addition to daily/ and
+// notes/ at the root, and every note is published twice.
+function walk(dir, out = [], isRoot = true) {
   if (!fs.existsSync(dir)) return out;
+  if (!isRoot && fs.existsSync(path.join(dir, '.obsidian'))) {
+    console.warn(`  (note: skipping nested vault at ${path.relative(VAULT_DIR, dir) || dir})`);
+    return out;
+  }
   for (const name of fs.readdirSync(dir)) {
     if (name.startsWith('.')) continue;
     const full = path.join(dir, name);
     const stat = fs.statSync(full);
-    if (stat.isDirectory()) walk(full, out);
+    if (stat.isDirectory()) walk(full, out, false);
     else if (name.endsWith('.md')) out.push(full);
   }
   return out;
@@ -161,6 +169,7 @@ function splitThoughts(note) {
 // an empty list — the page still renders with an empty-state.
 const CACHE_DIR  = path.resolve(__dirname, '.cache');
 const LASTFM_CACHE = path.join(CACHE_DIR, 'lastfm.json');
+const LASTFM_USER_CACHE = path.join(CACHE_DIR, 'lastfm-user.json');
 
 async function fetchLastfmTracks() {
   const cfg = siteConfig.lastfm || {};
@@ -219,6 +228,49 @@ async function fetchLastfmTracks() {
   }
 }
 
+// Total scrobble count from Last.fm's user.getinfo. Cached separately so
+// the stat stays visible offline and across deploys without creds.
+async function fetchLastfmPlaycount() {
+  const cfg  = siteConfig.lastfm || {};
+  const user = cfg.username || process.env.LASTFM_USERNAME || '';
+  const key  = process.env.LASTFM_API_KEY || '';
+  const ttl  = (cfg.cacheTtl ?? 900) * 1000;
+
+  const readCached = () => {
+    if (!fs.existsSync(LASTFM_USER_CACHE)) return null;
+    try {
+      const cached = JSON.parse(fs.readFileSync(LASTFM_USER_CACHE, 'utf8'));
+      return typeof cached.playcount === 'number' ? cached.playcount : null;
+    } catch { return null; }
+  };
+
+  if (fs.existsSync(LASTFM_USER_CACHE)) {
+    try {
+      const stat = fs.statSync(LASTFM_USER_CACHE);
+      if (Date.now() - stat.mtimeMs < ttl) {
+        const hit = readCached();
+        if (hit !== null) return hit;
+      }
+    } catch {}
+  }
+
+  if (!user || !key) return readCached() ?? 0;
+
+  const url = `https://ws.audioscrobbler.com/2.0/?method=user.getinfo&user=${encodeURIComponent(user)}&api_key=${encodeURIComponent(key)}&format=json`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const playcount = Number(data?.user?.playcount) || 0;
+    fs.mkdirSync(CACHE_DIR, { recursive: true });
+    fs.writeFileSync(LASTFM_USER_CACHE, JSON.stringify({ fetchedAt: new Date().toISOString(), playcount }, null, 2));
+    return playcount;
+  } catch (err) {
+    console.warn(`  (note: Last.fm user.getinfo failed — ${err.message}; using cache if available)`);
+    return readCached() ?? 0;
+  }
+}
+
 // ── 4. Render markdown, produce entries ─────────────────────────────────
 marked.setOptions({ gfm: true, breaks: false, mangle: false, headerIds: false });
 
@@ -258,7 +310,8 @@ articles.sort((a, b) => b.date - a.date);
 thoughts.sort((a, b) => b.date - a.date);
 
 // Listening: pulled from Last.fm. Kept separate from vault content.
-const lastfmTracks = await fetchLastfmTracks();
+const lastfmTracks  = await fetchLastfmTracks();
+const scrobbleTotal = await fetchLastfmPlaycount();
 const listening = lastfmTracks
   .filter(t => t.date)
   .map(t => ({
@@ -292,6 +345,7 @@ const siteMeta = {
     making:    articles.filter(a => a.kind === 'making').length,
     thoughts:  thoughts.length,
     listening: listening.length,
+    scrobbles: scrobbleTotal,
   },
 };
 
@@ -397,7 +451,7 @@ for (let i = 0; i < articles.length; i++) {
 // Section index pages — /journal/, /making/, /listening/
 writePage('/journal/',   listingPage({ siteConfig, kind: 'journal',   entries: journalArticles, nowPlaying: nowPlayingStatus }));
 writePage('/making/',    listingPage({ siteConfig, kind: 'making',    entries: makingArticles,  nowPlaying: nowPlayingStatus }));
-writePage('/listening/', listingPage({ siteConfig, kind: 'listening', entries: listening,       nowPlaying: nowPlayingStatus }));
+writePage('/listening/', listingPage({ siteConfig, kind: 'listening', entries: listening,       nowPlaying: nowPlayingStatus, totalScrobbles: scrobbleTotal }));
 
 // Colophon (get build.js line count for the vanity stat)
 const buildLines = fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').length;
