@@ -1,0 +1,13 @@
+name = "mattdoes-listening"
+main = "src/index.js"
+compatibility_date = "2026-04-01"
+
+# Same pattern as the contact worker — Workers-on-Routes take precedence
+# over Pages, so /api/listening/* is handled here instead of returning a 404
+# from the static site.
+routes = [
+  { pattern = "mattdoes.online/api/listening/now", zone_name = "mattdoes.online" }
+]
+
+# No [vars] block — LASTFM_USERNAME and LASTFM_API_KEY are set as secrets via
+# `wrangler secret put` so the username stays out of the public repo.

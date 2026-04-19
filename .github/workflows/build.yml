@@ -1,0 +1,41 @@
+name: build
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout site
+        uses: actions/checkout@v4
+        # Vault is private and cloned at deploy time on Cloudflare Pages.
+        # CI builds against test/fixture-vault instead — no VAULT_TOKEN needed here.
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build against fixture vault
+        env:
+          VAULT_DIR: ${{ github.workspace }}/test/fixture-vault
+          SITE_URL: https://mattdoes.online
+        run: npm run build
+
+      - name: Validate HTML
+        run: npx html-validate "dist/**/*.html"
+
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7

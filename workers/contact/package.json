@@ -1,0 +1,16 @@
+{
+  "name": "mattdoes-contact-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "tail": "wrangler tail",
+    "db:init": "wrangler d1 execute mattdoes-contact-log --file=./migrations/0001_init.sql",
+    "db:init:remote": "wrangler d1 execute mattdoes-contact-log --remote --file=./migrations/0001_init.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^4.83.0"
+  }
+}

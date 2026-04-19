@@ -1,0 +1,12 @@
+# Cloudflare Pages — URL redirects
+# Docs: https://developers.cloudflare.com/pages/configuration/redirects/
+
+# Apex canonicalization (handled at DNS + Pages custom domains, but belt-and-braces)
+https://www.mattdoes.online/*  https://mattdoes.online/:splat  301
+
+# Legacy paths from the pre-rebuild site (fill in as needed)
+# /old-path                    /new-path                        301
+
+# RSS alias
+/rss.xml                       /feed.xml                        301
+/atom.xml                      /feed.xml                        301

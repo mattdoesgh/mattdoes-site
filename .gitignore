@@ -1,0 +1,34 @@
+node_modules/
+dist/
+# Private vault content — cloned at build time by scripts/pages-prebuild.sh,
+# or cloned manually for local dev. Never committed to this repo.
+vault/
+.DS_Store
+.env
+.env.local
+.env.*.local
+*.log
+
+# Cloudflare / Wrangler local state
+.wrangler/
+.dev.vars
+
+# Build-time API caches (Last.fm scrobbles etc.)
+.cache/
+
+# Editor / OS
+.vscode/
+.idea/
+Thumbs.db
+
+# Claude scratch / local notes
+CLAUDE.md
+.claude/
+
+# Work-in-progress / build scratch
+*.tmp
+*.bak
+*.swp
+*.swo
+.scratch/
+.tmp/

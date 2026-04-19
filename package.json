@@ -1,0 +1,21 @@
+{
+  "name": "mattdoes-site",
+  "version": "0.1.0",
+  "private": true,
+  "description": "mattdoes.online — Obsidian vault → static HTML",
+  "type": "module",
+  "scripts": {
+    "build": "node build.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "marked": "^12.0.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "html-validate": "^10.13.1"
+  }
+}

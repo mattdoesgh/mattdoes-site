@@ -1,0 +1,30 @@
+name = "mattdoes-contact"
+main = "src/index.js"
+compatibility_date = "2026-04-01"
+
+# Route on the apex. The /api/contact path is matched here and does not
+# collide with Pages because Workers-on-Routes take precedence.
+routes = [
+  { pattern = "mattdoes.online/api/contact", zone_name = "mattdoes.online" }
+]
+
+# D1 binding — submissions are logged here since MailChannels has no dashboard.
+# Create the DB once with:  npx wrangler d1 create mattdoes-contact-log
+# Then paste the database_id below.
+[[d1_databases]]
+binding = "mattdoes_contact_log"
+database_name = "mattdoes-contact-log"
+database_id = "3b30f4e2-c3a4-42e7-a9a8-123c9768d281"
+
+
+# Non-secret vars. Secrets (DKIM keys) go via `wrangler secret put`.
+[vars]
+MAIL_TO        = "hi@mattdoes.online"
+MAIL_FROM      = "matt@mattdoes.online"
+MAIL_FROM_NAME = "mattdoes.online contact form"
+DKIM_DOMAIN    = "mattdoes.online"
+DKIM_SELECTOR  = "mailchannels"
+
+# Rate-limit: drop anything past N submissions per IP per hour.
+# Pages Functions have a built-in rate-limiter binding in 2025+; for the
+# Worker route we implement a small IP-keyed check against D1 below.
