@@ -86,7 +86,14 @@
   }
 
   // Kick off immediately so the page reflects current state on load,
-  // then poll for as long as the tab is open.
+  // then poll for as long as the tab is open. Also re-tick when the tab
+  // regains visibility or the page is restored from bfcache, so coming
+  // back to a long-idle tab doesn't wait up to a full POLL_MS for fresh
+  // scrobbles.
   tick();
   setInterval(tick, POLL_MS);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') tick();
+  });
+  window.addEventListener('pageshow', tick);
 })();

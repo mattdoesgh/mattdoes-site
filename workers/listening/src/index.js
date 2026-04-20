@@ -20,6 +20,13 @@
 //   Each endpoint is edge-cached via the Cache API so rapid client polls
 //   don't hit Last.fm. /now is short-lived (30s); /recent is a touch longer
 //   (45s) because it's heavier and scrobbles don't change that fast.
+//
+//   The edge TTL is baked into the response stored in `caches.default`, but
+//   the Cache-Control returned to the *browser* is rewritten to `no-cache`
+//   in toClient() below. Otherwise browsers hold the JSON locally for the
+//   full TTL and a plain reload keeps showing stale scrobbles — a hard
+//   refresh was the only way to get current data. Revalidation from the
+//   browser still hits the edge cache, so we pay nothing for freshness.
 
 const ALLOWED_ORIGIN  = 'https://mattdoes.online';
 const NOW_TTL         = 30;   // /now cache seconds (edge + browser)
@@ -43,10 +50,10 @@ async function handleNow(env, ctx, reqUrl) {
   const cacheKey = cacheKeyFor(reqUrl);
   const cache    = caches.default;
   const cached   = await cache.match(cacheKey);
-  if (cached) return withCors(cached);
+  if (cached) return toClient(cached);
 
   if (!env.LASTFM_API_KEY || !env.LASTFM_USERNAME) {
-    return json({ nowPlaying: false, reason: 'not_configured' }, 200, NOW_TTL);
+    return toClient(json({ nowPlaying: false, reason: 'not_configured' }, 200, NOW_TTL));
   }
 
   let payload;
@@ -59,12 +66,12 @@ async function handleNow(env, ctx, reqUrl) {
     const t    = Array.isArray(raw) ? raw[0] : raw;
     payload    = (t && t['@attr']?.nowplaying) ? trackToNow(t) : { nowPlaying: false };
   } catch (err) {
-    return json({ nowPlaying: false, error: short(err) }, 200, NOW_TTL);
+    return toClient(json({ nowPlaying: false, error: short(err) }, 200, NOW_TTL));
   }
 
   const response = json(payload, 200, NOW_TTL);
   ctx.waitUntil(cache.put(cacheKey, response.clone()));
-  return response;
+  return toClient(response);
 }
 
 // ── /recent ─────────────────────────────────────────────────────────────
@@ -75,10 +82,10 @@ async function handleRecent(env, ctx, reqUrl) {
   const cacheKey = cacheKeyFor(reqUrl);
   const cache    = caches.default;
   const cached   = await cache.match(cacheKey);
-  if (cached) return withCors(cached);
+  if (cached) return toClient(cached);
 
   if (!env.LASTFM_API_KEY || !env.LASTFM_USERNAME) {
-    return json({ playcount: 0, tracks: [], reason: 'not_configured' }, 200, RECENT_TTL);
+    return toClient(json({ playcount: 0, tracks: [], reason: 'not_configured' }, 200, RECENT_TTL));
   }
 
   let payload;
@@ -93,12 +100,12 @@ async function handleRecent(env, ctx, reqUrl) {
     const tracks = arr.map(trackToRow).filter(t => t.artist && t.track).slice(0, RECENT_LIMIT);
     payload = { playcount: Number(attr.total) || 0, tracks };
   } catch (err) {
-    return json({ playcount: 0, tracks: [], error: short(err) }, 200, RECENT_TTL);
+    return toClient(json({ playcount: 0, tracks: [], error: short(err) }, 200, RECENT_TTL));
   }
 
   const response = json(payload, 200, RECENT_TTL);
   ctx.waitUntil(cache.put(cacheKey, response.clone()));
-  return response;
+  return toClient(response);
 }
 
 // ── shape helpers ───────────────────────────────────────────────────────
@@ -147,9 +154,19 @@ function json(obj, status = 200, ttl = 0) {
   return new Response(JSON.stringify(obj), { status, headers });
 }
 
-function withCors(response) {
-  // Cached responses already carry CORS headers; this is a defensive pass-through.
-  return new Response(response.body, response);
+// Rewrite Cache-Control for the browser while leaving the entry stored in
+// `caches.default` untouched. The Cache API keeps its TTL (so we still
+// throttle Last.fm), but the browser is told to revalidate every time —
+// revalidation round-trips to us, hits the edge cache, and returns in
+// milliseconds. Net effect: plain reloads show current scrobbles without
+// the hard-refresh dance, and we don't lose edge-level throttling.
+function toClient(response) {
+  const h = new Headers(response.headers);
+  h.set('cache-control', 'no-cache');
+  // Belt-and-braces: stored responses already carry CORS headers, but make
+  // sure they're present after header rebuild.
+  h.set('access-control-allow-origin', ALLOWED_ORIGIN);
+  return new Response(response.body, { status: response.status, headers: h });
 }
 
 function corsPreflight() {

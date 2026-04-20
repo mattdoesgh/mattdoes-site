@@ -35,6 +35,12 @@
     }
   }
 
+  // Also re-tick on tab-visibility and bfcache restore so the pill
+  // catches up immediately when Matt comes back to the tab.
   tick();
   setInterval(tick, POLL_MS);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') tick();
+  });
+  window.addEventListener('pageshow', tick);
 })();

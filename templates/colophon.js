@@ -11,7 +11,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
   <aside class="side-left" aria-label="page meta">
     <div class="ident">
       <div class="who">colophon</div>
-      <div class="bio">How this site is put together. Obsidian vault → 180-line build script → static HTML.</div>
+      <div class="bio">How this site is put together. Obsidian vault → small Node build → static HTML.</div>
     </div>
 
     <div class="group">
@@ -47,10 +47,9 @@ export function colophonPage({ stats, updated, nowPlaying }) {
 <pre class="tree"><span class="b">┌</span> <span class="d">vault</span> <span class="note">(private · obsidian)</span>
 <span class="b">├──</span> <span class="d">daily</span>
 <span class="b">│   └──</span> <span class="f">YYYY-MM-DD.md</span>   <span class="note"># micro-posts · one ##HH:MM = one thought</span>
-<span class="b">├──</span> <span class="d">notes</span>
-<span class="b">│   ├──</span> <span class="d">dev</span>              <span class="note"># → /journal/&lt;slug&gt;/</span>
-<span class="b">│   ├──</span> <span class="d">making</span>           <span class="note"># → /making/&lt;slug&gt;/</span>
-<span class="b">│   └──</span> <span class="d">ideas</span>            <span class="note"># never published</span>
+<span class="b">├──</span> <span class="d">notes</span>             <span class="note"># publish: journal | making → routed below</span>
+<span class="b">│   ├──</span> <span class="d">making</span>           <span class="note"># convention bucket</span>
+<span class="b">│   └──</span> <span class="d">ideas</span>            <span class="note"># never published (no publish: key)</span>
 <span class="b">├──</span> <span class="d">attachments</span>          <span class="note"># images / audio / video</span>
 <span class="b">└──</span> <span class="f">.obsidian/</span>           <span class="note"># ignored</span>
 
@@ -75,21 +74,20 @@ export function colophonPage({ stats, updated, nowPlaying }) {
         <tr><td class="key">slug</td><td class="type">string</td><td class="req">opt</td><td>URL path segment. Defaults to kebab filename.</td></tr>
         <tr><td class="key">tags</td><td class="type">[string]</td><td class="req">opt</td><td>Render as #tag. Drives filter rows.</td></tr>
         <tr><td class="key">summary</td><td class="type">string</td><td class="req">opt</td><td>One-sentence lede. Shown in index + RSS.</td></tr>
-        <tr><td class="key">status</td><td class="type">enum</td><td class="req">opt</td><td>seed · growing · evergreen</td></tr>
         <tr><td class="key">updated</td><td class="type">date</td><td class="req">opt</td><td>Last meaningful edit.</td></tr>
-        <tr><td class="key">cover</td><td class="type">path</td><td class="req">opt</td><td>Image in vault/attachments/. Rewritten at build.</td></tr>
         <tr><td class="key">aliases</td><td class="type">[string]</td><td class="req">opt</td><td>Extra wikilink targets.</td></tr>
       </tbody>
     </table>
 
-    <div id="routing" class="section-label"><span>routing · path → url</span><span class="n">03</span></div>
+    <div id="routing" class="section-label"><span>routing · publish → url</span><span class="n">03</span></div>
+    <div class="blurb">Routes are driven by the <code>publish:</code> frontmatter value, not the folder. Folders are organizational only.</div>
     <div class="routes">
-      <span class="from">notes/dev/&lt;slug&gt;.md</span><span class="arr">→</span><span class="to">/journal/<span class="dim">&lt;slug&gt;</span></span>
-      <span class="from">notes/making/&lt;slug&gt;.md</span><span class="arr">→</span><span class="to">/making/<span class="dim">&lt;slug&gt;</span></span>
+      <span class="from">publish: journal</span><span class="arr">→</span><span class="to">/journal/<span class="dim">&lt;slug&gt;</span>/</span>
+      <span class="from">publish: making</span><span class="arr">→</span><span class="to">/making/<span class="dim">&lt;slug&gt;</span>/</span>
       <span class="from">daily/YYYY-MM-DD.md ##HH:MM</span><span class="arr">→</span><span class="to">/thoughts<span class="dim">#t-NNN</span></span>
       <span class="from">attachments/&lt;file&gt;</span><span class="arr">→</span><span class="to">/img/<span class="dim">&lt;file&gt;</span></span>
       <span class="from">last.fm recent tracks</span><span class="arr">→</span><span class="to">/listening/</span>
-      <span class="from">notes/ideas/*.md</span><span class="arr">✕</span><span class="to"><span class="dim">never built</span></span>
+      <span class="from">publish: draft · missing</span><span class="arr">✕</span><span class="to"><span class="dim">never built</span></span>
     </div>
 
     <div id="wikilinks" class="section-label"><span>wikilinks &amp; embeds</span><span class="n">04</span></div>
