@@ -71,7 +71,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
       <tbody>
         <tr><td class="key">publish</td><td class="type">enum</td><td class="req y">req</td><td>journal · thoughts · making · draft <span class="note">(listening is pulled from last.fm)</span></td></tr>
         <tr><td class="key">title</td><td class="type">string</td><td class="req">opt</td><td>Display title. Defaults to filename.</td></tr>
-        <tr><td class="key">date</td><td class="type">date</td><td class="req">opt</td><td>ISO 8601. Defaults to file mtime.</td></tr>
+        <tr><td class="key">date</td><td class="type">date</td><td class="req">opt</td><td>Bare <code>YYYY-MM-DD</code> is anchored to CT midnight (so the post lands on the day you wrote, not UTC's). Full ISO timestamps are used as-is. Defaults to file mtime.</td></tr>
         <tr><td class="key">slug</td><td class="type">string</td><td class="req">opt</td><td>URL path segment. Defaults to kebab filename.</td></tr>
         <tr><td class="key">tags</td><td class="type">[string]</td><td class="req">opt</td><td>Render as #tag. Drives filter rows.</td></tr>
         <tr><td class="key">summary</td><td class="type">string</td><td class="req">opt</td><td>One-sentence lede. Shown in index + RSS.</td></tr>
