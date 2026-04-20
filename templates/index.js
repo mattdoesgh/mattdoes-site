@@ -2,7 +2,7 @@
 
 import { base } from './base.js';
 import { asset } from './_assets.js';
-import { esc, fmtDate, relTime, tagList } from './_helpers.js';
+import { esc, fmtDate, fmtIsoDay, relTime, tagList } from './_helpers.js';
 
 function row(entry) {
   const kind = entry.kind; // journal | thought | making | listening
@@ -57,7 +57,7 @@ export function indexPage({ site, entries }) {
   const groups = groupByDay(entries).slice(0, 6); // most recent ~6 days
   const today = fmtDate(new Date(), 'iso');
   const timeline = groups.length ? groups.map(([day, rows]) => {
-    const label = day === today ? `today · ${fmtDate(day, 'day')}` : `${fmtDate(day, 'day')} · ${day.slice(0, 4)}`;
+    const label = day === today ? `today · ${fmtIsoDay(day)}` : `${fmtIsoDay(day)} · ${day.slice(0, 4)}`;
     return `
     <div class="tl-divider"><span>${label}</span><span>${rows.length}</span></div>
     ${rows.map(row).join('\n')}`;

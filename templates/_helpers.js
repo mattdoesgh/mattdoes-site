@@ -94,6 +94,17 @@ export function fmtDate(d, fmt = 'apr 17') {
   return `${mon} ${dd}`;
 }
 
+// Format a bare "YYYY-MM-DD" (e.g. a group key already computed in CT) as
+// "mon dd" without any timezone conversion. `fmtDate` can't be used here
+// because it would re-parse the string as UTC midnight and render it in
+// CT, shifting the label back a day.
+export function fmtIsoDay(iso) {
+  if (!iso) return '';
+  const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return '';
+  return `${MONTHS[Number(m[2]) - 1]} ${m[3]}`;
+}
+
 // Wrap a date in a <time> element with its ISO datetime + class="ts",
 // rendered text formatted in CT. The class is the contract local-time.js
 // looks for when layering a visitor-local tooltip (title attr). `extra`
