@@ -726,8 +726,21 @@ table.schema .req.y { color: var(--accent); }
   .row { grid-template-columns: 4rem 1fr; gap: 1rem; }
 }
 @media (max-width: 480px) {
-  .topbar nav { gap: 12px; }
-  .topbar nav a { font-size: 11px; }
+  .topbar .inner {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;          /* Firefox */
+    -ms-overflow-style: none;       /* IE/Edge */
+    flex-wrap: nowrap;
+    gap: 16px;
+  }
+  .topbar .inner::-webkit-scrollbar { display: none; }  /* Chrome/Safari */
+  .topbar nav { gap: 12px; flex-shrink: 0; }
+  .topbar nav a { font-size: 11px; white-space: nowrap; }
+  .topbar .home { flex-shrink: 0; }
+  .topbar .spacer { flex: 0 0 4px; }
+  .topbar .meta-link { flex-shrink: 0; white-space: nowrap; }
+  .topbar .status { flex-shrink: 0; white-space: nowrap; }
   .row { grid-template-columns: 1fr; gap: .2rem; }
   .row .gutter { flex-direction: row; gap: .8rem; }
 }
