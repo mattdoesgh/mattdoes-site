@@ -29,7 +29,26 @@ const VAULT_DIR  = process.env.VAULT_DIR || path.resolve(__dirname, 'vault');
 const DIST_DIR   = path.resolve(__dirname, 'dist');
 const STATIC_DIR = path.resolve(__dirname, 'static');
 const MEDIA_BASE = (process.env.MEDIA_BASE || '/img').replace(/\/$/, '');
+const MEDIA_BUILD_DIR = path.resolve(__dirname, '.cache', 'media-build');
+const MEDIA_MANIFEST  = path.resolve(__dirname, '.cache', 'media-manifest.json');
 const SITE_URL   = process.env.SITE_URL || siteConfig.url || 'https://mattdoes.online';
+
+// Media variants index (populated from optimize-media's manifest). Maps a
+// source basename like "hero.jpg" → [{ path: "hero.webp", type: "image/webp" }]
+// so mediaTag() can emit a <picture> element. Missing manifest → empty map,
+// and mediaTag falls back to a bare <img>.
+const mediaVariants = (() => {
+  if (!fs.existsSync(MEDIA_MANIFEST)) return new Map();
+  try {
+    const data = JSON.parse(fs.readFileSync(MEDIA_MANIFEST, 'utf8'));
+    const m = new Map();
+    for (const [key, entry] of Object.entries(data.entries || {})) {
+      m.set(key, entry.variants || []);
+      m.set(path.basename(key), entry.variants || []);
+    }
+    return m;
+  } catch { return new Map(); }
+})();
 
 const t0 = Date.now();
 
@@ -104,12 +123,29 @@ const IMG_EXT = /\.(png|jpe?g|gif|webp|avif|svg)$/i;
 const AUD_EXT = /\.(mp3|ogg|wav|m4a|flac)$/i;
 const VID_EXT = /\.(mp4|webm|mov)$/i;
 
+function mediaUrl(p) {
+  // Encode each path segment but keep slashes, so nested attachments
+  // (e.g. attachments/2026/foo.jpg) resolve cleanly against MEDIA_BASE.
+  return `${MEDIA_BASE}/${p.split('/').map(encodeURIComponent).join('/')}`;
+}
+
 function mediaTag(target, alt) {
-  const url = `${MEDIA_BASE}/${encodeURIComponent(target)}`;
-  if (IMG_EXT.test(target)) return `<img src="${url}" alt="${esc(alt || target)}" loading="lazy" />`;
-  if (AUD_EXT.test(target)) return `<audio controls src="${url}" preload="none"></audio>`;
-  if (VID_EXT.test(target)) return `<video controls src="${url}" preload="metadata"></video>`;
-  return `<a href="${url}">${esc(target)}</a>`;
+  const clean = target.replace(/^\/+/, '');
+  const url = mediaUrl(clean);
+  if (IMG_EXT.test(clean)) {
+    const variants = mediaVariants.get(clean) || mediaVariants.get(path.basename(clean)) || [];
+    const altText = esc(alt || clean);
+    if (variants.length === 0) {
+      return `<img src="${url}" alt="${altText}" loading="lazy" />`;
+    }
+    const sources = variants
+      .map(v => `<source type="${esc(v.type)}" srcset="${mediaUrl(v.path)}">`)
+      .join('');
+    return `<picture>${sources}<img src="${url}" alt="${altText}" loading="lazy" /></picture>`;
+  }
+  if (AUD_EXT.test(clean)) return `<audio controls src="${url}" preload="none"></audio>`;
+  if (VID_EXT.test(clean)) return `<video controls src="${url}" preload="metadata"></video>`;
+  return `<a href="${url}">${esc(clean)}</a>`;
 }
 
 function resolveWikilinks(md) {
@@ -466,11 +502,19 @@ const pairs = await Promise.all([
 for (const p of pairs) if (p) assetMap[p[0]] = p[1];
 setAssets(assetMap);
 
-// Copy vault attachments to dist/img (local dev; R2 sync is used in production)
+// Copy vault attachments + optimized variants to dist/img for the default
+// MEDIA_BASE='/img'. In production MEDIA_BASE points at media.mattdoes.online
+// and sync-media has already pushed the same files to R2, so these on-disk
+// copies are only consulted when the build is served locally. Variants are
+// merged in after originals so the .webp sits next to its source.
 const attachDir = path.join(VAULT_DIR, 'attachments');
 if (fs.existsSync(attachDir)) {
   fs.mkdirSync(path.join(DIST_DIR, 'img'), { recursive: true });
   copyStatic(attachDir, path.join(DIST_DIR, 'img'));
+}
+if (fs.existsSync(MEDIA_BUILD_DIR)) {
+  fs.mkdirSync(path.join(DIST_DIR, 'img'), { recursive: true });
+  copyStatic(MEDIA_BUILD_DIR, path.join(DIST_DIR, 'img'));
 }
 
 // Homepage

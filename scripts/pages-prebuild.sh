@@ -52,3 +52,18 @@ if [[ ! -d "$VAULT_DIR" ]] || [[ -z "$(ls -A "$VAULT_DIR" 2>/dev/null)" ]]; then
 fi
 
 echo "✓ vault/ checked out ($(git -C "$VAULT_DIR" rev-parse --short HEAD))"
+
+# Media pipeline: generate optimized variants, then push originals + variants
+# to R2. Both steps no-op gracefully if their prereqs (sharp, R2 token) are
+# absent — build.js falls back to serving attachments out of dist/img/.
+if [[ -f package.json ]]; then
+  echo "→ Optimizing media…"
+  npm run --silent optimize-media || echo "  (optimize-media reported an error — continuing)"
+
+  if [[ -n "${CLOUDFLARE_API_TOKEN:-}" ]] && [[ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]]; then
+    echo "→ Syncing media to R2…"
+    npm run --silent sync-media || echo "  (sync-media reported an error — continuing; originals may be stale on R2)"
+  else
+    echo "  (skip sync-media: CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID not set)"
+  fi
+fi

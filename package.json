@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "build": "node build.js",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "optimize-media": "node scripts/optimize-media.js",
+    "sync-media": "node --env-file-if-exists=.env scripts/sync-media.js"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
@@ -18,6 +20,7 @@
   "devDependencies": {
     "html-validate": "^10.13.1",
     "lightningcss": "^1.32.0",
+    "sharp": "^0.33.5",
     "terser": "^5.46.1"
   }
 }
