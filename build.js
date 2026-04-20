@@ -354,7 +354,6 @@ function renderBody(rawMd) {
 
 const articles = [];   // journal + making
 const thoughts = [];   // individual micro-posts
-let thoughtCounter = 0;
 
 for (const n of notes) {
   if (n.publish === 'journal' || n.publish === 'making') {
@@ -370,10 +369,8 @@ for (const n of notes) {
     });
   } else if (n.publish === 'thoughts') {
     for (const t of splitThoughts(n)) {
-      thoughtCounter += 1;
       thoughts.push({
         ...t,
-        id: `t-${String(thoughtCounter).padStart(3, '0')}`,
         html: renderBody(t.body),
       });
     }
@@ -381,7 +378,14 @@ for (const n of notes) {
 }
 
 articles.sort((a, b) => b.date - a.date);
-thoughts.sort((a, b) => b.date - a.date);
+// Assign IDs in chronological order so t-001 is always the oldest thought
+// and higher numbers are newer. Without this, IDs depend on vault-walk
+// order (daily notes authored newest-first end up with t-001 = newest),
+// which breaks stable permalinks and inverts the expected ordering on
+// any page that renders newest-first. Flip back to desc for display.
+thoughts.sort((a, b) => a.date - b.date);
+thoughts.forEach((t, i) => { t.id = `t-${String(i + 1).padStart(3, '0')}`; });
+thoughts.reverse();
 
 // Listening: pulled from Last.fm. Kept separate from vault content.
 const lastfmTracks  = await fetchLastfmTracks();
