@@ -365,6 +365,8 @@ a.accent:hover { border-bottom-color: var(--accent); }
 .row .body a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 .row .body strong { font-weight: 600; }
 .row .body em { font-style: italic; color: var(--mute); }
+.row .body img,
+.row .body picture { max-width: 100%; height: auto; display: block; }
 
 /* Quote variant — serif italic, old-site callback */
 .row .body.q {
