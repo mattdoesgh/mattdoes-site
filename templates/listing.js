@@ -4,7 +4,7 @@
 
 import { base } from './base.js';
 import { asset } from './_assets.js';
-import { esc, fmtDate, timeTag, tagList } from './_helpers.js';
+import { esc, fmtDate, timeTag, tagList, safeUrl, relFor } from './_helpers.js';
 
 function articleRow(entry) {
   const tags = tagList(entry.tags);
@@ -30,7 +30,7 @@ function listeningRow(entry) {
   const when = entry.nowPlaying
     ? '<span class="dot" style="display:inline-block;width:.5rem;height:.5rem;border-radius:50%;background:var(--accent,#f77bc9);margin-right:.25rem;"></span>now'
     : timeTag(entry.date, 'day');
-  const linkOpen  = entry.link ? `<a href="${esc(entry.link)}" rel="noopener">` : '';
+  const linkOpen  = entry.link ? `<a href="${esc(safeUrl(entry.link))}"${relFor(entry.link) || ' rel="noopener"'}>` : '';
   const linkClose = entry.link ? `</a>` : '';
   return `
     <div class="row">
@@ -98,7 +98,7 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
     <div class="group">
       <h3>source <span class="m">last.fm</span></h3>
       <ul>
-        <li><a href="https://www.last.fm/user/${encodeURIComponent(siteConfig.lastfm.username)}" rel="noopener">last.fm/${esc(siteConfig.lastfm.username)}</a><span class="meta">↗</span></li>
+        <li><a href="https://www.last.fm/user/${encodeURIComponent(siteConfig.lastfm.username)}" rel="noopener noreferrer">last.fm/${esc(siteConfig.lastfm.username)}</a><span class="meta">↗</span></li>
       </ul>
     </div>` : ''}
 
@@ -106,7 +106,7 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
     <div class="group">
       <h3>elsewhere</h3>
       <ul>
-        ${siteConfig.links.filter(l => l.href).map(l => `<li><a href="${esc(l.href)}">${esc(l.label)}</a>${l.meta ? `<span class="meta">${esc(l.meta)}</span>` : ''}</li>`).join('\n        ')}
+        ${siteConfig.links.filter(l => l.href).map(l => `<li><a href="${esc(safeUrl(l.href))}"${relFor(l.href)}>${esc(l.label)}</a>${l.meta ? `<span class="meta">${esc(l.meta)}</span>` : ''}</li>`).join('\n        ')}
       </ul>
     </div>` : ''}
   </aside>

@@ -19,6 +19,29 @@ export function esc(s) {
     .replace(/'/g, '&#39;');
 }
 
+// Allowlist URL schemes for href attributes. Returns '#' for anything that
+// isn't http(s), mailto, tel, an anchor, or a same-origin path — so a
+// `javascript:`/`data:`/`vbscript:` URL slipping into vault content (or
+// returned by an upstream API like Last.fm) can't become a click-to-XSS.
+// Use this to wrap any URL that originates outside the build pipeline
+// before interpolating it into an `href` attribute.
+export function safeUrl(url) {
+  if (url == null) return '';
+  const s = String(url).trim();
+  if (s === '') return '';
+  if (/^(https?:|mailto:|tel:|#|\/|\.\/|\.\.\/)/i.test(s)) return s;
+  return '#';
+}
+
+// Emit ` rel="noopener noreferrer"` for absolute http(s) URLs and nothing
+// for relative paths or other safe schemes. Keeps the referrer off
+// off-origin destinations and stops same-tab opener tabnabbing if the
+// link is ever switched to target=_blank.
+export function relFor(url) {
+  if (url == null) return '';
+  return /^https?:\/\//i.test(String(url).trim()) ? ' rel="noopener noreferrer"' : '';
+}
+
 // Wall-clock components of `instant` in America/Chicago. Intl emits "24"
 // for midnight under hour12:false, so we normalize that to "00".
 function tzParts(instant, tz = SITE_TZ) {

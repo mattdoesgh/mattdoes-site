@@ -20,7 +20,7 @@ import { articlePage }  from './templates/journal.js';
 import { thoughtsPage } from './templates/thoughts.js';
 import { listingPage }  from './templates/listing.js';
 import { colophonPage } from './templates/colophon.js';
-import { esc, fmtDate, ctWallClockToDate } from './templates/_helpers.js';
+import { esc, fmtDate, ctWallClockToDate, safeUrl } from './templates/_helpers.js';
 
 // Frontmatter dates without a time component (e.g. `date: 2026-04-19`)
 // are parsed by js-yaml as UTC midnight — which lands on the previous
@@ -348,6 +348,25 @@ async function fetchLastfmPlaycount() {
 // ── 4. Render markdown, produce entries ─────────────────────────────────
 marked.setOptions({ gfm: true, breaks: false, mangle: false, headerIds: false });
 
+// Scheme-allowlist any link or image URL emitted by marked. A note author
+// who pastes `[click](javascript:…)` or `![](data:text/html,…)` otherwise
+// gets those URLs rendered verbatim — CSP currently catches the fallout
+// but this is cheap belt-and-braces at the source.
+const safeLinkRenderer = {
+  link(href, title, text) {
+    const safe = safeUrl(href);
+    const t = title ? ` title="${esc(title)}"` : '';
+    return `<a href="${esc(safe)}"${t}>${text}</a>`;
+  },
+  image(href, title, text) {
+    const safe = safeUrl(href);
+    const t = title ? ` title="${esc(title)}"` : '';
+    const alt = text != null ? ` alt="${esc(text)}"` : '';
+    return `<img src="${esc(safe)}"${alt}${t} loading="lazy" />`;
+  },
+};
+marked.use({ renderer: safeLinkRenderer });
+
 function renderBody(rawMd) {
   return marked.parse(resolveWikilinks(rawMd));
 }
@@ -601,17 +620,28 @@ const distSizeKb = (() => {
 
 // ── 7. Feeds ────────────────────────────────────────────────────────────
 function rfc3339(d) { return new Date(d).toISOString(); }
+// CDATA can't contain a literal `]]>`. A note body that ever includes
+// that sequence (trivial inside an XML/HTML code fence) would otherwise
+// terminate the section early and let downstream characters become
+// feed-level markup. The standard escape: split the closing brackets
+// across two CDATA sections.
+function cdataSafe(s) {
+  return String(s ?? '').replace(/]]>/g, ']]]]><![CDATA[>');
+}
+// Atom <link href> must be a valid IRI and gets wrapped in a quoted
+// attribute, so XML-escape entry URLs as well as title text.
 function atomFeed() {
   const updated = feedEntries[0] ? rfc3339(feedEntries[0].date) : rfc3339(new Date());
   const items = feedEntries.slice(0, 30).map(e => {
     const title = e.title || (e.kind === 'thought' ? `thought · ${fmtDate(e.date, 'day')}` : e.kind);
     const content = e.html || esc(e.body || e.summary || '');
+    const href = `${SITE_URL}${e.url}`;
     return `  <entry>
     <title>${esc(title)}</title>
-    <link href="${SITE_URL}${e.url}"/>
-    <id>${SITE_URL}${e.url}</id>
+    <link href="${esc(href)}"/>
+    <id>${esc(href)}</id>
     <updated>${rfc3339(e.date)}</updated>
-    <content type="html"><![CDATA[${content}]]></content>
+    <content type="html"><![CDATA[${cdataSafe(content)}]]></content>
   </entry>`;
   }).join('\n');
   return `<?xml version="1.0" encoding="utf-8"?>

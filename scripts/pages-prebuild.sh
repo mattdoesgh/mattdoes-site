@@ -15,7 +15,11 @@
 
 set -euo pipefail
 
-VAULT_REPO="${VAULT_REPO:-github.com/mattdoesgh/mattdoes-vault.git}"
+# Repo URL is hardcoded — letting it be env-overridable would mean a
+# compromised CF Pages env var could redirect the clone (and the PAT
+# along with it) to an attacker-controlled mirror. Branch + dir stay
+# overridable for legitimate dev use.
+VAULT_REPO="github.com/mattdoesgh/mattdoes-vault.git"
 VAULT_BRANCH="${VAULT_BRANCH:-main}"
 VAULT_DIR="${VAULT_DIR:-vault}"
 

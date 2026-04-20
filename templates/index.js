@@ -2,7 +2,7 @@
 
 import { base } from './base.js';
 import { asset } from './_assets.js';
-import { esc, fmtDate, fmtIsoDay, relTime, tagList } from './_helpers.js';
+import { esc, fmtDate, fmtIsoDay, relTime, tagList, safeUrl, relFor } from './_helpers.js';
 
 function row(entry) {
   const kind = entry.kind; // journal | thought | making | listening
@@ -93,7 +93,7 @@ export function indexPage({ site, entries }) {
     <div class="group">
       <h3>elsewhere</h3>
       <ul>
-        ${links.filter(l => l.href).map(l => `<li><a href="${esc(l.href)}">${esc(l.label)}</a>${l.meta ? `<span class="meta">${esc(l.meta)}</span>` : ''}</li>`).join('\n        ')}
+        ${links.filter(l => l.href).map(l => `<li><a href="${esc(safeUrl(l.href))}"${relFor(l.href)}>${esc(l.label)}</a>${l.meta ? `<span class="meta">${esc(l.meta)}</span>` : ''}</li>`).join('\n        ')}
       </ul>
     </div>` : ''}
   </aside>

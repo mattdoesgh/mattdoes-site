@@ -19,6 +19,15 @@
   if (!panel) return;
   const root = document.documentElement;
 
+  // Same-origin target for postMessage. Broadcasting to '*' would leak
+  // edit-mode events to any embedder; the CSP `frame-ancestors 'self'`
+  // header already prevents cross-origin embedding, so pinning to our
+  // own origin here is consistent defense-in-depth.
+  const PARENT_ORIGIN = location.origin;
+  function postToParent(msg) {
+    try { window.parent.postMessage(msg, PARENT_ORIGIN); } catch (e) {}
+  }
+
   function apply() {
     root.dataset.theme = state.dark ? 'dark' : 'light';
     root.style.setProperty('--accent', ACCENTS[state.accent] || ACCENTS.warm);
@@ -39,7 +48,7 @@
   function persist(edits) {
     Object.assign(state, edits);
     apply();
-    try { window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*'); } catch (e) {}
+    postToParent({ type: '__edit_mode_set_keys', edits });
   }
 
   panel.querySelectorAll('.tk-toggle').forEach(btn => {
@@ -56,15 +65,20 @@
   });
   panel.querySelector('.close')?.addEventListener('click', () => {
     panel.classList.remove('open');
-    try { window.parent.postMessage({ type: '__deactivate_edit_mode' }, '*'); } catch (e) {}
+    postToParent({ type: '__deactivate_edit_mode' });
   });
 
+  // Only act on messages from our own origin. Without this check, any
+  // page that loaded us in an iframe (still constrained by the
+  // frame-ancestors CSP, but worth not relying on a single layer) could
+  // toggle the tweaks panel by posting a crafted message.
   window.addEventListener('message', (e) => {
+    if (e.origin !== PARENT_ORIGIN) return;
     const d = e.data || {};
     if (d.type === '__activate_edit_mode')   panel.classList.add('open');
     if (d.type === '__deactivate_edit_mode') panel.classList.remove('open');
   });
-  try { window.parent.postMessage({ type: '__edit_mode_available' }, '*'); } catch (e) {}
+  postToParent({ type: '__edit_mode_available' });
 
   apply();
 })();

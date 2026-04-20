@@ -86,13 +86,22 @@ function wrangler(args) {
 function putObject(key, filePath) {
   const ext = path.extname(key).toLowerCase();
   const mime = MIME[ext] || 'application/octet-stream';
-  wrangler([
+  // SVGs run JavaScript when loaded as a top-level document (not inside
+  // an <img>). Force a download for direct navigation so a poisoned
+  // .svg in attachments/ can't fire script in the media-subdomain
+  // origin. Inline `<img>` / `<picture>` rendering is unaffected.
+  const args = [
     'r2', 'object', 'put',
     `${BUCKET}/${key}`,
     '--file', filePath,
     '--content-type', mime,
-    '--remote',
-  ]);
+  ];
+  if (ext === '.svg') {
+    const filename = path.basename(key).replace(/"/g, '');
+    args.push('--content-disposition', `attachment; filename="${filename}"`);
+  }
+  args.push('--remote');
+  wrangler(args);
 }
 
 function deleteObject(key) {

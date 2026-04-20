@@ -2,7 +2,7 @@
 // Build stats are interpolated at build time.
 
 import { base } from './base.js';
-import { esc, fmtDate, timeTag } from './_helpers.js';
+import { esc, fmtDate, timeTag, safeUrl, relFor } from './_helpers.js';
 import { siteConfig } from '../site.config.js';
 
 export function colophonPage({ stats, updated, nowPlaying }) {
@@ -29,7 +29,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
     <div class="group">
       <h3>source</h3>
       <ul>
-        ${siteConfig.links.filter(l => l.href).map(l => `<li><a href="${esc(l.href)}">${esc(l.label)}</a>${l.meta ? `<span class="meta">${esc(l.meta)}</span>` : ''}</li>`).join('\n        ')}
+        ${siteConfig.links.filter(l => l.href).map(l => `<li><a href="${esc(safeUrl(l.href))}"${relFor(l.href)}>${esc(l.label)}</a>${l.meta ? `<span class="meta">${esc(l.meta)}</span>` : ''}</li>`).join('\n        ')}
         <li><span>build.js</span><span class="meta">${stats?.buildLines || '—'} ln</span></li>
       </ul>
     </div>` : ''}

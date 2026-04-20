@@ -52,7 +52,7 @@
       ? '<span class="dot" style="display:inline-block;width:.5rem;height:.5rem;border-radius:50%;background:var(--accent,#f77bc9);margin-right:.25rem;"></span>now'
       : timeTag(t.date, 'day');
     const year = esc(yearOf(t.date));
-    const linkOpen  = t.link ? `<a href="${esc(t.link)}" rel="noopener">` : '';
+    const linkOpen  = t.link ? `<a href="${esc(safeUrl(t.link))}" rel="noopener noreferrer">` : '';
     const linkClose = t.link ? `</a>` : '';
     return `
     <div class="row">
@@ -73,6 +73,16 @@
     return String(s ?? '')
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  // Mirror templates/_helpers.js safeUrl() — refuse anything that isn't
+  // an http(s)/mailto/anchor/relative URL so a poisoned Last.fm payload
+  // (or a future API change) can't slip a `javascript:` href through.
+  function safeUrl(url) {
+    if (url == null) return '';
+    const s = String(url).trim();
+    if (s === '') return '';
+    if (/^(https?:|mailto:|tel:|#|\/|\.\/|\.\.\/)/i.test(s)) return s;
+    return '#';
   }
   // Wall-clock parts in SITE_TZ. Matches tzParts() in templates/_helpers.js.
   function ctParts(iso) {
