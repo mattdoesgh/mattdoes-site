@@ -2,6 +2,7 @@
 // Every page's body fragment gets wrapped in this.
 
 import { esc } from './_helpers.js';
+import { asset } from './_assets.js';
 import { siteConfig } from '../site.config.js';
 
 const NAV = [
@@ -53,7 +54,9 @@ export function base({ page, body }) {
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>${esc(title)}</title>
-<link rel="stylesheet" href="/_shared.css?v=7" />
+<link rel="preload" href="/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/Fraunces-Variable.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="/${asset('_shared.css')}" />
 ${page.headExtra || ''}
 </head>
 <body>
@@ -86,10 +89,10 @@ ${body}
   <div class="row-t">
     <label>accent</label>
     <div class="tk-swatches" data-key="accent">
-      <button type="button" class="tk-sw" data-value="warm"  style="background:oklch(0.65 0.09 65);"  aria-pressed="false" aria-label="warm terracotta"></button>
-      <button type="button" class="tk-sw" data-value="pink"  style="background:#f77bc9;"               aria-pressed="true"  aria-label="hot pink"></button>
-      <button type="button" class="tk-sw" data-value="blue"  style="background:oklch(0.65 0.12 240);" aria-pressed="false" aria-label="cool blue"></button>
-      <button type="button" class="tk-sw" data-value="green" style="background:oklch(0.65 0.12 150);" aria-pressed="false" aria-label="fern green"></button>
+      <button type="button" class="tk-sw" data-value="warm"  aria-pressed="false" aria-label="warm terracotta"></button>
+      <button type="button" class="tk-sw" data-value="pink"  aria-pressed="true"  aria-label="hot pink"></button>
+      <button type="button" class="tk-sw" data-value="blue"  aria-pressed="false" aria-label="cool blue"></button>
+      <button type="button" class="tk-sw" data-value="green" aria-pressed="false" aria-label="fern green"></button>
     </div>
   </div>
   <div class="row-t">
@@ -98,8 +101,8 @@ ${body}
   </div>
 </div>
 
-<script src="/tweaks.js" defer></script>
-<script src="/now-playing.js" defer></script>
+<script src="/${asset('tweaks.js')}" defer></script>
+<script src="/${asset('now-playing.js')}" defer></script>
 ${page.bodyScripts || ''}
 </body>
 </html>

@@ -1,6 +1,7 @@
 // Homepage — three-column feed mixing every content type in reverse-chrono.
 
 import { base } from './base.js';
+import { asset } from './_assets.js';
 import { esc, fmtDate, relTime, tagList } from './_helpers.js';
 
 function row(entry) {
@@ -59,7 +60,7 @@ export function indexPage({ site, entries }) {
   }).join('\n') : `
     <div class="row">
       <div class="gutter"><span class="kind">—</span><span class="when"></span></div>
-      <div><div class="body" style="color:var(--mute);">Nothing published yet.</div></div>
+      <div><div class="body muted">Nothing published yet.</div></div>
     </div>`;
 
   const counts = site.counts || { journal: 0, thoughts: 0, making: 0, listening: 0, scrobbles: 0 };
@@ -118,7 +119,7 @@ export function indexPage({ site, entries }) {
       footerText: config.footerText ?? '',
       // Share the /listening/ poller to keep the scrobble counter fresh
       // between deploys. It no-ops if #listening-rows isn't on the page.
-      bodyScripts: '<script src="/listening-live.js" defer></script>',
+      bodyScripts: `<script src="/${asset('listening-live.js')}" defer></script>`,
     },
     body,
   });

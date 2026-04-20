@@ -13,8 +13,12 @@
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
 
-# CSS — long cache (rename on change; simple rebuild flush via Pages deploy)
+# CSS — long cache (content-hashed filenames flush by rename)
 /*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+# JS — long cache (content-hashed filenames flush by rename)
+/*.js
   Cache-Control: public, max-age=31536000, immutable
 
 # Feeds — short cache so new entries show up

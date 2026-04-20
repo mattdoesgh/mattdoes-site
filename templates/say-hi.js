@@ -1,10 +1,11 @@
 // Contact form page. Posts to /api/contact (Cloudflare Worker).
 
 import { base } from './base.js';
+import { asset } from './_assets.js';
 
 export function sayHiPage({ site } = {}) {
   const body = `
-<main class="page" style="grid-template-columns: 1fr; max-width: 720px;">
+<main class="page contact">
   <section class="timeline contact-wrap">
     <div class="post-head">
       <div class="kicker"><span class="kind">contact</span><span class="dot">·</span><span>no forms, no funnels</span></div>
@@ -66,7 +67,7 @@ export function sayHiPage({ site } = {}) {
       title: 'say hi',
       navActive: 'say-hi',
       nowPlaying: site?.nowPlaying || '',
-      bodyScripts: `<script src="/contact.js" defer></script>`,
+      bodyScripts: `<script src="/${asset('contact.js')}" defer></script>`,
     },
     body,
   });

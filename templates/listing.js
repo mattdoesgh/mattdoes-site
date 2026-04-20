@@ -3,6 +3,7 @@
 // no entries so pages stay functional on a fresh vault.
 
 import { base } from './base.js';
+import { asset } from './_assets.js';
 import { esc, fmtDate, tagList } from './_helpers.js';
 
 function articleRow(entry) {
@@ -138,7 +139,7 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
       nowPlaying: nowPlaying || '',
       footerText: siteConfig.footerText ?? '',
       // Load the live-update poller only on /listening/.
-      bodyScripts: kind === 'listening' ? '<script src="/listening-live.js" defer></script>' : '',
+      bodyScripts: kind === 'listening' ? `<script src="/${asset('listening-live.js')}" defer></script>` : '',
     },
     body,
   });

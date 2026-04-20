@@ -809,9 +809,15 @@ table.schema .req.y { color: var(--accent); }
 .tk-sw[aria-pressed="true"] {
   box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--ink);
 }
+.tk-sw[data-value="warm"]  { background: oklch(0.65 0.09 65); }
+.tk-sw[data-value="pink"]  { background: #f77bc9; }
+.tk-sw[data-value="blue"]  { background: oklch(0.65 0.12 240); }
+.tk-sw[data-value="green"] { background: oklch(0.65 0.12 150); }
 
 /* ── Contact form ───────────────────────────────── */
+.page.contact { grid-template-columns: 1fr; max-width: 720px; }
 .contact-wrap { max-width: var(--col); margin: 0 auto; }
+.muted { color: var(--mute); }
 form.note { display: grid; gap: 1.1rem; margin-top: 1.25rem; }
 form.note .field { display: grid; gap: .35rem; }
 form.note label {

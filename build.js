@@ -8,9 +8,12 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import matter from 'gray-matter';
 import { marked } from 'marked';
+import { transform as cssTransform } from 'lightningcss';
+import { minify as jsMinify } from 'terser';
 
 import { indexPage }    from './templates/index.js';
 import { articlePage }  from './templates/journal.js';
@@ -19,6 +22,7 @@ import { listingPage }  from './templates/listing.js';
 import { colophonPage } from './templates/colophon.js';
 import { sayHiPage }    from './templates/say-hi.js';
 import { esc, fmtDate } from './templates/_helpers.js';
+import { setAssets }    from './templates/_assets.js';
 import { siteConfig }   from './site.config.js';
 
 const __dirname  = path.dirname(fileURLToPath(import.meta.url));
@@ -415,6 +419,54 @@ fs.mkdirSync(DIST_DIR, { recursive: true });
 
 // Copy static assets (css, fonts, js) to dist root
 copyStatic(STATIC_DIR, DIST_DIR);
+
+// ── Minify + content-hash CSS/JS so they can be cached immutably. ──────
+// Runs against the copies already in dist/; leaves /fonts/ and /img/ alone.
+// Populates the template asset registry so emitted URLs reference the hashed
+// filenames (e.g. `_shared.3a7b9f12.css`) — replaces the old manual ?v=N bust.
+function hash8(buf) {
+  return crypto.createHash('sha256').update(buf).digest('hex').slice(0, 8);
+}
+async function processAsset(filename, kind) {
+  const src = path.join(DIST_DIR, filename);
+  if (!fs.existsSync(src)) return;
+  const input = fs.readFileSync(src);
+  let output;
+  if (kind === 'css') {
+    const { code } = cssTransform({
+      filename,
+      code: input,
+      minify: true,
+      sourceMap: false,
+    });
+    output = Buffer.from(code);
+  } else {
+    const result = await jsMinify(input.toString('utf8'), {
+      compress: true,
+      mangle: true,
+      format: { comments: false },
+      sourceMap: false,
+    });
+    output = Buffer.from(result.code ?? input.toString('utf8'), 'utf8');
+  }
+  const ext  = path.extname(filename);
+  const stem = path.basename(filename, ext);
+  const hashed = `${stem}.${hash8(output)}${ext}`;
+  fs.writeFileSync(path.join(DIST_DIR, hashed), output);
+  try { fs.unlinkSync(src); } catch {}
+  return [filename, hashed];
+}
+
+const assetMap = {};
+const pairs = await Promise.all([
+  processAsset('_shared.css',       'css'),
+  processAsset('tweaks.js',         'js'),
+  processAsset('now-playing.js',    'js'),
+  processAsset('listening-live.js', 'js'),
+  processAsset('contact.js',        'js'),
+]);
+for (const p of pairs) if (p) assetMap[p[0]] = p[1];
+setAssets(assetMap);
 
 // Copy vault attachments to dist/img (local dev; R2 sync is used in production)
 const attachDir = path.join(VAULT_DIR, 'attachments');

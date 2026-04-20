@@ -16,6 +16,8 @@
     "node": ">=20"
   },
   "devDependencies": {
-    "html-validate": "^10.13.1"
+    "html-validate": "^10.13.1",
+    "lightningcss": "^1.32.0",
+    "terser": "^5.46.1"
   }
 }

@@ -18,12 +18,20 @@ const ALLOWED_ORIGIN   = 'https://mattdoes.online';
 export default {
   async fetch(request, env, ctx) {
     if (request.method === 'OPTIONS') return corsPreflight();
-    if (request.method !== 'POST')    return json({ error: 'method_not_allowed' }, 405);
+
+    // Progressive-enhancement mode: JS clients send Accept: application/json,
+    // JS-off form posts don't. We respond in kind so no-JS users get a real
+    // HTML page instead of a blank JSON screen.
+    const wantsJSON = (request.headers.get('accept') || '').includes('application/json');
+    const reply = (obj, status = 200) =>
+      wantsJSON ? json(obj, status) : htmlReply(obj, status);
+
+    if (request.method !== 'POST') return reply({ error: 'method_not_allowed' }, 405);
 
     // Origin / referer check — cheap filter for random curl spam.
     const origin = request.headers.get('origin') || request.headers.get('referer') || '';
     if (!origin.startsWith(ALLOWED_ORIGIN)) {
-      return json({ error: 'bad_origin' }, 403);
+      return reply({ error: 'bad_origin' }, 403);
     }
 
     const ip      = request.headers.get('cf-connecting-ip') || '0.0.0.0';
@@ -37,7 +45,7 @@ export default {
        WHERE ip_hash = ?1 AND created_at > datetime('now', '-1 hour')`
     ).bind(ipHash).first();
     if ((recent?.n ?? 0) >= RATE_WINDOW_HOUR) {
-      return json({ error: 'rate_limited' }, 429);
+      return reply({ error: 'rate_limited' }, 429);
     }
 
     // Parse body.
@@ -51,7 +59,7 @@ export default {
         form = Object.fromEntries(fd.entries());
       }
     } catch {
-      return json({ error: 'bad_body' }, 400);
+      return reply({ error: 'bad_body' }, 400);
     }
 
     const name    = clip(form.name,    200);
@@ -60,8 +68,8 @@ export default {
     const body    = clip(form.body,    MAX_BODY_BYTES);
     const hp      = String(form._hp || '').trim();
 
-    if (!body)  return json({ error: 'body_required' }, 400);
-    if (email && !looksLikeEmail(email)) return json({ error: 'bad_email' }, 400);
+    if (!body)  return reply({ error: 'body_required' }, 400);
+    if (email && !looksLikeEmail(email)) return reply({ error: 'bad_email' }, 400);
 
     const honeypotHit = hp.length > 0 ? 1 : 0;
     let mailStatus = honeypotHit ? 'skipped' : null;
@@ -84,7 +92,7 @@ export default {
        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)`
     ).bind(ipHash, country, ua, name, email, subject, body, honeypotHit, mailStatus, mailError).run();
 
-    return json({ ok: true });
+    return reply({ ok: true });
   },
 };
 
@@ -119,6 +127,62 @@ function json(obj, status = 200) {
       'vary':                         'origin',
     },
   });
+}
+
+// HTML fallback for no-JS form posts. Returns a minimal, self-styled page
+// that matches the site's visual vocabulary closely enough without shipping
+// the full _shared.css. We can't know the cache-busted CSS filename here.
+function htmlReply(obj, status = 200) {
+  const ok = !!obj?.ok;
+  const err = obj?.error || '';
+  const { title, message } = ok
+    ? { title: 'thanks.', message: "thanks. I read everything. expect a reply within a few days — longer if I'm deep in a build." }
+    : errorCopy(err);
+  const page = `<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${escHtml(title)} — mattdoes.online</title>
+<style>
+  :root { color-scheme: dark light; }
+  html { background:#1a1820; color:#eae5dc; font:14px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; }
+  body { max-width: 520px; margin: 10vh auto; padding: 0 20px; }
+  h1 { font-weight:500; font-size:1.4rem; letter-spacing:-0.01em; margin:0 0 .75rem; }
+  p  { color:#b4aea3; }
+  a  { color:#eae5dc; border-bottom:1px dashed #6a6570; }
+  a:hover { color:#f77bc9; border-bottom-color:#f77bc9; }
+  .kicker { font-size:11px; letter-spacing:.08em; text-transform:lowercase; color:#f77bc9; margin-bottom:.75rem; }
+</style>
+</head><body>
+<div class="kicker">§ contact</div>
+<h1>${escHtml(title)}</h1>
+<p>${escHtml(message)}</p>
+<p><a href="/say-hi/">← back to the form</a> · <a href="/">home</a></p>
+</body></html>`;
+  return new Response(page, {
+    status,
+    headers: {
+      'content-type':                 'text/html; charset=utf-8',
+      'access-control-allow-origin':  ALLOWED_ORIGIN,
+      'vary':                         'origin, accept',
+      'cache-control':                'no-store',
+    },
+  });
+}
+
+function errorCopy(code) {
+  switch (code) {
+    case 'rate_limited':  return { title: 'hold up.',      message: "you've hit the hourly limit on this endpoint. try again in a bit." };
+    case 'body_required': return { title: 'missing body.', message: 'the message field was empty — add a few words and resend.' };
+    case 'bad_email':     return { title: 'bad email.',    message: "that email address didn't parse. double-check it and try again." };
+    case 'bad_origin':    return { title: 'blocked.',      message: 'this endpoint only accepts posts from mattdoes.online.' };
+    case 'bad_body':      return { title: 'bad request.',  message: "couldn't parse the form data." };
+    case 'method_not_allowed': return { title: 'wrong method.', message: 'this endpoint only accepts POST.' };
+    default:              return { title: 'something broke.', message: 'please try again, or email hi@mattdoes.online directly.' };
+  }
+}
+
+function escHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]);
 }
 
 function corsPreflight() {
