@@ -17,7 +17,7 @@ export const siteConfig = {
     { label: 'github', href: 'https://github.com/mattdoesgh', meta: '/mattdoesgh' },
     { label: '𝕏',     href: 'https://x.com/mattdoes',        meta: '/mattdoes'   },
     { label: 'rss',    href: '/feed.xml',                     meta: '.xml'        },
-    { label: 'say hi', href: '/say-hi/',                      meta: '↗'           },
+    { label: 'say hi', href: 'mailto:matt@mattdoes.online',   meta: '↗'           },
   ],
 
   // Per-section landing copy. `who` → left-rail heading; `bio` → left-rail

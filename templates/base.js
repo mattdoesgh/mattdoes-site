@@ -14,16 +14,16 @@ const NAV = [
 ];
 
 const META = [
-  { id: 'colophon', href: '/colophon/', label: 'colophon' },
-  { id: 'say-hi',   href: '/say-hi/',   label: 'say hi' },
+  { id: 'colophon', href: '/colophon/',                  label: 'colophon' },
+  { id: 'say-hi',   href: 'mailto:matt@mattdoes.online', label: 'say hi' },
 ];
 
 const FOOTER_DEFAULT = [
-  { href: '/thoughts/', label: 'thoughts' },
-  { href: '/journal/',  label: 'journal' },
-  { href: '/colophon/', label: 'colophon' },
-  { href: '/say-hi/',   label: 'say hi' },
-  { href: '/feed.xml',  label: 'rss' },
+  { href: '/thoughts/',                 label: 'thoughts' },
+  { href: '/journal/',                  label: 'journal' },
+  { href: '/colophon/',                 label: 'colophon' },
+  { href: 'mailto:matt@mattdoes.online', label: 'say hi' },
+  { href: '/feed.xml',                  label: 'rss' },
 ];
 
 export function base({ page, body }) {

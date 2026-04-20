@@ -20,7 +20,6 @@ import { articlePage }  from './templates/journal.js';
 import { thoughtsPage } from './templates/thoughts.js';
 import { listingPage }  from './templates/listing.js';
 import { colophonPage } from './templates/colophon.js';
-import { sayHiPage }    from './templates/say-hi.js';
 import { esc, fmtDate } from './templates/_helpers.js';
 import { setAssets }    from './templates/_assets.js';
 import { siteConfig }   from './site.config.js';
@@ -463,7 +462,6 @@ const pairs = await Promise.all([
   processAsset('tweaks.js',         'js'),
   processAsset('now-playing.js',    'js'),
   processAsset('listening-live.js', 'js'),
-  processAsset('contact.js',        'js'),
 ]);
 for (const p of pairs) if (p) assetMap[p[0]] = p[1];
 setAssets(assetMap);
@@ -516,9 +514,6 @@ const distSizeKb = (() => {
   walkSize(DIST_DIR);
   return `${Math.round(total / 1024)} KB`;
 })();
-
-// Say hi
-writePage('/say-hi/', sayHiPage({ site: siteMeta, nowPlaying: nowPlayingStatus }));
 
 // ── 7. Feeds ────────────────────────────────────────────────────────────
 function rfc3339(d) { return new Date(d).toISOString(); }
