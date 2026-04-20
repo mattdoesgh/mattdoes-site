@@ -44,10 +44,15 @@ export const siteConfig = {
   // IMPORTANT: username is intentionally not set here to keep it out of the
   // public repo. Set LASTFM_USERNAME (and LASTFM_API_KEY) as Cloudflare Pages
   // env vars. The listing page also hides the username from its left rail.
+  //
+  // These settings govern the *build-time* snapshot rendered into the static
+  // HTML. Between deploys the page is kept live by workers/listening, which
+  // has its own stale-while-revalidate thresholds (FRESH_MS / HARD_MS in
+  // workers/listening/src/index.js) — adjust those there, not here.
   lastfm: {
     username: '',       // read from LASTFM_USERNAME env var at build time
     limit:    25,       // how many recent tracks to render on /listening/
-    cacheTtl: 15 * 60,  // seconds — skip network if cache is fresher than this
+    cacheTtl: 15 * 60,  // seconds — build-time on-disk cache TTL only
     showUser: false,    // do not render 'last.fm/<user>' link on /listening/
   },
 };

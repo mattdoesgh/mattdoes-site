@@ -10,5 +10,22 @@ routes = [
   { pattern = "mattdoes.online/api/listening/recent", zone_name = "mattdoes.online" }
 ]
 
+# KV namespace for cached Last.fm payloads + in-flight refresh locks.
+#
+# One-time setup — wrangler validates the whole config before running any
+# command, so the binding block has to be commented out until the namespace
+# exists. Steps:
+#   1. Leave the block below commented on first deploy.
+#   2. Run:  npx wrangler kv namespace create LASTFM_CACHE
+#   3. Uncomment the block and paste the returned id into `id = "..."`.
+#   4. npx wrangler deploy
+#
+# Add `preview_id = "..."` alongside `id` if you want a separate namespace
+# for `wrangler dev`.
+#
+[[kv_namespaces]]
+binding = "LASTFM_CACHE"
+id      = "a6ea68e07a764aeba929a865d1d33a58"
+
 # No [vars] block — LASTFM_USERNAME and LASTFM_API_KEY are set as secrets via
 # `wrangler secret put` so the username stays out of the public repo.
