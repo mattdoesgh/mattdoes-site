@@ -43,7 +43,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
     </div>
 
     <div id="folder" class="section-label"><span>folder layout</span><span class="n">01</span></div>
-    <div class="blurb">Two repos. Vault stays private; site repo is thin and public. The build script pulls the vault as a submodule.</div>
+    <div class="blurb">Two repos. Vault stays private; site repo is thin and public. A pre-build script clones the vault into <code>./vault/</code> using a fine-grained PAT — not a submodule, since CF Pages' GitHub App auth doesn't reach submodule clones.</div>
 <pre class="tree"><span class="b">┌</span> <span class="d">vault</span> <span class="note">(private · obsidian)</span>
 <span class="b">├──</span> <span class="d">daily</span>
 <span class="b">│   └──</span> <span class="f">YYYY-MM-DD.md</span>   <span class="note"># micro-posts · one ##HH:MM = one thought</span>
