@@ -4,14 +4,14 @@
 
 import { base } from './base.js';
 import { asset } from './_assets.js';
-import { esc, fmtDate, tagList } from './_helpers.js';
+import { esc, fmtDate, timeTag, tagList } from './_helpers.js';
 
 function articleRow(entry) {
   const tags = tagList(entry.tags);
   return `
     <div class="row">
       <div class="gutter">
-        <span class="kind">${esc(fmtDate(entry.date, 'day'))}</span>
+        <span class="kind">${timeTag(entry.date, 'day')}</span>
         <span class="when">${entry.readTime ? esc(entry.readTime) : ''}</span>
       </div>
       <div>
@@ -29,7 +29,7 @@ function listeningRow(entry) {
   const album  = entry.album ? ` <span class="meta">· ${esc(entry.album)}</span>` : '';
   const when = entry.nowPlaying
     ? '<span class="dot" style="display:inline-block;width:.5rem;height:.5rem;border-radius:50%;background:var(--accent,#f77bc9);margin-right:.25rem;"></span>now'
-    : esc(fmtDate(entry.date, 'day'));
+    : timeTag(entry.date, 'day');
   const linkOpen  = entry.link ? `<a href="${esc(entry.link)}" rel="noopener">` : '';
   const linkClose = entry.link ? `</a>` : '';
   return `

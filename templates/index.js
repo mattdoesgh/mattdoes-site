@@ -6,7 +6,11 @@ import { esc, fmtDate, relTime, tagList } from './_helpers.js';
 
 function row(entry) {
   const kind = entry.kind; // journal | thought | making | listening
-  const when = relTime(entry.date);
+  // Homepage shows a compact "2h"/"3d"/"apr 17" label; wrap in <time> so
+  // the tooltip script can surface the full CT timestamp + visitor-local
+  // equivalent on hover.
+  const iso  = entry.date instanceof Date ? entry.date.toISOString() : new Date(entry.date).toISOString();
+  const when = `<time class="ts" datetime="${iso}">${esc(relTime(entry.date))}</time>`;
   const permalinkLabel = kind === 'thought'
     ? (entry.permalinkLabel || '#')
     : kind === 'listening'
@@ -31,7 +35,7 @@ function row(entry) {
   }
   return `
     <div class="row">
-      <div class="gutter"><span class="kind">${esc(kind)}</span><span class="when">${esc(when)}</span></div>
+      <div class="gutter"><span class="kind">${esc(kind)}</span><span class="when">${when}</span></div>
       <div>
         ${body}
         ${actions}

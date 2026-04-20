@@ -103,6 +103,7 @@ ${body}
 
 <script src="/${asset('tweaks.js')}" defer></script>
 <script src="/${asset('now-playing.js')}" defer></script>
+<script src="/${asset('local-time.js')}" defer></script>
 ${page.bodyScripts || ''}
 </body>
 </html>

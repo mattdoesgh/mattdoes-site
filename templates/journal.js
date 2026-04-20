@@ -1,7 +1,7 @@
 // Single article — journal post or making post. Same layout, different labels.
 
 import { base } from './base.js';
-import { esc, fmtDate, tagList } from './_helpers.js';
+import { esc, fmtDate, timeTag, tagList } from './_helpers.js';
 
 export function articlePage({ site, note, recent, prev, next }) {
   const kind = note.kind || 'journal';
@@ -28,7 +28,7 @@ export function articlePage({ site, note, recent, prev, next }) {
     <div class="group">
       <h3>recent</h3>
       <ul>
-        ${recent.slice(0, 5).map(r => `<li><a href="${r.url}">${esc(r.title)}</a><span class="meta">${fmtDate(r.date, 'day')}</span></li>`).join('\n        ')}
+        ${recent.slice(0, 5).map(r => `<li><a href="${r.url}">${esc(r.title)}</a><span class="meta">${timeTag(r.date, 'day')}</span></li>`).join('\n        ')}
       </ul>
     </div>` : ''}
   </aside>
@@ -38,7 +38,7 @@ export function articlePage({ site, note, recent, prev, next }) {
       <div class="kicker">
         <span class="kind">${esc(meta.kicker)}</span>
         <span class="dot">·</span>
-        <span>${fmtDate(note.date, 'long')}</span>
+        <span>${timeTag(note.date, 'long')}</span>
         ${note.readTime ? `<span class="dot">·</span><span>${esc(note.readTime)}</span>` : ''}
       </div>
       <h1>${esc(note.title)}</h1>
@@ -51,7 +51,7 @@ export function articlePage({ site, note, recent, prev, next }) {
       ${tags ? `<p style="margin-top:1.25rem;">${tags}</p>` : ''}
 
       <p style="margin-top:1rem; padding-top:.75rem; border-top:1px dashed var(--faint); font-size:11px; color:var(--mute); font-family:var(--font-mono);">
-        ↳ ${esc(note.sourcePath)}${note.words ? ` · ${note.words} words` : ''}${note.updated ? ` · last edited ${fmtDate(note.updated, 'day')}` : ''}
+        ↳ ${esc(note.sourcePath)}${note.words ? ` · ${note.words} words` : ''}${note.updated ? ` · last edited ${timeTag(note.updated, 'day')}` : ''}
       </p>
     </div>
 

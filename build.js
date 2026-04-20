@@ -20,7 +20,34 @@ import { articlePage }  from './templates/journal.js';
 import { thoughtsPage } from './templates/thoughts.js';
 import { listingPage }  from './templates/listing.js';
 import { colophonPage } from './templates/colophon.js';
-import { esc, fmtDate } from './templates/_helpers.js';
+import { esc, fmtDate, ctWallClockToDate } from './templates/_helpers.js';
+
+// Frontmatter dates without a time component (e.g. `date: 2026-04-19`)
+// are parsed by js-yaml as UTC midnight — which lands on the previous
+// calendar day in CT. Re-anchor them to CT midnight so posts don't
+// appear to be from the day before. Values with a time or offset are
+// left as-is: the author was explicit.
+function parseFrontmatterDate(v) {
+  if (v == null) return null;
+  if (typeof v === 'string') {
+    // YAML delivers strings only for values it couldn't parse as a date
+    // (rare), or for full ISO timestamps inside quotes. A bare "YYYY-MM-DD"
+    // string gets reinterpreted as CT midnight; anything richer goes
+    // through the Date constructor untouched.
+    const bare = v.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (bare) return ctWallClockToDate(+bare[1], +bare[2], +bare[3], 0, 0);
+    return new Date(v);
+  }
+  if (v instanceof Date) {
+    // js-yaml emits Dates at UTC midnight for bare YYYY-MM-DD values.
+    // Detect that exact shape and reinterpret as CT midnight.
+    if (v.getUTCHours() === 0 && v.getUTCMinutes() === 0 && v.getUTCSeconds() === 0 && v.getUTCMilliseconds() === 0) {
+      return ctWallClockToDate(v.getUTCFullYear(), v.getUTCMonth() + 1, v.getUTCDate(), 0, 0);
+    }
+    return v;
+  }
+  return new Date(v);
+}
 import { setAssets }    from './templates/_assets.js';
 import { siteConfig }   from './site.config.js';
 
@@ -91,8 +118,8 @@ for (const file of files) {
     frontmatter: data,
     publish: data.publish,
     title:   data.title || base,
-    date:    data.date ? new Date(data.date) : fs.statSync(file).mtime,
-    updated: data.updated ? new Date(data.updated) : null,
+    date:    data.date ? parseFrontmatterDate(data.date) : fs.statSync(file).mtime,
+    updated: data.updated ? parseFrontmatterDate(data.updated) : null,
     slug,
     tags:    data.tags || [],
     summary: data.summary || '',
@@ -180,9 +207,17 @@ function splitThoughts(note) {
     const m = line.match(/^##\s+(\d{1,2}):(\d{2})\b/);
     if (m) {
       flush();
-      const hh = m[1].padStart(2, '0'), mm = m[2];
+      // HH:MM headings are authored in Matt's local time (CT). Combine
+      // with the daily-note date (interpreted as a CT wall-clock date)
+      // to produce the correct absolute UTC instant.
       const base = note.date instanceof Date ? note.date : new Date(note.date);
-      const dt = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate(), Number(hh), Number(mm)));
+      const dt = ctWallClockToDate(
+        base.getUTCFullYear(),
+        base.getUTCMonth() + 1,
+        base.getUTCDate(),
+        Number(m[1]),
+        Number(m[2]),
+      );
       cur = { date: dt, tags: [...(note.tags || [])], body: [], quote: false };
       continue;
     }
@@ -497,6 +532,7 @@ const pairs = await Promise.all([
   processAsset('_shared.css',       'css'),
   processAsset('tweaks.js',         'js'),
   processAsset('now-playing.js',    'js'),
+  processAsset('local-time.js',     'js'),
   processAsset('listening-live.js', 'js'),
 ]);
 for (const p of pairs) if (p) assetMap[p[0]] = p[1];

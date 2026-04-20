@@ -1,16 +1,15 @@
 // Thoughts archive — microblog timeline with tag filters.
 
 import { base } from './base.js';
-import { esc, fmtDate, tagList } from './_helpers.js';
+import { esc, fmtDate, timeTag, tagList } from './_helpers.js';
 import { siteConfig } from '../site.config.js';
 
-function pad2(n) { return String(n).padStart(2, '0'); }
-
 function thoughtRow(t) {
-  const d = new Date(t.date);
-  const day  = `${['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'][d.getUTCMonth()]} ${pad2(d.getUTCDate())}`;
-  const time = `${pad2(d.getUTCHours())}:${pad2(d.getUTCMinutes())}`;
   const bodyClass = t.quote ? 'body q' : 'body';
+  // Day + time both wrapped in <time class="ts"> so local-time.js can
+  // layer a visitor-local tooltip on hover.
+  const day  = timeTag(t.date, 'day');
+  const time = timeTag(t.date, 'time');
   return `
     <div class="row" data-tags="${esc((t.tags || []).join(' '))}">
       <div class="gutter"><span class="kind">${day}</span><span class="when">${time}</span></div>
@@ -24,8 +23,9 @@ function thoughtRow(t) {
 function groupByMonth(thoughts) {
   const groups = new Map();
   for (const t of thoughts) {
-    const d = new Date(t.date);
-    const key = `${d.getUTCFullYear()}-${pad2(d.getUTCMonth()+1)}`;
+    // Bucket by CT month, not UTC — a thought posted at 23:30 CT on
+    // Apr 30 would otherwise slip into May under UTC.
+    const key = fmtDate(t.date, 'iso').slice(0, 7); // YYYY-MM in CT
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(t);
   }

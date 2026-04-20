@@ -10,6 +10,7 @@
   const POLL_MS    = 60_000;            // one minute — matches now-playing.js
   const MAX_ROWS   = 25;                // keep in sync with site.config.js lastfm.limit
   const MONTHS     = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  const SITE_TZ    = 'America/Chicago'; // must match templates/_helpers.js
 
   const countEl = document.getElementById(COUNT_ID);
   const listEl  = document.getElementById(LIST_ID);
@@ -41,14 +42,15 @@
   }
 
   // Mirrors listeningRow() in templates/listing.js so client-side swaps match
-  // the server-rendered markup exactly.
+  // the server-rendered markup exactly — including the <time class="ts">
+  // wrapper that local-time.js uses to attach a visitor-local tooltip.
   function renderRow(t) {
     const title  = t.track  || '(untitled)';
     const artist = t.artist || '';
     const album  = t.album  ? ` <span class="meta">· ${esc(t.album)}</span>` : '';
     const when   = t.nowPlaying
       ? '<span class="dot" style="display:inline-block;width:.5rem;height:.5rem;border-radius:50%;background:var(--accent,#f77bc9);margin-right:.25rem;"></span>now'
-      : esc(fmtDay(t.date));
+      : timeTag(t.date, 'day');
     const year = esc(yearOf(t.date));
     const linkOpen  = t.link ? `<a href="${esc(t.link)}" rel="noopener">` : '';
     const linkClose = t.link ? `</a>` : '';
@@ -72,17 +74,38 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
+  // Wall-clock parts in SITE_TZ. Matches tzParts() in templates/_helpers.js.
+  function ctParts(iso) {
+    const d = iso instanceof Date ? iso : new Date(iso);
+    if (isNaN(d)) return null;
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: SITE_TZ,
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit',
+      hour12: false,
+    }).formatToParts(d);
+    const o = {};
+    for (const p of parts) if (p.type !== 'literal') o[p.type] = p.value;
+    if (o.hour === '24') o.hour = '00';
+    return o;
+  }
   function fmtDay(iso) {
-    if (!iso) return '';
-    const d = new Date(iso);
-    if (isNaN(d)) return '';
-    return `${MONTHS[d.getUTCMonth()]} ${String(d.getUTCDate()).padStart(2, '0')}`;
+    const p = ctParts(iso);
+    if (!p) return '';
+    return `${MONTHS[Number(p.month) - 1]} ${p.day}`;
   }
   function yearOf(iso) {
-    if (!iso) return '';
-    const d = new Date(iso);
+    const p = ctParts(iso);
+    return p ? p.year : '';
+  }
+  // Emit a <time class="ts"> wrapper matching the server-rendered markup;
+  // local-time.js (loaded globally from base.js) will fill in the tooltip
+  // when the element is inserted into the DOM.
+  function timeTag(iso, fmt) {
+    const d = iso instanceof Date ? iso : new Date(iso);
     if (isNaN(d)) return '';
-    return String(d.getUTCFullYear());
+    const text = fmt === 'day' ? fmtDay(d) : fmtDay(d);
+    return `<time class="ts" datetime="${esc(d.toISOString())}">${esc(text)}</time>`;
   }
 
   // Kick off immediately so the page reflects current state on load,

@@ -2,7 +2,7 @@
 // Build stats are interpolated at build time.
 
 import { base } from './base.js';
-import { esc, fmtDate } from './_helpers.js';
+import { esc, fmtDate, timeTag } from './_helpers.js';
 import { siteConfig } from '../site.config.js';
 
 export function colophonPage({ stats, updated, nowPlaying }) {
@@ -37,7 +37,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
 
   <section class="timeline">
     <div class="post-head">
-      <div class="kicker"><span class="kind">docs</span><span class="dot">·</span><span>updated ${esc(fmtDate(updated || new Date(), 'day'))}</span></div>
+      <div class="kicker"><span class="kind">docs</span><span class="dot">·</span><span>updated ${timeTag(updated || new Date(), 'day')}</span></div>
       <h1>colophon.</h1>
       <p class="lede">The Obsidian vault is the source of truth; a small build script turns it into the pages you're reading.</p>
     </div>
