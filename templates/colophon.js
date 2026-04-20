@@ -48,6 +48,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
 <span class="b">├──</span> <span class="d">daily</span>
 <span class="b">│   └──</span> <span class="f">YYYY-MM-DD.md</span>   <span class="note"># micro-posts · one ##HH:MM = one thought</span>
 <span class="b">├──</span> <span class="d">notes</span>             <span class="note"># publish: journal | making → routed below</span>
+<span class="b">│   ├──</span> <span class="f">*.md</span>             <span class="note"># loose notes (publish: journal lives here)</span>
 <span class="b">│   ├──</span> <span class="d">making</span>           <span class="note"># convention bucket</span>
 <span class="b">│   └──</span> <span class="d">ideas</span>            <span class="note"># never published (no publish: key)</span>
 <span class="b">├──</span> <span class="d">attachments</span>          <span class="note"># images / audio / video</span>
@@ -84,9 +85,10 @@ export function colophonPage({ stats, updated, nowPlaying }) {
     <div class="routes">
       <span class="from">publish: journal</span><span class="arr">→</span><span class="to">/journal/<span class="dim">&lt;slug&gt;</span>/</span>
       <span class="from">publish: making</span><span class="arr">→</span><span class="to">/making/<span class="dim">&lt;slug&gt;</span>/</span>
-      <span class="from">daily/YYYY-MM-DD.md ##HH:MM</span><span class="arr">→</span><span class="to">/thoughts<span class="dim">#t-NNN</span></span>
+      <span class="from">publish: thoughts <span class="dim">(daily/YYYY-MM-DD.md, split on ##HH:MM)</span></span><span class="arr">→</span><span class="to">/thoughts<span class="dim">#t-NNN</span></span>
       <span class="from">attachments/&lt;file&gt;</span><span class="arr">→</span><span class="to">/img/<span class="dim">&lt;file&gt;</span></span>
       <span class="from">last.fm recent tracks</span><span class="arr">→</span><span class="to">/listening/</span>
+      <span class="from">publish: &lt;other&gt;</span><span class="arr">→</span><span class="to">/<span class="dim">&lt;slug&gt;</span>/ <span class="dim">(catch-all)</span></span>
       <span class="from">publish: draft · missing</span><span class="arr">✕</span><span class="to"><span class="dim">never built</span></span>
     </div>
 
