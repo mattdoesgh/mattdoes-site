@@ -123,6 +123,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
 
     <div class="doc-body">
       <p>Four templates, three content types, one loop. If a new section shows up (say, <code>publish: recipes</code>), it's a new template file and one line in <code>routeFor()</code>. That's the whole extension story.</p>
+      <p>One dynamic surface left: a single Cloudflare Worker at <code>/api/listening/*</code> that proxies Last.fm so the API key stays out of the client. Mail is handled by Fastmail — contact is a plain <code>mailto:</code>, no form worker.</p>
     </div>
   </section>
 
@@ -144,6 +145,8 @@ export function colophonPage({ stats, updated, nowPlaying }) {
         <li><span>Node</span><span class="meta">build</span></li>
         <li><span>CF Pages</span><span class="meta">host</span></li>
         <li><span>R2</span><span class="meta">media</span></li>
+        <li><span>CF Worker</span><span class="meta">listening</span></li>
+        <li><span>Fastmail</span><span class="meta">mail</span></li>
       </ul>
     </div>
   </aside>
