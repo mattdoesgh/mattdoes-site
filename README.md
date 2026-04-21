@@ -11,9 +11,9 @@ source for [mattdoes.online](https://mattdoes.online) — my personal site. i wr
 
 ## how it's built
 
-static HTML generated from an Obsidian vault (`mattdoes-vault`, private repo). a small Node script walks the vault with `gray-matter` + `marked` and writes `dist/`. no framework, no templating engine, no CMS. hosted on Cloudflare Pages. a small Worker handles the Last.fm feed; contact is a plain `mailto:` link. fonts are self-hosted — JetBrains Mono and Fraunces — no Google Fonts call. no tracker, no analytics.
+static HTML generated from an Obsidian vault (`mattdoes-vault`, private repo). a small Node script walks the vault with `gray-matter` + `marked` and writes `dist/`. no framework, no templating engine, no CMS. hosted on Cloudflare Pages. a small Worker handles the Last.fm feed; contact is a plain `mailto:` for now. fonts are self-hosted (JetBrains Mono and Fraunces), therefore no Google Fonts call. no tracker, no analytics. 
 
-the vault is cloned into `./vault/` at build time via a fine-grained PAT. submodules were out because Cloudflare Pages' GitHub App auth doesn't propagate to them.
+the vault is cloned into `./vault/` at build time via a fine-grained PAT. submodules are out because Cloudflare Pages' GitHub App auth doesn't propagate to them.
 
 ## running it
 
@@ -26,4 +26,4 @@ output lands in `dist/`. serve it however.
 
 ## why like this
 
-low vendor surface isn't an aesthetic. it's a bet that fewer moving parts now means fewer things to un-break later. the whole site is markdown, one build script, and one Worker — if any of it breaks, the fix is in this repo.
+this whole thing is Obsidian and one Worker — if any of it breaks, the fix is going to be in this repo.
