@@ -23,8 +23,14 @@
 
 # Feeds — short cache so new entries show up
 /feed.xml
-  Cache-Control: public, max-age=300, s-maxage=300
+  Cache-Control: public, max-age=1800, s-maxage=1800
 
-# HTML pages — let the edge cache briefly, revalidate often
+# HTML pages — long edge TTL with stale-while-revalidate, browser revalidates.
+# Pages purges the edge on each deploy, so 1h s-maxage is safe.
+# Three patterns to cover root, clean directory URLs, and any literal *.html.
+/
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
+/*/
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
 /*.html
-  Cache-Control: public, max-age=0, s-maxage=600, must-revalidate
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400

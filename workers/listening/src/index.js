@@ -17,6 +17,15 @@
 // A 60s KV lock key dedupes concurrent background refreshes so a burst of
 // polling clients only triggers one upstream call per SOFT window.
 //
+// On top of that, responses are stored in the Cloudflare edge cache for
+// EDGE_TTL_S (s-maxage). Concurrent visitors polling within the same window
+// collapse to a single Worker invocation; the rest are served from the edge
+// without ever entering this Worker. EDGE_TTL_S << FRESH_MS, so this never
+// widens the staleness budget set by the SWR layer above. The browser still
+// sees max-age=0 + must-revalidate, so each poll re-asks the edge — matching
+// the original design intent that scrobble updates aren't hidden by a stale
+// browser cache.
+//
 // Env (wrangler secrets):
 //   LASTFM_USERNAME  — Last.fm user to query
 //   LASTFM_API_KEY   — Last.fm API key
@@ -36,6 +45,7 @@ const ALLOWED_ORIGIN = 'https://mattdoes.online';
 const FRESH_MS    =  5 * 60 * 1000;   //  5 min — "medium" default
 const HARD_MS     = 30 * 60 * 1000;   // 30 min — upper bound on served staleness
 const LOCK_TTL_S  = 60;               // KV minimum expirationTtl is 60s
+const EDGE_TTL_S  = 30;               // edge-cache window; must be ≪ FRESH_MS / 1000
 
 const RECENT_LIMIT = 25;
 const USER_AGENT   = 'mattdoes-site/1.0 (+https://mattdoes.online)';
@@ -46,9 +56,28 @@ export default {
     if (request.method !== 'GET')     return json({ error: 'method_not_allowed' }, 405);
 
     const url = new URL(request.url);
-    if (url.pathname.endsWith('/now'))    return handle(env, ctx, 'now');
-    if (url.pathname.endsWith('/recent')) return handle(env, ctx, 'recent');
-    return json({ error: 'not_found' }, 404);
+    let kind;
+    if      (url.pathname.endsWith('/now'))    kind = 'now';
+    else if (url.pathname.endsWith('/recent')) kind = 'recent';
+    else return json({ error: 'not_found' }, 404);
+
+    // Edge cache layer. Cache key is just the URL — there are no per-user or
+    // per-origin variations (CORS only allows ALLOWED_ORIGIN). Workers
+    // responses bypass the edge cache by default, so we have to drive it via
+    // the Cache API explicitly. cache.put honours the s-maxage on the stored
+    // response (set in toClient).
+    const cache    = caches.default;
+    const cacheKey = new Request(url.toString(), { method: 'GET' });
+    const hit      = await cache.match(cacheKey);
+    if (hit) return hit;
+
+    const res = await handle(env, ctx, kind);
+    // Only cache successful payloads — a transient `not_configured` or
+    // upstream-failure response shouldn't lock in for the full window.
+    if (res.status === 200) {
+      ctx.waitUntil(cache.put(cacheKey, res.clone()));
+    }
+    return res;
   },
 };
 
@@ -194,13 +223,15 @@ function json(obj, status = 200) {
   });
 }
 
-// The Worker always reads from KV on the request path, so browser-side
-// caching would just hide scrobble updates between polls without saving
-// any upstream bandwidth. Keep `no-cache` on the response so plain reloads
-// always see current KV state.
+// Two-layer caching policy:
+//   • s-maxage=EDGE_TTL_S  → Cloudflare edge stores the response for that long,
+//     so concurrent polls collapse to one Worker run per window.
+//   • max-age=0, must-revalidate → browser always re-asks (the request hits
+//     the edge cache, not the Worker, on a HIT). Scrobble updates aren't
+//     hidden behind a stale browser cache, matching the original intent.
 function toClient(response) {
   const h = new Headers(response.headers);
-  h.set('cache-control', 'no-cache');
+  h.set('cache-control', `public, max-age=0, s-maxage=${EDGE_TTL_S}, must-revalidate`);
   h.set('access-control-allow-origin', ALLOWED_ORIGIN);
   return new Response(response.body, { status: response.status, headers: h });
 }
