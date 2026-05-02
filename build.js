@@ -557,6 +557,7 @@ const pairs = await Promise.all([
   processAsset('now-playing.js',    'js'),
   processAsset('local-time.js',     'js'),
   processAsset('listening-live.js', 'js'),
+  processAsset('tag-filter.js',     'js'),
 ]);
 for (const p of pairs) if (p) assetMap[p[0]] = p[1];
 setAssets(assetMap);

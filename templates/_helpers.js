@@ -151,7 +151,14 @@ export function relTime(iso) {
   return fmtDate(d, 'day');
 }
 
-export function tagList(tags) {
+// Render a list of inline tag chips. `baseHref` is the page the tag should
+// scope to — '' (default) means current page, so the link is just `?tag=foo`
+// and tag-filter.js can apply it in place. Article pages pass e.g. '/journal/'
+// so a click jumps to the journal index already filtered.
+export function tagList(tags, baseHref = '') {
   if (!tags || !tags.length) return '';
-  return tags.map(t => `<a class="tg" href="/tags/${encodeURIComponent(t)}/">${esc(t)}</a>`).join(' ');
+  return tags.map(t => {
+    const href = `${baseHref}?tag=${encodeURIComponent(t)}`;
+    return `<a class="tg" href="${href}" data-tag="${esc(t)}">${esc(t)}</a>`;
+  }).join(' ');
 }

@@ -33,8 +33,9 @@ function row(entry) {
   } else {
     body = `<div class="body">${entry.html || esc(entry.body || '')} ${tagList(entry.tags)}</div>`;
   }
+  const tagAttr = esc((entry.tags || []).join(' '));
   return `
-    <div class="row">
+    <div class="row" data-tags="${tagAttr}">
       <div class="gutter"><span class="kind">${esc(kind)}</span><span class="when">${when}</span></div>
       <div>
         ${body}
@@ -66,6 +67,23 @@ export function indexPage({ site, entries }) {
       <div class="gutter"><span class="kind">—</span><span class="when"></span></div>
       <div><div class="body muted">Nothing published yet.</div></div>
     </div>`;
+
+  // Filter strip — built from the tags actually present in the visible feed.
+  // tag-filter.js (loaded below) reads `?tag=` from the URL on load and toggles
+  // rows by data-tags, so a /?tag=foo URL is a deep-linkable filtered view.
+  const visibleEntries = groups.flatMap(([, rows]) => rows);
+  const tagCounts = new Map();
+  for (const e of visibleEntries) {
+    for (const t of (e.tags || [])) tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
+  }
+  const topTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
+  const filterBar = topTags.length ? `
+    <div class="filter">
+      <span class="label">filter</span>
+      <a href="/" class="on all" data-filter="">all</a>
+      ${topTags.slice(0, 6).map(([tag]) => `<a href="/?tag=${encodeURIComponent(tag)}" data-filter="${esc(tag)}">${esc(tag)}</a>`).join('\n      ')}
+      <span class="cnt">${visibleEntries.length} entries</span>
+    </div>` : '';
 
   const counts = site.counts || { journal: 0, thoughts: 0, making: 0, listening: 0, scrobbles: 0 };
   const scrobbles = Number(counts.scrobbles || 0).toLocaleString('en-US');
@@ -99,16 +117,17 @@ export function indexPage({ site, entries }) {
   </aside>
 
   <section class="timeline">
+    ${filterBar}
     ${timeline}
     ${entries.length ? `<div class="loadmore"><a href="/thoughts/">load older →</a></div>` : ''}
   </section>
 
   <aside class="side-right" aria-label="related">
-    ${site.trendingTags && site.trendingTags.length ? `
+    ${topTags.length ? `
     <div class="group">
       <h3>trending tags</h3>
       <ul>
-        ${site.trendingTags.map(t => `<li><a class="tg" href="/tags/${encodeURIComponent(t.tag)}/">${esc(t.tag)}</a><span class="meta">${t.count}</span></li>`).join('\n        ')}
+        ${topTags.slice(0, 12).map(([tag, count]) => `<li><a class="tg" href="/?tag=${encodeURIComponent(tag)}" data-tag="${esc(tag)}">${esc(tag)}</a><span class="meta">${count}</span></li>`).join('\n        ')}
       </ul>
     </div>` : ''}
   </aside>
@@ -123,7 +142,10 @@ export function indexPage({ site, entries }) {
       footerText: config.footerText ?? '',
       // Share the /listening/ poller to keep the scrobble counter fresh
       // between deploys. It no-ops if #listening-rows isn't on the page.
-      bodyScripts: `<script src="/${asset('listening-live.js')}" defer></script>`,
+      // tag-filter.js wires the ?tag= URL param + filter strip to in-place
+      // row hiding.
+      bodyScripts: `<script src="/${asset('listening-live.js')}" defer></script>
+<script src="/${asset('tag-filter.js')}" defer></script>`,
     },
     body,
   });

@@ -11,7 +11,10 @@ export function articlePage({ site, note, recent, prev, next }) {
     bio:    section.bio    || '',
     kicker: section.kicker || kind,
   };
-  const tags = (note.tags || []).map(t => `<a class="tg" href="/tags/${encodeURIComponent(t)}/">${esc(t)}</a>`).join(' ');
+  // Tag chips on a single post jump back to the kind-listing already
+  // filtered, so /journal/?tag=foo / /making/?tag=foo land on the right index.
+  const sectionPath = kind === 'making' ? '/making/' : '/journal/';
+  const tags = (note.tags || []).map(t => `<a class="tg" href="${sectionPath}?tag=${encodeURIComponent(t)}" data-tag="${esc(t)}">${esc(t)}</a>`).join(' ');
 
   const body = `
 <main class="page">
@@ -67,7 +70,7 @@ export function articlePage({ site, note, recent, prev, next }) {
     <div class="group">
       <h3>tags</h3>
       <ul>
-        ${note.tags.map(t => `<li><a class="tg" href="/tags/${encodeURIComponent(t)}/">${esc(t)}</a></li>`).join('\n        ')}
+        ${note.tags.map(t => `<li><a class="tg" href="${sectionPath}?tag=${encodeURIComponent(t)}" data-tag="${esc(t)}">${esc(t)}</a></li>`).join('\n        ')}
       </ul>
     </div>` : ''}
   </aside>

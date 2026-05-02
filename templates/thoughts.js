@@ -1,6 +1,7 @@
 // Thoughts archive — microblog timeline with tag filters.
 
 import { base } from './base.js';
+import { asset } from './_assets.js';
 import { esc, fmtDate, timeTag, tagList } from './_helpers.js';
 import { siteConfig } from '../site.config.js';
 
@@ -71,8 +72,8 @@ export function thoughtsPage({ site, thoughts }) {
   <section class="timeline">
     <div class="filter">
       <span class="label">filter</span>
-      <a href="#" class="on all" data-filter="">all</a>
-      ${topTags.slice(0, 6).map(([tag]) => `<a href="#" data-filter="${esc(tag)}">${esc(tag)}</a>`).join('\n      ')}
+      <a href="/thoughts/" class="on all" data-filter="">all</a>
+      ${topTags.slice(0, 6).map(([tag]) => `<a href="/thoughts/?tag=${encodeURIComponent(tag)}" data-filter="${esc(tag)}">${esc(tag)}</a>`).join('\n      ')}
       <span class="cnt">${thoughts.length} posts</span>
     </div>
 
@@ -83,7 +84,7 @@ export function thoughtsPage({ site, thoughts }) {
     <div class="group">
       <h3>by tag</h3>
       <ul>
-        ${topTags.map(([tag, n]) => `<li><a class="tg" href="/tags/${encodeURIComponent(tag)}/">${esc(tag)}</a><span class="meta">${n}</span></li>`).join('\n        ')}
+        ${topTags.map(([tag, n]) => `<li><a class="tg" href="/thoughts/?tag=${encodeURIComponent(tag)}" data-tag="${esc(tag)}">${esc(tag)}</a><span class="meta">${n}</span></li>`).join('\n        ')}
       </ul>
     </div>
 
@@ -102,20 +103,7 @@ export function thoughtsPage({ site, thoughts }) {
       navActive: 'thoughts',
       nowPlaying: site?.nowPlaying || '',
       footerText: siteConfig.footerText ?? '',
-      bodyScripts: `<script>
-(() => {
-  const links = document.querySelectorAll('.filter a[data-filter]');
-  const rows  = document.querySelectorAll('.row[data-tags]');
-  links.forEach(a => a.addEventListener('click', e => {
-    e.preventDefault();
-    links.forEach(l => l.classList.toggle('on', l === a));
-    const f = a.dataset.filter;
-    rows.forEach(r => {
-      r.style.display = (!f || (r.dataset.tags || '').split(' ').includes(f)) ? '' : 'none';
-    });
-  }));
-})();
-</script>`
+      bodyScripts: `<script src="/${asset('tag-filter.js')}" defer></script>`
     },
     body,
   });

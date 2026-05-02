@@ -6,10 +6,14 @@ import { base } from './base.js';
 import { asset } from './_assets.js';
 import { esc, fmtDate, timeTag, tagList, safeUrl, relFor } from './_helpers.js';
 
+// Pretty-name for the section we're listing — used in URLs and filter links.
+const SECTION_PATH = { journal: '/journal/', making: '/making/', listening: '/listening/' };
+
 function articleRow(entry) {
   const tags = tagList(entry.tags);
+  const tagAttr = esc((entry.tags || []).join(' '));
   return `
-    <div class="row">
+    <div class="row" data-tags="${tagAttr}">
       <div class="gutter">
         <span class="kind">${timeTag(entry.date, 'day')}</span>
         <span class="when">${entry.readTime ? esc(entry.readTime) : ''}</span>
@@ -82,6 +86,14 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
     for (const e of entries) for (const t of (e.tags || [])) tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
   }
   const topTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
+  const sectionPath = SECTION_PATH[kind] || '/';
+  const filterBar = topTags.length ? `
+    <div class="filter">
+      <span class="label">filter</span>
+      <a href="${sectionPath}" class="on all" data-filter="">all</a>
+      ${topTags.slice(0, 8).map(([tag]) => `<a href="${sectionPath}?tag=${encodeURIComponent(tag)}" data-filter="${esc(tag)}">${esc(tag)}</a>`).join('\n      ')}
+      <span class="cnt">${entries.length} ${statLabel}</span>
+    </div>` : '';
 
   const body = `
 <main class="page">
@@ -118,6 +130,7 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
       <p class="lede">${esc(section.intro)}</p>
     </div>` : ''}
 
+    ${filterBar}
     ${rowsOpen}${rows}${rowsClose}
   </section>
 
@@ -126,7 +139,7 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
     <div class="group">
       <h3>by tag</h3>
       <ul>
-        ${topTags.map(([t, n]) => `<li><a class="tg" href="/tags/${encodeURIComponent(t)}/">${esc(t)}</a><span class="meta">${n}</span></li>`).join('\n        ')}
+        ${topTags.map(([t, n]) => `<li><a class="tg" href="${sectionPath}?tag=${encodeURIComponent(t)}" data-tag="${esc(t)}">${esc(t)}</a><span class="meta">${n}</span></li>`).join('\n        ')}
       </ul>
     </div>` : ''}
   </aside>
@@ -138,8 +151,12 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
       navActive: kind,
       nowPlaying: nowPlaying || '',
       footerText: siteConfig.footerText ?? '',
-      // Load the live-update poller only on /listening/.
-      bodyScripts: kind === 'listening' ? `<script src="/${asset('listening-live.js')}" defer></script>` : '',
+      // Load the live-update poller only on /listening/. tag-filter.js wires
+      // the ?tag= URL param + filter strip on article-kind listings.
+      bodyScripts: [
+        kind === 'listening' ? `<script src="/${asset('listening-live.js')}" defer></script>` : '',
+        kind !== 'listening' ? `<script src="/${asset('tag-filter.js')}" defer></script>` : '',
+      ].filter(Boolean).join('\n'),
     },
     body,
   });
