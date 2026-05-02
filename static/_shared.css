@@ -438,6 +438,12 @@ a.tg:hover { color: var(--accent); }
 .filter a.all::before { content: ""; }
 .filter .cnt { margin-left: auto; color: var(--faint); font-size: 10.5px; }
 
+/* The HTML `hidden` attribute is supposed to imply `display: none`, but the
+   user-agent rule has the same specificity as our `.row { display: grid }`
+   and `.tl-divider { display: flex }`, so it loses. Force the override here
+   so tag-filter.js can hide rows by toggling `.hidden`. */
+[hidden] { display: none !important; }
+
 /* ── Tag filter banner (injected by tag-filter.js) ─────────────────── */
 .tag-banner {
   padding: .5rem .75rem;
@@ -848,7 +854,6 @@ table.schema .req.y { color: var(--accent); }
 
 .muted { color: var(--mute); }
 
-/* ── Broken wikilink ────────────────────────────── */
 .broken {
   color: var(--mute);
   border-bottom: 1px dotted var(--faint);
