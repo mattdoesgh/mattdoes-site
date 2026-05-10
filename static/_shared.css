@@ -2,6 +2,11 @@
    Warm off-white, mono type, subtle rules, restrained accent.
    Three-column desktop → single-column mobile. */
 
+/* Cross-Document View Transitions (Chromium). Lets the geo background
+   element morph between page loads instead of being snapshot/cross-faded.
+   Other browsers ignore both the at-rule and view-transition-name. */
+@view-transition { navigation: auto; }
+
 /* ── Self-hosted fonts ──────────────────────────── */
 /* Drop woff2 files into /fonts/. See README for sources. */
 @font-face {
@@ -38,7 +43,7 @@
 }
 
 html {
-  --bg: oklch(0.18 0.012 280);
+  --bg: #000;
   --surface: oklch(0.22 0.014 280);
   --ink: oklch(0.92 0.008 80);
   --mute: oklch(0.62 0.012 280);
@@ -881,36 +886,63 @@ table.schema .req.y { color: var(--accent); }
    - Opacity is tunable via --geo-bg-opacity (set on :root) so the
      drift never competes with body copy. */
 :root {
-  --geo-bg-opacity: 0.55;
+  --geo-bg-opacity: 0.75;
   --geo-bg-stroke:  0.6;
+  --geo-point-fill: #fff;
 }
+html[data-theme="light"] { --geo-point-fill: var(--rule); }
 #geo-bg {
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
   overflow: hidden;
-  opacity: 0;
-  transition: opacity .8s ease-out;
+  opacity: var(--geo-bg-opacity);
+  view-transition-name: geo-bg;
 }
-#geo-bg.ready { opacity: var(--geo-bg-opacity); }
 #geo-bg svg {
   width: 100%;
   height: 100%;
   display: block;
 }
-#geo-bg .geo-drift {
+/* Skip the default cross-fade for the geo layer — the live element carries
+   through and the rAF loop resumes from sessionStorage, so a fade would
+   blur the seam rather than hide it. */
+::view-transition-group(geo-bg) { animation-duration: 0s; }
+::view-transition-old(geo-bg),
+::view-transition-new(geo-bg) { animation: none; }
+
+/* Solid-mode wrapper: gentle drift via CSS keyframe. Hidden in points mode. */
+#geo-bg[data-shape="solid"] .geo-drift {
   transform-origin: 50% 50%;
   transform-box: view-box;
   animation: geo-drift 180s ease-in-out infinite;
   will-change: transform;
 }
+#geo-bg[data-shape="points"] .geo-drift { display: none; }
+#geo-bg[data-shape="solid"]  .geo-points { display: none; }
+/* Edge flashes belong to the points layer only — solid mode already
+   draws the full outline, so re-adding the connections would just
+   smear it. */
+#geo-bg[data-shape="solid"]  .geo-edges { display: none; }
+
 #geo-bg .geo-path {
-  stroke: var(--rule);
+  stroke: var(--geo-point-fill);
   stroke-width: var(--geo-bg-stroke);
   stroke-opacity: 0.85;
   fill: none;
   vector-effect: non-scaling-stroke;
+}
+#geo-bg .geo-point {
+  fill: var(--geo-point-fill);
+  fill-opacity: 0.85;
+}
+#geo-bg .geo-edge {
+  stroke: var(--geo-point-fill);
+  stroke-width: var(--geo-bg-stroke);
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  /* stroke-opacity set per-frame from JS */
 }
 @keyframes geo-drift {
   0%   { transform: translate(-2.5%, -1.5%) rotate(-0.5deg) scale(1.06); }
@@ -918,7 +950,7 @@ table.schema .req.y { color: var(--accent); }
   100% { transform: translate(-2.5%, -1.5%) rotate(-0.5deg) scale(1.06); }
 }
 @media (prefers-reduced-motion: reduce) {
-  #geo-bg .geo-drift { animation: none; transform: scale(1.04); }
+  #geo-bg[data-shape="solid"] .geo-drift { animation: none; transform: scale(1.04); }
 }
 
 /* Three-state segmented control inside #tweaks (used by the

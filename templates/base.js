@@ -130,6 +130,13 @@ ${body}
       <button type="button" data-value="off"  aria-pressed="false">off</button>
     </div>
   </div>
+  <div class="row-t">
+    <label>map style</label>
+    <div class="tk-seg" data-key="geoShape" role="group" aria-label="map style">
+      <button type="button" data-value="points" aria-pressed="true">points</button>
+      <button type="button" data-value="solid"  aria-pressed="false">solid</button>
+    </div>
+  </div>
   <div class="row-t help">
     <p class="note">picking <em>mine</em> uses your location once to look up the city outline. coordinates aren't stored.</p>
   </div>
