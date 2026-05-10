@@ -5,7 +5,8 @@
     dark: true,
     accent: "pink",
     serif: true,
-    geo: "home"
+    geo: "home",
+    geoShape: "points"
   }/*EDITMODE-END*/;
 
   const ACCENTS = {
@@ -55,6 +56,9 @@
     // hook in without a second event.
     window.dispatchEvent(new CustomEvent('geo-bg:setting', {
       detail: { value: state.geo },
+    }));
+    window.dispatchEvent(new CustomEvent('geo-bg:shape', {
+      detail: { value: state.geoShape },
     }));
   }
 

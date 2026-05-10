@@ -2,6 +2,11 @@
    Warm off-white, mono type, subtle rules, restrained accent.
    Three-column desktop → single-column mobile. */
 
+/* Cross-Document View Transitions (Chromium). Lets the geo background
+   element morph between page loads instead of being snapshot/cross-faded.
+   Other browsers ignore both the at-rule and view-transition-name. */
+@view-transition { navigation: auto; }
+
 /* ── Self-hosted fonts ──────────────────────────── */
 /* Drop woff2 files into /fonts/. See README for sources. */
 @font-face {
@@ -892,6 +897,7 @@ table.schema .req.y { color: var(--accent); }
   overflow: hidden;
   opacity: 0;
   transition: opacity .8s ease-out;
+  view-transition-name: geo-bg;
 }
 #geo-bg.ready { opacity: var(--geo-bg-opacity); }
 #geo-bg svg {
@@ -899,12 +905,23 @@ table.schema .req.y { color: var(--accent); }
   height: 100%;
   display: block;
 }
-#geo-bg .geo-drift {
+/* Skip the default cross-fade for the geo layer — the live element carries
+   through and the rAF loop resumes from sessionStorage, so a fade would
+   blur the seam rather than hide it. */
+::view-transition-group(geo-bg) { animation-duration: 0s; }
+::view-transition-old(geo-bg),
+::view-transition-new(geo-bg) { animation: none; }
+
+/* Solid-mode wrapper: gentle drift via CSS keyframe. Hidden in points mode. */
+#geo-bg[data-shape="solid"] .geo-drift {
   transform-origin: 50% 50%;
   transform-box: view-box;
   animation: geo-drift 180s ease-in-out infinite;
   will-change: transform;
 }
+#geo-bg[data-shape="points"] .geo-drift { display: none; }
+#geo-bg[data-shape="solid"]  .geo-points { display: none; }
+
 #geo-bg .geo-path {
   stroke: var(--rule);
   stroke-width: var(--geo-bg-stroke);
@@ -912,13 +929,17 @@ table.schema .req.y { color: var(--accent); }
   fill: none;
   vector-effect: non-scaling-stroke;
 }
+#geo-bg .geo-point {
+  fill: var(--rule);
+  fill-opacity: 0.85;
+}
 @keyframes geo-drift {
   0%   { transform: translate(-2.5%, -1.5%) rotate(-0.5deg) scale(1.06); }
   50%  { transform: translate( 2.5%,  1.5%) rotate( 0.5deg) scale(1.10); }
   100% { transform: translate(-2.5%, -1.5%) rotate(-0.5deg) scale(1.06); }
 }
 @media (prefers-reduced-motion: reduce) {
-  #geo-bg .geo-drift { animation: none; transform: scale(1.04); }
+  #geo-bg[data-shape="solid"] .geo-drift { animation: none; transform: scale(1.04); }
 }
 
 /* Three-state segmented control inside #tweaks (used by the
