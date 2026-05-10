@@ -1004,3 +1004,23 @@ html[data-theme="light"] { --geo-point-fill: var(--rule); }
 .post-body audio,
 .post-body video { max-width: 100%; height: auto; margin: 1rem 0; border-radius: 2px; }
 .post-body audio { width: 100%; }
+
+/* ── View Transitions ────────────────────────────
+   <meta name="view-transition" content="same-origin"> in base.js opts the
+   document into cross-document fades on supported browsers (Chrome 126+).
+   The default 250ms fade is a touch laggy for a text site — tighten to
+   180ms and respect prefers-reduced-motion. The pseudo-elements only exist
+   on supporting browsers, so this block is a no-op everywhere else. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: .18s;
+  animation-timing-function: cubic-bezier(.4, 0, .2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation-duration: .001s; }
+}
+/* Topbar + footer don't need to crossfade — pinning them with stable
+   names keeps them visually still while the timeline content fades. */
+.topbar { view-transition-name: topbar; }
+footer.site { view-transition-name: site-footer; }
