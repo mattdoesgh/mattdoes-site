@@ -18,9 +18,9 @@ routes = [
 #   3. Uncomment, paste the returned id into `id = "..."`.
 #   4. npx wrangler deploy
 #
-# [[kv_namespaces]]
-# binding = "GEO_CACHE"
-# id      = ""
+[[kv_namespaces]]
+binding = "GEO_CACHE"
+id      = "4368817cf07143268bdd3bb62874562c"
 
 # No [vars] block needed. The Worker uses public Nominatim with no key.
 # If we ever want to swap to a paid provider, set the API key as a
