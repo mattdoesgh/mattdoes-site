@@ -4,7 +4,8 @@
   const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
     dark: true,
     accent: "pink",
-    serif: true
+    serif: true,
+    geo: "home"
   }/*EDITMODE-END*/;
 
   const ACCENTS = {
@@ -43,6 +44,18 @@
         sw.setAttribute('aria-pressed', String(sw.dataset.value === state[key]));
       });
     });
+    panel.querySelectorAll('.tk-seg').forEach(grp => {
+      const key = grp.dataset.key;
+      grp.querySelectorAll('button').forEach(btn => {
+        btn.setAttribute('aria-pressed', String(btn.dataset.value === state[key]));
+      });
+    });
+    // Notify any listener (currently geo-background.js) that a tweak
+    // setting changed. Keyed by tweak name so future settings can
+    // hook in without a second event.
+    window.dispatchEvent(new CustomEvent('geo-bg:setting', {
+      detail: { value: state.geo },
+    }));
   }
 
   function persist(edits) {
@@ -61,6 +74,12 @@
     const key = grp.dataset.key;
     grp.querySelectorAll('.tk-sw').forEach(sw => {
       sw.addEventListener('click', () => persist({ [key]: sw.dataset.value }));
+    });
+  });
+  panel.querySelectorAll('.tk-seg').forEach(grp => {
+    const key = grp.dataset.key;
+    grp.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => persist({ [key]: btn.dataset.value }));
     });
   });
   panel.querySelector('.close')?.addEventListener('click', () => {

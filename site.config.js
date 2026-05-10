@@ -35,6 +35,22 @@ export const siteConfig = {
   // Footer text on generic pages. Empty string = render nothing.
   footerText: '© 2026 · mattdoes.online',
 
+  // Animated GeoJSON background.
+  // - `home` is the city baked into static/home.geojson at build time
+  //   (see scripts/bake-home-geojson.js). Lat/lng are used by the bake
+  //   step and at runtime as a fallback when reverse-geocoding fails.
+  // - `endpoint` is a same-origin path served by workers/geo, which
+  //   reverse-geocodes a visitor's coords to a city polygon. Same-origin
+  //   keeps connect-src 'self' working — no CSP changes needed.
+  geo: {
+    home: {
+      lat:   29.7604,
+      lng:  -95.3698,
+      label: 'Houston, TX',
+    },
+    endpoint: '/api/geo/lookup',
+  },
+
   // Status pill in the topbar. When `status` is empty and a Last.fm track is
   // currently playing at build time, build.js injects 'now: <artist — track>'
   // automatically. Set a fixed string here to override that behavior.

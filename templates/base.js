@@ -48,18 +48,27 @@ export function base({ page, body }) {
     ? `${siteTitle.split('.')[0]}<span class="dim">.${siteTitle.split('.').slice(1).join('.')}</span>`
     : esc(siteTitle);
 
+  // Tiny inline shim so geo-background.js can read its endpoint without
+  // hard-coding it. Kept inside <head> + minimal so it costs no
+  // perceptible bytes; respects the existing CSP (script-src 'self'
+  // + no inline-script — but `<meta>` is not a script and is fine).
+  const geoEndpoint = (siteConfig.geo && siteConfig.geo.endpoint) || '/api/geo/lookup';
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>${esc(title)}</title>
+<meta name="geo-endpoint" content="${esc(geoEndpoint)}" />
 <link rel="preload" href="/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="/fonts/Fraunces-Variable.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="/${asset('_shared.css')}" />
 ${page.headExtra || ''}
 </head>
 <body>
+
+<div id="geo-bg" aria-hidden="true"></div>
 
 <div class="topbar">
   <div class="inner">
@@ -99,9 +108,21 @@ ${body}
     <label>serif headings</label>
     <button type="button" class="tk-toggle" data-key="serif" aria-pressed="true" aria-label="toggle serif"></button>
   </div>
+  <div class="row-t">
+    <label>local map</label>
+    <div class="tk-seg" data-key="geo" role="group" aria-label="local map source">
+      <button type="button" data-value="home" aria-pressed="true">home</button>
+      <button type="button" data-value="mine" aria-pressed="false">mine</button>
+      <button type="button" data-value="off"  aria-pressed="false">off</button>
+    </div>
+  </div>
+  <div class="row-t help">
+    <p class="note">picking <em>mine</em> uses your location once to look up the city outline. coordinates aren't stored.</p>
+  </div>
 </div>
 
 <script src="/${asset('tweaks.js')}" defer></script>
+<script src="/${asset('geo-background.js')}" defer></script>
 <script src="/${asset('now-playing.js')}" defer></script>
 <script src="/${asset('local-time.js')}" defer></script>
 ${page.bodyScripts || ''}

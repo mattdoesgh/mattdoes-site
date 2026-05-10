@@ -21,6 +21,14 @@
 /*.js
   Cache-Control: public, max-age=31536000, immutable
 
+# Baked GeoJSON — re-baked rarely (run `npm run bake-geo`); not
+# content-hashed because the URL is referenced by /static/geo-background.js
+# at runtime. Day-long edge cache + browser revalidation strikes the
+# right balance: a re-baked Houston propagates within a few minutes
+# of the next deploy, but normal traffic skips re-fetching.
+/*.geojson
+  Cache-Control: public, max-age=3600, s-maxage=86400
+
 # Feeds — short cache so new entries show up
 /feed.xml
   Cache-Control: public, max-age=1800, s-maxage=1800

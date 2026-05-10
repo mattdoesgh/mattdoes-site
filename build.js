@@ -554,6 +554,7 @@ const assetMap = {};
 const pairs = await Promise.all([
   processAsset('_shared.css',       'css'),
   processAsset('tweaks.js',         'js'),
+  processAsset('geo-background.js', 'js'),
   processAsset('now-playing.js',    'js'),
   processAsset('local-time.js',     'js'),
   processAsset('listening-live.js', 'js'),

@@ -860,6 +860,102 @@ table.schema .req.y { color: var(--accent); }
   cursor: help;
 }
 
+/* ── Animated GeoJSON background ─────────────────── */
+/* #geo-bg sits behind every page. The SVG fills the viewport; an
+   inner <g class="geo-drift"> applies a slow keyframe transform so
+   the city outline gently breathes behind the content.
+   - aria-hidden + pointer-events:none keep it out of a11y / clicks.
+   - Stroke uses the existing --rule color so it adapts to dark/light
+     and to whichever accent the visitor has picked.
+   - Opacity is tunable via --geo-bg-opacity (set on :root) so the
+     drift never competes with body copy. */
+:root {
+  --geo-bg-opacity: 0.55;
+  --geo-bg-stroke:  0.6;
+}
+#geo-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity .8s ease-out;
+}
+#geo-bg.ready { opacity: var(--geo-bg-opacity); }
+#geo-bg svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#geo-bg .geo-drift {
+  transform-origin: 50% 50%;
+  transform-box: view-box;
+  animation: geo-drift 180s ease-in-out infinite;
+  will-change: transform;
+}
+#geo-bg .geo-path {
+  stroke: var(--rule);
+  stroke-width: var(--geo-bg-stroke);
+  stroke-opacity: 0.85;
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+@keyframes geo-drift {
+  0%   { transform: translate(-2.5%, -1.5%) rotate(-0.5deg) scale(1.06); }
+  50%  { transform: translate( 2.5%,  1.5%) rotate( 0.5deg) scale(1.10); }
+  100% { transform: translate(-2.5%, -1.5%) rotate(-0.5deg) scale(1.06); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #geo-bg .geo-drift { animation: none; transform: scale(1.04); }
+}
+
+/* Three-state segmented control inside #tweaks (used by the
+   `local map` row). Mirrors the visual language of the existing
+   .tk-toggle / .tk-swatches without inventing new tokens. */
+.tk-seg {
+  display: inline-flex;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.tk-seg button {
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--rule);
+  padding: 2px 8px;
+  font: inherit;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: var(--mute);
+  cursor: pointer;
+  text-transform: lowercase;
+}
+.tk-seg button:last-child { border-right: none; }
+.tk-seg button:hover { color: var(--ink); }
+.tk-seg button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* Tiny help line below the local-map row — used to surface the
+   one-time consent text "coordinates aren't stored" without
+   hijacking the rest of the panel layout. */
+#tweaks .row-t.help {
+  padding-top: 0;
+  padding-bottom: .55rem;
+  display: block;
+}
+#tweaks .row-t.help .note {
+  color: var(--mute);
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 100%;
+}
+
 /* ── Media embeds from ![[attachment]] ──────────── */
 .post-body img,
 .post-body audio,
