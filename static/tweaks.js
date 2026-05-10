@@ -82,9 +82,27 @@
       btn.addEventListener('click', () => persist({ [key]: btn.dataset.value }));
     });
   });
+  // Single source of truth for opening/closing the panel — keeps the
+  // .open class and any aria-expanded triggers (footer link, etc.)
+  // in lockstep regardless of who flipped it.
+  function setPanelOpen(open) {
+    panel.classList.toggle('open', !!open);
+    document.querySelectorAll('[data-tweaks-toggle]').forEach(b => {
+      b.setAttribute('aria-expanded', String(!!open));
+    });
+  }
+
   panel.querySelector('.close')?.addEventListener('click', () => {
-    panel.classList.remove('open');
+    setPanelOpen(false);
     postToParent({ type: '__deactivate_edit_mode' });
+  });
+
+  // On-page triggers (e.g. footer "tweaks" link). Independent of the
+  // edit-mode harness — a visitor can open settings without an embedder.
+  document.querySelectorAll('[data-tweaks-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setPanelOpen(!panel.classList.contains('open'));
+    });
   });
 
   // Only act on messages from our own origin. Without this check, any
@@ -94,8 +112,8 @@
   window.addEventListener('message', (e) => {
     if (e.origin !== PARENT_ORIGIN) return;
     const d = e.data || {};
-    if (d.type === '__activate_edit_mode')   panel.classList.add('open');
-    if (d.type === '__deactivate_edit_mode') panel.classList.remove('open');
+    if (d.type === '__activate_edit_mode')   setPanelOpen(true);
+    if (d.type === '__deactivate_edit_mode') setPanelOpen(false);
   });
   postToParent({ type: '__edit_mode_available' });
 

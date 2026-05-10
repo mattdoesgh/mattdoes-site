@@ -86,7 +86,7 @@ ${body}
 
 <footer class="site">
   <div>${page.footerText ?? siteConfig.footerText ?? ''}</div>
-  <nav aria-label="footer">${footerNav.map(n => `<a href="${n.href}">${n.label}</a>`).join('')}</nav>
+  <nav aria-label="footer">${footerNav.map(n => `<a href="${n.href}">${n.label}</a>`).join('')}<button type="button" class="footer-link" data-tweaks-toggle aria-controls="tweaks" aria-expanded="false">tweaks</button></nav>
 </footer>
 
 <div id="tweaks">

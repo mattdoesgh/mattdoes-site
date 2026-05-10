@@ -492,6 +492,12 @@ footer.site {
 footer.site nav { display: flex; gap: 1.5rem; flex-wrap: wrap; }
 footer.site a { color: var(--mute); border-bottom: none; }
 footer.site a:hover { color: var(--ink); }
+footer.site .footer-link {
+  background: none; border: none; padding: 0;
+  font: inherit; color: var(--mute);
+  cursor: pointer;
+}
+footer.site .footer-link:hover { color: var(--ink); }
 
 /* ── Post page ────────────────────────────────── */
 .post-head {
