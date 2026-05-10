@@ -30,6 +30,10 @@ export function base({ page, body }) {
   const siteTitle = siteConfig.title || 'mattdoes.online';
   const title = page.title ? `${page.title} — ${siteTitle}` : siteTitle;
   const active = page.navActive || '';
+  // Status priority: page-level override → config fixed string → build-time
+  // now-playing from Last.fm (passed in as page.nowPlaying). The #now-playing
+  // span is always in the DOM so now-playing.js can swap it client-side;
+  // it's rendered with `hidden` when no build-time status is set.
   const isLive      = !page.status && !siteConfig.status;
   const statusText  = page.status || siteConfig.status || (isLive ? page.nowPlaying : '') || '';
   const showDot     = page.statusDot ?? (isLive && Boolean(page.nowPlaying));
@@ -43,20 +47,12 @@ export function base({ page, body }) {
   const homeBrand = siteTitle.includes('.')
     ? `${siteTitle.split('.')[0]}<span class="dim">.${siteTitle.split('.').slice(1).join('.')}</span>`
     : esc(siteTitle);
-  const geoEndpoint = (siteConfig.geo && siteConfig.geo.endpoint) || '/api/geo/lookup';
 
-  // Resolve hashed asset URLs once so we can both reference them in
-  // <script> tags AND emit them as <link rel="modulepreload"/preload>
-  // hints in <head>. Hinting in <head> means the browser starts
-  // fetching the JS in parallel with the CSS — significant on first
-  // visit; on subsequent navigations the prefetcher (nav-prefetch.js)
-  // ensures the same hashed bundles are already in the disk cache.
-  const cssHref         = `/${asset('_shared.css')}`;
-  const tweaksJs        = `/${asset('tweaks.js')}`;
-  const geoBgJs         = `/${asset('geo-background.js')}`;
-  const nowPlayingJs    = `/${asset('now-playing.js')}`;
-  const localTimeJs     = `/${asset('local-time.js')}`;
-  const navPrefetchJs   = `/${asset('nav-prefetch.js')}`;
+  // Tiny inline shim so geo-background.js can read its endpoint without
+  // hard-coding it. Kept inside <head> + minimal so it costs no
+  // perceptible bytes; respects the existing CSP (script-src 'self'
+  // + no inline-script — but `<meta>` is not a script and is fine).
+  const geoEndpoint = (siteConfig.geo && siteConfig.geo.endpoint) || '/api/geo/lookup';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -65,19 +61,9 @@ export function base({ page, body }) {
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>${esc(title)}</title>
 <meta name="geo-endpoint" content="${esc(geoEndpoint)}" />
-<!-- View Transitions: cross-document fades on supported browsers. -->
-<meta name="view-transition" content="same-origin" />
-<!-- DNS warm-up for the media CDN; only matters when an article actually embeds. -->
-<link rel="dns-prefetch" href="https://media.mattdoes.online" />
-<link rel="preconnect"   href="https://media.mattdoes.online" crossorigin />
-<!-- Critical font preloads — also emitted as Link: headers in /static/_headers
-     for HTTP 103 Early Hints, but kept here so direct file:// + non-CF hosts work. -->
 <link rel="preload" href="/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="/fonts/Fraunces-Variable.woff2" as="font" type="font/woff2" crossorigin />
-<!-- Shell scripts — hinted early, executed deferred. -->
-<link rel="preload" href="${tweaksJs}"      as="script" />
-<link rel="preload" href="${navPrefetchJs}" as="script" />
-<link rel="stylesheet" href="${cssHref}" />
+<link rel="stylesheet" href="/${asset('_shared.css')}" />
 ${page.headExtra || ''}
 </head>
 <body>
@@ -91,7 +77,7 @@ ${page.headExtra || ''}
       ${NAV.map(n => `<a href="${n.href}"${active === n.id ? ' class="on"' : ''}>${n.label}</a>`).join('\n      ')}
     </nav>
     <span class="spacer"></span>
-    ${META.map(m => `<a href="${m.href}" class="meta-link${active === m.id ? ' on' : ''}"${m.href.startsWith('mailto:') ? ' data-prefetch="off"' : ''}>${m.label}</a>`).join('\n    ')}
+    ${META.map(m => `<a href="${m.href}" class="meta-link${active === m.id ? ' on' : ''}">${m.label}</a>`).join('\n    ')}
     ${status}
   </div>
 </div>
@@ -100,7 +86,7 @@ ${body}
 
 <footer class="site">
   <div>${page.footerText ?? siteConfig.footerText ?? ''}</div>
-  <nav aria-label="footer">${footerNav.map(n => `<a href="${n.href}"${n.href.startsWith('mailto:') ? ' data-prefetch="off"' : ''}>${n.label}</a>`).join('')}<button type="button" class="footer-link" data-tweaks-toggle aria-controls="tweaks" aria-expanded="false">tweaks</button></nav>
+  <nav aria-label="footer">${footerNav.map(n => `<a href="${n.href}">${n.label}</a>`).join('')}<button type="button" class="footer-link" data-tweaks-toggle aria-controls="tweaks" aria-expanded="false">tweaks</button></nav>
 </footer>
 
 <div id="tweaks">
@@ -135,11 +121,10 @@ ${body}
   </div>
 </div>
 
-<script src="${tweaksJs}" defer></script>
-<script src="${navPrefetchJs}" defer></script>
-<script src="${geoBgJs}" defer></script>
-<script src="${nowPlayingJs}" defer></script>
-<script src="${localTimeJs}" defer></script>
+<script src="/${asset('tweaks.js')}" defer></script>
+<script src="/${asset('geo-background.js')}" defer></script>
+<script src="/${asset('now-playing.js')}" defer></script>
+<script src="/${asset('local-time.js')}" defer></script>
 ${page.bodyScripts || ''}
 </body>
 </html>

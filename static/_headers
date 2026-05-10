@@ -9,36 +9,55 @@
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Content-Security-Policy: default-src 'self'; script-src 'self'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
 
-# Fonts — immutable, long cache
+# ── Immutable, content-hashed assets ────────────────────────────────────
+# Browser AND edge cache for a year. `immutable` tells browsers not to
+# revalidate on reload. CDN-Cache-Control lets us tune the edge tier
+# independently if we ever want to (Cloudflare reads it ahead of
+# Cache-Control). Source: https://developers.cloudflare.com/cache/concepts/cache-control/
+
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
+  CDN-Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
 
-# CSS — long cache (content-hashed filenames flush by rename)
 /*.css
   Cache-Control: public, max-age=31536000, immutable
+  CDN-Cache-Control: public, max-age=31536000, immutable
 
-# JS — long cache (content-hashed filenames flush by rename)
 /*.js
   Cache-Control: public, max-age=31536000, immutable
+  CDN-Cache-Control: public, max-age=31536000, immutable
 
-# Baked GeoJSON — re-baked rarely (run `npm run bake-geo`); not
-# content-hashed because the URL is referenced by /static/geo-background.js
-# at runtime. Day-long edge cache + browser revalidation strikes the
-# right balance: a re-baked Houston propagates within a few minutes
-# of the next deploy, but normal traffic skips re-fetching.
+# ── Build-baked data ────────────────────────────────────────────────────
+# Day-long edge cache, 1h browser cache. Re-baked GeoJSON propagates with
+# the next deploy (Pages purges the edge); browsers revalidate hourly so
+# returning visitors pick up changes without a hard refresh.
 /*.geojson
-  Cache-Control: public, max-age=3600, s-maxage=86400
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  CDN-Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
-# Feeds — short cache so new entries show up
+# ── Feeds ───────────────────────────────────────────────────────────────
 /feed.xml
-  Cache-Control: public, max-age=1800, s-maxage=1800
+  Cache-Control: public, max-age=900, stale-while-revalidate=3600
+  CDN-Cache-Control: public, max-age=1800, stale-while-revalidate=86400
 
-# HTML pages — long edge TTL with stale-while-revalidate, browser revalidates.
-# Pages purges the edge on each deploy, so 1h s-maxage is safe.
-# Three patterns to cover root, clean directory URLs, and any literal *.html.
+# ── HTML pages ──────────────────────────────────────────────────────────
+# 0 browser TTL + long edge TTL with stale-while-revalidate. Pages purges
+# the edge on deploy, so a 6h s-maxage is safe and dramatically lifts
+# edge hit rate for repeat visitors that already have the asset shell
+# cached. 103 Early Hints push the shell preloads while origin renders.
 /
-  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
+  Cache-Control: public, max-age=0, must-revalidate
+  CDN-Cache-Control: public, s-maxage=21600, stale-while-revalidate=604800
+  Link: </fonts/JetBrainsMono-Regular.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
+  Link: </fonts/Fraunces-Variable.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
+
 /*/
-  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
+  Cache-Control: public, max-age=0, must-revalidate
+  CDN-Cache-Control: public, s-maxage=21600, stale-while-revalidate=604800
+  Link: </fonts/JetBrainsMono-Regular.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
+  Link: </fonts/Fraunces-Variable.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
+
 /*.html
-  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
+  Cache-Control: public, max-age=0, must-revalidate
+  CDN-Cache-Control: public, s-maxage=21600, stale-while-revalidate=604800
