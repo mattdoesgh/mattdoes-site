@@ -83,7 +83,12 @@ html {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
-body { min-height: 100vh; }
+/* `position: relative` + explicit z-index here gives <body> its own
+   stacking context, so #geo-bg's `z-index: -1` lands behind body
+   content but stays above the page-canvas background painted by
+   <html>. Without this, z-index: -1 disappears beneath the html
+   element's background and the SVG is invisible. */
+body { min-height: 100vh; position: relative; z-index: 0; }
 
 a {
   color: inherit;
