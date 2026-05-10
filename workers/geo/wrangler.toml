@@ -1,0 +1,27 @@
+name = "mattdoes-geo"
+main = "src/index.js"
+compatibility_date = "2026-04-01"
+
+# Same-origin route on mattdoes.online so the static client can call it
+# without loosening the site's `connect-src 'self'` CSP. Workers-on-Routes
+# take precedence over Pages, so /api/geo/* is handled here.
+routes = [
+  { pattern = "mattdoes.online/api/geo/lookup", zone_name = "mattdoes.online" }
+]
+
+# KV cache for reverse-geocoded city polygons. Keyed by rounded
+# `lat,lng` so concurrent visitors in the same metro share a hit.
+#
+# One-time setup (mirrors workers/listening):
+#   1. Leave the [[kv_namespaces]] block commented on first deploy.
+#   2. Run:  npx wrangler kv namespace create GEO_CACHE
+#   3. Uncomment, paste the returned id into `id = "..."`.
+#   4. npx wrangler deploy
+#
+# [[kv_namespaces]]
+# binding = "GEO_CACHE"
+# id      = ""
+
+# No [vars] block needed. The Worker uses public Nominatim with no key.
+# If we ever want to swap to a paid provider, set the API key as a
+# secret via `wrangler secret put`.
