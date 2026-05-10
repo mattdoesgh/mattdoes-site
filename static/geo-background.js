@@ -39,23 +39,32 @@
   const STORAGE_TTL_MS  = 30 * 24 * 60 * 60 * 1000;   // 30 days
   const COORD_PRECISION = 1;                           // ~11 km grid → cache hits across a metro area
 
-  // Particle-cloud knobs. POINT_COUNT is intentionally modest — 300-ish
-  // SVG circles updated per frame is comfortable on mid-tier hardware
-  // without needing canvas. Velocities are in viewBox units / second
-  // (viewBox is 1000×1000), so VEL_MAX≈4 means a point crosses the
-  // visible area in ~250s — the "slow drift" the design called for.
-  const PARTICLES_KEY     = 'mdo:geo:particles:v1';
+  // Particle-cloud knobs. Each point is anchored at its sampled position
+  // on the polygon (ox, oy) and wanders within a small bounded disc of
+  // radius DRIFT_RADIUS (viewBox units; viewBox is 1000×1000). Velocity
+  // reflects off the boundary so the shape stays legible indefinitely.
+  // POINT_COUNT scales to viewport area so dense screens don't get a
+  // sparse map and mobile doesn't get an over-stuffed one.
+  const PARTICLES_KEY     = 'mdo:geo:particles:v2';
   const PARTICLES_TTL_MS  = 5_000;
-  const POINT_COUNT       = 320;
-  const POINT_RADIUS      = 2;
-  const VEL_MIN           = 1.0;
-  const VEL_MAX           = 4.0;
+  const POINT_RADIUS      = 1.2;
+  const VEL_MIN           = 0.4;
+  const VEL_MAX           = 1.2;
+  const DRIFT_RADIUS      = 25;
   const VIEWBOX_SIZE      = 1000;
-  // Wrap a touch outside viewBox so points that are wrapping don't
-  // visibly snap at the SVG edge — they slip off-screen and reappear
-  // on the opposite side (the SVG itself is `xMidYMid slice` so the
-  // edges of viewBox don't always coincide with viewport edges anyway).
-  const WRAP_MARGIN       = 12;
+  const POINT_COUNT = Math.max(
+    80,
+    Math.min(360, Math.round((window.innerWidth * window.innerHeight) / 9000)),
+  );
+
+  // Intermittent edge flashes: in points mode, a small pool of segments
+  // between perimeter-neighbor dots fades in/out at staggered phases,
+  // briefly "drawing" the outline. Each edge picks a fresh random pair
+  // when its triangular fade completes.
+  const EDGE_POOL_SIZE    = 6;
+  const EDGE_LIFE_MIN_MS  = 1600;
+  const EDGE_LIFE_MAX_MS  = 3400;
+  const EDGE_PEAK_OPACITY = 0.45;
 
   const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -67,7 +76,10 @@
     shape:       DEFAULT_SHAPE,   // 'solid' | 'points'
     homeFeature: null,
     mineFeature: null,
-    points:      null,            // [{x, y, vx, vy}, ...] in viewBox units
+    points:      null,            // [{ox, oy, dx, dy, vx, vy}, ...] in viewBox units
+    adjacency:   [],              // [[ai, bi], ...] perimeter-neighbor index pairs
+    edges:       [],              // pool of { ai, bi, born, life }
+    edgeLines:   [],              // matching SVG <line> nodes
     bboxHash:    null,            // identifies which polygon the points belong to
     circles:     [],              // matching SVG <circle> nodes
     rafId:       0,
@@ -79,6 +91,7 @@
   const svg     = document.createElementNS(SVGNS, 'svg');
   const drift   = document.createElementNS(SVGNS, 'g');
   const path    = document.createElementNS(SVGNS, 'path');
+  const edgesG  = document.createElementNS(SVGNS, 'g');
   const pointsG = document.createElementNS(SVGNS, 'g');
 
   svg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
@@ -90,8 +103,12 @@
   path.setAttribute('vector-effect', 'non-scaling-stroke');
   path.setAttribute('fill', 'none');
   drift.appendChild(path);
+  edgesG.setAttribute('class', 'geo-edges');
   pointsG.setAttribute('class', 'geo-points');
+  // Order matters: edges paint below points so dots remain the
+  // dominant layer even when a segment flashes through them.
   svg.appendChild(drift);
+  svg.appendChild(edgesG);
   svg.appendChild(pointsG);
   host.appendChild(svg);
   host.dataset.shape = state.shape;
@@ -182,7 +199,7 @@
   function samplePoints(geom, bbox) {
     const project = makeProjector(bbox);
     const rings = collectRings(geom).map(r => r.map(project));
-    if (!rings.length) return [];
+    if (!rings.length) return { points: [], adjacency: [] };
     const lengths = rings.map(r => {
       let l = 0;
       for (let i = 1; i < r.length; i++) {
@@ -191,24 +208,34 @@
       return l;
     });
     const totalLen = lengths.reduce((a, b) => a + b, 0);
-    if (totalLen === 0) return [];
-    const out = [];
+    if (totalLen === 0) return { points: [], adjacency: [] };
+    const points = [];
+    const adjacency = [];
     rings.forEach((r, i) => {
-      // Allocate point budget proportional to ring length so a tiny
-      // inner hole doesn't get the same density as the outer boundary.
-      const share = Math.max(2, Math.round(POINT_COUNT * (lengths[i] / totalLen)));
+      // Allocate point budget proportional to ring length, using floor
+      // so the total stays at-or-below POINT_COUNT. Tiny lakes/islands
+      // (Houston's MultiPolygon has 45 rings) round to 0 and drop out
+      // — they're visual noise against the main outline.
+      const share = Math.floor(POINT_COUNT * (lengths[i] / totalLen));
+      if (share < 1) return;
       const samples = sampleAlongRing(r, share);
+      const start = points.length;
       for (const [x, y] of samples) {
         const angle = Math.random() * Math.PI * 2;
         const speed = VEL_MIN + Math.random() * (VEL_MAX - VEL_MIN);
-        out.push({
-          x, y,
+        points.push({
+          ox: x, oy: y,
+          dx: 0, dy: 0,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
         });
       }
+      // Adjacency wraps around to close each ring.
+      for (let j = 0; j < share; j++) {
+        adjacency.push([start + j, start + ((j + 1) % share)]);
+      }
     });
-    return out;
+    return { points, adjacency };
   }
 
   // ── points rendering & drift loop ───────────────────────────────────
@@ -231,8 +258,48 @@
     for (let i = 0; i < state.points.length; i++) {
       const p = state.points[i];
       const c = state.circles[i];
-      c.setAttribute('cx', p.x.toFixed(2));
-      c.setAttribute('cy', p.y.toFixed(2));
+      c.setAttribute('cx', (p.ox + p.dx).toFixed(2));
+      c.setAttribute('cy', (p.oy + p.dy).toFixed(2));
+    }
+  }
+
+  function syncEdgeLines(n) {
+    while (state.edgeLines.length < n) {
+      const ln = document.createElementNS(SVGNS, 'line');
+      ln.setAttribute('class', 'geo-edge');
+      ln.setAttribute('stroke-opacity', '0');
+      edgesG.appendChild(ln);
+      state.edgeLines.push(ln);
+    }
+    while (state.edgeLines.length > n) {
+      state.edgeLines.pop().remove();
+    }
+  }
+
+  function randomEdge(now) {
+    const pair = state.adjacency[Math.floor(Math.random() * state.adjacency.length)];
+    return {
+      ai:   pair[0],
+      bi:   pair[1],
+      born: now,
+      life: EDGE_LIFE_MIN_MS + Math.random() * (EDGE_LIFE_MAX_MS - EDGE_LIFE_MIN_MS),
+    };
+  }
+
+  function initEdges() {
+    if (!state.adjacency.length) {
+      syncEdgeLines(0);
+      state.edges = [];
+      return;
+    }
+    syncEdgeLines(EDGE_POOL_SIZE);
+    const now = performance.now();
+    state.edges = [];
+    for (let i = 0; i < EDGE_POOL_SIZE; i++) {
+      const e = randomEdge(now);
+      // Spread initial phases so the pool isn't synchronized.
+      e.born = now - Math.random() * e.life;
+      state.edges.push(e);
     }
   }
 
@@ -245,19 +312,53 @@
     // Cap dt so a long tab-background pause doesn't teleport everything.
     const dt = Math.min(0.1, (now - state.lastT) / 1000);
     state.lastT = now;
-    const lo = -WRAP_MARGIN, hi = VIEWBOX_SIZE + WRAP_MARGIN, span = hi - lo;
+    const R = DRIFT_RADIUS, R2 = R * R;
     const pts = state.points;
     const cs  = state.circles;
     for (let i = 0; i < pts.length; i++) {
       const p = pts[i];
-      p.x += p.vx * dt;
-      p.y += p.vy * dt;
-      if (p.x < lo) p.x += span;
-      else if (p.x > hi) p.x -= span;
-      if (p.y < lo) p.y += span;
-      else if (p.y > hi) p.y -= span;
-      cs[i].setAttribute('cx', p.x.toFixed(2));
-      cs[i].setAttribute('cy', p.y.toFixed(2));
+      p.dx += p.vx * dt;
+      p.dy += p.vy * dt;
+      const r2 = p.dx * p.dx + p.dy * p.dy;
+      if (r2 > R2) {
+        const r  = Math.sqrt(r2);
+        const nx = p.dx / r, ny = p.dy / r;
+        const vDotN = p.vx * nx + p.vy * ny;
+        // Only reflect when moving outward — guards against a fast
+        // particle re-reflecting on the next frame and sticking.
+        if (vDotN > 0) {
+          p.vx -= 2 * vDotN * nx;
+          p.vy -= 2 * vDotN * ny;
+        }
+        p.dx = nx * R;
+        p.dy = ny * R;
+      }
+      cs[i].setAttribute('cx', (p.ox + p.dx).toFixed(2));
+      cs[i].setAttribute('cy', (p.oy + p.dy).toFixed(2));
+    }
+    // Edge flash pool: triangular fade-in/out per edge; respawn with
+    // a fresh random perimeter neighbor when its life expires.
+    const edges = state.edges;
+    if (edges.length && state.adjacency.length) {
+      const lines = state.edgeLines;
+      for (let i = 0; i < edges.length; i++) {
+        let e = edges[i];
+        let t = (now - e.born) / e.life;
+        if (t >= 1) {
+          e = edges[i] = randomEdge(now);
+          t = 0;
+        }
+        const fade = t < 0.5 ? t * 2 : (1 - t) * 2;
+        const a = pts[e.ai];
+        const b = pts[e.bi];
+        if (!a || !b) continue;
+        const ln = lines[i];
+        ln.setAttribute('x1', (a.ox + a.dx).toFixed(2));
+        ln.setAttribute('y1', (a.oy + a.dy).toFixed(2));
+        ln.setAttribute('x2', (b.ox + b.dx).toFixed(2));
+        ln.setAttribute('y2', (b.oy + b.dy).toFixed(2));
+        ln.setAttribute('stroke-opacity', (fade * EDGE_PEAK_OPACITY).toFixed(3));
+      }
     }
     state.rafId = requestAnimationFrame(step);
   }
@@ -273,25 +374,6 @@
       cancelAnimationFrame(state.rafId);
       state.rafId = 0;
     }
-  }
-
-  // ── ready/fade-in ───────────────────────────────────────────────────
-  // The CSS opacity transition on #geo-bg is a one-shot fade-in for the
-  // very first paint. On hydrated loads (sessionStorage cleared mid-flight)
-  // we skip it: the user's last frame and our first frame are nearly
-  // identical, so a fresh fade reads as a flicker, not a flourish.
-  let didFirstReady = false;
-  function setReady(skipTransition) {
-    if (host.classList.contains('ready')) return;
-    if (skipTransition) {
-      const prev = host.style.transition;
-      host.style.transition = 'none';
-      host.classList.add('ready');
-      requestAnimationFrame(() => { host.style.transition = prev; });
-    } else {
-      host.classList.add('ready');
-    }
-    didFirstReady = true;
   }
 
   // ── persistence ─────────────────────────────────────────────────────
@@ -314,17 +396,20 @@
     if (state.shape !== 'points' || !state.points || !state.bboxHash) return;
     try {
       const pts = state.points.map(p => ({
-        x:  +p.x.toFixed(2),
-        y:  +p.y.toFixed(2),
+        ox: +p.ox.toFixed(2),
+        oy: +p.oy.toFixed(2),
+        dx: +p.dx.toFixed(2),
+        dy: +p.dy.toFixed(2),
         vx: +p.vx.toFixed(3),
         vy: +p.vy.toFixed(3),
       }));
       sessionStorage.setItem(PARTICLES_KEY, JSON.stringify({
-        savedAt:  Date.now(),
-        mode:     state.mode,
-        shape:    state.shape,
-        bboxHash: state.bboxHash,
-        points:   pts,
+        savedAt:   Date.now(),
+        mode:      state.mode,
+        shape:     state.shape,
+        bboxHash:  state.bboxHash,
+        points:    pts,
+        adjacency: state.adjacency,
       }));
     } catch { /* quota / disabled — non-fatal */ }
   }
@@ -343,7 +428,6 @@
     host.dataset.shape = state.shape;
 
     if (state.mode === 'off') {
-      host.classList.remove('ready');
       cancelDrift();
       return;
     }
@@ -357,24 +441,26 @@
     if (state.shape === 'points') {
       const bbox = featureBBox(geom);
       const newHash = bboxHash(bbox);
-      let hydrated = false;
       if (pendingHydration &&
           pendingHydration.mode === state.mode &&
           pendingHydration.shape === 'points' &&
           pendingHydration.bboxHash === newHash) {
         state.points = pendingHydration.points.map(p => ({ ...p }));
-        hydrated = true;
+        state.adjacency = Array.isArray(pendingHydration.adjacency)
+          ? pendingHydration.adjacency.map(p => [p[0], p[1]])
+          : samplePoints(geom, bbox).adjacency;
         pendingHydration = null;
       } else if (!state.points || state.bboxHash !== newHash) {
-        state.points = samplePoints(geom, bbox);
+        const sample = samplePoints(geom, bbox);
+        state.points    = sample.points;
+        state.adjacency = sample.adjacency;
       }
       state.bboxHash = newHash;
       drawPoints();
+      initEdges();
       startDrift();
-      setReady(hydrated && !didFirstReady);
     } else {
       cancelDrift();
-      setReady(false);
     }
   }
 
@@ -489,7 +575,11 @@
   };
 
   // ── initial silent upgrade ──────────────────────────────────────────
-  if (state.mode !== 'off') {
-    tryUseMine({ prompt: false }).then(ok => { if (ok) state.mode = 'mine'; render(); });
+  // Only rehydrate the cached personal polygon when the configured
+  // default is already 'mine'. Without this gate, a cached polygon
+  // from a previous "mine" session silently overrides a deliberate
+  // revert to 'home' in TWEAK_DEFAULTS.
+  if (state.mode === 'mine') {
+    tryUseMine({ prompt: false }).then(() => render());
   }
 })();
