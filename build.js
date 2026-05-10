@@ -554,6 +554,7 @@ const assetMap = {};
 const pairs = await Promise.all([
   processAsset('_shared.css',       'css'),
   processAsset('tweaks.js',         'js'),
+  processAsset('nav-prefetch.js',   'js'),
   processAsset('geo-background.js', 'js'),
   processAsset('now-playing.js',    'js'),
   processAsset('local-time.js',     'js'),
@@ -562,6 +563,34 @@ const pairs = await Promise.all([
 ]);
 for (const p of pairs) if (p) assetMap[p[0]] = p[1];
 setAssets(assetMap);
+
+// Append per-deploy `Link: rel=preload` headers for the critical-path
+// hashed assets to dist/_headers, so Cloudflare Pages converts them to
+// HTTP 103 Early Hints. Targets the dist copy (already populated by the
+// copyStatic above) — never the static/ source — so each build starts
+// fresh and the rule doesn't compound across runs.
+function emitEarlyHintLinks(map) {
+  const css    = map['_shared.css'];
+  const tweaks = map['tweaks.js'];
+  const nav    = map['nav-prefetch.js'];
+  const lines = [
+    css    && `  Link: </${css}>; rel=preload; as=style`,
+    tweaks && `  Link: </${tweaks}>; rel=preload; as=script`,
+    nav    && `  Link: </${nav}>; rel=preload; as=script`,
+  ].filter(Boolean).join('\n');
+  if (!lines) return;
+
+  const headersPath = path.join(DIST_DIR, '_headers');
+  let txt = fs.readFileSync(headersPath, 'utf8');
+  // Match each HTML-route rule block: the route key (/, /*/, /*.html)
+  // followed by both Cache-Control and CDN-Cache-Control lines. Anchor
+  // on CDN-Cache-Control so appended Link: lines stay grouped under the
+  // edge directive that triggers Early Hints.
+  const routeRule = /^(\/(?:\*\/|\*\.html)?\n {2}Cache-Control: [^\n]+\n {2}CDN-Cache-Control: [^\n]+)$/gm;
+  txt = txt.replace(routeRule, (block) => `${block}\n${lines}`);
+  fs.writeFileSync(headersPath, txt);
+}
+emitEarlyHintLinks(assetMap);
 
 // Copy vault attachments + optimized variants to dist/img for the default
 // MEDIA_BASE='/img'. In production MEDIA_BASE points at media.mattdoes.online
