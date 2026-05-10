@@ -23,22 +23,31 @@
 
 # Baked GeoJSON — re-baked rarely (run `npm run bake-geo`); not
 # content-hashed because the URL is referenced by /static/geo-background.js
-# at runtime. Day-long edge cache + browser revalidation strikes the
-# right balance: a re-baked Houston propagates within a few minutes
-# of the next deploy, but normal traffic skips re-fetching.
+# at runtime. Browser revalidates hourly; edge holds a day with a week of
+# stale-while-revalidate, so a re-bake propagates within a few minutes of
+# the next deploy (Pages purges on deploy) and normal traffic skips re-fetching.
 /*.geojson
-  Cache-Control: public, max-age=3600, s-maxage=86400
+  Cache-Control: public, max-age=3600
+  CDN-Cache-Control: public, s-maxage=86400, stale-while-revalidate=604800
 
-# Feeds — short cache so new entries show up
+# Feeds — readers refresh on their own cadence; let the edge absorb most
+# of it (1h s-maxage + 1d SWR) while browsers/feed-readers still see a
+# 30-minute browser TTL.
 /feed.xml
-  Cache-Control: public, max-age=1800, s-maxage=1800
+  Cache-Control: public, max-age=1800
+  CDN-Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400
 
-# HTML pages — long edge TTL with stale-while-revalidate, browser revalidates.
-# Pages purges the edge on each deploy, so 1h s-maxage is safe.
-# Three patterns to cover root, clean directory URLs, and any literal *.html.
+# HTML pages — browser always revalidates (so a deploy is visible on the
+# next request), edge holds 6h with a week of stale-while-revalidate.
+# Cloudflare Pages purges the edge on every deploy, so the long SWR
+# can't serve content from a prior deploy. Three patterns cover root,
+# clean directory URLs, and any literal *.html.
 /
-  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
+  Cache-Control: public, max-age=0, must-revalidate
+  CDN-Cache-Control: public, s-maxage=21600, stale-while-revalidate=604800
 /*/
-  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
+  Cache-Control: public, max-age=0, must-revalidate
+  CDN-Cache-Control: public, s-maxage=21600, stale-while-revalidate=604800
 /*.html
-  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
+  Cache-Control: public, max-age=0, must-revalidate
+  CDN-Cache-Control: public, s-maxage=21600, stale-while-revalidate=604800

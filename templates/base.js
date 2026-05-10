@@ -129,6 +129,7 @@ ${body}
 </div>
 
 <script src="/${asset('tweaks.js')}" defer></script>
+<script src="/${asset('nav-prefetch.js')}" defer></script>
 <script src="/${asset('geo-background.js')}" defer></script>
 <script src="/${asset('now-playing.js')}" defer></script>
 <script src="/${asset('local-time.js')}" defer></script>
