@@ -936,9 +936,7 @@ html[data-theme="light"] { --geo-point-fill: var(--rule); }
   animation: geo-shimmer 9s ease-in-out infinite;
   will-change: stroke-opacity;
 }
-/* Edge-flash layer is gone — kept selector to swallow any stragglers
-   from older bfcache pages still in memory. */
-.geo-edges { display: none; }
+.geo-edges { display: none; } /* swallow stale edge layers from bfcache snapshots */
 
 #geo-bg .geo-path {
   stroke: var(--geo-point-fill);
