@@ -886,9 +886,14 @@ table.schema .req.y { color: var(--accent); }
    - Opacity is tunable via --geo-bg-opacity (set on :root) so the
      drift never competes with body copy. */
 :root {
-  --geo-bg-opacity: 0.75;
-  --geo-bg-stroke:  0.6;
-  --geo-point-fill: #fff;
+  --geo-bg-opacity:    0.45;
+  --geo-bg-stroke:     0.35;
+  --geo-point-fill:    #fff;
+  --geo-point-opacity: 0.50;
+  /* Continuous outline shimmer: stroke-opacity breathes between these
+     values across the entire perimeter (no per-segment flashes). */
+  --geo-shimmer-min:   0.05;
+  --geo-shimmer-max:   0.20;
 }
 html[data-theme="light"] { --geo-point-fill: var(--rule); }
 #geo-bg {
@@ -905,52 +910,59 @@ html[data-theme="light"] { --geo-point-fill: var(--rule); }
   height: 100%;
   display: block;
 }
-/* Skip the default cross-fade for the geo layer — the live element carries
-   through and the rAF loop resumes from sessionStorage, so a fade would
-   blur the seam rather than hide it. */
+/* Cross-document view transitions: with the default UA stylesheet the
+   old + new snapshots both render at full opacity simultaneously when
+   ::view-transition-old/new have `animation: none`, which produces a
+   visible "double exposure" blur between snapshots of slightly different
+   particle positions. Hiding the old snapshot leaves only the new (post-
+   hydration) image visible, so the seam disappears. */
 ::view-transition-group(geo-bg) { animation-duration: 0s; }
-::view-transition-old(geo-bg),
-::view-transition-new(geo-bg) { animation: none; }
+::view-transition-old(geo-bg)   { animation: none; display: none; }
+::view-transition-new(geo-bg)   { animation: none; }
 
-/* Solid-mode wrapper: gentle drift via CSS keyframe. Hidden in points mode. */
+/* Solid mode: drift the whole group with a slow keyframe. */
 #geo-bg[data-shape="solid"] .geo-drift {
   transform-origin: 50% 50%;
   transform-box: view-box;
   animation: geo-drift 180s ease-in-out infinite;
   will-change: transform;
 }
-#geo-bg[data-shape="points"] .geo-drift { display: none; }
-#geo-bg[data-shape="solid"]  .geo-points { display: none; }
-/* Edge flashes belong to the points layer only — solid mode already
-   draws the full outline, so re-adding the connections would just
-   smear it. */
-#geo-bg[data-shape="solid"]  .geo-edges { display: none; }
+#geo-bg[data-shape="solid"] .geo-points { display: none; }
+
+/* Points mode: outline stays put, its stroke-opacity breathes across
+   the full perimeter (the "shimmer"), and the points dance around it. */
+#geo-bg[data-shape="points"] .geo-path {
+  stroke-opacity: var(--geo-shimmer-min);
+  animation: geo-shimmer 9s ease-in-out infinite;
+  will-change: stroke-opacity;
+}
+/* Edge-flash layer is gone — kept selector to swallow any stragglers
+   from older bfcache pages still in memory. */
+.geo-edges { display: none; }
 
 #geo-bg .geo-path {
   stroke: var(--geo-point-fill);
   stroke-width: var(--geo-bg-stroke);
-  stroke-opacity: 0.85;
+  stroke-opacity: 0.7;
   fill: none;
   vector-effect: non-scaling-stroke;
 }
 #geo-bg .geo-point {
   fill: var(--geo-point-fill);
-  fill-opacity: 0.85;
-}
-#geo-bg .geo-edge {
-  stroke: var(--geo-point-fill);
-  stroke-width: var(--geo-bg-stroke);
-  fill: none;
-  vector-effect: non-scaling-stroke;
-  /* stroke-opacity set per-frame from JS */
+  fill-opacity: var(--geo-point-opacity);
 }
 @keyframes geo-drift {
   0%   { transform: translate(-2.5%, -1.5%) rotate(-0.5deg) scale(1.06); }
   50%  { transform: translate( 2.5%,  1.5%) rotate( 0.5deg) scale(1.10); }
   100% { transform: translate(-2.5%, -1.5%) rotate(-0.5deg) scale(1.06); }
 }
+@keyframes geo-shimmer {
+  0%, 100% { stroke-opacity: var(--geo-shimmer-min); }
+  50%      { stroke-opacity: var(--geo-shimmer-max); }
+}
 @media (prefers-reduced-motion: reduce) {
-  #geo-bg[data-shape="solid"] .geo-drift { animation: none; transform: scale(1.04); }
+  #geo-bg[data-shape="solid"]  .geo-drift { animation: none; transform: scale(1.04); }
+  #geo-bg[data-shape="points"] .geo-path  { animation: none; stroke-opacity: 0.12; }
 }
 
 /* Three-state segmented control inside #tweaks (used by the
