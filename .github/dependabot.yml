@@ -1,0 +1,48 @@
+# Dependabot — keep the small dependency surface current.
+#
+# The site has three npm package roots:
+#   /                  build pipeline (gray-matter, marked, lightningcss, …)
+#   /workers/listening listening Worker (wrangler devDep)
+#   /workers/geo       geo Worker (no deps today; tracked so a future add is picked up)
+#
+# Weekly cadence: the dep set is small and the maintenance budget is solo,
+# so daily PRs would only generate noise. Grouped minor + patch updates land
+# as a single PR per ecosystem per week; major bumps still come as their
+# own PR so they can be reviewed deliberately.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: npm
+    directory: "/workers/listening"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: npm
+    directory: "/workers/geo"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]

@@ -31,6 +31,10 @@
 //   LASTFM_API_KEY   — Last.fm API key
 // Bindings (wrangler.toml):
 //   LASTFM_CACHE     — Workers KV namespace used for cached payloads + locks
+//   LISTEN_RL        — Workers Rate Limiting binding (optional). When absent,
+//                      rate limiting is skipped; the SWR cache already keeps
+//                      upstream call volume bounded, so this is belt-and-braces
+//                      against abusive clients hammering the public route.
 //
 // Notes on Last.fm API etiquette:
 //   • We always serve from KV on the request path; upstream calls happen
@@ -50,7 +54,66 @@ const EDGE_TTL_S  = 30;               // edge-cache window; must be ≪ FRESH_MS
 const RECENT_LIMIT = 25;
 const USER_AGENT   = 'mattdoes-site/1.0 (+https://mattdoes.online)';
 
+/**
+ * @typedef {object} Env
+ * @property {KVNamespace} LASTFM_CACHE  Workers KV namespace for cached
+ *   payloads and dedupe locks.
+ * @property {string} LASTFM_USERNAME   Last.fm user to query.
+ * @property {string} LASTFM_API_KEY    Last.fm API key.
+ * @property {RateLimit} [LISTEN_RL]    Optional Workers Rate Limiting
+ *   binding. Absent → rate limiting is skipped.
+ */
+
+/**
+ * Per-IP rate limit gate. Uses the native Workers Rate Limiting binding
+ * (GA Sep 2025); falls through silently when the binding isn't configured
+ * so a partially-deployed Worker still serves data. The simple binding only
+ * supports period=10 or period=60 (seconds), so the limit configured in
+ * wrangler.toml is per-minute, not the 10-minute window mentioned in the
+ * code review — wider windows would need the WAF rate-limiting rules
+ * product or a Durable Object / KV implementation.
+ *
+ * @param {Request} request
+ * @param {Env} env
+ * @returns {Promise<Response|null>} a 429 response when the caller is over
+ *   limit, or `null` when the request should proceed
+ */
+async function checkRateLimit(request, env) {
+  if (!env.LISTEN_RL || typeof env.LISTEN_RL.limit !== 'function') return null;
+  const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+  // Key on IP + path so /now and /recent are budgeted independently.
+  const key = `${ip}:${new URL(request.url).pathname}`;
+  try {
+    const { success } = await env.LISTEN_RL.limit({ key });
+    if (success) return null;
+  } catch {
+    // Binding error → fail open. The SWR cache still bounds upstream.
+    return null;
+  }
+  return new Response(JSON.stringify({ error: 'rate_limited' }), {
+    status: 429,
+    headers: {
+      'content-type':                'application/json; charset=utf-8',
+      'access-control-allow-origin': ALLOWED_ORIGIN,
+      'retry-after':                 '60',
+      'cache-control':               'no-store',
+    },
+  });
+}
+
 export default {
+  /**
+   * Worker entrypoint. Handles the two routes:
+   *   `GET /api/listening/now`     → current scrobble
+   *   `GET /api/listening/recent`  → playcount + recent tracks
+   * Responses go through a two-layer cache (Workers Cache API + KV) so
+   * client polling collapses to a single upstream call per FRESH window.
+   *
+   * @param {Request} request
+   * @param {Env} env
+   * @param {ExecutionContext} ctx
+   * @returns {Promise<Response>}
+   */
   async fetch(request, env, ctx) {
     if (request.method === 'OPTIONS') return corsPreflight();
     if (request.method !== 'GET')     return json({ error: 'method_not_allowed' }, 405);
@@ -60,6 +123,12 @@ export default {
     if      (url.pathname.endsWith('/now'))    kind = 'now';
     else if (url.pathname.endsWith('/recent')) kind = 'recent';
     else return json({ error: 'not_found' }, 404);
+
+    // Per-IP rate limit. Runs before the edge-cache lookup so a flood of
+    // requests from a single IP can't consume cache CPU even on cold paths.
+    // Returns null (proceed) when the binding isn't configured.
+    const limited = await checkRateLimit(request, env);
+    if (limited) return limited;
 
     // Edge cache layer. Cache key is just the URL — there are no per-user or
     // per-origin variations (CORS only allows ALLOWED_ORIGIN). Workers
@@ -82,6 +151,16 @@ export default {
 };
 
 // ── core SWR handler ────────────────────────────────────────────────────
+/**
+ * Stale-while-revalidate core: serves KV when possible, kicks off background
+ * refreshes for the SOFT band, and blocks only when we truly have nothing
+ * fresh enough (HARD band or empty KV).
+ *
+ * @param {Env} env
+ * @param {ExecutionContext} ctx
+ * @param {'now'|'recent'} kind which payload to return
+ * @returns {Promise<Response>}
+ */
 async function handle(env, ctx, kind) {
   if (!env.LASTFM_API_KEY || !env.LASTFM_USERNAME) {
     return toClient(json(emptyPayload(kind, 'not_configured')));
@@ -117,6 +196,16 @@ async function handle(env, ctx, kind) {
   return toClient(json(emptyPayload(kind, fresh.error)));
 }
 
+/**
+ * SOFT-band background refresh: deduped via a short-lived KV lock so a
+ * burst of polling clients only triggers one upstream call per window.
+ *
+ * @param {Env} env
+ * @param {'now'|'recent'} kind
+ * @param {string} kvKey  KV key for the cached payload
+ * @param {string} lockKey KV key used purely as a mutex
+ * @returns {Promise<void>}
+ */
 async function backgroundRefresh(env, kind, kvKey, lockKey) {
   // Short-lived lock: first Worker through claims it; subsequent clients
   // within the TTL see the lock and skip. KV is eventually consistent so
@@ -132,6 +221,16 @@ async function backgroundRefresh(env, kind, kvKey, lockKey) {
 }
 
 // ── upstream fetch ──────────────────────────────────────────────────────
+/**
+ * Call Last.fm's `user.getrecenttracks` and reshape the response into the
+ * payload our client expects. Returns a discriminated `{ ok, data }` /
+ * `{ ok: false, error }` so callers can distinguish "fresh data" from
+ * "upstream sad, keep serving stale".
+ *
+ * @param {Env} env
+ * @param {'now'|'recent'} kind
+ * @returns {Promise<{ ok: true, data: object } | { ok: false, error: string }>}
+ */
 async function refresh(env, kind) {
   try {
     const limit = kind === 'now' ? 1 : RECENT_LIMIT;
@@ -160,6 +259,14 @@ async function refresh(env, kind) {
 }
 
 // ── KV helpers ──────────────────────────────────────────────────────────
+/**
+ * Read and validate a cached payload. Returns `null` on any error or
+ * malformed shape so callers can treat "missing" and "corrupt" uniformly.
+ *
+ * @param {Env} env
+ * @param {string} key
+ * @returns {Promise<{ data: object, fetchedAt: number }|null>}
+ */
 async function readCache(env, key) {
   try {
     const entry = await env.LASTFM_CACHE.get(key, { type: 'json' });
@@ -170,6 +277,15 @@ async function readCache(env, key) {
   }
 }
 
+/**
+ * Persist a fresh payload to KV. Errors are swallowed — the *next* tick's
+ * refresh will retry, and the worst case is "extra upstream call".
+ *
+ * @param {Env} env
+ * @param {string} key
+ * @param {object} data
+ * @returns {Promise<void>}
+ */
 async function writeCache(env, key, data) {
   try {
     await env.LASTFM_CACHE.put(key, JSON.stringify({ data, fetchedAt: Date.now() }));

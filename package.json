@@ -7,6 +7,8 @@
   "scripts": {
     "build": "node build.js",
     "clean": "rm -rf dist",
+    "lint": "html-validate \"dist/**/*.html\"",
+    "audit": "npm audit --audit-level=moderate",
     "bake-geo": "node scripts/bake-home-geojson.js",
     "optimize-media": "node scripts/optimize-media.js",
     "sync-media": "node --env-file-if-exists=.env scripts/sync-media.js"

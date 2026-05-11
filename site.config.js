@@ -1,6 +1,43 @@
 // site.config.js — single source of identity + per-section copy.
 // Leave any string empty to omit that element from the rendered page.
 
+/**
+ * @typedef {object} SiteLink
+ * @property {string} label    rendered label, e.g. `'github'`
+ * @property {string} href     URL (any safeUrl-allowed scheme)
+ * @property {string} [meta]   optional secondary text shown next to label
+ *
+ * @typedef {object} SiteSection
+ * @property {string} [who]    left-rail heading
+ * @property {string} [bio]    left-rail subtitle
+ * @property {string} [intro]  lede above the listing
+ *
+ * @typedef {object} SiteConfig
+ * @property {string} title
+ * @property {string} url     canonical origin, no trailing slash
+ * @property {{ name: string, handle?: string, bio?: string }} identity
+ * @property {SiteLink[]} links
+ * @property {{
+ *   journal:   SiteSection,
+ *   making:    SiteSection,
+ *   listening: SiteSection,
+ *   thoughts:  SiteSection,
+ * }} sections
+ * @property {string} footerText
+ * @property {{
+ *   home: { lat: number, lng: number, label: string },
+ *   endpoint: string,
+ * }} geo
+ * @property {string} status   manual override for the topbar status pill
+ * @property {{
+ *   username: string,    // intentionally blank in the repo — set via env
+ *   limit: number,       // # of recent tracks to render
+ *   cacheTtl: number,    // seconds — build-time cache only
+ *   showUser: boolean,
+ * }} lastfm
+ */
+
+/** @type {SiteConfig} */
 export const siteConfig = {
   title: 'mattdoes.online',
   url:   'https://mattdoes.online',

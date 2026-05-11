@@ -22,11 +22,16 @@ import { listingPage }  from './templates/listing.js';
 import { colophonPage } from './templates/colophon.js';
 import { esc, fmtDate, ctWallClockToDate, safeUrl } from './templates/_helpers.js';
 
-// Frontmatter dates without a time component (e.g. `date: 2026-04-19`)
-// are parsed by js-yaml as UTC midnight — which lands on the previous
-// calendar day in CT. Re-anchor them to CT midnight so posts don't
-// appear to be from the day before. Values with a time or offset are
-// left as-is: the author was explicit.
+/**
+ * Frontmatter dates without a time component (e.g. `date: 2026-04-19`)
+ * are parsed by js-yaml as UTC midnight — which lands on the previous
+ * calendar day in CT. Re-anchor them to CT midnight so posts don't
+ * appear to be from the day before. Values with a time or offset are
+ * left as-is: the author was explicit.
+ *
+ * @param {Date|string|null|undefined} v raw frontmatter value
+ * @returns {Date|null} parsed UTC instant, or `null` for nullish input
+ */
 function parseFrontmatterDate(v) {
   if (v == null) return null;
   if (typeof v === 'string') {
@@ -80,10 +85,18 @@ const mediaVariants = (() => {
 const t0 = Date.now();
 
 // ── 1. Walk vault & parse frontmatter ───────────────────────────────────
-// We skip any *nested* Obsidian vault (a subdir with its own .obsidian/).
-// Without this guard, a sub-vault that mirrors the top-level layout
-// (e.g. MDO/daily/, MDO/notes/) gets walked in addition to daily/ and
-// notes/ at the root, and every note is published twice.
+/**
+ * Recursively collect every `.md` file under `dir`. Skips any *nested*
+ * Obsidian vault (a subdir with its own `.obsidian/`). Without this guard,
+ * a sub-vault that mirrors the top-level layout (e.g. `MDO/daily/`,
+ * `MDO/notes/`) gets walked in addition to `daily/` and `notes/` at the
+ * root, and every note is published twice.
+ *
+ * @param {string} dir absolute directory to scan
+ * @param {string[]} [out=[]] accumulator (recursion); callers omit this
+ * @param {boolean} [isRoot=true] internal flag — never set by callers
+ * @returns {string[]} absolute paths to `.md` files
+ */
 function walk(dir, out = [], isRoot = true) {
   if (!fs.existsSync(dir)) return out;
   if (!isRoot && fs.existsSync(path.join(dir, '.obsidian'))) {
@@ -100,6 +113,12 @@ function walk(dir, out = [], isRoot = true) {
   return out;
 }
 
+/**
+ * Lowercase + kebab-case a string for use as a URL slug.
+ *
+ * @param {unknown} s
+ * @returns {string} `a-z0-9-` only, with no leading/trailing dash
+ */
 function kebab(s) {
   return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
@@ -128,6 +147,12 @@ for (const file of files) {
 }
 
 // ── 2. Routes & slug index (for wikilink resolution) ────────────────────
+/**
+ * Map a note to its public URL based on its `publish:` frontmatter.
+ *
+ * @param {{ publish: string, slug: string }} note
+ * @returns {string} path beginning and ending in `/`
+ */
 function routeFor(note) {
   if (note.publish === 'journal')   return `/journal/${note.slug}/`;
   if (note.publish === 'making')    return `/making/${note.slug}/`;
@@ -150,12 +175,28 @@ const IMG_EXT = /\.(png|jpe?g|gif|webp|avif|svg)$/i;
 const AUD_EXT = /\.(mp3|ogg|wav|m4a|flac)$/i;
 const VID_EXT = /\.(mp4|webm|mov)$/i;
 
+/**
+ * Build a `MEDIA_BASE`-prefixed URL for a vault-relative attachment path.
+ * Each path segment is `encodeURIComponent`'d but slashes are preserved,
+ * so nested attachments (e.g. `attachments/2026/foo.jpg`) resolve
+ * cleanly against `MEDIA_BASE`.
+ *
+ * @param {string} p attachment path relative to `MEDIA_BASE`
+ * @returns {string} fully-qualified URL
+ */
 function mediaUrl(p) {
-  // Encode each path segment but keep slashes, so nested attachments
-  // (e.g. attachments/2026/foo.jpg) resolve cleanly against MEDIA_BASE.
   return `${MEDIA_BASE}/${p.split('/').map(encodeURIComponent).join('/')}`;
 }
 
+/**
+ * Render a vault attachment as the appropriate HTML element based on
+ * extension: `<picture>` (with `.webp` source) for known image types,
+ * `<audio>` for audio, `<video>` for video, or `<a>` as a fallback.
+ *
+ * @param {string} target attachment path (relative to `MEDIA_BASE`)
+ * @param {string} [alt] alt text for images (defaults to filename)
+ * @returns {string} HTML fragment
+ */
 function mediaTag(target, alt) {
   const clean = target.replace(/^\/+/, '');
   const url = mediaUrl(clean);
@@ -175,6 +216,16 @@ function mediaTag(target, alt) {
   return `<a href="${url}">${esc(clean)}</a>`;
 }
 
+/**
+ * Replace Obsidian-style `[[wikilinks]]` and `![[embeds]]` in markdown
+ * with real HTML. Unresolved targets render as a `<span class="broken">`
+ * so they're visible to the author rather than silently disappearing.
+ * Fenced/inline code spans are masked first so the regex never edits
+ * a literal `[[foo]]` inside a code block.
+ *
+ * @param {string} md raw markdown
+ * @returns {string} markdown with wikilinks/embeds rewritten to HTML
+ */
 function resolveWikilinks(md) {
   // Mask fenced code blocks and inline code so wikilink regex doesn't mangle them.
   const masks = [];
@@ -197,7 +248,16 @@ function resolveWikilinks(md) {
   return md;
 }
 
-// Thoughts: daily file split on ## HH:MM headings → individual entries.
+/**
+ * Split a daily-note body on `## HH:MM` headings into individual "thought"
+ * entries. Each `HH:MM` heading is interpreted as CT wall-clock combined
+ * with the note's date. An inline `tags:: a, b` line inside a section
+ * appends additional tags to just that thought. A body that's a single
+ * blockquote line is flagged as a quote (`{quote: true}`).
+ *
+ * @param {{ body: string, date: Date|string|number, tags?: string[] }} note
+ * @returns {Array<{ date: Date, tags: string[], body: string, quote: boolean }>}
+ */
 function splitThoughts(note) {
   const out = [];
   const lines = note.body.split('\n');
@@ -245,6 +305,17 @@ const CACHE_DIR  = path.resolve(__dirname, '.cache');
 const LASTFM_CACHE = path.join(CACHE_DIR, 'lastfm.json');
 const LASTFM_USER_CACHE = path.join(CACHE_DIR, 'lastfm-user.json');
 
+/**
+ * Fetch the configured Last.fm user's recent tracks for the build-time
+ * /listening/ snapshot. Cached to disk (`.cache/lastfm.json`) so offline
+ * builds still succeed; a stale cache is returned (with a warning) when
+ * the upstream call fails. Missing creds → empty array.
+ *
+ * @returns {Promise<Array<{
+ *   track: string, artist: string, album: string, link: string,
+ *   image: string, date: string, nowPlaying: boolean,
+ * }>>}
+ */
 async function fetchLastfmTracks() {
   const cfg = siteConfig.lastfm || {};
   const user = cfg.username || process.env.LASTFM_USERNAME || '';
@@ -302,8 +373,14 @@ async function fetchLastfmTracks() {
   }
 }
 
-// Total scrobble count from Last.fm's user.getinfo. Cached separately so
-// the stat stays visible offline and across deploys without creds.
+/**
+ * Total scrobble count from Last.fm's `user.getinfo`. Cached separately
+ * from the recent-tracks list (`.cache/lastfm-user.json`) so the stat
+ * stays visible offline and across deploys without creds. Falls back to
+ * the last good cached value, or `0`, when the upstream call fails.
+ *
+ * @returns {Promise<number>}
+ */
 async function fetchLastfmPlaycount() {
   const cfg  = siteConfig.lastfm || {};
   const user = cfg.username || process.env.LASTFM_USERNAME || '';
@@ -367,6 +444,12 @@ const safeLinkRenderer = {
 };
 marked.use({ renderer: safeLinkRenderer });
 
+/**
+ * Resolve wikilinks/embeds and run the result through `marked`.
+ *
+ * @param {string} rawMd source markdown straight from the vault
+ * @returns {string} rendered HTML
+ */
 function renderBody(rawMd) {
   return marked.parse(resolveWikilinks(rawMd));
 }
@@ -481,12 +564,30 @@ const feedEntries = [
 ].sort((a, b) => b.date - a.date);
 
 // ── 6. Write dist/ ──────────────────────────────────────────────────────
+/**
+ * Write `html` to `dist/<urlPath>/index.html`, creating any missing
+ * intermediate directories. The route prefix is stripped of leading
+ * slashes before joining.
+ *
+ * @param {string} urlPath e.g. `'/journal/foo/'`
+ * @param {string} html
+ * @returns {void}
+ */
 function writePage(urlPath, html) {
   const dest = path.join(DIST_DIR, urlPath.replace(/^\//, ''), 'index.html');
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   fs.writeFileSync(dest, html);
 }
 
+/**
+ * Recursively copy a directory tree, replacing existing files. Tolerant
+ * of EPERM/unlink errors caused by mounted filesystems (e.g. project
+ * directories on iCloud Drive) — those files are skipped silently.
+ *
+ * @param {string} from source directory
+ * @param {string} to destination directory (created on demand)
+ * @returns {void}
+ */
 function copyStatic(from, to) {
   if (!fs.existsSync(from)) return;
   for (const name of fs.readdirSync(from)) {
@@ -517,9 +618,28 @@ copyStatic(STATIC_DIR, DIST_DIR);
 // Runs against the copies already in dist/; leaves /fonts/ and /img/ alone.
 // Populates the template asset registry so emitted URLs reference the hashed
 // filenames (e.g. `_shared.3a7b9f12.css`) — replaces the old manual ?v=N bust.
+/**
+ * 8-hex-char content hash (truncated SHA-256). Used to fingerprint CSS/JS
+ * filenames for immutable caching — collisions at 32 bits are effectively
+ * impossible for the ~10 assets this site ships.
+ *
+ * @param {Buffer|string} buf
+ * @returns {string} 8-char hex string
+ */
 function hash8(buf) {
   return crypto.createHash('sha256').update(buf).digest('hex').slice(0, 8);
 }
+
+/**
+ * Minify + content-hash one asset already present in `dist/`. The original
+ * is deleted and the hashed sibling is written next to it. CSS is run
+ * through lightningcss; JS through terser.
+ *
+ * @param {string} filename basename in `dist/` (e.g. `'_shared.css'`)
+ * @param {'css'|'js'} kind which minifier to use
+ * @returns {Promise<[string,string]|undefined>} `[original, hashed]` pair,
+ *   or `undefined` if the source file is missing
+ */
 async function processAsset(filename, kind) {
   const src = path.join(DIST_DIR, filename);
   if (!fs.existsSync(src)) return;
@@ -569,6 +689,16 @@ setAssets(assetMap);
 // HTTP 103 Early Hints. Targets the dist copy (already populated by the
 // copyStatic above) — never the static/ source — so each build starts
 // fresh and the rule doesn't compound across runs.
+/**
+ * Append per-deploy `Link: rel=preload` headers for the critical-path
+ * hashed assets to `dist/_headers`, so Cloudflare Pages converts them
+ * to HTTP 103 Early Hints. Targets the dist copy (already populated by
+ * the `copyStatic` above) — never the `static/` source — so each build
+ * starts fresh and the rule doesn't compound across runs.
+ *
+ * @param {Record<string, string>} map original → hashed filename
+ * @returns {void}
+ */
 function emitEarlyHintLinks(map) {
   const css    = map['_shared.css'];
   const tweaks = map['tweaks.js'];
@@ -650,17 +780,31 @@ const distSizeKb = (() => {
 })();
 
 // ── 7. Feeds ────────────────────────────────────────────────────────────
+/** @param {Date|string|number} d @returns {string} RFC 3339 / ISO 8601 timestamp */
 function rfc3339(d) { return new Date(d).toISOString(); }
-// CDATA can't contain a literal `]]>`. A note body that ever includes
-// that sequence (trivial inside an XML/HTML code fence) would otherwise
-// terminate the section early and let downstream characters become
-// feed-level markup. The standard escape: split the closing brackets
-// across two CDATA sections.
+/**
+ * Make a string safe to embed inside a CDATA section. CDATA can't
+ * contain a literal `]]>`. A note body that ever includes that sequence
+ * (trivial inside an XML/HTML code fence) would otherwise terminate the
+ * section early and let downstream characters become feed-level markup.
+ * The standard escape: split the closing brackets across two CDATA
+ * sections.
+ *
+ * @param {unknown} s
+ * @returns {string}
+ */
 function cdataSafe(s) {
   return String(s ?? '').replace(/]]>/g, ']]]]><![CDATA[>');
 }
-// Atom <link href> must be a valid IRI and gets wrapped in a quoted
-// attribute, so XML-escape entry URLs as well as title text.
+
+/**
+ * Build the Atom feed body from the (already sorted) `feedEntries`
+ * array. Atom `<link href>` must be a valid IRI and is wrapped in a
+ * quoted attribute, so URLs are XML-escaped via `esc()` along with
+ * title text.
+ *
+ * @returns {string} full XML feed (including `<?xml … ?>` prologue)
+ */
 function atomFeed() {
   const updated = feedEntries[0] ? rfc3339(feedEntries[0].date) : rfc3339(new Date());
   const items = feedEntries.slice(0, 30).map(e => {
