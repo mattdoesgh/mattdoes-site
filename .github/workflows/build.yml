@@ -7,8 +7,38 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  # Security + dependency hygiene. Fails on moderate+ advisories in either
+  # production or dev deps. Pinned to a single Node version (matches .nvmrc)
+  # so the audit result is reproducible between runs. Cloudflare Pages
+  # deploys independently of GitHub Actions, so a red audit blocks PR merge
+  # but does not block the production deploy.
+  audit:
+    name: npm audit
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install (root)
+        run: npm ci
+
+      - name: Audit (root, prod + dev)
+        run: npm run audit
+
+      # Workers ship their own lockfile, so audit them too — same threshold.
+      - name: Audit (workers/listening)
+        working-directory: workers/listening
+        run: npm audit --audit-level=moderate
+
+  build:
+    name: build + html-validate
+    runs-on: ubuntu-latest
+    needs: audit
     steps:
       - name: Checkout site
         uses: actions/checkout@v4
@@ -30,8 +60,8 @@ jobs:
           SITE_URL: https://mattdoes.online
         run: npm run build
 
-      - name: Validate HTML
-        run: npx html-validate "dist/**/*.html"
+      - name: Lint (html-validate)
+        run: npm run lint
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4

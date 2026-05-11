@@ -27,5 +27,25 @@ routes = [
 binding = "LASTFM_CACHE"
 id      = "a6ea68e07a764aeba929a865d1d33a58"
 
+# Workers Rate Limiting binding (GA Sep 2025). Belt-and-braces alongside the
+# SWR cache: blocks abusive single-IP floods before they touch KV or the edge
+# cache. Keyed on `${cf-connecting-ip}:${pathname}` inside the Worker so /now
+# and /recent are budgeted independently.
+#
+# Constraint: `simple.period` only accepts 10 or 60. A "100 / 10 min" window
+# isn't expressible here; for a wider window switch to a WAF rate-limiting
+# rule (dashboard → Security → WAF → Rate limiting rules) targeting
+# `http.request.uri.path matches "^/api/listening/"`.
+#
+# `namespace_id` is just a per-account integer label — bump it (or share it
+# with the geo Worker) to enforce one budget across both.
+[[ratelimits]]
+name         = "LISTEN_RL"
+namespace_id = "2001"
+
+  [ratelimits.simple]
+  limit  = 100   # requests per IP+path per `period`
+  period = 60    # seconds — must be 10 or 60
+
 # No [vars] block — LASTFM_USERNAME and LASTFM_API_KEY are set as secrets via
 # `wrangler secret put` so the username stays out of the public repo.

@@ -35,10 +35,14 @@ output lands in `dist/`. serve it however. without `vault/` populated the build 
 other useful scripts:
 
 ```
+npm run lint             # html-validate against dist/**/*.html
+npm run audit            # npm audit --audit-level=moderate
 npm run bake-geo         # re-bake static/home.geojson from siteConfig.geo.home
 npm run optimize-media   # generate .webp variants under .cache/media-build/
 npm run sync-media       # push originals + variants to R2 (needs CF token)
 ```
+
+CI (`.github/workflows/build.yml`) runs the audit job before the build job on every push and PR. Cloudflare Pages deploys independently from a successful GitHub push, so a red CI blocks PR merge but never blocks production. Dependency PRs come in weekly via Dependabot (`.github/dependabot.yml`), grouped minor + patch per ecosystem so most weeks are one PR per package root.
 
 workers live under `workers/` and deploy on their own schedule:
 
