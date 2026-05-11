@@ -5,10 +5,13 @@
 // tweaks panel:
 //   'solid'  — original stroked outline; gentle drift via CSS keyframe.
 //   'points' — sampled along the polygon perimeter; each point drifts
-//              independently with viewport-edge wrap. Particle positions
-//              are persisted to sessionStorage on pagehide and rehydrated
-//              on the next page so the cloud appears continuous across
-//              full-page navigations.
+//              independently within a bounded disc. A faint static
+//              outline of the same polygon is rendered behind the
+//              points and given a slow CSS-driven shimmer (stroke-
+//              opacity breathing across the full perimeter). Particle
+//              positions are persisted to sessionStorage on pagehide
+//              and rehydrated on the next page so the cloud appears
+//              continuous across full-page navigations.
 //
 // Optional upgrade: if the visitor has *already* granted geolocation
 // for this origin, we silently swap in their own city's polygon. We
@@ -47,7 +50,7 @@
   // sparse map and mobile doesn't get an over-stuffed one.
   const PARTICLES_KEY     = 'mdo:geo:particles:v2';
   const PARTICLES_TTL_MS  = 5_000;
-  const POINT_RADIUS      = 1.2;
+  const POINT_RADIUS      = 0.7;
   const VEL_MIN           = 0.4;
   const VEL_MAX           = 1.2;
   const DRIFT_RADIUS      = 25;
@@ -56,15 +59,6 @@
     80,
     Math.min(360, Math.round((window.innerWidth * window.innerHeight) / 9000)),
   );
-
-  // Intermittent edge flashes: in points mode, a small pool of segments
-  // between perimeter-neighbor dots fades in/out at staggered phases,
-  // briefly "drawing" the outline. Each edge picks a fresh random pair
-  // when its triangular fade completes.
-  const EDGE_POOL_SIZE    = 6;
-  const EDGE_LIFE_MIN_MS  = 1600;
-  const EDGE_LIFE_MAX_MS  = 3400;
-  const EDGE_PEAK_OPACITY = 0.45;
 
   const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -77,9 +71,6 @@
     homeFeature: null,
     mineFeature: null,
     points:      null,            // [{ox, oy, dx, dy, vx, vy}, ...] in viewBox units
-    adjacency:   [],              // [[ai, bi], ...] perimeter-neighbor index pairs
-    edges:       [],              // pool of { ai, bi, born, life }
-    edgeLines:   [],              // matching SVG <line> nodes
     bboxHash:    null,            // identifies which polygon the points belong to
     circles:     [],              // matching SVG <circle> nodes
     rafId:       0,
@@ -91,7 +82,6 @@
   const svg     = document.createElementNS(SVGNS, 'svg');
   const drift   = document.createElementNS(SVGNS, 'g');
   const path    = document.createElementNS(SVGNS, 'path');
-  const edgesG  = document.createElementNS(SVGNS, 'g');
   const pointsG = document.createElementNS(SVGNS, 'g');
 
   svg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
@@ -103,12 +93,12 @@
   path.setAttribute('vector-effect', 'non-scaling-stroke');
   path.setAttribute('fill', 'none');
   drift.appendChild(path);
-  edgesG.setAttribute('class', 'geo-edges');
   pointsG.setAttribute('class', 'geo-points');
-  // Order matters: edges paint below points so dots remain the
-  // dominant layer even when a segment flashes through them.
+  // Outline (.geo-drift > .geo-path) paints below the points. In points
+  // mode it stays put and the CSS-driven `geo-shimmer` keyframe breathes
+  // its stroke-opacity across the whole perimeter; in solid mode the
+  // group itself drifts (`geo-drift` keyframe).
   svg.appendChild(drift);
-  svg.appendChild(edgesG);
   svg.appendChild(pointsG);
   host.appendChild(svg);
   host.dataset.shape = state.shape;
@@ -199,7 +189,7 @@
   function samplePoints(geom, bbox) {
     const project = makeProjector(bbox);
     const rings = collectRings(geom).map(r => r.map(project));
-    if (!rings.length) return { points: [], adjacency: [] };
+    if (!rings.length) return { points: [] };
     const lengths = rings.map(r => {
       let l = 0;
       for (let i = 1; i < r.length; i++) {
@@ -208,9 +198,8 @@
       return l;
     });
     const totalLen = lengths.reduce((a, b) => a + b, 0);
-    if (totalLen === 0) return { points: [], adjacency: [] };
+    if (totalLen === 0) return { points: [] };
     const points = [];
-    const adjacency = [];
     rings.forEach((r, i) => {
       // Allocate point budget proportional to ring length, using floor
       // so the total stays at-or-below POINT_COUNT. Tiny lakes/islands
@@ -219,7 +208,6 @@
       const share = Math.floor(POINT_COUNT * (lengths[i] / totalLen));
       if (share < 1) return;
       const samples = sampleAlongRing(r, share);
-      const start = points.length;
       for (const [x, y] of samples) {
         const angle = Math.random() * Math.PI * 2;
         const speed = VEL_MIN + Math.random() * (VEL_MAX - VEL_MIN);
@@ -230,12 +218,8 @@
           vy: Math.sin(angle) * speed,
         });
       }
-      // Adjacency wraps around to close each ring.
-      for (let j = 0; j < share; j++) {
-        adjacency.push([start + j, start + ((j + 1) % share)]);
-      }
     });
-    return { points, adjacency };
+    return { points };
   }
 
   // ── points rendering & drift loop ───────────────────────────────────
@@ -260,46 +244,6 @@
       const c = state.circles[i];
       c.setAttribute('cx', (p.ox + p.dx).toFixed(2));
       c.setAttribute('cy', (p.oy + p.dy).toFixed(2));
-    }
-  }
-
-  function syncEdgeLines(n) {
-    while (state.edgeLines.length < n) {
-      const ln = document.createElementNS(SVGNS, 'line');
-      ln.setAttribute('class', 'geo-edge');
-      ln.setAttribute('stroke-opacity', '0');
-      edgesG.appendChild(ln);
-      state.edgeLines.push(ln);
-    }
-    while (state.edgeLines.length > n) {
-      state.edgeLines.pop().remove();
-    }
-  }
-
-  function randomEdge(now) {
-    const pair = state.adjacency[Math.floor(Math.random() * state.adjacency.length)];
-    return {
-      ai:   pair[0],
-      bi:   pair[1],
-      born: now,
-      life: EDGE_LIFE_MIN_MS + Math.random() * (EDGE_LIFE_MAX_MS - EDGE_LIFE_MIN_MS),
-    };
-  }
-
-  function initEdges() {
-    if (!state.adjacency.length) {
-      syncEdgeLines(0);
-      state.edges = [];
-      return;
-    }
-    syncEdgeLines(EDGE_POOL_SIZE);
-    const now = performance.now();
-    state.edges = [];
-    for (let i = 0; i < EDGE_POOL_SIZE; i++) {
-      const e = randomEdge(now);
-      // Spread initial phases so the pool isn't synchronized.
-      e.born = now - Math.random() * e.life;
-      state.edges.push(e);
     }
   }
 
@@ -335,30 +279,6 @@
       }
       cs[i].setAttribute('cx', (p.ox + p.dx).toFixed(2));
       cs[i].setAttribute('cy', (p.oy + p.dy).toFixed(2));
-    }
-    // Edge flash pool: triangular fade-in/out per edge; respawn with
-    // a fresh random perimeter neighbor when its life expires.
-    const edges = state.edges;
-    if (edges.length && state.adjacency.length) {
-      const lines = state.edgeLines;
-      for (let i = 0; i < edges.length; i++) {
-        let e = edges[i];
-        let t = (now - e.born) / e.life;
-        if (t >= 1) {
-          e = edges[i] = randomEdge(now);
-          t = 0;
-        }
-        const fade = t < 0.5 ? t * 2 : (1 - t) * 2;
-        const a = pts[e.ai];
-        const b = pts[e.bi];
-        if (!a || !b) continue;
-        const ln = lines[i];
-        ln.setAttribute('x1', (a.ox + a.dx).toFixed(2));
-        ln.setAttribute('y1', (a.oy + a.dy).toFixed(2));
-        ln.setAttribute('x2', (b.ox + b.dx).toFixed(2));
-        ln.setAttribute('y2', (b.oy + b.dy).toFixed(2));
-        ln.setAttribute('stroke-opacity', (fade * EDGE_PEAK_OPACITY).toFixed(3));
-      }
     }
     state.rafId = requestAnimationFrame(step);
   }
@@ -404,12 +324,11 @@
         vy: +p.vy.toFixed(3),
       }));
       sessionStorage.setItem(PARTICLES_KEY, JSON.stringify({
-        savedAt:   Date.now(),
-        mode:      state.mode,
-        shape:     state.shape,
-        bboxHash:  state.bboxHash,
-        points:    pts,
-        adjacency: state.adjacency,
+        savedAt:  Date.now(),
+        mode:     state.mode,
+        shape:    state.shape,
+        bboxHash: state.bboxHash,
+        points:   pts,
       }));
     } catch { /* quota / disabled — non-fatal */ }
   }
@@ -446,18 +365,12 @@
           pendingHydration.shape === 'points' &&
           pendingHydration.bboxHash === newHash) {
         state.points = pendingHydration.points.map(p => ({ ...p }));
-        state.adjacency = Array.isArray(pendingHydration.adjacency)
-          ? pendingHydration.adjacency.map(p => [p[0], p[1]])
-          : samplePoints(geom, bbox).adjacency;
         pendingHydration = null;
       } else if (!state.points || state.bboxHash !== newHash) {
-        const sample = samplePoints(geom, bbox);
-        state.points    = sample.points;
-        state.adjacency = sample.adjacency;
+        state.points = samplePoints(geom, bbox).points;
       }
       state.bboxHash = newHash;
       drawPoints();
-      initEdges();
       startDrift();
     } else {
       cancelDrift();
