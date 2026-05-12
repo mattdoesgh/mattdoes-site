@@ -6,10 +6,8 @@ import { asset } from './_assets.js';
 import { siteConfig } from '../site.config.js';
 
 const NAV = [
-  { id: 'all',       href: '/',           label: 'all' },
-  { id: 'journal',   href: '/journal/',   label: 'journal' },
-  { id: 'thoughts',  href: '/thoughts/',  label: 'thoughts' },
-  { id: 'making',    href: '/making/',    label: 'making' },
+  { id: 'home',      href: '/',           label: 'home' },
+  { id: 'blog',      href: '/blog/',      label: 'blog' },
   { id: 'listening', href: '/listening/', label: 'listening' },
   { id: 'about',     href: '/about/',     label: 'about' },
 ];
@@ -20,8 +18,7 @@ const META = [
 ];
 
 const FOOTER_DEFAULT = [
-  { href: '/thoughts/',                 label: 'thoughts' },
-  { href: '/journal/',                  label: 'journal' },
+  { href: '/blog/',                     label: 'blog' },
   { href: '/colophon/',                 label: 'colophon' },
   { href: 'mailto:matt@mattdoes.online', label: 'say hi' },
   { href: '/feed.xml',                  label: 'rss' },
