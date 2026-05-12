@@ -12,7 +12,7 @@ export function aboutPage({ site, note }) {
   const identity = site.identity || {};
 
   const body = `
-<main class="page" id="main">
+<main class="page about" id="main">
   <aside class="side-left" aria-label="page meta">
     <div class="ident">
       <div class="who">about</div>

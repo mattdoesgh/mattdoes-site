@@ -751,6 +751,19 @@ html[data-theme="dark"] .post-body pre.shiki span { color: var(--shiki-dark, inh
   text-align: center;
 }
 
+/* ── About page — accented headings ──────────────────
+   Scoped via `.page.about` (set on <main> in templates/about.js) so the
+   tint never leaks to journal, making, or colophon posts. Applies to the
+   page h1 and every in-body heading level. */
+.page.about .post-head h1,
+.page.about .post-body h2,
+.page.about .post-body h3,
+.page.about .post-body h4,
+.page.about .post-body h5,
+.page.about .post-body h6 {
+  color: var(--accent);
+}
+
 .pager {
   display: grid;
   grid-template-columns: 1fr 1fr;
