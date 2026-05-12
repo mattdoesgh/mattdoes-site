@@ -35,7 +35,7 @@ function row(entry) {
   }
   const tagAttr = esc((entry.tags || []).join(' '));
   return `
-    <div class="row" data-tags="${tagAttr}">
+    <div class="row" data-kind="${esc(kind)}" data-tags="${tagAttr}">
       <div class="gutter"><span class="kind">${esc(kind)}</span><span class="when">${when}</span></div>
       <div>
         ${body}
@@ -120,7 +120,7 @@ export function indexPage({ site, entries }) {
   <section class="timeline">
     ${filterBar}
     ${timeline}
-    ${entries.length ? `<div class="loadmore"><a href="/thoughts/">load older →</a></div>` : ''}
+    ${entries.length ? `<div class="loadmore"><a href="/blog/">load older →</a></div>` : ''}
   </section>
 
 </main>`;
@@ -128,7 +128,7 @@ export function indexPage({ site, entries }) {
   return base({
     page: {
       title: '',
-      navActive: 'all',
+      navActive: 'home',
       nowPlaying: site.nowPlaying || '',
       footerText: config.footerText ?? '',
       // Share the /listening/ poller to keep the scrobble counter fresh

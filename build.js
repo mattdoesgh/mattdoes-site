@@ -19,10 +19,10 @@ import { minify as jsMinify } from 'terser';
 
 import { indexPage }    from './templates/index.js';
 import { articlePage }  from './templates/journal.js';
-import { thoughtsPage } from './templates/thoughts.js';
 import { listingPage }  from './templates/listing.js';
 import { colophonPage } from './templates/colophon.js';
 import { aboutPage }    from './templates/about.js';
+import { blogPage }     from './templates/blog.js';
 import { esc, fmtDate, ctWallClockToDate, safeUrl } from './templates/_helpers.js';
 
 /**
@@ -627,10 +627,11 @@ const feedEntries = [
   })),
   ...thoughts.map(t => ({
     kind: 'thought',
+    id: t.id,
     body: t.body,
     html: t.html,
     date: t.date,
-    url: `/thoughts/#${t.id}`,
+    url: `/blog/#${t.id}`,
     permalinkLabel: `#${t.id}`,
     tags: t.tags,
     quote: t.quote,
@@ -826,9 +827,6 @@ if (fs.existsSync(MEDIA_BUILD_DIR)) {
 // Homepage
 fs.writeFileSync(path.join(DIST_DIR, 'index.html'), indexPage({ site: siteMeta, entries: feedEntries }));
 
-// Thoughts archive
-writePage('/thoughts/', thoughtsPage({ site: siteMeta, thoughts }));
-
 // Articles (journal + making)
 const journalArticles = articles.filter(a => a.kind === 'journal');
 const makingArticles  = articles.filter(a => a.kind === 'making');
@@ -848,9 +846,17 @@ for (let i = 0; i < articles.length; i++) {
   }));
 }
 
-// Section index pages — /journal/, /making/, /listening/
-writePage('/journal/',   listingPage({ siteConfig, kind: 'journal',   entries: journalArticles, nowPlaying: nowPlayingStatus }));
-writePage('/making/',    listingPage({ siteConfig, kind: 'making',    entries: makingArticles,  nowPlaying: nowPlayingStatus }));
+// Blog — unified journal + making + thoughts listing. Replaces the three
+// separate /journal/, /making/, /thoughts/ index pages (still reachable
+// via 301s in static/_redirects). Individual post URLs are unchanged.
+writePage('/blog/', blogPage({
+  siteConfig,
+  entries: feedEntries.filter(e => e.kind !== 'listening'),
+  nowPlaying: nowPlayingStatus,
+}));
+
+// Listening keeps its own dedicated page since it's a distinct surface
+// (live-polled tracklist, not a blog kind).
 writePage('/listening/', listingPage({ siteConfig, kind: 'listening', entries: listening.slice(0, siteConfig.lastfm?.limit || 25), nowPlaying: nowPlayingStatus, totalScrobbles: scrobbleTotal }));
 
 // About — singleton. Rendered from whichever vault note has

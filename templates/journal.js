@@ -11,10 +11,11 @@ export function articlePage({ site, note, recent, prev, next }) {
     bio:    section.bio    || '',
     kicker: section.kicker || kind,
   };
-  // Tag chips on a single post jump back to the kind-listing already
-  // filtered, so /journal/?tag=foo / /making/?tag=foo land on the right index.
-  const sectionPath = kind === 'making' ? '/making/' : '/journal/';
-  const tags = (note.tags || []).map(t => `<a class="tg" href="${sectionPath}?tag=${encodeURIComponent(t)}" data-tag="${esc(t)}">${esc(t)}</a>`).join(' ');
+  // Tag chips on a single post jump back to /blog/ pre-filtered by the
+  // post's kind and the clicked tag. tag-filter.js AND-combines the two
+  // params, so /blog/?kind=making&tag=foo lands on the right slice.
+  const sectionPath = '/blog/';
+  const tags = (note.tags || []).map(t => `<a class="tg" href="${sectionPath}?kind=${encodeURIComponent(kind)}&tag=${encodeURIComponent(t)}" data-tag="${esc(t)}">${esc(t)}</a>`).join(' ');
 
   const body = `
 <main class="page" id="main">
@@ -70,7 +71,7 @@ export function articlePage({ site, note, recent, prev, next }) {
     <div class="group">
       <h2>tags</h2>
       <ul>
-        ${note.tags.map(t => `<li><a class="tg" href="${sectionPath}?tag=${encodeURIComponent(t)}" data-tag="${esc(t)}">${esc(t)}</a></li>`).join('\n        ')}
+        ${note.tags.map(t => `<li><a class="tg" href="${sectionPath}?kind=${encodeURIComponent(kind)}&tag=${encodeURIComponent(t)}" data-tag="${esc(t)}">${esc(t)}</a></li>`).join('\n        ')}
       </ul>
     </div>` : ''}
   </aside>
@@ -79,7 +80,7 @@ export function articlePage({ site, note, recent, prev, next }) {
   return base({
     page: {
       title: note.title,
-      navActive: kind === 'making' ? 'making' : 'journal',
+      navActive: 'blog',
       nowPlaying: site.nowPlaying || '',
       footerText: site.config?.footerText ?? '',
     },
