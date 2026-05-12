@@ -4,10 +4,13 @@ source for [mattdoes.online](https://mattdoes.online) — my personal site. i wr
 
 ## what's on it
 
-- **journal** — reflective posts, usually weighing a tradeoff.
-- **making** — building-in-public notes on projects, tools, and stack choices.
-- **thoughts** — short, one-idea posts, time-stamped through the day.
+- **home** — a summary, recent thoughts, recent listening.
+- **blog** — long-form and short, on one reverse-chronological timeline. three kinds:
+  - *journal* — reflective posts, usually weighing a tradeoff
+  - *making* — building-in-public notes on projects, tools, and stack choices
+  - *thoughts* — short, one-idea posts, time-stamped through the day
 - **listening** — recent plays pulled from Last.fm at build time and refreshed live between deploys.
+- **about** — who I am, what I work on.
 - **colophon** — how the whole thing fits together.
 
 ## how it's built
@@ -19,7 +22,7 @@ two thin Cloudflare Workers handle the live bits, both same-origin so the site's
 - **`mattdoes-listening`** — proxies Last.fm for the topbar's now-playing pill and the live track list on `/listening/`. KV-cached with stale-while-revalidate.
 - **`mattdoes-geo`** — reverse-geocodes a visitor's city against Nominatim *only if* they opt in via the tweaks panel. Default page render uses `static/home.geojson` (Houston), baked once with `npm run bake-geo`. KV-cached for 7 days per metro.
 
-media flows through R2: `scripts/optimize-media.js` produces `.webp` variants from `vault/attachments/`, `scripts/sync-media.js` PUTs originals + variants to the `mattdoes-media` bucket, and the build emits `<picture>` tags pointed at `media.mattdoes.online`. fonts are self-hosted (JetBrains Mono, Fraunces) — no Google Fonts call. contact is a plain `mailto:` to a Fastmail address. no tracker, no analytics, no third-party connect.
+media flows through R2: `scripts/optimize-media.js` produces `.webp` variants from `vault/attachments/`, `scripts/sync-media.js` PUTs originals + variants to the `mattdoes-media` bucket, and the build emits `<picture>` tags pointed at `media.mattdoes.online`. fonts are self-hosted (JetBrains Mono) — no Google Fonts call. contact is a plain `mailto:` to a Fastmail address. no tracker, no analytics, no third-party connect.
 
 the vault is cloned into `./vault/` at build time via a fine-grained PAT (`scripts/pages-prebuild.sh`). submodules are out because Cloudflare Pages' GitHub App auth doesn't propagate to them.
 

@@ -58,7 +58,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
 <span class="b">┌</span> <span class="d">mattdoes-site</span> <span class="note">(public)</span>
 <span class="b">├──</span> <span class="f">build.js</span>             <span class="note"># the generator</span>
 <span class="b">├──</span> <span class="f">site.config.js</span>       <span class="note"># identity + last.fm</span>
-<span class="b">├──</span> <span class="d">templates</span>            <span class="note"># 5 page templates + helpers</span>
+<span class="b">├──</span> <span class="d">templates</span>            <span class="note"># page templates + helpers</span>
 <span class="b">├──</span> <span class="d">static</span>               <span class="note"># css, js (tweaks · geo-bg · live), fonts, baked geojson, _headers</span>
 <span class="b">├──</span> <span class="d">scripts</span>              <span class="note"># prebuild, optimize-media, sync-media, bake-geo</span>
 <span class="b">├──</span> <span class="d">workers</span>              <span class="note"># mattdoes-listening · mattdoes-geo (each = src + wrangler.toml)</span>
@@ -74,7 +74,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
         <tr><th>key</th><th>type</th><th>req</th><th>description</th></tr>
       </thead>
       <tbody>
-        <tr><td class="key">publish</td><td class="type">enum</td><td class="req y">req</td><td>journal · thoughts · making · draft <span class="note">(listening is pulled from last.fm)</span></td></tr>
+        <tr><td class="key">publish</td><td class="type">enum</td><td class="req y">req</td><td>journal · making · thoughts · about · draft <span class="note">(listening is pulled from last.fm)</span></td></tr>
         <tr><td class="key">title</td><td class="type">string</td><td class="req">opt</td><td>Display title. Defaults to filename.</td></tr>
         <tr><td class="key">date</td><td class="type">date</td><td class="req">opt</td><td>Bare <code>YYYY-MM-DD</code> is anchored to CT midnight (so the post lands on the day you wrote, not UTC's). Full ISO timestamps are used as-is. Defaults to file mtime.</td></tr>
         <tr><td class="key">slug</td><td class="type">string</td><td class="req">opt</td><td>URL path segment. Defaults to kebab filename.</td></tr>
@@ -88,9 +88,10 @@ export function colophonPage({ stats, updated, nowPlaying }) {
     <h2 id="routing" class="section-label"><span>routing · publish → url</span><span class="n">03</span></h2>
     <div class="blurb">Routes are driven by the <code>publish:</code> frontmatter value, not the folder. Folders are organizational only.</div>
     <div class="routes">
-      <span class="from">publish: journal</span><span class="arr">→</span><span class="to">/journal/<span class="dim">&lt;slug&gt;</span>/</span>
-      <span class="from">publish: making</span><span class="arr">→</span><span class="to">/making/<span class="dim">&lt;slug&gt;</span>/</span>
-      <span class="from">publish: thoughts <span class="dim">(daily/YYYY-MM-DD.md, split on ##HH:MM)</span></span><span class="arr">→</span><span class="to">/thoughts<span class="dim">#t-NNN</span></span>
+      <span class="from">publish: journal</span><span class="arr">→</span><span class="to">/journal/<span class="dim">&lt;slug&gt;</span>/ <span class="dim">· /blog/?kind=journal</span></span>
+      <span class="from">publish: making</span><span class="arr">→</span><span class="to">/making/<span class="dim">&lt;slug&gt;</span>/ <span class="dim">· /blog/?kind=making</span></span>
+      <span class="from">publish: thoughts <span class="dim">(daily/YYYY-MM-DD.md, split on ##HH:MM)</span></span><span class="arr">→</span><span class="to">/blog/<span class="dim">#t-NNN</span></span>
+      <span class="from">publish: about</span><span class="arr">→</span><span class="to">/about/</span>
       <span class="from">attachments/&lt;file&gt;</span><span class="arr">→</span><span class="to">/img/<span class="dim">&lt;file&gt;</span> <span class="dim">(R2 in prod via media.mattdoes.online)</span></span>
       <span class="from">last.fm recent tracks</span><span class="arr">→</span><span class="to">/listening/ <span class="dim">(static at build · refreshed live)</span></span>
       <span class="from">listening worker</span><span class="arr">→</span><span class="to">/api/listening/{now,recent}</span>
@@ -129,9 +130,9 @@ export function colophonPage({ stats, updated, nowPlaying }) {
 <span class="v">writeFeeds</span>(<span class="s">'dist/feed.xml'</span>)</div>
 
     <div class="doc-body">
-      <p>Four templates, three content types, one loop. If a new section shows up (say, <code>publish: recipes</code>), it's a new template file and one line in <code>routeFor()</code>. That's the whole extension story.</p>
+      <p>One loop, a handful of templates, four surfaces in the nav (home · blog · listening · about). If a new section shows up (say, <code>publish: recipes</code>), it's a new template file and one line in <code>routeFor()</code>. That's the whole extension story.</p>
       <p>Two dynamic surfaces, both same-origin Workers so <code>connect-src 'self'</code> stays intact. <code>/api/listening/*</code> proxies Last.fm (now-playing for the topbar, recent tracks for the listening page) with a stale-while-revalidate KV cache out front. <code>/api/geo/lookup</code> reverse-geocodes a visitor's coords against Nominatim if they opt in via the tweaks panel — by default the animated background renders the home polygon baked into <code>static/home.geojson</code>, no prompt, no network call.</p>
-      <p>Media takes the long way around. <code>scripts/optimize-media.js</code> hashes every attachment and emits <code>.webp</code> siblings into <code>.cache/media-build/</code>; <code>scripts/sync-media.js</code> PUTs originals + variants to R2 over <code>wrangler r2 object</code>, and the build emits <code>&lt;picture&gt;</code> tags pointed at <code>media.mattdoes.online</code>. CSS, JS, and fonts are content-hashed and served immutable from Pages; CSP is strict, no inline scripts, no third-party connect. Mail is Fastmail, contact is a plain <code>mailto:</code>, no form worker.</p>
+      <p>Media takes the long way around. <code>scripts/optimize-media.js</code> hashes every attachment and emits <code>.webp</code> siblings into <code>.cache/media-build/</code>; <code>scripts/sync-media.js</code> PUTs originals + variants to R2 over <code>wrangler r2 object</code>, and the build emits <code>&lt;picture&gt;</code> tags pointed at <code>media.mattdoes.online</code>. CSS and JS are content-hashed and served immutable from Pages; CSP is strict, no inline scripts, no third-party connect. Mail is Fastmail, contact is a plain <code>mailto:</code>, no form worker.</p>
     </div>
   </section>
 
@@ -152,6 +153,8 @@ export function colophonPage({ stats, updated, nowPlaying }) {
         <li><span>Obsidian</span><span class="meta">vault</span></li>
         <li><span>Node</span><span class="meta">build</span></li>
         <li><span>marked + gray-matter</span><span class="meta">md</span></li>
+        <li><span>shiki</span><span class="meta">code hl</span></li>
+        <li><span>marked-footnote</span><span class="meta">md ext</span></li>
         <li><span>lightningcss + terser</span><span class="meta">assets</span></li>
         <li><span>sharp</span><span class="meta">img</span></li>
         <li><span>CF Pages</span><span class="meta">host</span></li>
