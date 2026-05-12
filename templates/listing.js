@@ -96,7 +96,8 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
     </div>` : '';
 
   const body = `
-<main class="page">
+<main class="page" id="main">
+  <h1 class="visually-hidden">${esc(kind)}</h1>
   <aside class="side-left" aria-label="page meta">
     <div class="ident">
       ${section.who ? `<div class="who">${esc(section.who)}</div>` : ''}
@@ -108,7 +109,7 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
 
     ${showLastfm ? `
     <div class="group">
-      <h3>source <span class="m">last.fm</span></h3>
+      <h2>source <span class="m">last.fm</span></h2>
       <ul>
         <li><a href="https://www.last.fm/user/${encodeURIComponent(siteConfig.lastfm.username)}" rel="noopener noreferrer">last.fm/${esc(siteConfig.lastfm.username)}</a><span class="meta">↗</span></li>
       </ul>
@@ -116,7 +117,7 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
 
     ${siteConfig.links && siteConfig.links.length ? `
     <div class="group">
-      <h3>elsewhere</h3>
+      <h2>elsewhere</h2>
       <ul>
         ${siteConfig.links.filter(l => l.href).map(l => `<li><a href="${esc(safeUrl(l.href))}"${relFor(l.href)}>${esc(l.label)}</a>${l.meta ? `<span class="meta">${esc(l.meta)}</span>` : ''}</li>`).join('\n        ')}
       </ul>
@@ -137,7 +138,7 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
   <aside class="side-right" aria-label="related">
     ${topTags.length ? `
     <div class="group">
-      <h3>by tag</h3>
+      <h2>by tag</h2>
       <ul>
         ${topTags.map(([t, n]) => `<li><a class="tg" href="${sectionPath}?tag=${encodeURIComponent(t)}" data-tag="${esc(t)}">${esc(t)}</a><span class="meta">${n}</span></li>`).join('\n        ')}
       </ul>

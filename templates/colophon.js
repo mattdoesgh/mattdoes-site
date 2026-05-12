@@ -7,7 +7,7 @@ import { siteConfig } from '../site.config.js';
 
 export function colophonPage({ stats, updated, nowPlaying }) {
   const body = `
-<main class="page">
+<main class="page" id="main">
   <aside class="side-left" aria-label="page meta">
     <div class="ident">
       <div class="who">colophon</div>
@@ -15,7 +15,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
     </div>
 
     <div class="group">
-      <h3>on this page</h3>
+      <h2>on this page</h2>
       <ul>
         <li><a href="#folder">folder layout</a><span class="meta">01</span></li>
         <li><a href="#schema">frontmatter</a><span class="meta">02</span></li>
@@ -27,7 +27,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
 
     ${siteConfig.links && siteConfig.links.length ? `
     <div class="group">
-      <h3>source</h3>
+      <h2>source</h2>
       <ul>
         ${siteConfig.links.filter(l => l.href).map(l => `<li><a href="${esc(safeUrl(l.href))}"${relFor(l.href)}>${esc(l.label)}</a>${l.meta ? `<span class="meta">${esc(l.meta)}</span>` : ''}</li>`).join('\n        ')}
         <li><span>build.js</span><span class="meta">${stats?.buildLines || '—'} ln</span></li>
@@ -42,7 +42,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
       <p class="lede">The Obsidian vault is the source of truth; a small build script turns it into the pages you're reading.</p>
     </div>
 
-    <div id="folder" class="section-label"><span>folder layout</span><span class="n">01</span></div>
+    <h2 id="folder" class="section-label"><span>folder layout</span><span class="n">01</span></h2>
     <div class="blurb">Two repos. Vault stays private; site repo is thin and public. A pre-build script clones the vault into <code>./vault/</code> using a fine-grained PAT — not a submodule, since CF Pages' GitHub App auth doesn't reach submodule clones.</div>
 <pre class="tree"><span class="b">┌</span> <span class="d">vault</span> <span class="note">(private · obsidian)</span>
 <span class="b">├──</span> <span class="d">daily</span>
@@ -65,10 +65,11 @@ export function colophonPage({ stats, updated, nowPlaying }) {
 <span class="b">├──</span> <span class="d">vault</span>                <span class="note">→ cloned pre-build</span>
 <span class="b">└──</span> <span class="d">dist</span>                 <span class="note"># deployed</span></pre>
 
-    <div id="schema" class="section-label"><span>frontmatter schema</span><span class="n">02</span></div>
+    <h2 id="schema" class="section-label"><span>frontmatter schema</span><span class="n">02</span></h2>
     <div class="blurb">Every note that wants to appear on the site declares it. <code style="font-family:var(--font-mono); background:var(--faint); padding:1px 5px; border-radius:2px;">publish:</code> is the only required field.</div>
 
     <table class="schema">
+      <caption class="visually-hidden">Frontmatter fields accepted in vault notes</caption>
       <thead>
         <tr><th>key</th><th>type</th><th>req</th><th>description</th></tr>
       </thead>
@@ -84,7 +85,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
       </tbody>
     </table>
 
-    <div id="routing" class="section-label"><span>routing · publish → url</span><span class="n">03</span></div>
+    <h2 id="routing" class="section-label"><span>routing · publish → url</span><span class="n">03</span></h2>
     <div class="blurb">Routes are driven by the <code>publish:</code> frontmatter value, not the folder. Folders are organizational only.</div>
     <div class="routes">
       <span class="from">publish: journal</span><span class="arr">→</span><span class="to">/journal/<span class="dim">&lt;slug&gt;</span>/</span>
@@ -98,7 +99,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
       <span class="from">publish: draft · missing</span><span class="arr">✕</span><span class="to"><span class="dim">never built</span></span>
     </div>
 
-    <div id="wikilinks" class="section-label"><span>wikilinks &amp; embeds</span><span class="n">04</span></div>
+    <h2 id="wikilinks" class="section-label"><span>wikilinks &amp; embeds</span><span class="n">04</span></h2>
     <div class="doc-body">
       <ul>
         <li><code>[[some-slug]]</code> — resolves to published page; else renders as plain text with a dotted underline.</li>
@@ -109,7 +110,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
       </ul>
     </div>
 
-    <div id="build" class="section-label"><span>the build</span><span class="n">05</span></div>
+    <h2 id="build" class="section-label"><span>the build</span><span class="n">05</span></h2>
 <div class="code-block"><span class="c">// simplified</span>
 <span class="k">for</span> (<span class="k">const</span> note <span class="k">of</span> <span class="v">walk</span>(<span class="s">'vault/'</span>)) {
   <span class="k">const</span> { data, body } = <span class="v">matter</span>(note)
@@ -136,7 +137,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
 
   <aside class="side-right" aria-label="related">
     <div class="group">
-      <h3>build stats</h3>
+      <h2>build stats</h2>
       <ul>
         <li><span>notes read</span><span class="meta">${stats?.notesRead ?? '—'}</span></li>
         <li><span>pages written</span><span class="meta">${stats?.pagesWritten ?? '—'}</span></li>
@@ -146,7 +147,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
     </div>
 
     <div class="group">
-      <h3>stack</h3>
+      <h2>stack</h2>
       <ul>
         <li><span>Obsidian</span><span class="meta">vault</span></li>
         <li><span>Node</span><span class="meta">build</span></li>

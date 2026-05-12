@@ -89,12 +89,49 @@
   // Single source of truth for opening/closing the panel — keeps the
   // .open class and any aria-expanded triggers (footer link, etc.)
   // in lockstep regardless of who flipped it.
+  // Tracks the trigger that opened the panel so we can restore focus
+  // to it on close (WCAG 2.4.3 focus-order, 2.4.11 focus-not-obscured).
+  let lastFocus = null;
+  function focusables() {
+    return panel.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+  }
   function setPanelOpen(open) {
+    const was = panel.classList.contains('open');
     panel.classList.toggle('open', !!open);
     document.querySelectorAll('[data-tweaks-toggle]').forEach(b => {
       b.setAttribute('aria-expanded', String(!!open));
     });
+    if (open && !was) {
+      lastFocus = document.activeElement;
+      const first = focusables()[0];
+      if (first) first.focus();
+    } else if (!open && was) {
+      if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+      lastFocus = null;
+    }
   }
+
+  // Trap Tab inside the panel while open; Escape closes.
+  panel.addEventListener('keydown', (e) => {
+    if (!panel.classList.contains('open')) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      setPanelOpen(false);
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    const list = focusables();
+    if (!list.length) return;
+    const first = list[0];
+    const last  = list[list.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault(); first.focus();
+    }
+  });
 
   panel.querySelector('.close')?.addEventListener('click', () => {
     setPanelOpen(false);

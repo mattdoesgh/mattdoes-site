@@ -93,7 +93,8 @@ export function indexPage({ site, entries }) {
   const config = site.config || {};
 
   const body = `
-<main class="page">
+<main class="page" id="main">
+  <h1 class="visually-hidden">latest</h1>
 
   <aside class="side-left" aria-label="page meta">
     <div class="ident">
@@ -109,7 +110,7 @@ export function indexPage({ site, entries }) {
 
     ${links.length ? `
     <div class="group">
-      <h3>elsewhere</h3>
+      <h2>elsewhere</h2>
       <ul>
         ${links.filter(l => l.href).map(l => `<li><a href="${esc(safeUrl(l.href))}"${relFor(l.href)}>${esc(l.label)}</a>${l.meta ? `<span class="meta">${esc(l.meta)}</span>` : ''}</li>`).join('\n        ')}
       </ul>

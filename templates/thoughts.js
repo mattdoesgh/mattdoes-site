@@ -48,7 +48,8 @@ export function thoughtsPage({ site, thoughts }) {
 
   const section = siteConfig.sections?.thoughts || {};
   const body = `
-<main class="page">
+<main class="page" id="main">
+  <h1 class="visually-hidden">thoughts</h1>
   <aside class="side-left" aria-label="page meta">
     <div class="ident">
       <div class="who">${esc(section.who || 'thoughts')}</div>
@@ -60,7 +61,7 @@ export function thoughtsPage({ site, thoughts }) {
     </div>
 
     <div class="group">
-      <h3>source <span class="m">obsidian</span></h3>
+      <h2>source <span class="m">obsidian</span></h2>
       <ul>
         <li style="font-family:var(--font-mono); font-size:11px; color:var(--mute); border-bottom:1px dashed var(--faint);">vault/daily/*.md</li>
         <li><span>publish:</span><span class="meta">thoughts</span></li>
@@ -82,14 +83,14 @@ export function thoughtsPage({ site, thoughts }) {
 
   <aside class="side-right" aria-label="related">
     <div class="group">
-      <h3>by tag</h3>
+      <h2>by tag</h2>
       <ul>
         ${topTags.map(([tag, n]) => `<li><a class="tg" href="/thoughts/?tag=${encodeURIComponent(tag)}" data-tag="${esc(tag)}">${esc(tag)}</a><span class="meta">${n}</span></li>`).join('\n        ')}
       </ul>
     </div>
 
     <div class="group">
-      <h3>subscribe</h3>
+      <h2>subscribe</h2>
       <ul>
         <li><a href="/feed.xml">rss</a><span class="meta">.xml</span></li>
       </ul>

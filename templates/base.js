@@ -82,6 +82,8 @@ ${page.headExtra || ''}
 </head>
 <body>
 
+<a class="skip-link" href="#main">skip to content</a>
+
 <div id="geo-bg" aria-hidden="true"></div>
 
 <div class="topbar">
@@ -103,15 +105,15 @@ ${body}
   <nav aria-label="footer">${footerNav.map(n => `<a href="${n.href}"${n.href.startsWith('mailto:') ? ' data-prefetch="off"' : ''}>${n.label}</a>`).join('')}<button type="button" class="footer-link" data-tweaks-toggle aria-controls="tweaks" aria-expanded="false">tweaks</button></nav>
 </footer>
 
-<div id="tweaks">
-  <header>tweaks<button type="button" class="close" aria-label="close">×</button></header>
+<div id="tweaks" role="dialog" aria-modal="true" aria-labelledby="tweaks-title">
+  <header><span id="tweaks-title">tweaks</span><button type="button" class="close" aria-label="close tweaks">×</button></header>
   <div class="row-t">
-    <label>dark mode</label>
-    <button type="button" class="tk-toggle" data-key="dark" aria-pressed="true" aria-label="toggle dark mode"></button>
+    <span class="row-t-label">dark mode</span>
+    <button type="button" class="tk-toggle" data-key="dark" aria-pressed="true" aria-label="dark mode"></button>
   </div>
   <div class="row-t">
-    <label>accent</label>
-    <div class="tk-swatches" data-key="accent">
+    <span class="row-t-label">accent</span>
+    <div class="tk-swatches" data-key="accent" role="radiogroup" aria-label="accent color">
       <button type="button" class="tk-sw" data-value="warm"  aria-pressed="false" aria-label="warm terracotta"></button>
       <button type="button" class="tk-sw" data-value="pink"  aria-pressed="true"  aria-label="hot pink"></button>
       <button type="button" class="tk-sw" data-value="blue"  aria-pressed="false" aria-label="cool blue"></button>
@@ -119,22 +121,22 @@ ${body}
     </div>
   </div>
   <div class="row-t">
-    <label>serif headings</label>
-    <button type="button" class="tk-toggle" data-key="serif" aria-pressed="true" aria-label="toggle serif"></button>
+    <span class="row-t-label">serif headings</span>
+    <button type="button" class="tk-toggle" data-key="serif" aria-pressed="true" aria-label="serif headings"></button>
   </div>
   <div class="row-t">
-    <label>local map</label>
+    <span class="row-t-label">local map</span>
     <div class="tk-seg" data-key="geo" role="group" aria-label="local map source">
-      <button type="button" data-value="home" aria-pressed="true">home</button>
-      <button type="button" data-value="mine" aria-pressed="false">mine</button>
-      <button type="button" data-value="off"  aria-pressed="false">off</button>
+      <button type="button" data-value="home" aria-pressed="true"  aria-label="local map: home">home</button>
+      <button type="button" data-value="mine" aria-pressed="false" aria-label="local map: mine">mine</button>
+      <button type="button" data-value="off"  aria-pressed="false" aria-label="local map: off">off</button>
     </div>
   </div>
   <div class="row-t">
-    <label>map style</label>
+    <span class="row-t-label">map style</span>
     <div class="tk-seg" data-key="geoShape" role="group" aria-label="map style">
-      <button type="button" data-value="points" aria-pressed="true">points</button>
-      <button type="button" data-value="solid"  aria-pressed="false">solid</button>
+      <button type="button" data-value="points" aria-pressed="true"  aria-label="map style: points">points</button>
+      <button type="button" data-value="solid"  aria-pressed="false" aria-label="map style: solid">solid</button>
     </div>
   </div>
   <div class="row-t help">
