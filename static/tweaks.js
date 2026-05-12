@@ -4,7 +4,6 @@
   const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
     dark: true,
     accent: "pink",
-    serif: true,
     geo: "home",
     geoShape: "points"
   }/*EDITMODE-END*/;
@@ -33,8 +32,6 @@
   function apply() {
     root.dataset.theme = state.dark ? 'dark' : 'light';
     root.style.setProperty('--accent', ACCENTS[state.accent] || ACCENTS.warm);
-    if (!state.serif) root.style.setProperty('--font-serif', 'var(--font-mono)');
-    else              root.style.removeProperty('--font-serif');
 
     panel.querySelectorAll('.tk-toggle').forEach(b => {
       b.setAttribute('aria-pressed', String(!!state[b.dataset.key]));

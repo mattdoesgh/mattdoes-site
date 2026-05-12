@@ -29,16 +29,13 @@
   src: url('/fonts/JetBrainsMono-SemiBold.woff2') format('woff2');
   font-weight: 600; font-style: normal; font-display: swap;
 }
+/* Italic face for blockquotes and the .row .body.q variant. While the
+   woff2 file is still being deployed, the browser falls back to a
+   synthesized slant of the regular weight — readable, just slightly
+   mechanical. */
 @font-face {
-  font-family: 'Fraunces';
-  src: url('/fonts/Fraunces-Variable.woff2') format('woff2-variations'),
-       url('/fonts/Fraunces-Variable.woff2') format('woff2');
-  font-weight: 400 500; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: 'Fraunces';
-  src: url('/fonts/Fraunces-VariableItalic.woff2') format('woff2-variations'),
-       url('/fonts/Fraunces-VariableItalic.woff2') format('woff2');
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Italic.woff2') format('woff2');
   font-weight: 400; font-style: italic; font-display: swap;
 }
 
@@ -54,7 +51,6 @@ html {
   --accent-soft: oklch(0.30 0.06 340);
 
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-  --font-serif: 'Fraunces', Georgia, serif;
   --font-ui: system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-body: var(--font-mono);
 
@@ -116,9 +112,11 @@ a.accent:hover { border-bottom-color: var(--accent); }
 }
 
 /* Visually-hidden but still in the accessibility tree. Used by the
-   skip-to-content link until it receives focus and by per-page h1s
-   that exist only for document outline. */
-.visually-hidden {
+   skip-to-content link until it receives focus, by per-page h1s that
+   exist only for document outline, and by marked-footnote's footer
+   label (it ships `.sr-only` — aliased here). */
+.visually-hidden,
+.sr-only {
   position: absolute !important;
   width: 1px; height: 1px;
   padding: 0; margin: -1px;
@@ -413,12 +411,12 @@ a.accent:hover { border-bottom-color: var(--accent); }
 .row .body img,
 .row .body picture { max-width: 100%; height: auto; display: block; }
 
-/* Quote variant — serif italic, old-site callback */
+/* Quote variant — mono italic. */
 .row .body.q {
-  font-family: var(--font-serif);
+  font-family: var(--font-mono);
   font-style: italic;
-  font-size: 15px;
-  line-height: 1.4;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--ink);
   border-left: none;
   padding-left: 0;
@@ -557,13 +555,13 @@ footer.site .footer-link:hover { color: var(--ink); }
 .post-head .kicker .dot { color: var(--faint); }
 .post-head h1 {
   margin: 0 0 .5rem;
-  font-family: var(--font-serif);
-  font-weight: 400;
-  font-size: clamp(1.4rem, 3vw, 1.9rem);
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: clamp(1.25rem, 2.6vw, 1.65rem);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
   color: var(--ink);
-  max-width: 22ch;
+  max-width: 28ch;
   text-wrap: pretty;
 }
 .post-head .lede {
@@ -606,11 +604,11 @@ footer.site .footer-link:hover { color: var(--ink); }
 }
 .post-body p { margin: 0 0 1rem; }
 .post-body h2 {
-  font-family: var(--font-serif);
-  font-weight: 400;
-  font-size: 1.15rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 1.05rem;
   margin: 1.75rem 0 .5rem;
-  letter-spacing: -0.005em;
+  letter-spacing: -0.01em;
 }
 .post-body ul { padding-left: 1.3rem; margin: 0 0 1rem; }
 .post-body li { margin: .15rem 0; }
@@ -632,16 +630,126 @@ footer.site .footer-link:hover { color: var(--ink); }
   border-left: 2px solid var(--accent);
 }
 .post-body pre code { background: transparent; padding: 0; }
+
+/* Shiki-highlighted fences. Shiki ships dual-theme output via CSS
+   variables (`defaultColor: false`); we map them onto data-theme so the
+   tweaks panel toggle switches palettes without a rebuild. */
+.post-body pre.shiki {
+  background: var(--shiki-light-bg, var(--hover));
+  color: var(--shiki-light, var(--ink));
+}
+.post-body pre.shiki span { color: var(--shiki-light, inherit); }
+html[data-theme="dark"] .post-body pre.shiki {
+  background: var(--shiki-dark-bg, var(--hover));
+  color: var(--shiki-dark, var(--ink));
+}
+html[data-theme="dark"] .post-body pre.shiki span { color: var(--shiki-dark, inherit); }
+
 .post-body blockquote {
   margin: 1rem 0;
   padding-left: 1rem;
   border-left: 2px solid var(--faint);
   color: var(--mute);
   font-style: italic;
-  font-family: var(--font-serif);
-  font-size: 1.02rem;
+  font-family: var(--font-mono);
+  font-size: .98rem;
 }
 .post-body hr { border: none; border-top: 1px dashed var(--faint); margin: 1.5rem 0; }
+
+/* Callouts: GitHub/Obsidian-style `> [!type]` blockquotes. Each type
+   re-skins the accent via a local --co-accent so the border + title
+   color match. Body stays in the post body type. */
+.post-body .callout {
+  --co-accent: var(--accent);
+  margin: 1.25rem 0;
+  padding: .65rem .85rem .65rem 1rem;
+  border-left: 3px solid var(--co-accent);
+  background: color-mix(in oklch, var(--co-accent) 8%, transparent);
+  border-radius: 2px;
+}
+.post-body .callout-title {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  color: var(--co-accent);
+  margin-bottom: .35rem;
+}
+.post-body .callout-body > :first-child { margin-top: 0; }
+.post-body .callout-body > :last-child  { margin-bottom: 0; }
+.post-body .callout-note    { --co-accent: oklch(0.65 0.12 240); }
+.post-body .callout-tip,
+.post-body .callout-info    { --co-accent: oklch(0.65 0.12 150); }
+.post-body .callout-warning { --co-accent: oklch(0.72 0.13 75);  }
+.post-body .callout-danger,
+.post-body .callout-error   { --co-accent: oklch(0.62 0.16 25);  }
+
+/* Footnotes from marked-footnote. The package uses `data-footnote-ref`
+   on the inline link and `data-footnote-backref` on the back-arrow,
+   and wraps the list in <section class="footnotes" data-footnotes>. */
+.post-body [data-footnote-ref] {
+  color: var(--accent);
+  border-bottom: none;
+  padding: 0 .15em;
+}
+.post-body .footnotes {
+  margin-top: 2rem;
+  padding-top: .75rem;
+  border-top: 1px dashed var(--faint);
+  font-size: 12.5px;
+  color: var(--mute);
+}
+.post-body .footnotes ol { padding-left: 1.4rem; margin: 0; }
+.post-body .footnotes li { margin: .35rem 0; }
+.post-body .footnotes p  { margin: 0; display: inline; }
+.post-body [data-footnote-backref] {
+  color: var(--accent);
+  border-bottom: none;
+  margin-left: .3em;
+}
+
+/* Generic tables inside post bodies. The colophon's .schema table
+   keeps its own bespoke styles; this rule targets only `.post-body
+   table` so we don't overlap. */
+.post-body table {
+  width: 100%;
+  margin: 1rem 0;
+  font-size: 13px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.post-body th,
+.post-body td {
+  padding: .4rem .65rem;
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+.post-body th {
+  color: var(--mute);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  border-bottom: 1px solid var(--mute);
+}
+.post-body tr:hover td { background: var(--hover); }
+
+/* Figures with explicit captions. Plain `![[image]]` embeds remain bare
+   images; only `![[image|caption]]` opts into the figure/figcaption. */
+.post-body figure {
+  margin: 1.25rem 0;
+}
+.post-body figure img,
+.post-body figure picture { display: block; max-width: 100%; height: auto; border-radius: 2px; }
+.post-body figcaption {
+  margin-top: .4rem;
+  font-size: 11.5px;
+  color: var(--mute);
+  letter-spacing: 0.02em;
+  text-align: center;
+}
 
 .pager {
   display: grid;

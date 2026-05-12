@@ -12,6 +12,8 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import matter from 'gray-matter';
 import { marked } from 'marked';
+import markedFootnote from 'marked-footnote';
+import { createHighlighter } from 'shiki';
 import { transform as cssTransform } from 'lightningcss';
 import { minify as jsMinify } from 'terser';
 
@@ -20,6 +22,7 @@ import { articlePage }  from './templates/journal.js';
 import { thoughtsPage } from './templates/thoughts.js';
 import { listingPage }  from './templates/listing.js';
 import { colophonPage } from './templates/colophon.js';
+import { aboutPage }    from './templates/about.js';
 import { esc, fmtDate, ctWallClockToDate, safeUrl } from './templates/_helpers.js';
 
 /**
@@ -202,14 +205,20 @@ function mediaTag(target, alt) {
   const url = mediaUrl(clean);
   if (IMG_EXT.test(clean)) {
     const variants = mediaVariants.get(clean) || mediaVariants.get(path.basename(clean)) || [];
-    const altText = esc(alt || clean);
-    if (variants.length === 0) {
-      return `<img src="${url}" alt="${altText}" loading="lazy" />`;
-    }
+    // An explicit `|caption` clause produces a <figcaption>. A bare embed
+    // without a pipe falls back to the filename for the alt attr but
+    // does not render a caption — captions are an opt-in affordance.
+    const hasExplicitAlt = alt != null && alt !== '';
+    const altText = esc(hasExplicitAlt ? alt : clean);
     const sources = variants
       .map(v => `<source type="${esc(v.type)}" srcset="${mediaUrl(v.path)}">`)
       .join('');
-    return `<picture>${sources}<img src="${url}" alt="${altText}" loading="lazy" /></picture>`;
+    const img = variants.length === 0
+      ? `<img src="${url}" alt="${altText}" loading="lazy" />`
+      : `<picture>${sources}<img src="${url}" alt="${altText}" loading="lazy" /></picture>`;
+    return hasExplicitAlt
+      ? `<figure>${img}<figcaption>${esc(alt)}</figcaption></figure>`
+      : img;
   }
   if (AUD_EXT.test(clean)) return `<audio controls src="${url}" preload="none"></audio>`;
   if (VID_EXT.test(clean)) return `<video controls src="${url}" preload="metadata"></video>`;
@@ -425,24 +434,92 @@ async function fetchLastfmPlaycount() {
 // ── 4. Render markdown, produce entries ─────────────────────────────────
 marked.setOptions({ gfm: true, breaks: false, mangle: false, headerIds: false });
 
+// Shiki highlighter — initialized once at build time and reused per fence.
+// `defaultColor: false` emits Shiki's two-theme output as CSS custom
+// properties (`--shiki-light`, `--shiki-dark`) so we can switch by the
+// site's existing `html[data-theme]` attribute without re-running the
+// build. Adding a new language only requires extending `LANGS`.
+const LANGS = [
+  'javascript', 'typescript', 'jsx', 'tsx',
+  'bash', 'shell',
+  'css', 'html', 'json', 'markdown',
+  'python', 'rust', 'go', 'yaml', 'toml', 'sql', 'diff',
+];
+const LANG_ALIAS = { js: 'javascript', ts: 'typescript', sh: 'bash', md: 'markdown', py: 'python', rs: 'rust', yml: 'yaml' };
+const highlighter = await createHighlighter({
+  themes: ['min-light', 'min-dark'],
+  langs: LANGS,
+});
+const LOADED = new Set(highlighter.getLoadedLanguages());
+function highlightCode(code, rawLang) {
+  const lang = (rawLang || '').toLowerCase().trim();
+  const resolved = LANG_ALIAS[lang] || lang;
+  const supported = resolved && LOADED.has(resolved);
+  return highlighter.codeToHtml(code, {
+    lang: supported ? resolved : 'text',
+    themes: { light: 'min-light', dark: 'min-dark' },
+    defaultColor: false,
+  });
+}
+
+// Callouts — Obsidian/GitHub-style: a blockquote whose first line is
+// `[!type]` (optionally followed by a title) is rewritten to a semantic
+// `<aside class="callout callout-${type}">`. We tag the token in
+// walkTokens and then branch on it in the blockquote renderer.
+const CALLOUT_RE = /^\[!(\w+)\]\s*(.*)$/;
+function detectCallout(token) {
+  if (token.type !== 'blockquote' || !token.tokens?.length) return;
+  const first = token.tokens[0];
+  if (first.type !== 'paragraph' || !first.tokens?.length) return;
+  const t0 = first.tokens[0];
+  if (t0.type !== 'text') return;
+  const lines = t0.text.split('\n');
+  const m = lines[0].match(CALLOUT_RE);
+  if (!m) return;
+  const rest = lines.slice(1).join('\n');
+  t0.text = rest;
+  t0.raw  = rest;
+  // Drop the now-empty leading paragraph if there's no body left.
+  if (!rest.trim()) first.tokens.shift();
+  if (first.tokens.length === 0) token.tokens.shift();
+  token.callout = { type: m[1].toLowerCase(), title: m[2].trim() };
+}
+
 // Scheme-allowlist any link or image URL emitted by marked. A note author
 // who pastes `[click](javascript:…)` or `![](data:text/html,…)` otherwise
 // gets those URLs rendered verbatim — CSP currently catches the fallout
 // but this is cheap belt-and-braces at the source.
-const safeLinkRenderer = {
-  link(href, title, text) {
+const renderers = {
+  link({ href, title, tokens }) {
     const safe = safeUrl(href);
     const t = title ? ` title="${esc(title)}"` : '';
+    const text = this.parser.parseInline(tokens);
     return `<a href="${esc(safe)}"${t}>${text}</a>`;
   },
-  image(href, title, text) {
+  image({ href, title, text }) {
     const safe = safeUrl(href);
     const t = title ? ` title="${esc(title)}"` : '';
     const alt = text != null ? ` alt="${esc(text)}"` : '';
     return `<img src="${esc(safe)}"${alt}${t} loading="lazy" />`;
   },
+  code({ text, lang }) {
+    return highlightCode(text, lang || '');
+  },
+  blockquote(token) {
+    const inner = this.parser.parse(token.tokens);
+    if (token.callout) {
+      const { type, title } = token.callout;
+      const titleHtml = title ? `<div class="callout-title">${esc(title)}</div>` : '';
+      return `<aside class="callout callout-${esc(type)}" role="note">${titleHtml}<div class="callout-body">${inner}</div></aside>`;
+    }
+    return `<blockquote>${inner}</blockquote>`;
+  },
 };
-marked.use({ renderer: safeLinkRenderer });
+marked.use({
+  renderer: renderers,
+  walkTokens: detectCallout,
+});
+marked.use(markedFootnote());
 
 /**
  * Resolve wikilinks/embeds and run the result through `marked`.
@@ -456,6 +533,9 @@ function renderBody(rawMd) {
 
 const articles = [];   // journal + making
 const thoughts = [];   // individual micro-posts
+const aboutNotes = []; // publish: about — singleton, but collected as a list
+                       // so a stray duplicate fails loud during render rather
+                       // than silently shadowing the canonical /about/.
 
 for (const n of notes) {
   if (n.publish === 'journal' || n.publish === 'making') {
@@ -476,6 +556,12 @@ for (const n of notes) {
         html: renderBody(t.body),
       });
     }
+  } else if (n.publish === 'about') {
+    aboutNotes.push({
+      ...n,
+      url: '/about/',
+      html: renderBody(n.body),
+    });
   }
 }
 
@@ -766,6 +852,15 @@ for (let i = 0; i < articles.length; i++) {
 writePage('/journal/',   listingPage({ siteConfig, kind: 'journal',   entries: journalArticles, nowPlaying: nowPlayingStatus }));
 writePage('/making/',    listingPage({ siteConfig, kind: 'making',    entries: makingArticles,  nowPlaying: nowPlayingStatus }));
 writePage('/listening/', listingPage({ siteConfig, kind: 'listening', entries: listening.slice(0, siteConfig.lastfm?.limit || 25), nowPlaying: nowPlayingStatus, totalScrobbles: scrobbleTotal }));
+
+// About — singleton. Rendered from whichever vault note has
+// `publish: about`. Logs and skips if missing; warns if duplicated.
+if (aboutNotes.length > 1) {
+  console.warn(`  (note: ${aboutNotes.length} notes have publish: about — using ${aboutNotes[0].rel})`);
+}
+if (aboutNotes.length) {
+  writePage('/about/', aboutPage({ site: siteMeta, note: aboutNotes[0] }));
+}
 
 // Colophon (get build.js line count for the vanity stat)
 const buildLines = fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').length;
