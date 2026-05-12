@@ -17,7 +17,7 @@ export function articlePage({ site, note, recent, prev, next }) {
   const tags = (note.tags || []).map(t => `<a class="tg" href="${sectionPath}?tag=${encodeURIComponent(t)}" data-tag="${esc(t)}">${esc(t)}</a>`).join(' ');
 
   const body = `
-<main class="page">
+<main class="page" id="main">
   <aside class="side-left" aria-label="page meta">
     <div class="ident">
       ${meta.who ? `<div class="who">${esc(meta.who)}</div>` : ''}
@@ -29,7 +29,7 @@ export function articlePage({ site, note, recent, prev, next }) {
 
     ${recent && recent.length ? `
     <div class="group">
-      <h3>recent</h3>
+      <h2>recent</h2>
       <ul>
         ${recent.slice(0, 5).map(r => `<li><a href="${r.url}">${esc(r.title)}</a><span class="meta">${timeTag(r.date, 'day')}</span></li>`).join('\n        ')}
       </ul>
@@ -68,7 +68,7 @@ export function articlePage({ site, note, recent, prev, next }) {
   <aside class="side-right" aria-label="related">
     ${note.tags && note.tags.length ? `
     <div class="group">
-      <h3>tags</h3>
+      <h2>tags</h2>
       <ul>
         ${note.tags.map(t => `<li><a class="tg" href="${sectionPath}?tag=${encodeURIComponent(t)}" data-tag="${esc(t)}">${esc(t)}</a></li>`).join('\n        ')}
       </ul>

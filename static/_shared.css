@@ -107,6 +107,44 @@ a.plain:hover { color: var(--accent); }
 a.accent { color: var(--accent); border-bottom-color: transparent; }
 a.accent:hover { border-bottom-color: var(--accent); }
 
+/* Keyboard focus: a single rule covers links, buttons, summary, and any
+   tabbable element. `:focus-visible` so mouse clicks don't leave a ring. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 1px;
+}
+
+/* Visually-hidden but still in the accessibility tree. Used by the
+   skip-to-content link until it receives focus and by per-page h1s
+   that exist only for document outline. */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link: hidden until keyboard-focused, then surfaces top-left. */
+.skip-link {
+  position: absolute;
+  left: 8px; top: 8px;
+  z-index: 200;
+  padding: .4rem .6rem;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--accent);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  transform: translateY(-150%);
+  transition: transform .15s;
+}
+.skip-link:focus { transform: translateY(0); }
+
 /* ── Minimal top bar ─────────────────────────────── */
 .topbar {
   background: color-mix(in oklch, var(--bg) 85%, transparent);
@@ -245,7 +283,7 @@ a.accent:hover { border-bottom-color: var(--accent); }
 
 /* ── Rail groups (replace the heavy widget cards) ── */
 .group { }
-.group h3 {
+.group h2 {
   margin: 0 0 .55rem;
   padding-bottom: .3rem;
   border-bottom: 1px solid var(--rule);
@@ -256,7 +294,7 @@ a.accent:hover { border-bottom-color: var(--accent); }
   color: var(--mute);
   display: flex; justify-content: space-between; align-items: baseline;
 }
-.group h3 .m { color: var(--faint); font-size: 10px; }
+.group h2 .m { color: var(--faint); font-size: 10px; }
 .group ul { list-style: none; margin: 0; padding: 0; }
 .group li {
   padding: .3rem 0;
@@ -631,12 +669,14 @@ footer.site .footer-link:hover { color: var(--ink); }
 
 /* ── Colophon doc primitives ───────────────────── */
 .section-label {
+  font-family: var(--font-mono);
   font-size: 10.5px;
+  font-weight: 500;
   color: var(--mute);
   text-transform: lowercase;
   letter-spacing: 0.14em;
   padding: 2rem 0 .4rem;
-  margin-bottom: .75rem;
+  margin: 0 0 .75rem;
   border-bottom: 1px solid var(--rule);
   display: flex; justify-content: space-between; align-items: baseline;
 }
@@ -821,7 +861,7 @@ table.schema .req.y { color: var(--accent); }
   color: var(--ink);
 }
 #tweaks .row-t:last-child { border-bottom: none; }
-#tweaks .row-t label { color: var(--mute); letter-spacing: 0.04em; }
+#tweaks .row-t .row-t-label { color: var(--mute); letter-spacing: 0.04em; }
 
 .tk-toggle {
   width: 34px; height: 18px;
@@ -851,10 +891,15 @@ table.schema .req.y { color: var(--accent); }
   border: 1px solid var(--rule);
   cursor: pointer;
   padding: 0;
-  outline: none;
   transition: transform .1s;
 }
 .tk-sw:hover { transform: scale(1.15); }
+/* Swatches are small and circular — the global focus ring would clip the
+   bg color, so give them a halo via box-shadow instead. */
+.tk-sw:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+}
 .tk-sw[aria-pressed="true"] {
   box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--ink);
 }
