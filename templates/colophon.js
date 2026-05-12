@@ -86,11 +86,12 @@ export function colophonPage({ stats, updated, nowPlaying }) {
     </table>
 
     <h2 id="routing" class="section-label"><span>routing · publish → url</span><span class="n">03</span></h2>
-    <div class="blurb">Routes are driven by the <code>publish:</code> frontmatter value, not the folder. Folders are organizational only.</div>
+    <div class="blurb">Routes are driven by the <code>publish:</code> frontmatter value, not the folder. Folders are organizational only. Journal, making, and thoughts all surface together on <code>/blog/</code> in reverse-chronological order; individual posts keep their kind-prefixed permalinks so existing backlinks survive.</div>
     <div class="routes">
-      <span class="from">publish: journal</span><span class="arr">→</span><span class="to">/journal/<span class="dim">&lt;slug&gt;</span>/</span>
-      <span class="from">publish: making</span><span class="arr">→</span><span class="to">/making/<span class="dim">&lt;slug&gt;</span>/</span>
-      <span class="from">publish: thoughts <span class="dim">(daily/YYYY-MM-DD.md, split on ##HH:MM)</span></span><span class="arr">→</span><span class="to">/thoughts<span class="dim">#t-NNN</span></span>
+      <span class="from">publish: journal</span><span class="arr">→</span><span class="to">/journal/<span class="dim">&lt;slug&gt;</span>/ <span class="dim">· feed at /blog/?kind=journal</span></span>
+      <span class="from">publish: making</span><span class="arr">→</span><span class="to">/making/<span class="dim">&lt;slug&gt;</span>/ <span class="dim">· feed at /blog/?kind=making</span></span>
+      <span class="from">publish: thoughts <span class="dim">(daily/YYYY-MM-DD.md, split on ##HH:MM)</span></span><span class="arr">→</span><span class="to">/blog/<span class="dim">#t-NNN</span> <span class="dim">· feed at /blog/?kind=thought</span></span>
+      <span class="from">publish: about <span class="dim">(singleton)</span></span><span class="arr">→</span><span class="to">/about/</span>
       <span class="from">attachments/&lt;file&gt;</span><span class="arr">→</span><span class="to">/img/<span class="dim">&lt;file&gt;</span> <span class="dim">(R2 in prod via media.mattdoes.online)</span></span>
       <span class="from">last.fm recent tracks</span><span class="arr">→</span><span class="to">/listening/ <span class="dim">(static at build · refreshed live)</span></span>
       <span class="from">listening worker</span><span class="arr">→</span><span class="to">/api/listening/{now,recent}</span>
@@ -98,6 +99,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
       <span class="from">publish: &lt;other&gt;</span><span class="arr">→</span><span class="to">/<span class="dim">&lt;slug&gt;</span>/ <span class="dim">(catch-all)</span></span>
       <span class="from">publish: draft · missing</span><span class="arr">✕</span><span class="to"><span class="dim">never built</span></span>
     </div>
+    <div class="blurb"><code>/journal/</code>, <code>/making/</code>, and <code>/thoughts/</code> still resolve — they 301 to the matching <code>/blog/?kind=…</code> view. URL fragments survive the redirect, so legacy <code>/thoughts/#t-001</code> links still scroll to the right row.</div>
 
     <h2 id="wikilinks" class="section-label"><span>wikilinks &amp; embeds</span><span class="n">04</span></h2>
     <div class="doc-body">

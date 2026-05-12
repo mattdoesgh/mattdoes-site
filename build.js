@@ -942,10 +942,13 @@ function atomFeed() {
     <content type="html"><![CDATA[${cdataSafe(content)}]]></content>
   </entry>`;
   }).join('\n');
+  // The alternate link points at /blog/ — the canonical HTML view of
+  // the feed's content. The feed itself stays at /feed.xml so existing
+  // subscribers don't break.
   return `<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>mattdoes.online</title>
-  <link href="${SITE_URL}/"/>
+  <link href="${SITE_URL}/blog/"/>
   <link rel="self" href="${SITE_URL}/feed.xml"/>
   <updated>${updated}</updated>
   <id>${SITE_URL}/</id>
