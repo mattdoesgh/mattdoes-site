@@ -11,6 +11,7 @@ const NAV = [
   { id: 'thoughts',  href: '/thoughts/',  label: 'thoughts' },
   { id: 'making',    href: '/making/',    label: 'making' },
   { id: 'listening', href: '/listening/', label: 'listening' },
+  { id: 'about',     href: '/about/',     label: 'about' },
 ];
 
 const META = [

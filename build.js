@@ -22,6 +22,7 @@ import { articlePage }  from './templates/journal.js';
 import { thoughtsPage } from './templates/thoughts.js';
 import { listingPage }  from './templates/listing.js';
 import { colophonPage } from './templates/colophon.js';
+import { aboutPage }    from './templates/about.js';
 import { esc, fmtDate, ctWallClockToDate, safeUrl } from './templates/_helpers.js';
 
 /**
@@ -532,6 +533,9 @@ function renderBody(rawMd) {
 
 const articles = [];   // journal + making
 const thoughts = [];   // individual micro-posts
+const aboutNotes = []; // publish: about — singleton, but collected as a list
+                       // so a stray duplicate fails loud during render rather
+                       // than silently shadowing the canonical /about/.
 
 for (const n of notes) {
   if (n.publish === 'journal' || n.publish === 'making') {
@@ -552,6 +556,12 @@ for (const n of notes) {
         html: renderBody(t.body),
       });
     }
+  } else if (n.publish === 'about') {
+    aboutNotes.push({
+      ...n,
+      url: '/about/',
+      html: renderBody(n.body),
+    });
   }
 }
 
@@ -842,6 +852,15 @@ for (let i = 0; i < articles.length; i++) {
 writePage('/journal/',   listingPage({ siteConfig, kind: 'journal',   entries: journalArticles, nowPlaying: nowPlayingStatus }));
 writePage('/making/',    listingPage({ siteConfig, kind: 'making',    entries: makingArticles,  nowPlaying: nowPlayingStatus }));
 writePage('/listening/', listingPage({ siteConfig, kind: 'listening', entries: listening.slice(0, siteConfig.lastfm?.limit || 25), nowPlaying: nowPlayingStatus, totalScrobbles: scrobbleTotal }));
+
+// About — singleton. Rendered from whichever vault note has
+// `publish: about`. Logs and skips if missing; warns if duplicated.
+if (aboutNotes.length > 1) {
+  console.warn(`  (note: ${aboutNotes.length} notes have publish: about — using ${aboutNotes[0].rel})`);
+}
+if (aboutNotes.length) {
+  writePage('/about/', aboutPage({ site: siteMeta, note: aboutNotes[0] }));
+}
 
 // Colophon (get build.js line count for the vanity stat)
 const buildLines = fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').length;
