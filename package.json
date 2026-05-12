@@ -21,7 +21,7 @@
     "node": ">=20"
   },
   "devDependencies": {
-    "html-validate": "^10.16.0",
+    "html-validate": "^11.0.0",
     "lightningcss": "^1.32.0",
     "sharp": "^0.34.5",
     "terser": "^5.47.1"
