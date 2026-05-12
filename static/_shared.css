@@ -516,6 +516,127 @@ a.tg:hover { color: var(--accent); }
 .loadmore a { border-bottom: 1px dashed var(--faint); color: var(--mute); }
 .loadmore a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
+/* ── Homepage redesign (summary + thought highlights + recent listening) ── */
+
+/* Summary block — bio lede + counts row at the top of the home column. */
+.summary {
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+.summary .lede {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink);
+  margin: 0 0 .75rem;
+  max-width: 52ch;
+}
+.summary .counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  font-size: 12px;
+  color: var(--mute);
+  letter-spacing: 0.02em;
+}
+.summary .counts span { white-space: nowrap; }
+.summary .counts b {
+  color: var(--ink);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  margin-right: .25rem;
+}
+
+/* Section headings on the homepage. Smaller than article h2; mono;
+   sits flush with the see-more link inline at the section end. */
+.thought-highlights,
+.recent-listening {
+  margin-top: 1.75rem;
+}
+.thought-highlights > h2,
+.recent-listening  > h2 {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: var(--mute);
+  margin: 0 0 .75rem;
+  padding-bottom: .3rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* Three-thought highlight grid. Each card is bordered, compact, links
+   to its anchor on /blog/ via the timestamp. */
+.thought-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.thought-card {
+  padding: .65rem .75rem .7rem;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink);
+  overflow: hidden;
+}
+.thought-card .card-link {
+  display: block;
+  margin-bottom: .35rem;
+  color: var(--mute);
+  border-bottom: none;
+}
+.thought-card .card-link:hover .ts { color: var(--accent); }
+.thought-card .ts {
+  color: var(--mute);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+}
+.thought-card .body { margin: 0; }
+.thought-card .body > p:first-child { margin-top: 0; }
+.thought-card .body > p:last-child  { margin-bottom: 0; }
+.thought-card .body.q {
+  font-style: italic;
+  color: var(--mute);
+  border-left: 2px solid var(--faint);
+  padding-left: .5rem;
+}
+.thought-card.empty { color: var(--mute); font-style: italic; text-align: center; }
+
+@media (max-width: 760px) {
+  .thought-grid { grid-template-columns: 1fr; }
+}
+
+/* Listening summary header — top artist + scrobbles-in-7d, sits above
+   the three-row track list. Hidden if there's no data. */
+.listening-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 11.5px;
+  color: var(--mute);
+  letter-spacing: 0.02em;
+  margin-bottom: .65rem;
+}
+.listening-summary strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* See-more link — small, underlined, sits at the end of each section. */
+.see-more {
+  display: inline-block;
+  margin-top: .75rem;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  border-bottom: none;
+}
+.see-more:hover { border-bottom-color: var(--accent); }
+
 /* ── Footer ──────────────────────────────────── */
 footer.site {
   max-width: calc(var(--rail) + var(--col) + var(--rail) + 48px);

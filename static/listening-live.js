@@ -16,6 +16,14 @@
   const listEl  = document.getElementById(LIST_ID);
   if (!countEl && !listEl) return;      // nothing to update — page shape changed
 
+  // Pages like the homepage that only surface the top few tracks can cap
+  // the swap by setting `data-max="N"` on the rows container. The default
+  // matches the /listening/ page (full 25-row list).
+  const maxRows = (() => {
+    const n = Number(listEl?.dataset.max);
+    return Number.isFinite(n) && n > 0 ? n : MAX_ROWS;
+  })();
+
   async function tick() {
     try {
       const res = await fetch(ENDPOINT, { headers: { accept: 'application/json' }});
@@ -35,7 +43,7 @@
     }
 
     if (listEl && Array.isArray(data?.tracks) && data.tracks.length) {
-      const html = data.tracks.slice(0, MAX_ROWS).map(renderRow).join('\n');
+      const html = data.tracks.slice(0, maxRows).map(renderRow).join('\n');
       // Cheap dedupe: skip swap if markup is byte-identical to what's already there.
       if (listEl.innerHTML.trim() !== html.trim()) listEl.innerHTML = html;
     }

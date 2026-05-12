@@ -824,8 +824,30 @@ if (fs.existsSync(MEDIA_BUILD_DIR)) {
   copyStatic(MEDIA_BUILD_DIR, path.join(DIST_DIR, 'img'));
 }
 
-// Homepage
-fs.writeFileSync(path.join(DIST_DIR, 'index.html'), indexPage({ site: siteMeta, entries: feedEntries }));
+// Homepage — summary + thought highlights + recent listening.
+// Recent slices are server-rendered at build; the live poller swaps the
+// listening rows between deploys (capped at data-max=3 on the homepage).
+// `topArtistRecent` and `scrobbles7d` are best-effort: they're computed
+// from the `lastfm.limit` (default 25) most-recent tracks, so a heavy
+// listening week may understate.
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+const last7 = listening.filter(t => t.date && (Date.now() - new Date(t.date).getTime()) < SEVEN_DAYS_MS);
+const artistTally = new Map();
+for (const t of last7) {
+  if (!t.artist) continue;
+  artistTally.set(t.artist, (artistTally.get(t.artist) || 0) + 1);
+}
+let topArtistRecent = null;
+for (const [name, plays] of artistTally) {
+  if (!topArtistRecent || plays > topArtistRecent.plays) topArtistRecent = { name, plays };
+}
+fs.writeFileSync(path.join(DIST_DIR, 'index.html'), indexPage({
+  site: siteMeta,
+  recentThoughts: thoughts.slice(0, 3),
+  recentTracks:   listening.slice(0, 3),
+  topArtistRecent,
+  scrobbles7d:    last7.length,
+}));
 
 // Articles (journal + making)
 const journalArticles = articles.filter(a => a.kind === 'journal');

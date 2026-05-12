@@ -1,111 +1,85 @@
-// Homepage — three-column feed mixing every content type in reverse-chrono.
+// Homepage — summary block + three-thought highlight grid + recent
+// listening section. Replaces the day-grouped timeline; the full mixed
+// feed lives at /blog/. The listening rows here share the #listening-rows
+// id with the /listening/ page so the live poller keeps both fresh, but
+// the homepage caps the visible count at 3 via `data-max="3"`.
 
 import { base } from './base.js';
 import { asset } from './_assets.js';
-import { esc, fmtDate, fmtIsoDay, relTime, tagList, safeUrl, relFor } from './_helpers.js';
+import { esc, fmtDate, timeTag, safeUrl, relFor } from './_helpers.js';
 
-function row(entry) {
-  const kind = entry.kind; // journal | thought | making | listening
-  // Homepage shows a compact "2h"/"3d"/"apr 17" label; wrap in <time> so
-  // the tooltip script can surface the full CT timestamp + visitor-local
-  // equivalent on hover.
-  const iso  = entry.date instanceof Date ? entry.date.toISOString() : new Date(entry.date).toISOString();
-  const when = `<time class="ts" datetime="${iso}">${esc(relTime(entry.date))}</time>`;
-  const permalinkLabel = kind === 'thought'
-    ? (entry.permalinkLabel || '#')
-    : kind === 'listening'
-      ? '↗ listening'
-      : (entry.readTime || '');
-  const permalink = entry.url
-    ? `<a class="permalink" href="${entry.url}">${esc(permalinkLabel)}</a>`
-    : '';
-  const actions = `<div class="actions">${permalink}</div>`;
-  let body;
-  if (entry.quote) {
-    body = `<div class="body q">${entry.html || esc(entry.body || '')}</div>`;
-  } else if (kind === 'listening') {
-    const title = entry.track ? esc(entry.track) : (entry.title ? esc(entry.title) : '(untitled)');
-    const artist = entry.artist ? ` — ${esc(entry.artist)}` : '';
-    const album = entry.album ? ` <span class="meta">· ${esc(entry.album)}</span>` : '';
-    body = `<div class="body"><strong>${title}</strong>${artist}${album}${entry.nowPlaying ? ' <span class="meta">· now</span>' : ''}</div>`;
-  } else if ((kind === 'journal' || kind === 'making') && entry.url) {
-    body = `<div class="body"><a href="${entry.url}"><strong>${esc(entry.title)}</strong></a>${entry.summary ? ` — ${esc(entry.summary)}` : ''} ${tagList(entry.tags)}</div>`;
-  } else {
-    body = `<div class="body">${entry.html || esc(entry.body || '')} ${tagList(entry.tags)}</div>`;
-  }
-  const tagAttr = esc((entry.tags || []).join(' '));
+function thoughtCard(t) {
+  // timeTag() returns a `<time class="ts">…</time>` — drop it inside the
+  // anchor as the only child so local-time.js still attaches its tooltip
+  // without nesting two `<time>` elements.
+  const day = timeTag(t.date, 'day');
+  const bodyClass = t.quote ? 'body q' : 'body';
   return `
-    <div class="row" data-kind="${esc(kind)}" data-tags="${tagAttr}">
-      <div class="gutter"><span class="kind">${esc(kind)}</span><span class="when">${when}</span></div>
+    <article class="thought-card" data-id="${esc(t.id)}">
+      <a class="card-link" href="/blog/#${esc(t.id)}">${day}</a>
+      <div class="${bodyClass}">${t.html || esc(t.body || '')}</div>
+    </article>`;
+}
+
+// Mirrors listening-live.js renderRow() and listing.js listeningRow() so
+// the initial server render and the polled swap produce identical markup.
+function trackRow(t) {
+  const title  = t.track  || t.title || '(untitled)';
+  const artist = t.artist || '';
+  const album  = t.album  ? ` <span class="meta">· ${esc(t.album)}</span>` : '';
+  const when = t.nowPlaying
+    ? '<span class="dot" style="display:inline-block;width:.5rem;height:.5rem;border-radius:50%;background:var(--accent,#f77bc9);margin-right:.25rem;"></span>now'
+    : timeTag(t.date, 'day');
+  const year = esc(fmtDate(t.date, 'iso').slice(0, 4));
+  const linkOpen  = t.link ? `<a href="${esc(safeUrl(t.link))}" rel="noopener noreferrer">` : '';
+  const linkClose = t.link ? `</a>` : '';
+  return `
+    <div class="row">
+      <div class="gutter">
+        <span class="kind">${when}</span>
+        <span class="when">${year}</span>
+      </div>
       <div>
-        ${body}
-        ${actions}
+        <div class="body">
+          ${linkOpen}<strong>${esc(title)}</strong>${linkClose}
+          ${artist ? ` — ${esc(artist)}` : ''}${album}
+        </div>
       </div>
     </div>`;
 }
 
-function groupByDay(entries) {
-  const groups = new Map();
-  for (const e of entries) {
-    const key = fmtDate(e.date, 'iso');
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(e);
-  }
-  return [...groups.entries()].sort((a, b) => b[0].localeCompare(a[0]));
-}
-
-export function indexPage({ site, entries }) {
-  const groups = groupByDay(entries).slice(0, 6); // most recent ~6 days
-  const today = fmtDate(new Date(), 'iso');
-  const timeline = groups.length ? groups.map(([day, rows]) => {
-    const label = day === today ? `today · ${fmtIsoDay(day)}` : `${fmtIsoDay(day)} · ${day.slice(0, 4)}`;
-    return `
-    <div class="tl-divider"><span>${label}</span><span>${rows.length}</span></div>
-    ${rows.map(row).join('\n')}`;
-  }).join('\n') : `
-    <div class="row">
-      <div class="gutter"><span class="kind">—</span><span class="when"></span></div>
-      <div><div class="body muted">Nothing published yet.</div></div>
-    </div>`;
-
-  // Filter strip — built from the tags actually present in the visible feed.
-  // tag-filter.js (loaded below) reads `?tag=` from the URL on load and toggles
-  // rows by data-tags, so a /?tag=foo URL is a deep-linkable filtered view.
-  const visibleEntries = groups.flatMap(([, rows]) => rows);
-  const tagCounts = new Map();
-  for (const e of visibleEntries) {
-    for (const t of (e.tags || [])) tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
-  }
-  const topTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
-  const filterBar = topTags.length ? `
-    <div class="filter">
-      <span class="label">filter</span>
-      <a href="/" class="on all" data-filter="">all</a>
-      ${topTags.slice(0, 6).map(([tag]) => `<a href="/?tag=${encodeURIComponent(tag)}" data-filter="${esc(tag)}">${esc(tag)}</a>`).join('\n      ')}
-      <span class="cnt">${visibleEntries.length} entries</span>
-    </div>` : '';
-
+export function indexPage({ site, recentThoughts, recentTracks, topArtistRecent, scrobbles7d }) {
   const counts = site.counts || { journal: 0, thoughts: 0, making: 0, listening: 0, scrobbles: 0 };
-  const scrobbles = Number(counts.scrobbles || 0).toLocaleString('en-US');
+  const scrobblesFmt = Number(counts.scrobbles || 0).toLocaleString('en-US');
+  const postsCount   = (counts.journal || 0) + (counts.making || 0);
   const identity = site.identity || {};
   const identityLine = [identity.name, identity.handle].filter(Boolean).join(' · ');
+  const bio = identity.bio || site.bio || '';
   const links = site.links || [];
   const config = site.config || {};
 
+  const thoughtCards = (recentThoughts || []).length
+    ? recentThoughts.map(thoughtCard).join('\n')
+    : `<div class="thought-card empty">No thoughts yet.</div>`;
+
+  const trackRows = (recentTracks || []).length
+    ? recentTracks.map(trackRow).join('\n')
+    : `<div class="row"><div class="gutter"><span class="kind">—</span><span class="when"></span></div><div><div class="body" style="color:var(--mute);">No tracks yet.</div></div></div>`;
+
+  const listeningHeader = topArtistRecent
+    ? `<div class="listening-summary">
+        <span>top this week: <strong>${esc(topArtistRecent.name)}</strong></span>
+        ${scrobbles7d ? `<span>${scrobbles7d} scrobble${scrobbles7d === 1 ? '' : 's'} · last 7 days</span>` : ''}
+      </div>`
+    : '';
+
   const body = `
 <main class="page" id="main">
-  <h1 class="visually-hidden">latest</h1>
+  <h1 class="visually-hidden">home</h1>
 
   <aside class="side-left" aria-label="page meta">
     <div class="ident">
       ${identityLine ? `<div class="who">${esc(identityLine)}</div>` : ''}
-      ${site.bio ? `<div class="bio">${esc(site.bio)}</div>` : ''}
-      <div class="stats">
-        <span class="s"><span class="n">${counts.journal}</span>journal</span>
-        <span class="s"><span class="n">${counts.thoughts}</span>thoughts</span>
-        <span class="s"><span class="n">${counts.making}</span>making</span>
-        <span class="s"><span class="n" id="scrobble-count">${scrobbles}</span>scrobbles</span>
-      </div>
     </div>
 
     ${links.length ? `
@@ -118,11 +92,32 @@ export function indexPage({ site, entries }) {
   </aside>
 
   <section class="timeline">
-    ${filterBar}
-    ${timeline}
-    ${entries.length ? `<div class="loadmore"><a href="/blog/">load older →</a></div>` : ''}
-  </section>
+    <div class="summary">
+      ${bio ? `<p class="lede">${esc(bio)}</p>` : ''}
+      <div class="counts">
+        <span><b>${postsCount}</b> posts</span>
+        <span><b>${counts.thoughts || 0}</b> thoughts</span>
+        <span><b id="scrobble-count">${scrobblesFmt}</b> scrobbles</span>
+      </div>
+    </div>
 
+    <section class="thought-highlights" aria-label="recent thoughts">
+      <h2>recent thoughts</h2>
+      <div class="thought-grid">
+        ${thoughtCards}
+      </div>
+      <a class="see-more" href="/blog/?kind=thought">all thoughts →</a>
+    </section>
+
+    <section class="recent-listening" aria-label="recently listened">
+      <h2>recent listening</h2>
+      ${listeningHeader}
+      <div id="listening-rows" data-max="3">
+        ${trackRows}
+      </div>
+      <a class="see-more" href="/listening/">all listening →</a>
+    </section>
+  </section>
 </main>`;
 
   return base({
@@ -131,12 +126,10 @@ export function indexPage({ site, entries }) {
       navActive: 'home',
       nowPlaying: site.nowPlaying || '',
       footerText: config.footerText ?? '',
-      // Share the /listening/ poller to keep the scrobble counter fresh
-      // between deploys. It no-ops if #listening-rows isn't on the page.
-      // tag-filter.js wires the ?tag= URL param + filter strip to in-place
-      // row hiding.
-      bodyScripts: `<script src="/${asset('listening-live.js')}" defer></script>
-<script src="/${asset('tag-filter.js')}" defer></script>`,
+      // Share the /listening/ poller for live scrobble + recent-tracks
+      // updates. tag-filter.js is no longer loaded here — the homepage
+      // has no filter strip after the redesign.
+      bodyScripts: `<script src="/${asset('listening-live.js')}" defer></script>`,
     },
     body,
   });
