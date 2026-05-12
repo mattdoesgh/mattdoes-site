@@ -73,7 +73,6 @@ export function base({ page, body }) {
 <!-- Critical font preloads — also emitted as Link: headers in /static/_headers
      for HTTP 103 Early Hints, but kept here so direct file:// + non-CF hosts work. -->
 <link rel="preload" href="/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin />
-<link rel="preload" href="/fonts/Fraunces-Variable.woff2" as="font" type="font/woff2" crossorigin />
 <!-- Shell scripts — hinted early, executed deferred. -->
 <link rel="preload" href="${tweaksJs}"      as="script" />
 <link rel="preload" href="${navPrefetchJs}" as="script" />
@@ -119,10 +118,6 @@ ${body}
       <button type="button" class="tk-sw" data-value="blue"  aria-pressed="false" aria-label="cool blue"></button>
       <button type="button" class="tk-sw" data-value="green" aria-pressed="false" aria-label="fern green"></button>
     </div>
-  </div>
-  <div class="row-t">
-    <span class="row-t-label">serif headings</span>
-    <button type="button" class="tk-toggle" data-key="serif" aria-pressed="true" aria-label="serif headings"></button>
   </div>
   <div class="row-t">
     <span class="row-t-label">local map</span>

@@ -29,16 +29,13 @@
   src: url('/fonts/JetBrainsMono-SemiBold.woff2') format('woff2');
   font-weight: 600; font-style: normal; font-display: swap;
 }
+/* Italic face for blockquotes and the .row .body.q variant. While the
+   woff2 file is still being deployed, the browser falls back to a
+   synthesized slant of the regular weight — readable, just slightly
+   mechanical. */
 @font-face {
-  font-family: 'Fraunces';
-  src: url('/fonts/Fraunces-Variable.woff2') format('woff2-variations'),
-       url('/fonts/Fraunces-Variable.woff2') format('woff2');
-  font-weight: 400 500; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: 'Fraunces';
-  src: url('/fonts/Fraunces-VariableItalic.woff2') format('woff2-variations'),
-       url('/fonts/Fraunces-VariableItalic.woff2') format('woff2');
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Italic.woff2') format('woff2');
   font-weight: 400; font-style: italic; font-display: swap;
 }
 
@@ -54,7 +51,6 @@ html {
   --accent-soft: oklch(0.30 0.06 340);
 
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-  --font-serif: 'Fraunces', Georgia, serif;
   --font-ui: system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-body: var(--font-mono);
 
@@ -413,12 +409,12 @@ a.accent:hover { border-bottom-color: var(--accent); }
 .row .body img,
 .row .body picture { max-width: 100%; height: auto; display: block; }
 
-/* Quote variant — serif italic, old-site callback */
+/* Quote variant — mono italic. */
 .row .body.q {
-  font-family: var(--font-serif);
+  font-family: var(--font-mono);
   font-style: italic;
-  font-size: 15px;
-  line-height: 1.4;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--ink);
   border-left: none;
   padding-left: 0;
@@ -557,13 +553,13 @@ footer.site .footer-link:hover { color: var(--ink); }
 .post-head .kicker .dot { color: var(--faint); }
 .post-head h1 {
   margin: 0 0 .5rem;
-  font-family: var(--font-serif);
-  font-weight: 400;
-  font-size: clamp(1.4rem, 3vw, 1.9rem);
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: clamp(1.25rem, 2.6vw, 1.65rem);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
   color: var(--ink);
-  max-width: 22ch;
+  max-width: 28ch;
   text-wrap: pretty;
 }
 .post-head .lede {
@@ -606,11 +602,11 @@ footer.site .footer-link:hover { color: var(--ink); }
 }
 .post-body p { margin: 0 0 1rem; }
 .post-body h2 {
-  font-family: var(--font-serif);
-  font-weight: 400;
-  font-size: 1.15rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 1.05rem;
   margin: 1.75rem 0 .5rem;
-  letter-spacing: -0.005em;
+  letter-spacing: -0.01em;
 }
 .post-body ul { padding-left: 1.3rem; margin: 0 0 1rem; }
 .post-body li { margin: .15rem 0; }
@@ -638,8 +634,8 @@ footer.site .footer-link:hover { color: var(--ink); }
   border-left: 2px solid var(--faint);
   color: var(--mute);
   font-style: italic;
-  font-family: var(--font-serif);
-  font-size: 1.02rem;
+  font-family: var(--font-mono);
+  font-size: .98rem;
 }
 .post-body hr { border: none; border-top: 1px dashed var(--faint); margin: 1.5rem 0; }
 
