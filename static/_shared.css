@@ -140,7 +140,6 @@ a.accent:hover { border-bottom-color: var(--accent); }
 }
 .topbar nav a:hover { color: var(--ink); }
 .topbar nav a.on { color: var(--ink); }
-.topbar nav a.on::before { content: "§ "; color: var(--accent); }
 .topbar .spacer { flex: 1; }
 .topbar .meta-link {
   color: var(--mute);
@@ -151,7 +150,6 @@ a.accent:hover { border-bottom-color: var(--accent); }
 }
 .topbar .meta-link:hover { color: var(--ink); }
 .topbar .meta-link.on { color: var(--ink); }
-.topbar .meta-link.on::before { content: "§ "; color: var(--accent); }
 .topbar .status {
   color: var(--mute);
   font-size: 11px;
@@ -258,7 +256,6 @@ a.accent:hover { border-bottom-color: var(--accent); }
   color: var(--mute);
   display: flex; justify-content: space-between; align-items: baseline;
 }
-.group h3::before { content: "§ "; color: var(--accent); }
 .group h3 .m { color: var(--faint); font-size: 10px; }
 .group ul { list-style: none; margin: 0; padding: 0; }
 .group li {
@@ -643,7 +640,6 @@ footer.site .footer-link:hover { color: var(--ink); }
   border-bottom: 1px solid var(--rule);
   display: flex; justify-content: space-between; align-items: baseline;
 }
-.section-label::before { content: "§ "; color: var(--accent); }
 .section-label .n {
   color: var(--accent);
   font-family: var(--font-mono);
@@ -809,7 +805,6 @@ table.schema .req.y { color: var(--accent); }
   text-transform: lowercase;
   font-size: 10.5px;
 }
-#tweaks header::before { content: "§ "; color: var(--accent); }
 #tweaks header .close {
   cursor: pointer;
   color: var(--mute);

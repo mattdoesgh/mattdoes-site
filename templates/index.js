@@ -122,16 +122,6 @@ export function indexPage({ site, entries }) {
     ${entries.length ? `<div class="loadmore"><a href="/thoughts/">load older →</a></div>` : ''}
   </section>
 
-  <aside class="side-right" aria-label="related">
-    ${topTags.length ? `
-    <div class="group">
-      <h3>trending tags</h3>
-      <ul>
-        ${topTags.slice(0, 12).map(([tag, count]) => `<li><a class="tg" href="/?tag=${encodeURIComponent(tag)}" data-tag="${esc(tag)}">${esc(tag)}</a><span class="meta">${count}</span></li>`).join('\n        ')}
-      </ul>
-    </div>` : ''}
-  </aside>
-
 </main>`;
 
   return base({
