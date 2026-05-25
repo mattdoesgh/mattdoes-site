@@ -54,23 +54,31 @@
       }
       div.hidden = visible === 0;
     });
-    // Toggle on-class for each filter chip independently. The `.all`
-    // chip lights up only when no filter is active.
+    // Toggle on-class for each filter chip independently, and keep
+    // `aria-current` in sync so the active chip is exposed to assistive
+    // tech (not just by colour). The `.all` chip lights up only when no
+    // filter is active.
+    const setActive = (a, active) => {
+      a.classList.toggle('on', active);
+      if (active) a.setAttribute('aria-current', 'true');
+      else        a.removeAttribute('aria-current');
+    };
     tagLinks().forEach(a => {
       // .all carries both data-filter="" and data-kind-filter="" — skip
       // it here so the all-detection below owns it.
       if (a.classList.contains('all')) return;
-      a.classList.toggle('on', (a.dataset.filter || '') === t);
+      setActive(a, (a.dataset.filter || '') === t);
     });
     kindLinks().forEach(a => {
       if (a.classList.contains('all')) return;
-      a.classList.toggle('on', (a.dataset.kindFilter || '') === k);
+      setActive(a, (a.dataset.kindFilter || '') === k);
     });
     document.querySelectorAll('.filter a.all').forEach(a => {
-      a.classList.toggle('on', !t && !k);
+      setActive(a, !t && !k);
     });
     updateBanner({ tag: t, kind: k });
     updateCount();
+    announce({ tag: t, kind: k });
   }
 
   function updateBanner({ tag, kind }) {
@@ -89,6 +97,43 @@
     banner.innerHTML =
       'showing ' + parts.join(' · ') +
       ' · <a href="' + window.location.pathname + '" class="clear">clear</a>';
+  }
+
+  // ── live-region announcements (WCAG 4.1.3) ──────────────────────────
+  // Filtering changes the visible result set with no DOM focus move, so
+  // screen-reader users get no feedback. A single visually-hidden
+  // role="status" region carries one concise message per filter action.
+  //
+  // `liveRegion` is created lazily on the first announcement and
+  // `announcedOnce` suppresses the initial page-load call when no filter
+  // is active (no result actually changed yet).
+  let liveRegion = null;
+  let announcedOnce = false;
+  function getLiveRegion() {
+    if (liveRegion) return liveRegion;
+    liveRegion = document.createElement('div');
+    liveRegion.className = 'visually-hidden';
+    liveRegion.setAttribute('role', 'status');
+    liveRegion.setAttribute('aria-live', 'polite');
+    timeline.appendChild(liveRegion);
+    return liveRegion;
+  }
+  function announce({ tag, kind }) {
+    const active = !!(tag || kind);
+    // Don't announce the no-op initial load when nothing is filtered.
+    if (!active && !announcedOnce) return;
+    announcedOnce = true;
+    let visible = 0;
+    rows().forEach(r => { if (!r.hidden) visible++; });
+    const total = rows().length;
+    let msg = `showing ${visible} of ${total} entries`;
+    if (active) {
+      const facets = [];
+      if (kind) facets.push(`kind ${kind}`);
+      if (tag)  facets.push(`tag ${tag}`);
+      msg = `filtered by ${facets.join(' and ')} — ${msg}`;
+    }
+    getLiveRegion().textContent = msg;
   }
 
   // If the filter strip has a `.cnt` counter, keep it in sync with what's

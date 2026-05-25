@@ -9,6 +9,8 @@
     "clean": "rm -rf dist",
     "lint": "html-validate \"dist/**/*.html\"",
     "audit": "npm audit --audit-level=moderate",
+    "pretest": "VAULT_DIR=test/fixture-vault SITE_URL=https://mattdoes.online node build.js",
+    "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
     "bake-geo": "node scripts/bake-home-geojson.js",
     "optimize-media": "node scripts/optimize-media.js",
     "sync-media": "node --env-file-if-exists=.env scripts/sync-media.js"
@@ -23,7 +25,10 @@
     "node": ">=20"
   },
   "devDependencies": {
+    "axe-core": "^4.11.4",
+    "culori": "^4.0.2",
     "html-validate": "^11.0.0",
+    "jsdom": "^25.0.1",
     "lightningcss": "^1.32.0",
     "sharp": "^0.34.5",
     "terser": "^5.47.1"

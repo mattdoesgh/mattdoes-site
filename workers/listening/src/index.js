@@ -292,10 +292,49 @@ async function writeCache(env, key, data) {
   } catch { /* swallow — next tick will retry */ }
 }
 
+// ── payload contract (C7) ───────────────────────────────────────────────
+// The static clients (static/listening-live.js, static/now-playing.js) treat
+// the *presence of a truthy `reason` field* as "this is an error/fallback
+// payload — do not overwrite the live UI; keep whatever is on screen".
+//
+//   • NO `reason`  → AUTHORITATIVE. The client applies the payload verbatim,
+//     even when `playcount` is 0 or `tracks` is empty (a real "you haven't
+//     scrobbled" state must be allowed to render).
+//   • truthy `reason` → ERROR / DEGRADED / FALLBACK. The client ignores the
+//     data and leaves the last-known-good content in place.
+//
+// Two invariants must therefore hold for *every* response this Worker emits:
+//   1. Every error / degraded / fallback payload carries a truthy `reason`.
+//   2. No genuine-success payload carries a `reason` at all.
+//
+// Where each branch lands:
+//   • refresh() success data → { playcount, tracks } / { nowPlaying, ... } —
+//     never carries `reason`. Authoritative, including empty/zero results.
+//   • HARD band "upstream failed, serve stale `cached.data`" → that data is a
+//     previously-successful payload with no `reason`. Correct: it is real
+//     data, just stale, so the client should keep showing it.
+//   • emptyPayload() → always attaches a guaranteed-truthy `reason` (see
+//     below). Used for not_configured + every upstream/refresh failure.
+// The KV-missing "direct fetch" branch routes through exactly these two
+// shapes (refresh success data, or emptyPayload on failure), so it obeys the
+// contract automatically.
+
+/**
+ * Build a non-authoritative fallback payload. Always carries a truthy
+ * `reason` so clients keep their live UI (contract C7 above). `reason` is
+ * coerced to a non-empty string defensively — an error/fallback payload must
+ * never escape with a missing or empty `reason`, or a client would mistake
+ * it for an authoritative empty state and wipe good content.
+ *
+ * @param {'now'|'recent'} kind
+ * @param {string} [reason] short machine-readable cause
+ * @returns {object} payload with a guaranteed-truthy `reason`
+ */
 function emptyPayload(kind, reason) {
+  const safeReason = (typeof reason === 'string' && reason) ? reason : 'unavailable';
   return kind === 'now'
-    ? { nowPlaying: false, reason }
-    : { playcount: 0, tracks: [], reason };
+    ? { nowPlaying: false, reason: safeReason }
+    : { playcount: 0, tracks: [], reason: safeReason };
 }
 
 // ── shape helpers (preserved from the previous Worker) ──────────────────

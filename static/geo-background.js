@@ -19,12 +19,15 @@
 // is via the tweaks panel (`local map: mine`), so casual visitors get
 // the home shape and nothing more.
 //
-// Caching: a successfully fetched personal polygon is stashed in
-// localStorage, keyed by rounded coords, for 30 days.
+// Caching: a successfully fetched personal polygon (the derived city
+// shape — NOT coordinates) is stashed in localStorage for 7 days. The
+// short TTL bounds how long a traveler keeps seeing a stale city.
 //
 // Privacy: coords are sent to /api/geo/lookup (Matt's worker) once per
-// rounded-grid cell. They're never written to localStorage and never
-// leave the worker — only the polygon comes back.
+// rounded-grid cell. They are never written to localStorage and never
+// leave the worker — only the polygon comes back, and only the polygon
+// is cached. Switching the map mode to 'home' or 'off' clears the cache
+// entirely; geoBackground.clearCache() exposes the same as an API.
 
 (() => {
   // Keep these in sync with TWEAK_DEFAULTS in tweaks.js. Read here
@@ -39,7 +42,9 @@
   const HOME_URL        = '/home.geojson';
   const ENDPOINT        = (document.querySelector('meta[name="geo-endpoint"]')?.content) || '/api/geo/lookup';
   const STORAGE_KEY     = 'mdo:geo:v1';
-  const STORAGE_TTL_MS  = 30 * 24 * 60 * 60 * 1000;   // 30 days
+  // 7 days (was 30). A shorter TTL limits how long a traveler keeps
+  // seeing the city they were in when the polygon was first cached.
+  const STORAGE_TTL_MS  = 7 * 24 * 60 * 60 * 1000;   // 7 days
   const COORD_PRECISION = 1;                           // ~11 km grid → cache hits across a metro area
 
   // Particle-cloud knobs. Each point is anchored at its sampled position
@@ -378,16 +383,30 @@
   }
 
   // ── home polygon (always loaded) ────────────────────────────────────
-  fetch(HOME_URL, { cache: 'force-cache' })
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
-      if (!data) return;
-      state.homeFeature = data;
-      render();
-    })
-    .catch(() => { /* offline / 404 — leave the page un-decorated */ });
+  // The home polygon is purely decorative, so defer its fetch until the
+  // browser is idle rather than competing with critical page work on
+  // load. requestIdleCallback isn't in Safari — fall back to a short
+  // setTimeout there.
+  function loadHomePolygon() {
+    fetch(HOME_URL, { cache: 'force-cache' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data) return;
+        state.homeFeature = data;
+        render();
+      })
+      .catch(() => { /* offline / 404 — leave the page un-decorated */ });
+  }
+  if (typeof requestIdleCallback === 'function') {
+    requestIdleCallback(loadHomePolygon, { timeout: 3000 });
+  } else {
+    setTimeout(loadHomePolygon, 200);
+  }
 
   // ── localStorage cache for the visitor's own polygon ────────────────
+  // Only the derived city polygon and a timestamp are persisted. The
+  // rounded coordinates that produced it are deliberately NOT stored —
+  // doing so would contradict the tweaks-panel privacy copy.
   function loadCachedMine() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -398,12 +417,19 @@
       return obj;
     } catch { return null; }
   }
-  function saveCachedMine(feature, key) {
+  function saveCachedMine(feature) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        feature, key, savedAt: Date.now(),
+        feature, savedAt: Date.now(),
       }));
     } catch { /* quota / disabled — non-fatal */ }
+  }
+  // Explicit way to wipe any locally cached location data. Called when
+  // the visitor switches the map away from 'mine' and exposed on the
+  // imperative API so the cache is never stuck around silently.
+  function clearCachedMine() {
+    try { localStorage.removeItem(STORAGE_KEY); }
+    catch { /* disabled — non-fatal */ }
   }
 
   // ── opt-in upgrade flow ─────────────────────────────────────────────
@@ -437,9 +463,10 @@
       });
     } catch { return false; }
 
+    // Coordinates are rounded only for the worker request URL — they are
+    // never persisted, so no cache key is derived from them.
     const lat = +pos.coords.latitude.toFixed(COORD_PRECISION);
     const lng = +pos.coords.longitude.toFixed(COORD_PRECISION);
-    const cacheKey = `${lat},${lng}`;
 
     try {
       const res = await fetch(`${ENDPOINT}?lat=${lat}&lng=${lng}`, {
@@ -449,7 +476,7 @@
       const body = await res.json();
       if (!body || !body.feature) return false;
       state.mineFeature = body.feature;
-      saveCachedMine(body.feature, cacheKey);
+      saveCachedMine(body.feature);
       render();
       return true;
     } catch { return false; }
@@ -469,6 +496,11 @@
         // keep state.mode='mine' so a later retry still aims for it.
         if (!ok) render();
       });
+    } else if (next === 'home' || next === 'off') {
+      // Leaving the personal map: drop the cached city polygon and the
+      // in-memory copy so no location data lingers after opting out.
+      clearCachedMine();
+      state.mineFeature = null;
     }
     render();
   });
@@ -481,10 +513,23 @@
   });
 
   // ── imperative API ──────────────────────────────────────────────────
+  // useHome/off and clearCache all wipe the cached personal polygon so
+  // opting out of the personal map clears the stored location too.
   window.geoBackground = {
     useMine: () => { state.mode = 'mine'; return tryUseMine({ prompt: true }).finally(render); },
-    useHome: () => { state.mode = 'home'; render(); },
-    off:     () => { state.mode = 'off';  render(); },
+    useHome: () => {
+      state.mode = 'home';
+      clearCachedMine();
+      state.mineFeature = null;
+      render();
+    },
+    off: () => {
+      state.mode = 'off';
+      clearCachedMine();
+      state.mineFeature = null;
+      render();
+    },
+    clearCache: () => { clearCachedMine(); state.mineFeature = null; },
   };
 
   // ── initial silent upgrade ──────────────────────────────────────────

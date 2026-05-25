@@ -103,9 +103,23 @@ async function main() {
     await sharp(buf).webp({ quality: WEBP_QUALITY }).toFile(variantDest);
     generated += 1;
 
+    // Record the source image's intrinsic dimensions so build.js can emit
+    // `width`/`height` on the <img>, reserving layout space ahead of decode
+    // and cutting cumulative layout shift (CLS). `sharp().metadata()` reads
+    // these from the image header without decoding pixels; a corrupt or
+    // dimensionless image just leaves the fields undefined.
+    let width, height;
+    try {
+      const meta = await sharp(buf).metadata();
+      width  = meta.width;
+      height = meta.height;
+    } catch {}
+
     manifest.entries[rel] = {
       sha256: hash,
       variants: [{ path: variantRel, type: 'image/webp' }],
+      width,
+      height,
       optimizedAt: new Date().toISOString(),
     };
   }

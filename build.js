@@ -23,7 +23,7 @@ import { listingPage }  from './templates/listing.js';
 import { colophonPage } from './templates/colophon.js';
 import { aboutPage }    from './templates/about.js';
 import { blogPage }     from './templates/blog.js';
-import { esc, fmtDate, ctWallClockToDate, safeUrl } from './templates/_helpers.js';
+import { esc, fmtDate, fmtTime, ctWallClockToDate, safeUrl } from './templates/_helpers.js';
 
 /**
  * Frontmatter dates without a time component (e.g. `date: 2026-04-19`)
@@ -69,17 +69,22 @@ const MEDIA_MANIFEST  = path.resolve(__dirname, '.cache', 'media-manifest.json')
 const SITE_URL   = process.env.SITE_URL || siteConfig.url || 'https://mattdoes.online';
 
 // Media variants index (populated from optimize-media's manifest). Maps a
-// source basename like "hero.jpg" → [{ path: "hero.webp", type: "image/webp" }]
-// so mediaTag() can emit a <picture> element. Missing manifest → empty map,
-// and mediaTag falls back to a bare <img>.
+// source basename like "hero.jpg" → { variants: [{ path, type }], width, height }
+// so mediaTag() can emit a <picture> element and intrinsic dimensions.
+// Missing manifest → empty map, and mediaTag falls back to a bare <img>.
 const mediaVariants = (() => {
   if (!fs.existsSync(MEDIA_MANIFEST)) return new Map();
   try {
     const data = JSON.parse(fs.readFileSync(MEDIA_MANIFEST, 'utf8'));
     const m = new Map();
     for (const [key, entry] of Object.entries(data.entries || {})) {
-      m.set(key, entry.variants || []);
-      m.set(path.basename(key), entry.variants || []);
+      // Keep variants alongside the intrinsic width/height recorded by
+      // optimize-media.js, so mediaTag() can set <img width/height> and
+      // reserve layout space (cuts CLS). Both the full vault-relative key
+      // and the bare basename are indexed for flexible lookup.
+      const info = { variants: entry.variants || [], width: entry.width, height: entry.height };
+      m.set(key, info);
+      m.set(path.basename(key), info);
     }
     return m;
   } catch { return new Map(); }
@@ -126,27 +131,99 @@ function kebab(s) {
   return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
+// A valid explicit slug is exactly one lowercase URL segment: lowercase
+// alphanumerics in hyphen-separated groups. This rejects slashes (route
+// escape / extra path segments), `..` (directory traversal), quotes and
+// other attribute-breaking characters, and leading/trailing/double hyphens.
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+// `publish:` values that select a render target. Anything else is an
+// authoring mistake and must fail the build loudly; nullish/`draft` are
+// handled before this set is consulted (those notes are simply skipped).
+const PUBLISH_KINDS = new Set(['journal', 'making', 'thoughts', 'about', 'draft']);
+
 const files = walk(VAULT_DIR);
 const notes = [];
+// Resolved public route → first source file that claimed it. Two notes
+// resolving to the same route would have one silently overwrite the other
+// in dist/ while indexes still link both — so a collision fails the build.
+const routeOwners = new Map();
 for (const file of files) {
   const src  = fs.readFileSync(file, 'utf8');
   const { data, content } = matter(src);
-  if (!data.publish || data.publish === 'draft') continue;
   const rel  = path.relative(VAULT_DIR, file);
+  // Validate `publish` before the skip check: an unrecognized non-nullish
+  // value (e.g. a typo'd `publsh: journal` landing under `publish:`) is an
+  // authoring mistake that would otherwise silently drop the note.
+  if (data.publish != null && !PUBLISH_KINDS.has(data.publish)) {
+    throw new Error(`Invalid frontmatter: ${rel} has publish: "${data.publish}" — must be one of ${[...PUBLISH_KINDS].join('/')}.`);
+  }
+  if (!data.publish || data.publish === 'draft') continue;
   const base = path.basename(file, '.md');
-  const slug = data.slug || kebab(data.title || base);
-  notes.push({
+
+  // Slug: an explicit `slug:` must be a single safe URL segment; the
+  // kebab() fallback (from title or filename) must be non-empty.
+  let slug;
+  if (data.slug != null && data.slug !== '') {
+    slug = String(data.slug);
+    if (!SLUG_RE.test(slug)) {
+      throw new Error(`Invalid frontmatter: ${rel} has slug: "${slug}" — must be one lowercase URL segment (a-z0-9, hyphen-separated, no slashes, dots, quotes, or leading/trailing/double hyphens).`);
+    }
+  } else {
+    slug = kebab(data.title || base);
+    if (!slug) {
+      throw new Error(`Invalid frontmatter: ${rel} produced an empty slug from its title/filename — set an explicit slug:.`);
+    }
+  }
+
+  // Shape checks: tags/aliases must be arrays if present; date/updated, if
+  // present, must parse to a valid Date (an unparseable value yields a
+  // Date whose getTime() is NaN — reject it rather than emitting Invalid Date).
+  if (data.tags != null && !Array.isArray(data.tags)) {
+    throw new Error(`Invalid frontmatter: ${rel} has a non-array tags: value.`);
+  }
+  if (data.aliases != null && !Array.isArray(data.aliases)) {
+    throw new Error(`Invalid frontmatter: ${rel} has a non-array aliases: value.`);
+  }
+  let parsedDate = null, parsedUpdated = null;
+  if (data.date != null) {
+    parsedDate = parseFrontmatterDate(data.date);
+    if (!(parsedDate instanceof Date) || isNaN(parsedDate)) {
+      throw new Error(`Invalid frontmatter: ${rel} has an unparseable date: value.`);
+    }
+  }
+  if (data.updated != null) {
+    parsedUpdated = parseFrontmatterDate(data.updated);
+    if (!(parsedUpdated instanceof Date) || isNaN(parsedUpdated)) {
+      throw new Error(`Invalid frontmatter: ${rel} has an unparseable updated: value.`);
+    }
+  }
+
+  const note = {
     file, rel, base, body: content,
     frontmatter: data,
     publish: data.publish,
     title:   data.title || base,
-    date:    data.date ? parseFrontmatterDate(data.date) : fs.statSync(file).mtime,
-    updated: data.updated ? parseFrontmatterDate(data.updated) : null,
+    date:    parsedDate || fs.statSync(file).mtime,
+    updated: parsedUpdated,
     slug,
     tags:    data.tags || [],
     summary: data.summary || '',
     aliases: data.aliases || [],
-  });
+  };
+
+  // Duplicate-route detection. Thought (daily) notes all resolve to the
+  // shared /thoughts/ archive route, so they're exempt — only routes that
+  // own a distinct page can collide.
+  if (note.publish !== 'thoughts') {
+    const route = routeFor(note);
+    const owner = routeOwners.get(route);
+    if (owner) {
+      throw new Error(`Duplicate route ${route}: claimed by both ${owner} and ${rel}.`);
+    }
+    routeOwners.set(route, rel);
+  }
+
+  notes.push(note);
 }
 
 // ── 2. Routes & slug index (for wikilink resolution) ────────────────────
@@ -191,32 +268,67 @@ function mediaUrl(p) {
   return `${MEDIA_BASE}/${p.split('/').map(encodeURIComponent).join('/')}`;
 }
 
+// Track which informative images have already been warned about for
+// missing authored alt text, so a note re-embedding the same file (or a
+// repeated build pass) only logs once per target.
+const altWarned = new Set();
+
 /**
  * Render a vault attachment as the appropriate HTML element based on
  * extension: `<picture>` (with `.webp` source) for known image types,
  * `<audio>` for audio, `<video>` for video, or `<a>` as a fallback.
  *
+ * Image embeds distinguish three alt-text cases (F15):
+ *  - no pipe (`![[img.png]]`)        → `alt` is `undefined`; the filename is
+ *    used as a last-resort alt and a one-time warning is logged.
+ *  - empty pipe (`![[img.png|]]`)    → `alt` is `''`; the image is treated as
+ *    decorative — `alt=""` and no `<figcaption>`.
+ *  - text pipe (`![[img.png|cap]]`)  → `alt` is the caption; rendered with a
+ *    `<figcaption>`.
+ *
  * @param {string} target attachment path (relative to `MEDIA_BASE`)
- * @param {string} [alt] alt text for images (defaults to filename)
+ * @param {string|undefined} alt caption/alt text — `undefined` = no pipe,
+ *   `''` = explicit decorative empty alt, non-empty = authored caption
+ * @param {boolean} [eager=false] render the first image of a note eagerly
+ *   (likely the LCP element) instead of `loading="lazy"`
  * @returns {string} HTML fragment
  */
-function mediaTag(target, alt) {
+function mediaTag(target, alt, eager = false) {
   const clean = target.replace(/^\/+/, '');
   const url = mediaUrl(clean);
   if (IMG_EXT.test(clean)) {
-    const variants = mediaVariants.get(clean) || mediaVariants.get(path.basename(clean)) || [];
-    // An explicit `|caption` clause produces a <figcaption>. A bare embed
-    // without a pipe falls back to the filename for the alt attr but
-    // does not render a caption — captions are an opt-in affordance.
-    const hasExplicitAlt = alt != null && alt !== '';
-    const altText = esc(hasExplicitAlt ? alt : clean);
+    const info = mediaVariants.get(clean) || mediaVariants.get(path.basename(clean)) || {};
+    const variants = info.variants || [];
+    // Alt-text resolution. `undefined` = bare embed (no pipe); `''` = an
+    // explicit decorative embed (`![[img|]]`); non-empty = authored caption.
+    const isDecorative  = alt === '';
+    const hasAuthoredAlt = alt != null && alt !== '';
+    if (alt === undefined && !altWarned.has(clean)) {
+      // Informative image without authored alt text — degrades to the
+      // filename, which is rarely meaningful. Warn once so the author can
+      // add `|caption` (informative) or `|` (decorative).
+      altWarned.add(clean);
+      console.warn(`  (note: image embed lacks alt text — ${clean}; add '|caption' or '|' for decorative)`);
+    }
+    const altText = isDecorative ? '' : esc(hasAuthoredAlt ? alt : clean);
+    // Intrinsic dimensions, when optimize-media recorded them, let the
+    // browser reserve layout space before decode (cuts CLS).
+    const dims = (info.width && info.height)
+      ? ` width="${info.width}" height="${info.height}"`
+      : '';
+    // Eager-load the first image in a note (likely above the fold / the LCP
+    // element) and hint high fetch priority; lazy-load the rest.
+    const loadAttrs = eager ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"';
     const sources = variants
       .map(v => `<source type="${esc(v.type)}" srcset="${mediaUrl(v.path)}">`)
       .join('');
+    const imgTag = `<img src="${url}" alt="${altText}"${dims}${loadAttrs} />`;
     const img = variants.length === 0
-      ? `<img src="${url}" alt="${altText}" loading="lazy" />`
-      : `<picture>${sources}<img src="${url}" alt="${altText}" loading="lazy" /></picture>`;
-    return hasExplicitAlt
+      ? imgTag
+      : `<picture>${sources}${imgTag}</picture>`;
+    // A <figcaption> is only emitted for an authored caption — never for a
+    // bare or explicitly-decorative embed.
+    return hasAuthoredAlt
       ? `<figure>${img}<figcaption>${esc(alt)}</figcaption></figure>`
       : img;
   }
@@ -242,8 +354,20 @@ function resolveWikilinks(md) {
     masks.push(m);
     return `\u0000${masks.length - 1}\u0000`;
   });
-  // Embeds first: ![[file|alt]]
-  md = md.replace(/!\[\[([^\]|]+?)(?:\|([^\]]+))?\]\]/g, (_, target, alt) => mediaTag(target.trim(), alt && alt.trim()));
+  // Embeds first: ![[file|alt]]. The alt group is `*` (not `+`) so an
+  // explicit decorative embed `![[img.png|]]` matches with an empty alt;
+  // mediaTag distinguishes that empty string from a missing pipe.
+  // `imgIdx` counts image embeds in *this* note body so the first one
+  // (likely the LCP / above-the-fold image) renders eagerly (F15).
+  let imgIdx = 0;
+  md = md.replace(/!\[\[([^\]|]+?)(?:\|([^\]]*))?\]\]/g, (_, target, alt) => {
+    const t = target.trim();
+    const eager = IMG_EXT.test(t.replace(/^\/+/, '')) && imgIdx++ === 0;
+    // Preserve the alt distinction: `undefined` (no pipe) stays undefined;
+    // an empty/whitespace pipe collapses to `''` (decorative); otherwise trim.
+    const altArg = alt === undefined ? undefined : alt.trim();
+    return mediaTag(t, altArg, eager);
+  });
   // Links: [[target|label]]
   md = md.replace(/\[\[([^\]|]+?)(?:\|([^\]]+))?\]\]/g, (_, target, label) => {
     const key = target.trim().toLowerCase();
@@ -565,14 +689,34 @@ for (const n of notes) {
   }
 }
 
+// /about/ is a singleton surface. More than one `publish: about` note can't
+// both own it — the second would silently overwrite the first in dist/
+// while still being linked. Fail the build naming every offender.
+if (aboutNotes.length > 1) {
+  throw new Error(`Multiple publish: about notes — only one is allowed: ${aboutNotes.map(n => n.rel).join(', ')}.`);
+}
+
 articles.sort((a, b) => b.date - a.date);
-// Assign IDs in chronological order so t-001 is always the oldest thought
-// and higher numbers are newer. Without this, IDs depend on vault-walk
-// order (daily notes authored newest-first end up with t-001 = newest),
-// which breaks stable permalinks and inverts the expected ordering on
-// any page that renders newest-first. Flip back to desc for display.
+// Stable thought IDs (F13 / contract C6). The old scheme assigned
+// `t-001…` sequential ordinals after a chronological sort, so inserting an
+// older daily note shifted every later ordinal and broke existing fragment
+// permalinks and feed <id>s. Derive the id from the thought's own
+// timestamp instead: `t-YYYYMMDD-HHMM` in CT wall-clock (the same zone the
+// rest of the file treats dates in). `t.date` is the correct absolute
+// instant — fmtDate('iso')/fmtTime convert it to CT components for us.
+// Two thoughts in the same CT minute disambiguate with a `-2`, `-3`, … suffix.
 thoughts.sort((a, b) => a.date - b.date);
-thoughts.forEach((t, i) => { t.id = `t-${String(i + 1).padStart(3, '0')}`; });
+{
+  const idCounts = new Map();
+  for (const t of thoughts) {
+    const ymd = fmtDate(t.date, 'iso').replace(/-/g, ''); // YYYYMMDD in CT
+    const hm  = fmtTime(t.date).replace(':', '');         // HHMM in CT
+    const base = `t-${ymd}-${hm}`;
+    const seen = idCounts.get(base) || 0;
+    idCounts.set(base, seen + 1);
+    t.id = seen === 0 ? base : `${base}-${seen + 1}`;
+  }
+}
 thoughts.reverse();
 
 // Listening: pulled from Last.fm. Kept separate from vault content.
@@ -585,7 +729,12 @@ const listening = lastfmTracks
     track:  t.track,
     artist: t.artist,
     album:  t.album,
-    link:   t.link,
+    // Last.fm data (live API or stale on-disk cache) is untrusted input
+    // (contract C1): a `track.url` carrying an unsafe scheme or
+    // attribute-breaking text must never reach an href. Normalize through
+    // safeUrl() here so every downstream `entry.link` is already scheme-safe;
+    // templates additionally HTML-escape on emit.
+    link:   safeUrl(t.link),
     image:  t.image,
     date:   new Date(t.date),
     nowPlaying: t.nowPlaying,
@@ -642,9 +791,13 @@ const feedEntries = [
     artist: l.artist,
     track: l.track,
     album: l.album,
+    // `l.link` is already safeUrl()-normalized above. Route `url` to a
+    // usable destination: a missing link is `''` and an unsafe-scheme link
+    // is `'#'` — in either case fall back to the site-owned /listening/
+    // page rather than emitting a dead/placeholder href (contract C1).
     link: l.link,
     date: l.date,
-    url: l.link || '/listening/',
+    url: (l.link && l.link !== '#') ? l.link : '/listening/',
     tags: l.tags,
     nowPlaying: l.nowPlaying,
   })),
@@ -662,6 +815,12 @@ const feedEntries = [
  */
 function writePage(urlPath, html) {
   const dest = path.join(DIST_DIR, urlPath.replace(/^\//, ''), 'index.html');
+  // Defense in depth: even though slugs are validated at parse time, assert
+  // the resolved output path never escapes DIST_DIR before writing — a bad
+  // route reaching here must fail loudly, never overwrite a file elsewhere.
+  if (!path.resolve(dest).startsWith(DIST_DIR + path.sep)) {
+    throw new Error(`Refusing to write outside dist/: route "${urlPath}" resolved to ${path.resolve(dest)}.`);
+  }
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   fs.writeFileSync(dest, html);
 }
@@ -846,25 +1005,41 @@ for (let i = 0; i < articles.length; i++) {
   }));
 }
 
-// Blog — unified journal + making + thoughts listing. Replaces the three
-// separate /journal/, /making/, /thoughts/ index pages (still reachable
-// via 301s in static/_redirects). Individual post URLs are unchanged.
+// Blog — unified journal + making + thoughts listing. Kept as the single
+// combined view with client-side kind chips. Individual post URLs unchanged.
 writePage('/blog/', blogPage({
   siteConfig,
   entries: feedEntries.filter(e => e.kind !== 'listening'),
   nowPlaying: nowPlayingStatus,
 }));
 
+// Real per-kind archive index pages (F12 / contract C5). Previously
+// /journal/, /making/, /thoughts/ were 301s into /blog/?kind=… and the
+// filtering was JS-only — so a scripts-disabled visitor saw the whole
+// archive. These server-rendered pages make each section meaningful
+// without JavaScript; /blog/ remains the unified, chip-filterable view.
+writePage('/journal/', listingPage({
+  siteConfig, kind: 'journal', entries: journalArticles, nowPlaying: nowPlayingStatus,
+}));
+writePage('/making/', listingPage({
+  siteConfig, kind: 'making', entries: makingArticles, nowPlaying: nowPlayingStatus,
+}));
+// Thoughts: pass the thought objects themselves (they carry .html, .date,
+// .tags, .id, .quote). `thoughts` is already newest-first after the reverse()
+// above. The template agent extends listingPage to accept kind:'thoughts'.
+writePage('/thoughts/', listingPage({
+  siteConfig, kind: 'thoughts', entries: thoughts, nowPlaying: nowPlayingStatus,
+}));
+
 // Listening keeps its own dedicated page since it's a distinct surface
 // (live-polled tracklist, not a blog kind).
 writePage('/listening/', listingPage({ siteConfig, kind: 'listening', entries: listening.slice(0, siteConfig.lastfm?.limit || 25), nowPlaying: nowPlayingStatus, totalScrobbles: scrobbleTotal }));
 
-// About — singleton. Rendered from whichever vault note has
-// `publish: about`. Logs and skips if missing; warns if duplicated.
-if (aboutNotes.length > 1) {
-  console.warn(`  (note: ${aboutNotes.length} notes have publish: about — using ${aboutNotes[0].rel})`);
-}
-if (aboutNotes.length) {
+// About — singleton. Rendered from whichever vault note has `publish: about`.
+// A duplicate is already rejected at parse time (see the aboutNotes length
+// check above), so here we only need the present/absent branch.
+const aboutWritten = aboutNotes.length > 0;
+if (aboutWritten) {
   writePage('/about/', aboutPage({ site: siteMeta, note: aboutNotes[0] }));
 }
 
@@ -904,18 +1079,50 @@ function cdataSafe(s) {
  * quoted attribute, so URLs are XML-escaped via `esc()` along with
  * title text.
  *
+ * Fixes applied (F5):
+ *  - Emits feed-level and per-entry `<author>` metadata.
+ *  - Only prefixes `SITE_URL` onto *relative* entry URLs — a listening
+ *    entry whose `e.url` is already an absolute Last.fm URL is no longer
+ *    double-prefixed into a malformed link.
+ *  - Listening entries get a stable, unique tag-URI `<id>` derived from the
+ *    scrobble timestamp, so repeated plays of one track no longer collapse
+ *    into a single feed entry; they also use a site-owned /listening/ link.
+ *  - Transient now-playing entries are excluded entirely.
+ *
  * @returns {string} full XML feed (including `<?xml … ?>` prologue)
  */
 function atomFeed() {
-  const updated = feedEntries[0] ? rfc3339(feedEntries[0].date) : rfc3339(new Date());
-  const items = feedEntries.slice(0, 30).map(e => {
+  const authorName = siteConfig.identity?.name || 'mattdoes.online';
+  // Reused for the feed-level author and every entry author. Both name and
+  // uri are XML-escaped since they land inside element content / attributes.
+  const authorBlock = (indent) =>
+    `${indent}<author><name>${esc(authorName)}</name><uri>${esc(SITE_URL + '/')}</uri></author>`;
+  // Exclude transient now-playing entries — they have no durable identity
+  // and would churn the feed on every build.
+  const feedItems = feedEntries.filter(e => !(e.kind === 'listening' && e.nowPlaying));
+  const updated = feedItems[0] ? rfc3339(feedItems[0].date) : rfc3339(new Date());
+  const items = feedItems.slice(0, 30).map(e => {
     const title = e.title || (e.kind === 'thought' ? `thought · ${fmtDate(e.date, 'day')}` : e.kind);
     const content = e.html || esc(e.body || e.summary || '');
-    const href = `${SITE_URL}${e.url}`;
+    // Listening entries always link to the site-owned /listening/ page, so
+    // the feed link stays valid even if the upstream Last.fm URL rots.
+    // Other kinds keep their own URL: prefix SITE_URL only when relative,
+    // never when it's already an absolute http(s) URL.
+    const isAbs = /^https?:\/\//i.test(e.url || '');
+    const href = e.kind === 'listening'
+      ? `${SITE_URL}/listening/`
+      : (isAbs ? e.url : `${SITE_URL}${e.url}`);
+    // Unique <id>. Articles/thoughts have unique URLs already; listening
+    // entries reuse one /listening/ link, so derive a per-scrobble tag URI
+    // from the play timestamp so distinct plays stay distinct in readers.
+    const id = e.kind === 'listening'
+      ? `tag:mattdoes.online,2026:listening:${new Date(e.date).getTime()}`
+      : href;
     return `  <entry>
     <title>${esc(title)}</title>
     <link href="${esc(href)}"/>
-    <id>${esc(href)}</id>
+    <id>${esc(id)}</id>
+${authorBlock('    ')}
     <updated>${rfc3339(e.date)}</updated>
     <content type="html"><![CDATA[${cdataSafe(content)}]]></content>
   </entry>`;
@@ -925,6 +1132,7 @@ function atomFeed() {
   <title>mattdoes.online</title>
   <link href="${SITE_URL}/"/>
   <link rel="self" href="${SITE_URL}/feed.xml"/>
+${authorBlock('  ')}
   <updated>${updated}</updated>
   <id>${SITE_URL}/</id>
 ${items}
@@ -945,6 +1153,54 @@ writePage('/colophon/', colophonPage({
     buildLines,
   },
 }));
+
+// ── 8b. Sitemap + robots (F16 / contract C9) ────────────────────────────
+// Emit a crawl map of every generated route. The per-page <meta
+// description>/canonical/OG tags are the template agent's concern; this
+// half just makes the route set discoverable.
+{
+  /**
+   * One `<url>` element. `loc` is XML-escaped (it can contain `&` from a
+   * query-free but still reserved-character slug); `lastmod`, when given,
+   * is an ISO date.
+   *
+   * @param {string} loc absolute URL
+   * @param {string} [lastmod] ISO timestamp
+   * @returns {string}
+   */
+  const urlEl = (loc, lastmod) =>
+    `  <url><loc>${esc(loc)}</loc>${lastmod ? `<lastmod>${esc(lastmod)}</lastmod>` : ''}</url>`;
+
+  // Static routes that are always generated, plus /about/ only when an
+  // about note was actually written. /journal/, /making/, /thoughts/ are
+  // now real pages (F12), so they belong in the sitemap.
+  const staticRoutes = ['/', '/blog/', '/listening/', '/colophon/', '/journal/', '/making/', '/thoughts/'];
+  if (aboutWritten) staticRoutes.push('/about/');
+
+  const urls = [
+    ...staticRoutes.map(r => urlEl(`${SITE_URL}${r}`)),
+    // Each article carries a date — surface it as <lastmod> so crawlers
+    // can prioritize fresh content.
+    ...articles.map(a => urlEl(`${SITE_URL}${a.url}`, rfc3339(a.date))),
+  ].join('\n');
+
+  const sitemap = `<?xml version="1.0" encoding="utf-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>
+`;
+  fs.writeFileSync(path.join(DIST_DIR, 'sitemap.xml'), sitemap);
+
+  // robots.txt — allow all crawling except the Worker API surface, and
+  // advertise the sitemap so crawlers discover it without guessing.
+  const robots = `User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: ${SITE_URL}/sitemap.xml
+`;
+  fs.writeFileSync(path.join(DIST_DIR, 'robots.txt'), robots);
+}
 
 // ── 9. Summary ──────────────────────────────────────────────────────────
 console.log(`✓ built in ${((Date.now() - t0) / 1000).toFixed(2)}s`);

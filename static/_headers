@@ -5,8 +5,15 @@
   X-Content-Type-Options: nosniff
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: interest-cohort=(), browsing-topics=()
+  # Permissions-Policy: geolocation is allowed for self only — the opt-in
+  # city map in the tweaks panel reverse-geocodes the visitor's coords.
+  # Every other powerful feature the site does not use is explicitly denied,
+  # plus the interest-cohort / browsing-topics opt-outs.
+  Permissions-Policy: geolocation=(self), camera=(), microphone=(), payment=(), usb=(), midi=(), magnetometer=(), accelerometer=(), gyroscope=(), display-capture=(), screen-wake-lock=(), xr-spatial-tracking=(), serial=(), bluetooth=(), hid=(), interest-cohort=(), browsing-topics=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  # CSP keeps style-src 'unsafe-inline': Shiki emits inline style attributes on
+  # highlighted code and authored inline styles are only partially migrated.
+  # Tightening style-src needs a report-only CSP trial first before enforcement.
   Content-Security-Policy: default-src 'self'; script-src 'self'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
 
 # ── Immutable, content-hashed assets ────────────────────────────────────
@@ -46,17 +53,17 @@
 # the edge on deploy, so a 6h s-maxage is safe and dramatically lifts
 # edge hit rate for repeat visitors that already have the asset shell
 # cached. 103 Early Hints push the shell preloads while origin renders.
+# Only the critical JetBrains Mono Regular face is preloaded — it is the sole
+# font on the critical render path (see static/_shared.css @font-face rules).
 /
   Cache-Control: public, max-age=0, must-revalidate
   CDN-Cache-Control: public, s-maxage=21600, stale-while-revalidate=604800
   Link: </fonts/JetBrainsMono-Regular.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
-  Link: </fonts/Fraunces-Variable.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
 
 /*/
   Cache-Control: public, max-age=0, must-revalidate
   CDN-Cache-Control: public, s-maxage=21600, stale-while-revalidate=604800
   Link: </fonts/JetBrainsMono-Regular.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
-  Link: </fonts/Fraunces-Variable.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
 
 /*.html
   Cache-Control: public, max-age=0, must-revalidate

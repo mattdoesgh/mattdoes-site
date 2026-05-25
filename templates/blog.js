@@ -47,7 +47,7 @@ function emptyRow() {
   return `
     <div class="row">
       <div class="gutter"><span class="kind">—</span><span class="when"></span></div>
-      <div><div class="body" style="color:var(--mute);">Nothing published yet.</div></div>
+      <div><div class="body muted">Nothing published yet.</div></div>
     </div>`;
 }
 
@@ -70,7 +70,7 @@ export function blogPage({ siteConfig, entries, nowPlaying }) {
   const filterBar = `
     <div class="filter">
       <span class="label">filter</span>
-      <a href="/blog/" class="on all" data-filter="" data-kind-filter="">all</a>
+      <a href="/blog/" class="on all" data-filter="" data-kind-filter="" aria-current="true">all</a>
       ${kinds.map(([k]) => `<a href="/blog/?kind=${encodeURIComponent(k)}" data-kind-filter="${esc(k)}">${esc(k)}</a>`).join('\n      ')}
       ${topTags.slice(0, 8).map(([tag]) => `<a href="/blog/?tag=${encodeURIComponent(tag)}" data-filter="${esc(tag)}">${esc(tag)}</a>`).join('\n      ')}
       <span class="cnt">${entries.length} entries</span>
@@ -125,6 +125,8 @@ export function blogPage({ siteConfig, entries, nowPlaying }) {
   return base({
     page: {
       title: 'blog',
+      url: '/blog/',
+      description: 'Posts, micro-thoughts, and building-in-public — one reverse-chronological timeline.',
       navActive: 'blog',
       nowPlaying: nowPlaying || '',
       footerText: siteConfig.footerText ?? '',

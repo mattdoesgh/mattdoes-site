@@ -69,3 +69,28 @@ jobs:
           name: dist
           path: dist
           retention-days: 7
+
+  # Regression suite. Runs the node:test files under test/ (build input
+  # validation, URL output safety, Atom feed standards, structural
+  # accessibility via axe/jsdom, token-level contrast, Worker robustness,
+  # privacy storage, progressive enhancement, and W3C/lint coverage).
+  # `npm test` is self-contained — its `pretest` step builds the fixture
+  # vault, and build-dependent tests rebuild in their own before() hooks.
+  test:
+    name: regression tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Run regression test suite
+        run: npm test
