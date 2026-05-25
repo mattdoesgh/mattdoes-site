@@ -35,12 +35,42 @@
     }
   }
 
-  // Also re-tick on tab-visibility and bfcache restore so the pill
-  // catches up immediately when Matt comes back to the tab.
+  // Polling lifecycle. The interval only runs while the tab is visible
+  // — a hidden tab does no useful work and shouldn't keep polling.
+  // startPolling()/stopPolling() are idempotent.
+  let pollId = 0;
+  function startPolling() {
+    if (pollId) return;
+    pollId = setInterval(tick, POLL_MS);
+  }
+  function stopPolling() {
+    if (!pollId) return;
+    clearInterval(pollId);
+    pollId = 0;
+  }
+
+  // Kick off immediately, then poll while the tab stays visible.
   tick();
-  setInterval(tick, POLL_MS);
+  if (document.visibilityState === 'visible') startPolling();
+
+  // On tab-hide, stop the interval; on regaining visibility, tick once
+  // to catch up and resume the interval.
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') tick();
+    if (document.visibilityState === 'visible') {
+      tick();
+      startPolling();
+    } else {
+      stopPolling();
+    }
   });
-  window.addEventListener('pageshow', tick);
+
+  // pageshow fires on the initial load too (right after the startup
+  // tick), which would double-fire an identical request. Only re-tick
+  // when the page is genuinely restored from the bfcache.
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) {
+      tick();
+      if (document.visibilityState === 'visible') startPolling();
+    }
+  });
 })();

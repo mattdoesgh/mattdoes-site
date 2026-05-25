@@ -28,17 +28,39 @@
   }
 
   function render(data) {
-    if (countEl && typeof data?.playcount === 'number' && data.playcount > 0) {
+    // The listening Worker tags every error/fallback payload with a
+    // truthy `reason`; authoritative success payloads carry none. On a
+    // marked failure, keep whatever is already on screen rather than
+    // wiping it with a stale or empty fallback.
+    if (!data || data.reason) return;
+
+    // Authoritative update: trust ANY numeric playcount, including 0.
+    if (countEl && typeof data.playcount === 'number') {
       // Match the server-side format: comma-grouped US locale.
       const next = Number(data.playcount).toLocaleString('en-US');
       if (countEl.textContent !== next) countEl.textContent = next;
     }
 
-    if (listEl && Array.isArray(data?.tracks) && data.tracks.length) {
-      const html = data.tracks.slice(0, MAX_ROWS).map(renderRow).join('\n');
+    // Authoritative update: trust ANY array of tracks, including []. An
+    // empty array renders the same muted empty-state row the server
+    // emits via emptyState('listening') in templates/listing.js.
+    if (listEl && Array.isArray(data.tracks)) {
+      const html = data.tracks.length
+        ? data.tracks.slice(0, MAX_ROWS).map(renderRow).join('\n')
+        : emptyRow();
       // Cheap dedupe: skip swap if markup is byte-identical to what's already there.
       if (listEl.innerHTML.trim() !== html.trim()) listEl.innerHTML = html;
     }
+  }
+
+  // Mirrors emptyState('listening') in templates/listing.js so a valid
+  // empty result renders the same muted row the server would.
+  function emptyRow() {
+    return `
+    <div class="row">
+      <div class="gutter"><span class="kind">—</span><span class="when"></span></div>
+      <div><div class="body muted">No scrobbles yet — check back after a listen.</div></div>
+    </div>`;
   }
 
   // Mirrors listeningRow() in templates/listing.js so client-side swaps match
@@ -49,7 +71,7 @@
     const artist = t.artist || '';
     const album  = t.album  ? ` <span class="meta">· ${esc(t.album)}</span>` : '';
     const when   = t.nowPlaying
-      ? '<span class="dot" style="display:inline-block;width:.5rem;height:.5rem;border-radius:50%;background:var(--accent,#f77bc9);margin-right:.25rem;"></span>now'
+      ? '<span class="dot now-dot"></span>now'
       : timeTag(t.date, 'day');
     const year = esc(yearOf(t.date));
     const linkOpen  = t.link ? `<a href="${esc(safeUrl(t.link))}" rel="noopener noreferrer">` : '';
@@ -118,15 +140,44 @@
     return `<time class="ts" datetime="${esc(d.toISOString())}">${esc(text)}</time>`;
   }
 
+  // Polling lifecycle. We only run the interval while the tab is
+  // visible — a backgrounded tab does no useful work and shouldn't
+  // burn network/CPU. startPolling()/stopPolling() are idempotent.
+  let pollId = 0;
+  function startPolling() {
+    if (pollId) return;
+    pollId = setInterval(tick, POLL_MS);
+  }
+  function stopPolling() {
+    if (!pollId) return;
+    clearInterval(pollId);
+    pollId = 0;
+  }
+
   // Kick off immediately so the page reflects current state on load,
-  // then poll for as long as the tab is open. Also re-tick when the tab
-  // regains visibility or the page is restored from bfcache, so coming
-  // back to a long-idle tab doesn't wait up to a full POLL_MS for fresh
-  // scrobbles.
+  // then poll for as long as the tab stays visible.
   tick();
-  setInterval(tick, POLL_MS);
+  if (document.visibilityState === 'visible') startPolling();
+
+  // On tab-hide, stop the interval entirely; on regaining visibility,
+  // tick once to catch up immediately and resume the interval.
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') tick();
+    if (document.visibilityState === 'visible') {
+      tick();
+      startPolling();
+    } else {
+      stopPolling();
+    }
   });
-  window.addEventListener('pageshow', tick);
+
+  // pageshow fires on the initial load too (right after our startup
+  // tick above), which would double-fire an identical request. Only
+  // re-tick when the page is genuinely restored from the bfcache
+  // (event.persisted) — the case that actually needs a refresh.
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) {
+      tick();
+      if (document.visibilityState === 'visible') startPolling();
+    }
+  });
 })();
