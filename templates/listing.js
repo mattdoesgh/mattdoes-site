@@ -1,17 +1,24 @@
-// Listing — reverse-chrono index for /journal/, /making/, /listening/.
-// One template, three call sites. Renders an empty-state when there are
-// no entries so pages stay functional on a fresh vault.
+// Listing — reverse-chrono index for /journal/, /making/, /listening/,
+// /thoughts/. One template, four call sites. Renders an empty-state when
+// there are no entries so pages stay functional on a fresh vault.
 
 import { base } from './base.js';
 import { asset } from './_assets.js';
 import { esc, fmtDate, timeTag, tagList, safeUrl, relFor } from './_helpers.js';
 
 // Pretty-name for the section we're listing — used in URLs and filter links.
-const SECTION_PATH = { journal: '/journal/', making: '/making/', listening: '/listening/' };
+const SECTION_PATH = {
+  journal:   '/journal/',
+  making:    '/making/',
+  listening: '/listening/',
+  thoughts:  '/thoughts/',
+};
 
 function articleRow(entry) {
   const tags = tagList(entry.tags);
   const tagAttr = esc((entry.tags || []).join(' '));
+  // entry.url is a build-generated route string; esc() it anyway so any
+  // future entry-derived URL stays attribute-safe (finding C1).
   return `
     <div class="row" data-tags="${tagAttr}">
       <div class="gutter">
@@ -20,9 +27,29 @@ function articleRow(entry) {
       </div>
       <div>
         <div class="body">
-          <a href="${entry.url}"><strong>${esc(entry.title)}</strong></a>${entry.summary ? ` — ${esc(entry.summary)}` : ''}
+          <a href="${esc(entry.url)}"><strong>${esc(entry.title)}</strong></a>${entry.summary ? ` — ${esc(entry.summary)}` : ''}
           ${tags}
         </div>
+      </div>
+    </div>`;
+}
+
+// Microblog row for the /thoughts/ archive. A thought has no `.url`/`.title`
+// — just rendered `.html`, an `.id` fragment anchor, and optional `.tags`.
+// Adapted from blog.js's thoughtRow; the permalink doubles as the fragment
+// target so /thoughts/#t-<id> deep-links straight to the entry.
+function thoughtRow(entry) {
+  const tagAttr = esc((entry.tags || []).join(' '));
+  const bodyClass = entry.quote ? 'body q' : 'body';
+  return `
+    <div class="row" data-kind="thought" data-tags="${tagAttr}">
+      <div class="gutter">
+        <span class="kind">thought</span>
+        <span class="when">${timeTag(entry.date, 'day')}</span>
+      </div>
+      <div>
+        <div class="${bodyClass}">${entry.html || esc(entry.body || '')}${(entry.tags && entry.tags.length && !entry.quote) ? ' ' + tagList(entry.tags) : ''}</div>
+        ${entry.id ? `<div class="actions"><a class="permalink" href="#${esc(entry.id)}" id="${esc(entry.id)}">#${esc(entry.id)}</a></div>` : ''}
       </div>
     </div>`;
 }
@@ -32,7 +59,7 @@ function listeningRow(entry) {
   const artist = entry.artist || '';
   const album  = entry.album ? ` <span class="meta">· ${esc(entry.album)}</span>` : '';
   const when = entry.nowPlaying
-    ? '<span class="dot" style="display:inline-block;width:.5rem;height:.5rem;border-radius:50%;background:var(--accent,#f77bc9);margin-right:.25rem;"></span>now'
+    ? '<span class="dot now-dot"></span>now'
     : timeTag(entry.date, 'day');
   const linkOpen  = entry.link ? `<a href="${esc(safeUrl(entry.link))}"${relFor(entry.link) || ' rel="noopener"'}>` : '';
   const linkClose = entry.link ? `</a>` : '';
@@ -56,19 +83,33 @@ function emptyState(kind) {
     journal:   'No journal entries yet.',
     making:    'Nothing posted to making yet.',
     listening: 'No scrobbles yet — check back after a listen.',
+    thoughts:  'No thoughts yet — check back soon.',
   }[kind] || 'Nothing here yet.';
   return `
     <div class="row">
       <div class="gutter"><span class="kind">—</span><span class="when"></span></div>
-      <div><div class="body" style="color:var(--mute);">${esc(copy)}</div></div>
+      <div><div class="body muted">${esc(copy)}</div></div>
     </div>`;
 }
+
+// Per-kind document description (finding C9).
+const SECTION_DESCRIPTION = {
+  journal:   'Journal entries — longer-form notes, reverse-chronological.',
+  making:    'Building-in-public posts — projects, experiments, and dev notes.',
+  listening: 'A live-updating log of recent listens, pulled from Last.fm.',
+  thoughts:  'Micro-thoughts — short posts split out of the daily notes.',
+};
 
 export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobbles }) {
   const section = (siteConfig.sections && siteConfig.sections[kind]) || {};
   const showLastfm = kind === 'listening' && siteConfig.lastfm?.showUser && siteConfig.lastfm?.username;
+  // Pick the row renderer for this kind: listening → listeningRow,
+  // thoughts → thoughtRow (microblog markup), everything else → articleRow.
+  const rowRenderer = kind === 'listening' ? listeningRow
+    : kind === 'thoughts' ? thoughtRow
+    : articleRow;
   const rows = entries.length
-    ? entries.map(kind === 'listening' ? listeningRow : articleRow).join('\n')
+    ? entries.map(rowRenderer).join('\n')
     : emptyState(kind);
   const statLabel = kind === 'listening' ? 'scrobbles' : 'posts';
   const statValue = kind === 'listening'
@@ -90,7 +131,7 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
   const filterBar = topTags.length ? `
     <div class="filter">
       <span class="label">filter</span>
-      <a href="${sectionPath}" class="on all" data-filter="">all</a>
+      <a href="${sectionPath}" class="on all" data-filter="" aria-current="true">all</a>
       ${topTags.slice(0, 8).map(([tag]) => `<a href="${sectionPath}?tag=${encodeURIComponent(tag)}" data-filter="${esc(tag)}">${esc(tag)}</a>`).join('\n      ')}
       <span class="cnt">${entries.length} ${statLabel}</span>
     </div>` : '';
@@ -146,14 +187,21 @@ export function listingPage({ siteConfig, kind, entries, nowPlaying, totalScrobb
   </aside>
 </main>`;
 
+  // `listening` is its own nav surface; journal/making/thoughts all live
+  // under the unified /blog/ timeline, so they highlight the blog nav item.
+  const navActive = kind === 'listening' ? 'listening' : 'blog';
+
   return base({
     page: {
       title: kind,
-      navActive: kind,
+      url: sectionPath,
+      description: SECTION_DESCRIPTION[kind] || '',
+      navActive,
       nowPlaying: nowPlaying || '',
       footerText: siteConfig.footerText ?? '',
       // Load the live-update poller only on /listening/. tag-filter.js wires
-      // the ?tag= URL param + filter strip on article-kind listings.
+      // the ?tag= URL param + filter strip on article-kind listings
+      // (journal/making/thoughts).
       bodyScripts: [
         kind === 'listening' ? `<script src="/${asset('listening-live.js')}" defer></script>` : '',
         kind !== 'listening' ? `<script src="/${asset('tag-filter.js')}" defer></script>` : '',

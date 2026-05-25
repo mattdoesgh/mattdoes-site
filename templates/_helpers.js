@@ -47,17 +47,19 @@ export function safeUrl(url) {
 }
 
 /**
- * Emit ` rel="noopener noreferrer"` for absolute http(s) URLs and nothing
- * for relative paths or other safe schemes. Keeps the referrer off
- * off-origin destinations and stops same-tab opener tabnabbing if the
- * link is ever switched to `target=_blank`.
+ * Emit ` rel="noopener noreferrer"` for off-origin URLs and nothing for
+ * relative paths or other safe schemes. Matches both absolute http(s) URLs
+ * and protocol-relative `//host/path` URLs — `safeUrl()` permits the latter,
+ * so they need the same external-link protections. Keeps the referrer off
+ * off-origin destinations and stops same-tab opener tabnabbing if the link
+ * is ever switched to `target=_blank`.
  *
  * @param {unknown} url URL to inspect
  * @returns {string} attribute fragment (with leading space) or `''`
  */
 export function relFor(url) {
   if (url == null) return '';
-  return /^https?:\/\//i.test(String(url).trim()) ? ' rel="noopener noreferrer"' : '';
+  return /^(https?:)?\/\//i.test(String(url).trim()) ? ' rel="noopener noreferrer"' : '';
 }
 
 // Wall-clock components of `instant` in America/Chicago. Intl emits "24"

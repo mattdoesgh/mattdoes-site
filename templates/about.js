@@ -43,6 +43,8 @@ export function aboutPage({ site, note }) {
   return base({
     page: {
       title: 'about',
+      url: '/about/',
+      description: note.summary || identity.bio || '',
       navActive: 'about',
       nowPlaying: site.nowPlaying || '',
       footerText: siteConfig.footerText ?? '',

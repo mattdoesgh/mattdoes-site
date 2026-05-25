@@ -66,7 +66,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
 <span class="b">└──</span> <span class="d">dist</span>                 <span class="note"># deployed</span></pre>
 
     <h2 id="schema" class="section-label"><span>frontmatter schema</span><span class="n">02</span></h2>
-    <div class="blurb">Every note that wants to appear on the site declares it. <code style="font-family:var(--font-mono); background:var(--faint); padding:1px 5px; border-radius:2px;">publish:</code> is the only required field.</div>
+    <div class="blurb">Every note that wants to appear on the site declares it. <code class="ic">publish:</code> is the only required field.</div>
 
     <table class="schema">
       <caption class="visually-hidden">Frontmatter fields accepted in vault notes</caption>
@@ -90,7 +90,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
     <div class="routes">
       <span class="from">publish: journal</span><span class="arr">→</span><span class="to">/journal/<span class="dim">&lt;slug&gt;</span>/ <span class="dim">· /blog/?kind=journal</span></span>
       <span class="from">publish: making</span><span class="arr">→</span><span class="to">/making/<span class="dim">&lt;slug&gt;</span>/ <span class="dim">· /blog/?kind=making</span></span>
-      <span class="from">publish: thoughts <span class="dim">(daily/YYYY-MM-DD.md, split on ##HH:MM)</span></span><span class="arr">→</span><span class="to">/blog/<span class="dim">#t-NNN</span></span>
+      <span class="from">publish: thoughts <span class="dim">(daily/YYYY-MM-DD.md, split on ##HH:MM)</span></span><span class="arr">→</span><span class="to">/blog/<span class="dim">#t-&lt;timestamp&gt;</span></span>
       <span class="from">publish: about</span><span class="arr">→</span><span class="to">/about/</span>
       <span class="from">attachments/&lt;file&gt;</span><span class="arr">→</span><span class="to">/img/<span class="dim">&lt;file&gt;</span> <span class="dim">(R2 in prod via media.mattdoes.online)</span></span>
       <span class="from">last.fm recent tracks</span><span class="arr">→</span><span class="to">/listening/ <span class="dim">(static at build · refreshed live)</span></span>
@@ -171,6 +171,8 @@ export function colophonPage({ stats, updated, nowPlaying }) {
   return base({
     page: {
       title: 'colophon',
+      url: '/colophon/',
+      description: 'How mattdoes.online is put together — Obsidian vault, Node build, static HTML, and two thin Cloudflare Workers.',
       navActive: 'colophon',
       nowPlaying: nowPlaying || '',
       footerText: siteConfig.footerText ?? '',

@@ -52,9 +52,9 @@ export function articlePage({ site, note, recent, prev, next }) {
     <div class="post-body">
       ${note.html}
 
-      ${tags ? `<p style="margin-top:1.25rem;">${tags}</p>` : ''}
+      ${tags ? `<p class="post-tags">${tags}</p>` : ''}
 
-      <p style="margin-top:1rem; padding-top:.75rem; border-top:1px dashed var(--faint); font-size:11px; color:var(--mute); font-family:var(--font-mono);">
+      <p class="post-source">
         ↳ ${esc(note.sourcePath)}${note.words ? ` · ${note.words} words` : ''}${note.updated ? ` · last edited ${timeTag(note.updated, 'day')}` : ''}
       </p>
     </div>
@@ -80,6 +80,11 @@ export function articlePage({ site, note, recent, prev, next }) {
   return base({
     page: {
       title: note.title,
+      url: note.url,
+      // A post is an Open Graph "article"; description falls back to the
+      // section bio so social cards still say something useful (finding C9).
+      description: note.summary || meta.bio || `${meta.who} — ${esc(note.title)}`,
+      ogType: 'article',
       navActive: 'blog',
       nowPlaying: site.nowPlaying || '',
       footerText: site.config?.footerText ?? '',

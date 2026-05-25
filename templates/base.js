@@ -28,6 +28,14 @@ export function base({ page, body }) {
   const siteTitle = siteConfig.title || 'mattdoes.online';
   const title = page.title ? `${page.title} — ${siteTitle}` : siteTitle;
   const active = page.navActive || '';
+
+  // Document metadata (finding C9). `page.description` is the page-specific
+  // summary; `page.url` is the page's own route path. The canonical URL drops
+  // any query string — filtered archive views (?tag=, ?kind=) are enhancements
+  // over the base path, so they all canonicalize to the unfiltered route.
+  const description  = page.description || siteConfig.identity?.bio || '';
+  const canonicalUrl = siteConfig.url + (page.canonical || page.url || '/');
+  const ogType       = page.ogType === 'article' ? 'article' : 'website';
   const isLive      = !page.status && !siteConfig.status;
   const statusText  = page.status || siteConfig.status || (isLive ? page.nowPlaying : '') || '';
   const showDot     = page.statusDot ?? (isLive && Boolean(page.nowPlaying));
@@ -62,6 +70,17 @@ export function base({ page, body }) {
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>${esc(title)}</title>
+<meta name="description" content="${esc(description)}" />
+<link rel="canonical" href="${esc(canonicalUrl)}" />
+<!-- Atom feed autodiscovery. -->
+<link rel="alternate" type="application/atom+xml" title="mattdoes.online" href="/feed.xml" />
+<!-- Social sharing metadata (Open Graph + Twitter). -->
+<meta property="og:title" content="${esc(title)}" />
+<meta property="og:description" content="${esc(description)}" />
+<meta property="og:type" content="${esc(ogType)}" />
+<meta property="og:url" content="${esc(canonicalUrl)}" />
+<meta property="og:site_name" content="${esc(siteTitle)}" />
+<meta name="twitter:card" content="summary" />
 <meta name="geo-endpoint" content="${esc(geoEndpoint)}" />
 <!-- View Transitions: cross-document fades on supported browsers. -->
 <meta name="view-transition" content="same-origin" />
@@ -87,10 +106,10 @@ ${page.headExtra || ''}
   <div class="inner">
     <a href="/" class="home">${homeBrand}</a>
     <nav aria-label="primary">
-      ${NAV.map(n => `<a href="${n.href}"${active === n.id ? ' class="on"' : ''}>${n.label}</a>`).join('\n      ')}
+      ${NAV.map(n => `<a href="${n.href}"${active === n.id ? ' class="on" aria-current="page"' : ''}>${n.label}</a>`).join('\n      ')}
     </nav>
     <span class="spacer"></span>
-    ${META.map(m => `<a href="${m.href}" class="meta-link${active === m.id ? ' on' : ''}"${m.href.startsWith('mailto:') ? ' data-prefetch="off"' : ''}>${m.label}</a>`).join('\n    ')}
+    ${META.map(m => `<a href="${m.href}" class="meta-link${active === m.id ? ' on' : ''}"${active === m.id ? ' aria-current="page"' : ''}${m.href.startsWith('mailto:') ? ' data-prefetch="off"' : ''}>${m.label}</a>`).join('\n    ')}
     ${status}
   </div>
 </div>
@@ -102,20 +121,20 @@ ${body}
   <nav aria-label="footer">${footerNav.map(n => `<a href="${n.href}"${n.href.startsWith('mailto:') ? ' data-prefetch="off"' : ''}>${n.label}</a>`).join('')}<button type="button" class="footer-link" data-tweaks-toggle aria-controls="tweaks" aria-expanded="false">tweaks</button></nav>
 </footer>
 
-<div id="tweaks" role="dialog" aria-modal="true" aria-labelledby="tweaks-title">
+<dialog id="tweaks" aria-labelledby="tweaks-title">
   <header><span id="tweaks-title">tweaks</span><button type="button" class="close" aria-label="close tweaks">×</button></header>
   <div class="row-t">
     <span class="row-t-label">dark mode</span>
     <button type="button" class="tk-toggle" data-key="dark" aria-pressed="true" aria-label="dark mode"></button>
   </div>
   <div class="row-t">
-    <span class="row-t-label">accent</span>
-    <div class="tk-swatches" data-key="accent" role="radiogroup" aria-label="accent color">
-      <button type="button" class="tk-sw" data-value="warm"  aria-pressed="false" aria-label="warm terracotta"></button>
-      <button type="button" class="tk-sw" data-value="pink"  aria-pressed="true"  aria-label="hot pink"></button>
-      <button type="button" class="tk-sw" data-value="blue"  aria-pressed="false" aria-label="cool blue"></button>
-      <button type="button" class="tk-sw" data-value="green" aria-pressed="false" aria-label="fern green"></button>
-    </div>
+    <fieldset class="tk-swatches" data-key="accent">
+      <legend class="row-t-label">accent</legend>
+      <label class="tk-sw" data-value="warm"><input type="radio" name="tk-accent" value="warm"><span class="tk-sw-dot"></span><span class="visually-hidden">warm terracotta</span></label>
+      <label class="tk-sw" data-value="pink"><input type="radio" name="tk-accent" value="pink"><span class="tk-sw-dot"></span><span class="visually-hidden">hot pink</span></label>
+      <label class="tk-sw" data-value="blue"><input type="radio" name="tk-accent" value="blue"><span class="tk-sw-dot"></span><span class="visually-hidden">cool blue</span></label>
+      <label class="tk-sw" data-value="green"><input type="radio" name="tk-accent" value="green"><span class="tk-sw-dot"></span><span class="visually-hidden">fern green</span></label>
+    </fieldset>
   </div>
   <div class="row-t">
     <span class="row-t-label">local map</span>
@@ -133,9 +152,9 @@ ${body}
     </div>
   </div>
   <div class="row-t help">
-    <p class="note">picking <em>mine</em> uses your location once to look up the city outline. coordinates aren't stored.</p>
+    <p class="note">picking <em>mine</em> uses your location once to look up your city outline. the outline is cached on this device for 7 days; your coordinates aren't saved and never leave the lookup. switch back to <em>home</em> to clear it.</p>
   </div>
-</div>
+</dialog>
 
 <script src="${tweaksJs}" defer></script>
 <script src="${navPrefetchJs}" defer></script>
