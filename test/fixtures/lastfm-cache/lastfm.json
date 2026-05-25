@@ -1,0 +1,42 @@
+{
+  "fetchedAt": "2026-02-01T00:00:00.000Z",
+  "_note": "Fixture Last.fm cache seeded by test/url-safety.test.js into .cache/lastfm.json. Carries a malicious-scheme URL, an attribute-breaking URL, a normal absolute URL, and TWO plays of the same track (distinct timestamps) so feed <id> uniqueness can be checked.",
+  "tracks": [
+    {
+      "track": "Poisoned Track",
+      "artist": "Evil Artist",
+      "album": "Bad Album",
+      "link": "javascript:alert('xss')",
+      "image": "",
+      "date": "2026-01-30T12:00:00.000Z",
+      "nowPlaying": false
+    },
+    {
+      "track": "Quote Breakout",
+      "artist": "Attr Artist",
+      "album": "",
+      "link": "https://www.last.fm/x\"onmouseover=\"alert(1)",
+      "image": "",
+      "date": "2026-01-30T11:00:00.000Z",
+      "nowPlaying": false
+    },
+    {
+      "track": "Repeated Song",
+      "artist": "Repeat Artist",
+      "album": "Loop",
+      "link": "https://www.last.fm/music/Repeat+Artist/_/Repeated+Song",
+      "image": "",
+      "date": "2026-01-29T10:00:00.000Z",
+      "nowPlaying": false
+    },
+    {
+      "track": "Repeated Song",
+      "artist": "Repeat Artist",
+      "album": "Loop",
+      "link": "https://www.last.fm/music/Repeat+Artist/_/Repeated+Song",
+      "image": "",
+      "date": "2026-01-29T09:00:00.000Z",
+      "nowPlaying": false
+    }
+  ]
+}
