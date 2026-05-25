@@ -7,13 +7,11 @@ https://www.mattdoes.online/*  https://mattdoes.online/:splat  301
 # Legacy paths from the pre-rebuild site (fill in as needed)
 # /old-path                    /new-path                        301
 
-# Blog consolidation — the three kind-specific index pages collapsed into
-# /blog/ with kind chips. Individual post URLs (e.g. /journal/<slug>/) are
-# preserved; only the index pages redirect. URL fragments survive 30x
-# redirects so /thoughts/#t-001 still scrolls to the right anchor.
-/journal/                      /blog/?kind=journal              301
-/making/                       /blog/?kind=making               301
-/thoughts/                     /blog/?kind=thought              301
+# Blog consolidation — /blog/ is the unified journal + making + thoughts
+# view with client-side kind chips. /journal/, /making/, and /thoughts/ are
+# now REAL server-generated archive index pages (see build.js), so they no
+# longer redirect — a scripts-disabled visitor gets the actual section
+# content. Individual post URLs (e.g. /journal/<slug>/) are unchanged.
 
 # RSS alias
 /rss.xml                       /feed.xml                        301
