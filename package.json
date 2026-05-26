@@ -27,7 +27,7 @@
   "devDependencies": {
     "axe-core": "^4.11.4",
     "culori": "^4.0.2",
-    "html-validate": "^11.3.0",
+    "html-validate": "^11.4.0",
     "jsdom": "^25.0.1",
     "lightningcss": "^1.32.0",
     "sharp": "^0.34.5",
