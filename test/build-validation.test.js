@@ -2,18 +2,33 @@
 // slug/frontmatter negative fixtures". Covers audit finding #2.
 //
 // Each NEGATIVE fixture under test/fixtures/ is a tiny standalone vault that
-// trips exactly one build-time guard. We run build.js as a subprocess with
-// VAULT_DIR pointed at it and assert a NON-ZERO exit plus an error message
-// that names the offending note (so an author can find it).
+// trips exactly one Intake guard. Validation now lives behind the Intake
+// interface (lib/intake.js), so these tests call readVault + intake directly
+// — no subprocess, no Shiki startup — and assert the thrown message names
+// the offending note (so an author can find it).
 //
-// The positive case asserts the canonical fixture-vault still builds clean.
+// The CLI contract (non-zero exit + the error on stderr) is still the
+// author-facing surface of `npm run build`, so ONE subprocess smoke test per
+// outcome survives: a failing vault exits non-zero, and the canonical
+// fixture-vault builds clean.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { readVault, intake } from '../lib/intake.js';
 import { runBuild, buildFixtureVault, REPO_ROOT } from './helpers/run-build.js';
 
 const fixturePath = (name) => path.join(REPO_ROOT, 'test', 'fixtures', name);
+
+/** Run intake over a fixture vault and return the thrown message. */
+function intakeError(dir) {
+  try {
+    intake(readVault(fixturePath(dir)));
+  } catch (err) {
+    return String(err.message);
+  }
+  assert.fail(`expected intake to throw for fixture ${dir}`);
+}
 
 // Each row: [fixture dir, offending note filename, a substring the error
 // message must contain so the failure mode is unambiguous].
@@ -28,35 +43,47 @@ const NEGATIVE_CASES = [
 ];
 
 for (const [dir, offendingNote, errorSubstring] of NEGATIVE_CASES) {
-  test(`build fails for negative fixture: ${dir}`, () => {
-    const res = runBuild({ vaultDir: fixturePath(dir) });
-
-    assert.notEqual(res.status, 0,
-      `expected a non-zero exit for ${dir}, got ${res.status}`);
-
-    const combined = `${res.stdout}\n${res.stderr}`;
-    assert.match(combined, /Error/,
-      `expected an Error message for ${dir}`);
-    assert.ok(combined.includes(offendingNote),
+  test(`intake rejects negative fixture: ${dir}`, () => {
+    const msg = intakeError(dir);
+    assert.ok(msg.includes(offendingNote),
       `error for ${dir} must name the offending note "${offendingNote}".\n` +
-      `Got:\n${combined}`);
-    assert.ok(combined.includes(errorSubstring),
-      `error for ${dir} must mention "${errorSubstring}".\nGot:\n${combined}`);
+      `Got: ${msg}`);
+    assert.ok(msg.includes(errorSubstring),
+      `error for ${dir} must mention "${errorSubstring}".\nGot: ${msg}`);
   });
 }
 
 test('duplicate-route names BOTH colliding notes', () => {
-  const res = runBuild({ vaultDir: fixturePath('duplicate-route') });
-  const combined = `${res.stdout}\n${res.stderr}`;
-  assert.ok(combined.includes('first.md') && combined.includes('second.md'),
-    `duplicate-route error must name both notes.\nGot:\n${combined}`);
+  const msg = intakeError('duplicate-route');
+  assert.ok(msg.includes('first.md') && msg.includes('second.md'),
+    `duplicate-route error must name both notes.\nGot: ${msg}`);
 });
 
 test('duplicate-about names BOTH offending notes', () => {
-  const res = runBuild({ vaultDir: fixturePath('duplicate-about') });
+  const msg = intakeError('duplicate-about');
+  assert.ok(msg.includes('about-one.md') && msg.includes('about-two.md'),
+    `duplicate-about error must name both notes.\nGot: ${msg}`);
+});
+
+// Intake's stated invariant (CONTEXT.md): same records in, same model out —
+// no clock, no fs, no env. Two runs over identical records must produce a
+// deeply-equal Content model; a diff here means something non-deterministic
+// (a Date.now(), an fs read, iteration-order dependence) leaked in.
+test('intake is deterministic: same records in, same model out', () => {
+  const records = readVault(path.join(REPO_ROOT, 'test', 'fixture-vault'));
+  assert.deepStrictEqual(intake(records), intake(records));
+});
+
+// ── CLI smoke tests (the subprocess surface authors actually see) ────────
+
+test('a failing vault makes the CLI exit non-zero and print the error', () => {
+  const res = runBuild({ vaultDir: fixturePath('slug-traversal') });
+  assert.notEqual(res.status, 0,
+    `expected a non-zero exit, got ${res.status}`);
   const combined = `${res.stdout}\n${res.stderr}`;
-  assert.ok(combined.includes('about-one.md') && combined.includes('about-two.md'),
-    `duplicate-about error must name both notes.\nGot:\n${combined}`);
+  assert.match(combined, /Error/, 'expected an Error message');
+  assert.ok(combined.includes('escape.md'),
+    `CLI error must name the offending note.\nGot:\n${combined}`);
 });
 
 test('the canonical fixture-vault still builds cleanly (exit 0)', () => {

@@ -30,7 +30,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
       <h2>source</h2>
       <ul>
         ${siteConfig.links.filter(l => l.href).map(l => `<li><a href="${esc(safeUrl(l.href))}"${relFor(l.href)}>${esc(l.label)}</a>${l.meta ? `<span class="meta">${esc(l.meta)}</span>` : ''}</li>`).join('\n        ')}
-        <li><span>build.js</span><span class="meta">${stats?.buildLines || '—'} ln</span></li>
+        <li><span>build.js + lib/</span><span class="meta">${stats?.buildLines || '—'} ln</span></li>
       </ul>
     </div>` : ''}
   </aside>
@@ -56,7 +56,8 @@ export function colophonPage({ stats, updated, nowPlaying }) {
 <span class="b">└──</span> <span class="f">.obsidian/</span>           <span class="note"># ignored</span>
 
 <span class="b">┌</span> <span class="d">mattdoes-site</span> <span class="note">(public)</span>
-<span class="b">├──</span> <span class="f">build.js</span>             <span class="note"># the generator</span>
+<span class="b">├──</span> <span class="f">build.js</span>             <span class="note"># the generator entrypoint</span>
+<span class="b">├──</span> <span class="d">lib</span>                  <span class="note"># intake (vault → model) · emit (model → dist) · listening</span>
 <span class="b">├──</span> <span class="f">site.config.js</span>       <span class="note"># identity + last.fm</span>
 <span class="b">├──</span> <span class="d">templates</span>            <span class="note"># page templates + helpers</span>
 <span class="b">├──</span> <span class="d">static</span>               <span class="note"># css, js (tweaks · geo-bg · live), fonts, baked geojson, _headers</span>
