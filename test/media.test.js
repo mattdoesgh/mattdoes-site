@@ -21,7 +21,7 @@ test.before(() => {
   if (buildResult.status !== 0) {
     throw new Error(`media fixture build failed:\n${buildResult.stderr}`);
   }
-  mediaHtml = readDist('journal/media-post/index.html');
+  mediaHtml = readDist(buildResult.distDir, 'journal/media-post/index.html');
   mediaDoc = new JSDOM(mediaHtml).window.document;
 });
 

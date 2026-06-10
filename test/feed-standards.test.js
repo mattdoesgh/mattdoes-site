@@ -1,8 +1,9 @@
 // Audit backlog: "Feed standards — Atom validator and duplicate-scrobble ID
 // fixtures". Covers audit finding #5.
 //
-// Builds the fixture vault with a seeded Last.fm cache that contains TWO
-// plays of the same track, parses dist/feed.xml, and asserts:
+// Builds the fixture vault with a seeded Last.fm cache (own temp CACHE_DIR,
+// so the repo .cache is never touched) that contains TWO plays of the same
+// track, parses the generated feed.xml, and asserts:
 //   - the XML is well-formed (jsdom XML parse, no <parsererror>)
 //   - a feed-level <author> exists
 //   - every <entry> carries its own <author>
@@ -11,34 +12,17 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
-import { buildFixtureVault, readDist, REPO_ROOT } from './helpers/run-build.js';
+import { buildFixtureVault, readDist, seedLastfmCache, REPO_ROOT } from './helpers/run-build.js';
 
-// Build once with the duplicate-scrobble cache seeded; tear down after.
-const cacheDir   = path.join(REPO_ROOT, '.cache');
-const cachePath  = path.join(cacheDir, 'lastfm.json');
+// Build once with the duplicate-scrobble cache seeded into a temp CACHE_DIR.
 const fixtureCache = path.join(REPO_ROOT, 'test', 'fixtures', 'lastfm-cache', 'lastfm.json');
-let priorCache = null;
-let hadCache = false;
 let feedXml = '';
 
 test.before(() => {
-  hadCache = fs.existsSync(cachePath);
-  priorCache = hadCache ? fs.readFileSync(cachePath) : null;
-  fs.mkdirSync(cacheDir, { recursive: true });
-  fs.copyFileSync(fixtureCache, cachePath);
-  const now = new Date();
-  fs.utimesSync(cachePath, now, now);
-
-  buildFixtureVault();
-  feedXml = readDist('feed.xml');
-});
-
-test.after(() => {
-  if (hadCache) fs.writeFileSync(cachePath, priorCache);
-  else fs.rmSync(cachePath, { force: true });
+  const res = buildFixtureVault({ cacheDir: seedLastfmCache(fixtureCache) });
+  feedXml = readDist(res.distDir, 'feed.xml');
 });
 
 /** Parse an Atom feed as XML and return the document. Throws on malformed XML. */

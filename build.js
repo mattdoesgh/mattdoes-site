@@ -10,6 +10,10 @@
 //
 // Usage:   npm run build
 // Config:  VAULT_DIR env var overrides the default vault path.
+//          DIST_DIR env var overrides the output directory (default <repo>/dist;
+//          tests build into per-test temp dirs).
+//          CACHE_DIR env var overrides the Last.fm cache directory
+//          (default <repo>/.cache; tests use temp dirs so runs are hermetic).
 //          MEDIA_BASE env var overrides where ![[image.jpg]] URLs point
 //          (defaults to '/img'; set to 'https://media.mattdoes.online' for the R2 bucket).
 //          SITE_URL env var overrides the canonical origin.
@@ -24,7 +28,8 @@ import { siteConfig } from './site.config.js';
 
 const __dirname  = path.dirname(fileURLToPath(import.meta.url));
 const VAULT_DIR  = process.env.VAULT_DIR || path.resolve(__dirname, 'vault');
-const DIST_DIR   = path.resolve(__dirname, 'dist');
+const DIST_DIR   = path.resolve(process.env.DIST_DIR || path.join(__dirname, 'dist'));
+const CACHE_DIR  = path.resolve(process.env.CACHE_DIR || path.join(__dirname, '.cache'));
 const MEDIA_BASE = process.env.MEDIA_BASE || '/img';
 const SITE_URL   = process.env.SITE_URL || siteConfig.url || 'https://mattdoes.online';
 
@@ -32,8 +37,8 @@ const t0 = Date.now();
 
 const model = intake(readVault(VAULT_DIR));
 
-const lastfmTracks  = await fetchLastfmTracks();
-const scrobbleTotal = await fetchLastfmPlaycount();
+const lastfmTracks  = await fetchLastfmTracks({ cacheDir: CACHE_DIR });
+const scrobbleTotal = await fetchLastfmPlaycount({ cacheDir: CACHE_DIR });
 
 const { distSize } = await emit(model, {
   distDir: DIST_DIR,

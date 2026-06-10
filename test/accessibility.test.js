@@ -24,13 +24,14 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
-import { buildFixtureVault, listDistHtml, DIST_DIR } from './helpers/run-build.js';
+import { buildFixtureVault, listDistHtml } from './helpers/run-build.js';
 
 const AXE_SRC = fs.readFileSync(
   path.join(process.cwd(), 'node_modules', 'axe-core', 'axe.min.js'), 'utf8',
 );
 
-test.before(() => { buildFixtureVault(); });
+let distDir;
+test.before(() => { ({ distDir } = buildFixtureVault()); });
 
 /** Load HTML into jsdom and run axe-core scoped to WCAG A/AA. */
 async function axeScan(html) {
@@ -45,11 +46,11 @@ async function axeScan(html) {
 
 // ── 1. axe across every generated page ──────────────────────────────────
 test('every generated page has zero WCAG A/AA axe violations', async (t) => {
-  const files = listDistHtml();
+  const files = listDistHtml(distDir);
   assert.ok(files.length > 0, 'expected dist/ to contain generated HTML');
 
   for (const file of files) {
-    const rel = path.relative(DIST_DIR, file);
+    const rel = path.relative(distDir, file);
     await t.test(rel, async () => {
       const results = await axeScan(fs.readFileSync(file, 'utf8'));
       const summary = results.violations
@@ -64,13 +65,13 @@ test('every generated page has zero WCAG A/AA axe violations', async (t) => {
 // ── 2. structural assertions on remediated markup ───────────────────────
 /** Parse a dist HTML file into a jsdom document. */
 function doc(rel) {
-  const html = fs.readFileSync(path.join(DIST_DIR, rel), 'utf8');
+  const html = fs.readFileSync(path.join(distDir, rel), 'utf8');
   return new JSDOM(html).window.document;
 }
 
 test('every page has a skip link targeting #main', () => {
-  for (const file of listDistHtml()) {
-    const rel = path.relative(DIST_DIR, file);
+  for (const file of listDistHtml(distDir)) {
+    const rel = path.relative(distDir, file);
     const d = doc(rel);
     const skip = d.querySelector('a.skip-link');
     assert.ok(skip, `${rel} must have a skip link`);
@@ -80,8 +81,8 @@ test('every page has a skip link targeting #main', () => {
 });
 
 test('every page has exactly one <main id="main">', () => {
-  for (const file of listDistHtml()) {
-    const rel = path.relative(DIST_DIR, file);
+  for (const file of listDistHtml(distDir)) {
+    const rel = path.relative(distDir, file);
     const d = doc(rel);
     const mains = d.querySelectorAll('main');
     assert.equal(mains.length, 1, `${rel} must have exactly one <main>`);
