@@ -1,35 +1,70 @@
 // Test helper — runs build.js as a child process against a chosen vault.
 //
-// The build writes to a fixed dist/ at the repo root, so tests that need a
-// fresh build call buildFixtureVault() in a before() hook and then read
-// dist/. Negative-fixture tests use runBuild() directly and only inspect the
-// exit code + stderr — they never need the (non-existent) output.
+// Every build targets its own temp dist/cache dir (DIST_DIR / CACHE_DIR env
+// overrides in build.js), so test files are hermetic and can run in parallel:
+// no shared repo-root dist/, no shared .cache/lastfm.json. Tests that need
+// output call buildFixtureVault()/runBuild() and read via the returned
+// distDir. Negative-fixture tests use runBuild() directly and only inspect
+// the exit code + stderr.
+//
+// Temp dirs are left behind for post-mortem debugging; the OS cleans tmpdir.
 
 import { spawnSync } from 'node:child_process';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = path.resolve(__dirname, '..', '..');
-export const DIST_DIR  = path.join(REPO_ROOT, 'dist');
 export const FIXTURE_VAULT = path.join(REPO_ROOT, 'test', 'fixture-vault');
+
+/** Create a fresh temp directory. @param {string} [prefix] @returns {string} */
+export function makeTempDir(prefix = 'mattdoes-test-') {
+  return fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+}
+
+/**
+ * Seed a fresh temp cache dir with a fixture Last.fm cache, ready to pass as
+ * runBuild's cacheDir. The copy's mtime is "now", so the build's TTL
+ * freshness check (lib/listening.js) treats it as fresh.
+ *
+ * @param {string} fixtureJson absolute path to a fixture lastfm.json
+ * @returns {string} the seeded cache dir
+ */
+export function seedLastfmCache(fixtureJson) {
+  const cacheDir = makeTempDir('mattdoes-cache-');
+  fs.copyFileSync(fixtureJson, path.join(cacheDir, 'lastfm.json'));
+  return cacheDir;
+}
 
 /**
  * Run `node build.js` as a subprocess.
  *
  * @param {object}  opts
  * @param {string}  opts.vaultDir   absolute path passed as VAULT_DIR
+ * @param {string} [opts.distDir]   output dir (default: fresh temp dir)
+ * @param {string} [opts.cacheDir]  Last.fm cache dir (default: fresh temp
+ *                                  dir, so builds never see the repo .cache)
  * @param {string} [opts.siteUrl]   SITE_URL (default https://mattdoes.online)
  * @param {Record<string,string>} [opts.env] extra env vars
- * @returns {{ status: number|null, stdout: string, stderr: string }}
+ * @returns {{ status: number|null, stdout: string, stderr: string,
+ *             distDir: string, cacheDir: string }}
  */
-export function runBuild({ vaultDir, siteUrl = 'https://mattdoes.online', env = {} }) {
+export function runBuild({
+  vaultDir,
+  distDir = makeTempDir('mattdoes-dist-'),
+  cacheDir = makeTempDir('mattdoes-cache-'),
+  siteUrl = 'https://mattdoes.online',
+  env = {},
+}) {
   const res = spawnSync(process.execPath, ['build.js'], {
     cwd: REPO_ROOT,
     env: {
       ...process.env,
       VAULT_DIR: vaultDir,
+      DIST_DIR: distDir,
+      CACHE_DIR: cacheDir,
       SITE_URL: siteUrl,
       ...env,
     },
@@ -40,18 +75,20 @@ export function runBuild({ vaultDir, siteUrl = 'https://mattdoes.online', env = 
     status: res.status,
     stdout: res.stdout || '',
     stderr: res.stderr || '',
+    distDir,
+    cacheDir,
   };
 }
 
 /**
  * Build the canonical happy-path fixture vault. Throws if the build fails so
- * a broken build surfaces as a test error rather than silently empty dist/.
+ * a broken build surfaces as a test error rather than silently empty output.
  *
- * @param {Record<string,string>} [env] extra env vars (e.g. a seeded cache)
- * @returns {{ status: number|null, stdout: string, stderr: string }}
+ * @param {Omit<Parameters<typeof runBuild>[0], 'vaultDir'>} [opts]
+ * @returns {ReturnType<typeof runBuild>}
  */
-export function buildFixtureVault(env = {}) {
-  const res = runBuild({ vaultDir: FIXTURE_VAULT, env });
+export function buildFixtureVault(opts = {}) {
+  const res = runBuild({ vaultDir: FIXTURE_VAULT, ...opts });
   if (res.status !== 0) {
     throw new Error(
       `fixture-vault build failed (exit ${res.status}):\n${res.stderr || res.stdout}`,
@@ -60,13 +97,19 @@ export function buildFixtureVault(env = {}) {
   return res;
 }
 
-/** Read a generated dist file as UTF-8. @param {string} rel @returns {string} */
-export function readDist(rel) {
-  return fs.readFileSync(path.join(DIST_DIR, rel), 'utf8');
+/**
+ * Read a generated dist file as UTF-8.
+ * @param {string} distDir @param {string} rel @returns {string}
+ */
+export function readDist(distDir, rel) {
+  return fs.readFileSync(path.join(distDir, rel), 'utf8');
 }
 
-/** List every generated HTML file under dist/. @returns {string[]} absolute paths */
-export function listDistHtml() {
+/**
+ * List every generated HTML file under a dist dir.
+ * @param {string} distDir @returns {string[]} absolute paths
+ */
+export function listDistHtml(distDir) {
   const out = [];
   const walk = (dir) => {
     for (const name of fs.readdirSync(dir)) {
@@ -76,6 +119,6 @@ export function listDistHtml() {
       else if (name.endsWith('.html')) out.push(full);
     }
   };
-  if (fs.existsSync(DIST_DIR)) walk(DIST_DIR);
+  if (fs.existsSync(distDir)) walk(distDir);
   return out.sort();
 }

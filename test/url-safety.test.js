@@ -6,16 +6,17 @@
 //      primitives every other layer relies on.
 //   2. A negative vault fixture with authored Markdown links carrying unsafe
 //      schemes / attribute-breaking text — built and asserted.
-//   3. A seeded .cache/lastfm.json carrying a javascript: URL, a quote-
-//      breaking URL, and a normal URL — built into the real fixture vault
-//      and asserted on the homepage + feed.
+//   3. A seeded Last.fm cache (own temp CACHE_DIR) carrying a javascript:
+//      URL, a quote-breaking URL, and a normal URL — built into the real
+//      fixture vault and asserted on the homepage + feed.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
 import path from 'node:path';
 import { esc, safeUrl } from '../templates/_helpers.js';
-import { runBuild, buildFixtureVault, readDist, REPO_ROOT } from './helpers/run-build.js';
+import {
+  runBuild, buildFixtureVault, readDist, seedLastfmCache, REPO_ROOT,
+} from './helpers/run-build.js';
 
 // ── 1. safeUrl / esc unit tests ─────────────────────────────────────────
 test('safeUrl neutralizes dangerous schemes', () => {
@@ -61,7 +62,7 @@ test('authored Markdown links with unsafe schemes are neutralized', () => {
   });
   assert.equal(res.status, 0, `url-safety fixture build failed:\n${res.stderr}`);
 
-  const html = readDist('journal/dangerous-links/index.html');
+  const html = readDist(res.distDir, 'journal/dangerous-links/index.html');
 
   // No unsafe scheme reaches an href or src.
   assert.ok(!/href="javascript:/i.test(html), 'no javascript: href');
@@ -84,43 +85,26 @@ test('authored Markdown links with unsafe schemes are neutralized', () => {
 });
 
 // ── 3. seeded Last.fm cache ─────────────────────────────────────────────
-// build.js reads .cache/lastfm.json (mtime-fresh within cacheTtl). We seed
-// it with a poisoned payload, build, and restore the prior state after.
+// The build reads <CACHE_DIR>/lastfm.json (mtime-fresh within cacheTtl). We
+// seed a temp cache dir with a poisoned payload and build against it — the
+// repo .cache is never touched, so this is safe under parallel test files.
 test('Last.fm cache values are sanitized on the homepage and in the feed', () => {
-  const cacheDir  = path.join(REPO_ROOT, '.cache');
-  const cachePath = path.join(cacheDir, 'lastfm.json');
   const fixtureCache = path.join(REPO_ROOT, 'test', 'fixtures', 'lastfm-cache', 'lastfm.json');
+  const res = buildFixtureVault({ cacheDir: seedLastfmCache(fixtureCache) });
+  assert.equal(res.status, 0);
 
-  // Preserve any pre-existing cache so we don't disturb a local dev setup.
-  const had = fs.existsSync(cachePath);
-  const prior = had ? fs.readFileSync(cachePath) : null;
+  const home = readDist(res.distDir, 'index.html');
+  const feed = readDist(res.distDir, 'feed.xml');
 
-  try {
-    fs.mkdirSync(cacheDir, { recursive: true });
-    fs.copyFileSync(fixtureCache, cachePath);
-    // Touch so the mtime-freshness check treats it as fresh.
-    const now = new Date();
-    fs.utimesSync(cachePath, now, now);
+  // The javascript: track URL must never reach an href on the homepage.
+  assert.ok(!/href="javascript:/i.test(home),
+    'homepage must not emit a javascript: listening href');
 
-    const res = buildFixtureVault();
-    assert.equal(res.status, 0);
+  // The quote-breaking Last.fm URL is HTML-escaped where it is emitted.
+  assert.ok(!/onmouseover="alert/i.test(home),
+    'homepage must not emit a live onmouseover from a poisoned Last.fm URL');
 
-    const home = readDist('index.html');
-    const feed = readDist('feed.xml');
-
-    // The javascript: track URL must never reach an href on the homepage.
-    assert.ok(!/href="javascript:/i.test(home),
-      'homepage must not emit a javascript: listening href');
-
-    // The quote-breaking Last.fm URL is HTML-escaped where it is emitted.
-    assert.ok(!/onmouseover="alert/i.test(home),
-      'homepage must not emit a live onmouseover from a poisoned Last.fm URL');
-
-    // The feed never double-prefixes SITE_URL onto an absolute URL.
-    assert.ok(!/https?:\/\/[^\s"]*https?:\/\//.test(feed),
-      'feed must not contain a double-prefixed https://...https:// link');
-  } finally {
-    if (had) fs.writeFileSync(cachePath, prior);
-    else fs.rmSync(cachePath, { force: true });
-  }
+  // The feed never double-prefixes SITE_URL onto an absolute URL.
+  assert.ok(!/https?:\/\/[^\s"]*https?:\/\//.test(feed),
+    'feed must not contain a double-prefixed https://...https:// link');
 });
