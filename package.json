@@ -11,6 +11,7 @@
     "audit": "npm audit --audit-level=moderate",
     "pretest": "VAULT_DIR=test/fixture-vault SITE_URL=https://mattdoes.online node build.js",
     "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
+    "deploy:workers": "cd workers/listening && npm run deploy && cd ../geo && npm run deploy",
     "bake-geo": "node scripts/bake-home-geojson.js",
     "optimize-media": "node scripts/optimize-media.js",
     "sync-media": "node --env-file-if-exists=.env scripts/sync-media.js"

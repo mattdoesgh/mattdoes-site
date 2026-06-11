@@ -146,6 +146,30 @@ test('listening: without KV, an upstream failure still carries a reason', async 
     'the KV-missing direct-fetch failure path must carry a reason');
 });
 
+// ── rate limit (the one deliberate header fix from the transport refactor) ─
+test('listening: an over-limit caller gets a 429 with the full CORS envelope', async () => {
+  const caches = installCaches();
+  const fetchStub = installFetch(() => jsonResponse(lastfmBody(1, 1)));
+  try {
+    const env = {
+      LASTFM_API_KEY: 'k', LASTFM_USERNAME: 'u', LASTFM_CACHE: new KVStub(),
+      LISTEN_RL: { limit: async () => ({ success: false }) },
+    };
+    const res = await listeningWorker.fetch(
+      workerRequest(RECENT, { headers: { 'cf-connecting-ip': '203.0.113.1' } }), env, makeCtx());
+    assert.equal(res.status, 429);
+    assert.deepEqual(await res.json(), { error: 'rate_limited' });
+    assert.equal(res.headers.get('retry-after'),   '60');
+    assert.equal(res.headers.get('cache-control'), 'no-store');
+    // Pre-refactor this hand-built response lacked the vary/allow-methods/
+    // allow-headers trio; it now goes through the shared errorJson envelope.
+    assert.equal(res.headers.get('access-control-allow-origin'),  'https://mattdoes.online');
+    assert.equal(res.headers.get('access-control-allow-methods'), 'GET, OPTIONS');
+    assert.equal(res.headers.get('access-control-allow-headers'), 'content-type');
+    assert.equal(res.headers.get('vary'),                         'origin');
+  } finally { caches.restore(); fetchStub.restore(); }
+});
+
 test('listening: a non-GET request is rejected', async () => {
   const caches = installCaches();
   const fetchStub = installFetch(() => jsonResponse({}));
