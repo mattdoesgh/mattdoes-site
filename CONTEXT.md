@@ -19,6 +19,7 @@ The module that writes the Content model to a `distDir`: markdown rendering (Shi
 
 ## Listening
 The Last.fm-derived track data (recent scrobbles + playcount). Fetched by the build entrypoint (disk-cached) and by workers/listening (KV-cached); an input to Emit, not part of the Content model.
+Both consumers decode through `lib/lastfm.js` — the pure wire-format codec (URL builders + decoders, no fetch/fs/config). It is bundled into the listening Worker, so the ADR 0002 redeploy rule applies to it.
 
 ## Thought
 A micro-post split out of a daily note on `## HH:MM` headings (CT wall-clock). Carries a stable id `t-YYYYMMDD-HHMM` derived from its own timestamp.
