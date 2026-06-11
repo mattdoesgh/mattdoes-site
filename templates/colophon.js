@@ -43,7 +43,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
     </div>
 
     <h2 id="folder" class="section-label"><span>folder layout</span><span class="n">01</span></h2>
-    <div class="blurb">Two repos. Vault stays private; site repo is thin and public. A pre-build script clones the vault into <code>./vault/</code> using a fine-grained PAT — not a submodule, since CF Pages' GitHub App auth doesn't reach submodule clones.</div>
+    <div class="blurb">Two repos. Vault stays private; site repo is thin and public. A pre-build script clones the vault into <code>./vault/</code> using a fine-grained PAT.</div>
 <pre class="tree"><span class="b">┌</span> <span class="d">vault</span> <span class="note">(private · obsidian)</span>
 <span class="b">├──</span> <span class="d">daily</span>
 <span class="b">│   └──</span> <span class="f">YYYY-MM-DD.md</span>   <span class="note"># micro-posts · one ##HH:MM = one thought</span>
@@ -62,7 +62,7 @@ export function colophonPage({ stats, updated, nowPlaying }) {
 <span class="b">├──</span> <span class="d">templates</span>            <span class="note"># page templates + helpers</span>
 <span class="b">├──</span> <span class="d">static</span>               <span class="note"># css, js (tweaks · geo-bg · live), fonts, baked geojson, _headers</span>
 <span class="b">├──</span> <span class="d">scripts</span>              <span class="note"># prebuild, optimize-media, sync-media, bake-geo</span>
-<span class="b">├──</span> <span class="d">workers</span>              <span class="note"># mattdoes-listening · mattdoes-geo (each = src + wrangler.toml)</span>
+<span class="b">├──</span> <span class="d">workers</span>              <span class="note"># listening · geo · lib (shared edge transport)</span>
 <span class="b">├──</span> <span class="d">vault</span>                <span class="note">→ cloned pre-build</span>
 <span class="b">└──</span> <span class="d">dist</span>                 <span class="note"># deployed</span></pre>
 
@@ -131,8 +131,8 @@ export function colophonPage({ stats, updated, nowPlaying }) {
 <span class="v">writeFeeds</span>(<span class="s">'dist/feed.xml'</span>)</div>
 
     <div class="doc-body">
-      <p>One loop, a handful of templates, four surfaces in the nav (home · blog · listening · about). If a new section shows up (say, <code>publish: recipes</code>), it's a new template file and one line in <code>routeFor()</code>. That's the whole extension story.</p>
-      <p>Two dynamic surfaces, both same-origin Workers so <code>connect-src 'self'</code> stays intact. <code>/api/listening/*</code> proxies Last.fm (now-playing for the topbar, recent tracks for the listening page) with a stale-while-revalidate KV cache out front. <code>/api/geo/lookup</code> reverse-geocodes a visitor's coords against Nominatim if they opt in via the tweaks panel — by default the animated background renders the home polygon baked into <code>static/home.geojson</code>, no prompt, no network call.</p>
+      <p>One pass, two modules. Intake turns notes into the content model — frontmatter validation, thought splitting, stable IDs, the slug index. Emit writes the model to <code>dist/</code> — markdown, templates, hashed assets, feeds. Four surfaces in the nav (home · blog · listening · about); a new section (say, <code>publish: recipes</code>) is a new template file and one line in <code>routeFor()</code>.</p>
+      <p>Two dynamic surfaces, both same-origin Workers; <code>connect-src 'self'</code> holds. <code>/api/listening/*</code> proxies Last.fm (now-playing for the topbar, recent tracks for the listening page) with a stale-while-revalidate KV cache out front. <code>/api/geo/lookup</code> reverse-geocodes a visitor's coords against Nominatim if they opt in via the tweaks panel — by default the animated background renders the home polygon baked into <code>static/home.geojson</code>, no prompt, no network call. Both Workers answer through one shared envelope (<code>workers/lib/transport.js</code>) — JSON + CORS, preflight, cached error responses — with caching policy kept per-Worker.</p>
       <p>Media takes the long way around. <code>scripts/optimize-media.js</code> hashes every attachment and emits <code>.webp</code> siblings into <code>.cache/media-build/</code>; <code>scripts/sync-media.js</code> PUTs originals + variants to R2 over <code>wrangler r2 object</code>, and the build emits <code>&lt;picture&gt;</code> tags pointed at <code>media.mattdoes.online</code>. CSS and JS are content-hashed and served immutable from Pages; CSP is strict, no inline scripts, no third-party connect. Mail is Fastmail, contact is a plain <code>mailto:</code>, no form worker.</p>
     </div>
   </section>
