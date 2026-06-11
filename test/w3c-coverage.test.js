@@ -30,6 +30,10 @@ import {
   runBuild, buildFixtureVault, readDist, REPO_ROOT,
 } from './helpers/run-build.js';
 
+// One fixture-vault build shared by the html-validate and sitemap tests.
+let fixtureDist;
+test.before(() => { ({ distDir: fixtureDist } = buildFixtureVault()); });
+
 // ── 1. html-validate config ─────────────────────────────────────────────
 test('.htmlvalidate.json keeps the intended rule decisions', () => {
   const cfg = JSON.parse(
@@ -48,9 +52,13 @@ test('.htmlvalidate.json keeps the intended rule decisions', () => {
 });
 
 test('the fixture build still passes html-validate with the tightened rules', () => {
-  buildFixtureVault();
-  // Run the project lint script exactly as CI does.
-  const res = spawnSync('npx', ['html-validate', 'dist/**/*.html'], {
+  // Same rules CI's lint step uses — the config is passed explicitly because
+  // the build output lives in a temp dir outside the repo tree.
+  const res = spawnSync('npx', [
+    'html-validate',
+    '--config', path.join(REPO_ROOT, '.htmlvalidate.json'),
+    path.join(fixtureDist, '**', '*.html'),
+  ], {
     cwd: REPO_ROOT, encoding: 'utf8', timeout: 60_000,
   });
   assert.equal(res.status, 0,
@@ -72,7 +80,7 @@ test('adding an older thought does not shift pre-existing thought ids', () => {
     vaultDir: path.join(REPO_ROOT, 'test', 'fixtures', 'thoughts-before'),
   });
   assert.equal(before.status, 0, `thoughts-before build failed:\n${before.stderr}`);
-  const idsBefore = thoughtIds(readDist('thoughts/index.html'));
+  const idsBefore = thoughtIds(readDist(before.distDir, 'thoughts/index.html'));
   assert.ok(idsBefore.length >= 2, 'before-vault should yield >=2 thought ids');
 
   // Build the "after" vault: same March note + an OLDER (January) thought.
@@ -80,7 +88,7 @@ test('adding an older thought does not shift pre-existing thought ids', () => {
     vaultDir: path.join(REPO_ROOT, 'test', 'fixtures', 'thoughts-after'),
   });
   assert.equal(after.status, 0, `thoughts-after build failed:\n${after.stderr}`);
-  const idsAfter = thoughtIds(readDist('thoughts/index.html'));
+  const idsAfter = thoughtIds(readDist(after.distDir, 'thoughts/index.html'));
 
   // Every id that existed before must still exist — the older insertion must
   // not renumber later thoughts (the regression fixed in finding #13).
@@ -98,12 +106,11 @@ test('adding an older thought does not shift pre-existing thought ids', () => {
 });
 
 test('sitemap.xml and robots.txt are emitted', () => {
-  buildFixtureVault();
-  const sitemap = readDist('sitemap.xml');
+  const sitemap = readDist(fixtureDist, 'sitemap.xml');
   assert.match(sitemap, /<urlset/, 'sitemap.xml must be a urlset');
   assert.ok(sitemap.includes('/blog/</loc>'), 'sitemap must list /blog/');
 
-  const robots = readDist('robots.txt');
+  const robots = readDist(fixtureDist, 'robots.txt');
   assert.match(robots, /Sitemap:/, 'robots.txt must advertise the sitemap');
   assert.match(robots, /User-agent:/, 'robots.txt must declare a user-agent rule');
 });
