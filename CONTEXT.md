@@ -22,3 +22,6 @@ The Last.fm-derived track data (recent scrobbles + playcount). Fetched by the bu
 
 ## Thought
 A micro-post split out of a daily note on `## HH:MM` headings (CT wall-clock). Carries a stable id `t-YYYYMMDD-HHMM` derived from its own timestamp.
+
+## Row
+The rendered form of one timeline entry — one renderer per content kind (article, thought, listening) plus a per-kind empty state, shared verbatim by every timeline surface: /blog/, the section listings, and the in-browser listening live updates. The homepage's compact feed is deliberately not a Row consumer; it is its own renderer.

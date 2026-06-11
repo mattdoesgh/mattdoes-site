@@ -140,7 +140,7 @@ export function indexPage({ site, entries }) {
       // between deploys. It no-ops if #listening-rows isn't on the page.
       // tag-filter.js wires the ?tag= URL param + filter strip to in-place
       // row hiding.
-      bodyScripts: `<script src="/${asset('listening-live.js')}" defer></script>
+      bodyScripts: `<script src="/${asset('listening-live.js')}" type="module"></script>
 <script src="/${asset('tag-filter.js')}" defer></script>`,
     },
     body,
