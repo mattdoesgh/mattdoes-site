@@ -22,3 +22,6 @@ The Last.fm-derived track data (recent scrobbles + playcount). Fetched by the bu
 
 ## Thought
 A micro-post split out of a daily note on `## HH:MM` headings (CT wall-clock). Carries a stable id `t-YYYYMMDD-HHMM` derived from its own timestamp.
+
+## Edge transport
+The shared Worker response machinery in `workers/lib/transport.js`: the JSON+CORS envelope, preflight, error cache policy (`errorJson`), fail-open KV access, and request helpers. Caching *policy* (TTLs, cache-control strings) stays per-Worker; only the envelope is shared. Editing it means redeploying all Workers (`npm run deploy:workers`) — see ADR 0002.

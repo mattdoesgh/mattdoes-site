@@ -20,7 +20,9 @@
 // Env / bindings:
 //   GEO_CACHE — Workers KV (added in wrangler.toml after first deploy)
 
-const ALLOWED_ORIGIN = 'https://mattdoes.online';
+import {
+  json, errorJson, withCache, corsPreflight, kvGet, kvPut, getClientIp, shortError,
+} from '../../lib/transport.js';
 
 const COORD_PRECISION  = 1;                          // ~11 km grid
 const KV_TTL_S         = 7 * 24 * 60 * 60;           // 7 days
@@ -101,21 +103,17 @@ export default {
     // KV cache check. A polygon entry is a real hit; a negative marker means
     // "we already looked here recently and Nominatim had nothing" — serve a
     // cached 404 instead of re-hitting upstream for the same empty cell.
-    if (env.GEO_CACHE) {
-      // Fail OPEN on a KV read error (binding present but throwing): a cache
-      // miss is recoverable, a crashed handler is not. Mirrors the absent-
-      // binding posture and the lock/budget code below.
-      try {
-        const cached = await env.GEO_CACHE.get(key, { type: 'json' });
-        if (cached && cached.feature) {
-          const res = toClient(json(cached));
-          ctx.waitUntil(edge.put(cacheKey, res.clone()));
-          return res;
-        }
-        if (cached && cached.negative) {
-          return errorJson({ error: 'no_polygon' }, 404, NEG_TTL_S);
-        }
-      } catch { /* KV read error — fall through to a fresh lookup */ }
+    // kvGet fails OPEN (absent binding or a KV read error reads as a miss):
+    // a cache miss is recoverable, a crashed handler is not. Mirrors the
+    // lock/budget posture below.
+    const cached = await kvGet(env.GEO_CACHE, key, { type: 'json' });
+    if (cached && cached.feature) {
+      const res = toClient(json(cached));
+      ctx.waitUntil(edge.put(cacheKey, res.clone()));
+      return res;
+    }
+    if (cached && cached.negative) {
+      return errorJson({ error: 'no_polygon' }, 404, { edgeTtlS: NEG_TTL_S });
     }
 
     // Per-IP upstream budget. Everything above this point is an edge/KV cache
@@ -129,16 +127,12 @@ export default {
     if (overBudget) return overBudget;
 
     // 60s lock so a thundering herd doesn't fan out to Nominatim.
-    if (env.GEO_CACHE) {
-      // 503 busy: brief retry-after so polling clients back off instead of
-      // hammering the locked key in a tight loop. A KV read error here fails
-      // OPEN — skip the lock rather than crash the handler.
-      try {
-        const locked = await env.GEO_CACHE.get(`lock:${key}`);
-        if (locked) return errorJson({ error: 'busy' }, 503, ERROR_EDGE_TTL_S);
-      } catch { /* KV read error — skip the lock, proceed to lookup */ }
-      try { await env.GEO_CACHE.put(`lock:${key}`, '1', { expirationTtl: LOCK_TTL_S }); } catch {}
-    }
+    // 503 busy: brief retry-after so polling clients back off instead of
+    // hammering the locked key in a tight loop. kvGet/kvPut fail OPEN —
+    // skip the lock rather than crash the handler.
+    const locked = await kvGet(env.GEO_CACHE, `lock:${key}`);
+    if (locked) return errorJson({ error: 'busy' }, 503, { edgeTtlS: ERROR_EDGE_TTL_S });
+    await kvPut(env.GEO_CACHE, `lock:${key}`, '1', { expirationTtl: LOCK_TTL_S });
 
     let payload;
     try {
@@ -146,22 +140,18 @@ export default {
     } catch (err) {
       // 502 upstream_failed: brief edge cache + retry-after so a flapping
       // Nominatim doesn't get re-probed on every single request.
-      return errorJson({ error: 'upstream_failed', detail: short(err) }, 502, ERROR_EDGE_TTL_S);
+      return errorJson({ error: 'upstream_failed', detail: shortError(err) }, 502, { edgeTtlS: ERROR_EDGE_TTL_S });
     }
     if (!payload) {
       // No polygon for this cell. Remember that briefly so a repeated empty
       // coordinate serves a cached 404 instead of re-hitting Nominatim.
-      if (env.GEO_CACHE) {
-        ctx.waitUntil(
-          env.GEO_CACHE.put(key, JSON.stringify({ negative: true }), { expirationTtl: NEG_TTL_S }),
-        );
-      }
-      return errorJson({ error: 'no_polygon' }, 404, NEG_TTL_S);
+      ctx.waitUntil(
+        kvPut(env.GEO_CACHE, key, JSON.stringify({ negative: true }), { expirationTtl: NEG_TTL_S }),
+      );
+      return errorJson({ error: 'no_polygon' }, 404, { edgeTtlS: NEG_TTL_S });
     }
 
-    if (env.GEO_CACHE) {
-      ctx.waitUntil(env.GEO_CACHE.put(key, JSON.stringify(payload), { expirationTtl: KV_TTL_S }));
-    }
+    ctx.waitUntil(kvPut(env.GEO_CACHE, key, JSON.stringify(payload), { expirationTtl: KV_TTL_S }));
     const res = toClient(json(payload));
     ctx.waitUntil(edge.put(cacheKey, res.clone()));
     return res;
@@ -191,18 +181,20 @@ export default {
  */
 async function checkUpstreamBudget(request, env, ctx) {
   if (!env.GEO_CACHE) return null;            // fail open — no binding
-  const ip = request.headers.get('cf-connecting-ip');
+  const ip = getClientIp(request);
   if (!ip) return null;                       // fail open — can't attribute
   // Bucket the window so the counter key naturally expires and resets:
   // every request inside the same RL_WINDOW_S slice shares one key.
   const bucket = Math.floor(Date.now() / 1000 / RL_WINDOW_S);
   const rlKey  = `rl:${ip}:${bucket}`;
+  // Deliberately NOT kvGet/kvPut: a read error must also skip the increment,
+  // so the read and the conditional write share one fail-open guard.
   try {
     const count = parseInt(await env.GEO_CACHE.get(rlKey), 10) || 0;
     if (count >= RL_MAX_LOOKUPS) {
       // retry-after points at the end of the current bucket window.
       const retryAfter = RL_WINDOW_S - (Math.floor(Date.now() / 1000) % RL_WINDOW_S);
-      return errorJson({ error: 'rate_limited' }, 429, 0, retryAfter);
+      return errorJson({ error: 'rate_limited' }, 429, { retryAfterS: retryAfter });
     }
     // Count this upcoming upstream lookup. expirationTtl gives the slot a
     // hard lifetime even if the bucket math and TTL drift slightly.
@@ -307,62 +299,11 @@ function simplifyGeometry(g, eps) {
 }
 
 // ── transport / helpers ────────────────────────────────────────────────
+// Envelope helpers (json, errorJson, corsPreflight, …) come from
+// workers/lib/transport.js; only this Worker's caching POLICY lives here.
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-function short(err) { return String(err?.message || err).slice(0, 200); }
-function json(obj, status = 200) {
-  return new Response(JSON.stringify(obj), {
-    status,
-    headers: {
-      'content-type':                 'application/json; charset=utf-8',
-      'access-control-allow-origin':  ALLOWED_ORIGIN,
-      'access-control-allow-methods': 'GET, OPTIONS',
-      'access-control-allow-headers': 'content-type',
-      'vary':                         'origin',
-    },
-  });
-}
-
-/**
- * JSON error response with a short edge-cache / retry-after window so
- * negative, busy, rate-limited, and upstream-failure replies aren't
- * re-probed on every request. Builds on {@link json} so CORS headers
- * (and the 400/429 the abuse controls return) stay consistent.
- *
- * @param {object} obj            response body
- * @param {number} status         HTTP status
- * @param {number} edgeTtlS       seconds for `s-maxage` edge caching (0 = none)
- * @param {number} [retryAfterS]  seconds for a `retry-after` header
- * @returns {Response}
- */
-function errorJson(obj, status, edgeTtlS = 0, retryAfterS) {
-  const res = json(obj, status);
-  const h = new Headers(res.headers);
-  if (edgeTtlS > 0) {
-    // No browser caching — only the shared edge cache holds it briefly so a
-    // repeated bad/empty coordinate collapses to one Worker run per window.
-    h.set('cache-control', `public, max-age=0, s-maxage=${edgeTtlS}`);
-  } else {
-    h.set('cache-control', 'no-store');
-  }
-  if (retryAfterS != null) h.set('retry-after', String(retryAfterS));
-  return new Response(res.body, { status, headers: h });
-}
 function toClient(response) {
-  const h = new Headers(response.headers);
   // Polygons are stable for the lifetime of the cache key (a metro
   // doesn't move). Browser revalidates after 1h, edge holds for a day.
-  h.set('cache-control', `public, max-age=3600, s-maxage=${EDGE_TTL_S}`);
-  h.set('access-control-allow-origin', ALLOWED_ORIGIN);
-  return new Response(response.body, { status: response.status, headers: h });
-}
-function corsPreflight() {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      'access-control-allow-origin':  ALLOWED_ORIGIN,
-      'access-control-allow-methods': 'GET, OPTIONS',
-      'access-control-allow-headers': 'content-type',
-      'access-control-max-age':       '86400',
-    },
-  });
+  return withCache(response, `public, max-age=3600, s-maxage=${EDGE_TTL_S}`);
 }

@@ -43,7 +43,9 @@
 //   • A descriptive User-Agent is sent so Last.fm can identify / rate-limit
 //     this client distinctly.
 
-const ALLOWED_ORIGIN = 'https://mattdoes.online';
+import {
+  json, errorJson, withCache, corsPreflight, kvGet, kvPut, getClientIp, shortError,
+} from '../../lib/transport.js';
 
 // Thresholds (milliseconds).
 const FRESH_MS    =  5 * 60 * 1000;   //  5 min — "medium" default
@@ -80,7 +82,7 @@ const USER_AGENT   = 'mattdoes-site/1.0 (+https://mattdoes.online)';
  */
 async function checkRateLimit(request, env) {
   if (!env.LISTEN_RL || typeof env.LISTEN_RL.limit !== 'function') return null;
-  const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+  const ip = getClientIp(request) || 'unknown';
   // Key on IP + path so /now and /recent are budgeted independently.
   const key = `${ip}:${new URL(request.url).pathname}`;
   try {
@@ -90,15 +92,8 @@ async function checkRateLimit(request, env) {
     // Binding error → fail open. The SWR cache still bounds upstream.
     return null;
   }
-  return new Response(JSON.stringify({ error: 'rate_limited' }), {
-    status: 429,
-    headers: {
-      'content-type':                'application/json; charset=utf-8',
-      'access-control-allow-origin': ALLOWED_ORIGIN,
-      'retry-after':                 '60',
-      'cache-control':               'no-store',
-    },
-  });
+  // The binding's period is 60s, so retry-after points at the next window.
+  return errorJson({ error: 'rate_limited' }, 429, { retryAfterS: 60 });
 }
 
 export default {
@@ -210,11 +205,9 @@ async function backgroundRefresh(env, kind, kvKey, lockKey) {
   // Short-lived lock: first Worker through claims it; subsequent clients
   // within the TTL see the lock and skip. KV is eventually consistent so
   // an occasional duplicate fetch is possible — within rate-limit budget.
-  const locked = await env.LASTFM_CACHE.get(lockKey);
+  const locked = await kvGet(env.LASTFM_CACHE, lockKey);
   if (locked) return;
-  try {
-    await env.LASTFM_CACHE.put(lockKey, '1', { expirationTtl: LOCK_TTL_S });
-  } catch { /* non-fatal */ }
+  await kvPut(env.LASTFM_CACHE, lockKey, '1', { expirationTtl: LOCK_TTL_S });
 
   const fresh = await refresh(env, kind);
   if (fresh.ok) await writeCache(env, kvKey, fresh.data);
@@ -254,7 +247,7 @@ async function refresh(env, kind) {
     const tracks = arr.map(trackToRow).filter(t => t.artist && t.track).slice(0, RECENT_LIMIT);
     return { ok: true, data: { playcount: Number(attr.total) || 0, tracks } };
   } catch (err) {
-    return { ok: false, error: short(err) };
+    return { ok: false, error: shortError(err) };
   }
 }
 
@@ -268,13 +261,9 @@ async function refresh(env, kind) {
  * @returns {Promise<{ data: object, fetchedAt: number }|null>}
  */
 async function readCache(env, key) {
-  try {
-    const entry = await env.LASTFM_CACHE.get(key, { type: 'json' });
-    if (!entry || typeof entry.fetchedAt !== 'number' || !entry.data) return null;
-    return entry;
-  } catch {
-    return null;
-  }
+  const entry = await kvGet(env.LASTFM_CACHE, key, { type: 'json' });
+  if (!entry || typeof entry.fetchedAt !== 'number' || !entry.data) return null;
+  return entry;
 }
 
 /**
@@ -287,9 +276,7 @@ async function readCache(env, key) {
  * @returns {Promise<void>}
  */
 async function writeCache(env, key, data) {
-  try {
-    await env.LASTFM_CACHE.put(key, JSON.stringify({ data, fetchedAt: Date.now() }));
-  } catch { /* swallow — next tick will retry */ }
+  await kvPut(env.LASTFM_CACHE, key, JSON.stringify({ data, fetchedAt: Date.now() }));
 }
 
 // ── payload contract (C7) ───────────────────────────────────────────────
@@ -365,19 +352,9 @@ function trackToRow(t) {
 }
 
 // ── transport ───────────────────────────────────────────────────────────
-function json(obj, status = 200) {
-  return new Response(JSON.stringify(obj), {
-    status,
-    headers: {
-      'content-type':                 'application/json; charset=utf-8',
-      'access-control-allow-origin':  ALLOWED_ORIGIN,
-      'access-control-allow-methods': 'GET, OPTIONS',
-      'access-control-allow-headers': 'content-type',
-      'vary':                         'origin',
-    },
-  });
-}
-
+// Envelope helpers (json, errorJson, corsPreflight, …) come from
+// workers/lib/transport.js; only this Worker's caching POLICY lives here.
+//
 // Two-layer caching policy:
 //   • s-maxage=EDGE_TTL_S  → Cloudflare edge stores the response for that long,
 //     so concurrent polls collapse to one Worker run per window.
@@ -385,22 +362,5 @@ function json(obj, status = 200) {
 //     the edge cache, not the Worker, on a HIT). Scrobble updates aren't
 //     hidden behind a stale browser cache, matching the original intent.
 function toClient(response) {
-  const h = new Headers(response.headers);
-  h.set('cache-control', `public, max-age=0, s-maxage=${EDGE_TTL_S}, must-revalidate`);
-  h.set('access-control-allow-origin', ALLOWED_ORIGIN);
-  return new Response(response.body, { status: response.status, headers: h });
+  return withCache(response, `public, max-age=0, s-maxage=${EDGE_TTL_S}, must-revalidate`);
 }
-
-function corsPreflight() {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      'access-control-allow-origin':  ALLOWED_ORIGIN,
-      'access-control-allow-methods': 'GET, OPTIONS',
-      'access-control-allow-headers': 'content-type',
-      'access-control-max-age':       '86400',
-    },
-  });
-}
-
-function short(err) { return String(err?.message || err).slice(0, 200); }

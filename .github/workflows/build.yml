@@ -35,6 +35,10 @@ jobs:
         working-directory: workers/listening
         run: npm audit --audit-level=moderate
 
+      - name: Audit (workers/geo)
+        working-directory: workers/geo
+        run: npm audit --audit-level=moderate
+
   build:
     name: build + html-validate
     runs-on: ubuntu-latest
