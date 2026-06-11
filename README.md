@@ -15,16 +15,22 @@ source for [mattdoes.online](https://mattdoes.online) — my personal site. i wr
 
 ## how it's built
 
-static HTML generated from an Obsidian vault (`mattdoes-vault`, private repo). a small Node script walks the vault with `gray-matter` + `marked`, runs CSS through `lightningcss` and JS through `terser`, content-hashes the result, and writes `dist/`. no framework, no templating engine, no CMS. hosted on Cloudflare Pages.
+static HTML generated from an Obsidian vault (`mattdoes-vault`, private repo). a pre-build script (`scripts/pages-prebuild.sh`) clones the vault into `./vault/` with a fine-grained PAT. no framework, no templating engine, no CMS. hosted on Cloudflare Pages.
 
-two thin Cloudflare Workers handle the live bits, both same-origin so the site's CSP stays at `connect-src 'self'`:
+the generator, in three parts:
+
+- **`build.js`** — the entrypoint. reads the vault, fetches Last.fm listening data (disk-cached under `.cache/`), and hands both to the modules below.
+- **`lib/intake.js`** — vault notes → content model. frontmatter parsing (`gray-matter`) and validation, splitting daily notes into thoughts, stable thought IDs, sorting, the slug index. pure: same notes in, same model out.
+- **`lib/emit.js`** — content model → `dist/`. markdown via `marked` (shiki for code highlighting), wikilink + embed resolution, page templates from `templates/`, CSS through `lightningcss`, JS through `terser`, content-hashed assets, RSS + sitemap.
+
+two thin Cloudflare Workers serve the live bits, both same-origin under `/api/`; the site's CSP stays at `connect-src 'self'`:
 
 - **`mattdoes-listening`** — proxies Last.fm for the topbar's now-playing pill and the live track list on `/listening/`. KV-cached with stale-while-revalidate.
 - **`mattdoes-geo`** — reverse-geocodes a visitor's city against Nominatim *only if* they opt in via the tweaks panel. Default page render uses `static/home.geojson` (Houston), baked once with `npm run bake-geo`. KV-cached for 7 days per metro.
 
-media flows through R2: `scripts/optimize-media.js` produces `.webp` variants from `vault/attachments/`, `scripts/sync-media.js` PUTs originals + variants to the `mattdoes-media` bucket, and the build emits `<picture>` tags pointed at `media.mattdoes.online`. fonts are self-hosted (JetBrains Mono) — no Google Fonts call. contact is a plain `mailto:` to a Fastmail address. no tracker, no analytics, no third-party connect.
+both Workers share their response machinery — JSON + CORS envelope, preflight, error responses with edge-TTL policy, fail-open KV reads — from `workers/lib/transport.js`. caching policy (TTLs, cache-control strings) stays in each Worker.
 
-the vault is cloned into `./vault/` at build time via a fine-grained PAT (`scripts/pages-prebuild.sh`). submodules are out because Cloudflare Pages' GitHub App auth doesn't propagate to them.
+media flows through R2: `scripts/optimize-media.js` produces `.webp` variants from `vault/attachments/`, `scripts/sync-media.js` PUTs originals + variants to the `mattdoes-media` bucket, and the build emits `<picture>` tags pointed at `media.mattdoes.online`. fonts are self-hosted (JetBrains Mono). contact is a plain `mailto:` to a Fastmail address. no tracker, no analytics, no third-party connect.
 
 ## running it
 
@@ -54,8 +60,4 @@ cd workers/listening && npx wrangler deploy
 cd workers/geo       && npx wrangler deploy
 ```
 
-each has its own README covering KV setup, secrets, and refresh policy.
-
-## why like this
-
-this whole thing is Obsidian, a build script, and two Workers — if any of it breaks, the fix is going to be in this repo.
+shared code under `workers/lib/` is bundled into every Worker that imports it — editing it means redeploying both. `npm run deploy:workers` from the repo root does that in one go. each Worker has its own README covering KV setup, secrets, and refresh policy.
