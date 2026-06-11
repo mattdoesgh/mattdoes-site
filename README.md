@@ -25,7 +25,7 @@ the generator, in three parts:
 
 two thin Cloudflare Workers serve the live bits, both same-origin under `/api/`; the site's CSP stays at `connect-src 'self'`:
 
-- **`mattdoes-listening`** — proxies Last.fm for the topbar's now-playing pill and the live track list on `/listening/`. KV-cached with stale-while-revalidate.
+- **`mattdoes-listening`** — proxies Last.fm for the topbar's now-playing pill and the live track list on `/listening/`. KV-cached with stale-while-revalidate. decodes Last.fm responses through `lib/lastfm.js`, the same pure codec the build uses.
 - **`mattdoes-geo`** — reverse-geocodes a visitor's city against Nominatim *only if* they opt in via the tweaks panel. Default page render uses `static/home.geojson` (Houston), baked once with `npm run bake-geo`. KV-cached for 7 days per metro.
 
 both Workers share their response machinery — JSON + CORS envelope, preflight, error responses with edge-TTL policy, fail-open KV reads — from `workers/lib/transport.js`. caching policy (TTLs, cache-control strings) stays in each Worker.
