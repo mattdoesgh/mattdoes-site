@@ -96,7 +96,7 @@ export function base({ page, body }) {
 <link rel="stylesheet" href="${cssHref}" />
 <!-- Importmap: lets module scripts import shared modules by their clean
      URLs (/rows.js, /_helpers.js) while the network fetches the hashed
-     immutable copies. Must precede any module script (docs/adr/0001). -->
+     immutable copies. Must precede any module script. -->
 <script type="importmap">{"imports":{"/rows.js":"/${asset('rows.js')}","/_helpers.js":"/${asset('_helpers.js')}"}}</script>
 ${page.headExtra || ''}
 </head>
