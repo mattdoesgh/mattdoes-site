@@ -46,6 +46,7 @@
 import {
   json, errorJson, withCache, corsPreflight, kvGet, kvPut, getClientIp, shortError,
 } from '../../lib/transport.js';
+import { decodeTrack, decodeTracks, recentTracksUrl } from '../../../lib/lastfm.js';
 
 // Thresholds (milliseconds).
 const FRESH_MS    =  5 * 60 * 1000;   //  5 min — "medium" default
@@ -227,25 +228,20 @@ async function backgroundRefresh(env, kind, kvKey, lockKey) {
 async function refresh(env, kind) {
   try {
     const limit = kind === 'now' ? 1 : RECENT_LIMIT;
-    const api = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks`
-              + `&user=${encodeURIComponent(env.LASTFM_USERNAME)}`
-              + `&api_key=${encodeURIComponent(env.LASTFM_API_KEY)}`
-              + `&format=json&limit=${limit}`;
+    const api = recentTracksUrl(env.LASTFM_USERNAME, env.LASTFM_API_KEY, limit);
     const res = await fetch(api, { headers: { 'User-Agent': USER_AGENT } });
     if (!res.ok) throw new Error(`lastfm ${res.status}`);
     const body = await res.json();
-    const raw  = body?.recenttracks?.track || [];
-    const attr = body?.recenttracks?.['@attr'] || {};
-    const arr  = Array.isArray(raw) ? raw : [raw];
 
     if (kind === 'now') {
-      const t = arr[0];
+      const raw = body?.recenttracks?.track || [];
+      const t   = Array.isArray(raw) ? raw[0] : raw;
       const data = (t && t['@attr']?.nowplaying) ? trackToNow(t) : { nowPlaying: false };
       return { ok: true, data };
     }
 
-    const tracks = arr.map(trackToRow).filter(t => t.artist && t.track).slice(0, RECENT_LIMIT);
-    return { ok: true, data: { playcount: Number(attr.total) || 0, tracks } };
+    const { playcount, tracks } = decodeTracks(body, { limit: RECENT_LIMIT });
+    return { ok: true, data: { playcount, tracks } };
   } catch (err) {
     return { ok: false, error: shortError(err) };
   }
@@ -324,31 +320,15 @@ function emptyPayload(kind, reason) {
     : { playcount: 0, tracks: [], reason: safeReason };
 }
 
-// ── shape helpers (preserved from the previous Worker) ──────────────────
+// ── shape helpers ───────────────────────────────────────────────────────
+/**
+ * The /now payload contract: `nowPlaying: true` leads, no date, no image.
+ * This is a payload shape owned by this Worker (the topbar pill client
+ * reads it), so it stays here — the field extraction is the codec's.
+ */
 function trackToNow(t) {
-  return {
-    nowPlaying: true,
-    artist: (t.artist && (t.artist['#text'] || t.artist.name)) || '',
-    track:  t.name || '',
-    album:  (t.album && t.album['#text']) || '',
-    link:   t.url || '',
-  };
-}
-
-function trackToRow(t) {
-  const nowPlaying = Boolean(t['@attr']?.nowplaying);
-  return {
-    artist: (t.artist && (t.artist['#text'] || t.artist.name)) || '',
-    track:  t.name || '',
-    album:  (t.album && t.album['#text']) || '',
-    link:   t.url || '',
-    // `@attr.nowplaying` rows carry no date.uts; stamp with now so the
-    // client can still sort and render a year label.
-    date: nowPlaying
-      ? new Date().toISOString()
-      : (t.date?.uts ? new Date(Number(t.date.uts) * 1000).toISOString() : ''),
-    nowPlaying,
-  };
+  const d = decodeTrack(t);
+  return { nowPlaying: true, artist: d.artist, track: d.track, album: d.album, link: d.link };
 }
 
 // ── transport ───────────────────────────────────────────────────────────
