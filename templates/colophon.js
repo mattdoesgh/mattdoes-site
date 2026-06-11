@@ -57,9 +57,9 @@ export function colophonPage({ stats, updated, nowPlaying }) {
 
 <span class="b">┌</span> <span class="d">mattdoes-site</span> <span class="note">(public)</span>
 <span class="b">├──</span> <span class="f">build.js</span>             <span class="note"># the generator entrypoint</span>
-<span class="b">├──</span> <span class="d">lib</span>                  <span class="note"># intake (vault → model) · emit (model → dist) · listening</span>
+<span class="b">├──</span> <span class="d">lib</span>                  <span class="note"># intake (vault → model) · emit (model → dist) · listening · lastfm codec</span>
 <span class="b">├──</span> <span class="f">site.config.js</span>       <span class="note"># identity + last.fm</span>
-<span class="b">├──</span> <span class="d">templates</span>            <span class="note"># page templates + helpers</span>
+<span class="b">├──</span> <span class="d">templates</span>            <span class="note"># page templates · shared row renderers · helpers</span>
 <span class="b">├──</span> <span class="d">static</span>               <span class="note"># css, js (tweaks · geo-bg · live), fonts, baked geojson, _headers</span>
 <span class="b">├──</span> <span class="d">scripts</span>              <span class="note"># prebuild, optimize-media, sync-media, bake-geo</span>
 <span class="b">├──</span> <span class="d">workers</span>              <span class="note"># listening · geo · lib (shared edge transport)</span>
