@@ -5,51 +5,8 @@
 
 import { base } from './base.js';
 import { asset } from './_assets.js';
-import { esc, timeTag, tagList, safeUrl, relFor } from './_helpers.js';
-
-function articleRow(entry) {
-  const tags = tagList(entry.tags);
-  const tagAttr = esc((entry.tags || []).join(' '));
-  return `
-    <div class="row" data-kind="${esc(entry.kind)}" data-tags="${tagAttr}">
-      <div class="gutter">
-        <span class="kind">${esc(entry.kind)}</span>
-        <span class="when">${timeTag(entry.date, 'day')}</span>
-      </div>
-      <div>
-        <div class="body">
-          <a href="${entry.url}"><strong>${esc(entry.title)}</strong></a>${entry.summary ? ` — ${esc(entry.summary)}` : ''}
-          ${tags}
-        </div>
-      </div>
-    </div>`;
-}
-
-function thoughtRow(entry) {
-  const tagAttr = esc((entry.tags || []).join(' '));
-  const bodyClass = entry.quote ? 'body q' : 'body';
-  // Permalink ids land on /blog/?kind=thought#t-NNN once the old
-  // /thoughts/#t-NNN URLs follow the 301 chain.
-  return `
-    <div class="row" data-kind="thought" data-tags="${tagAttr}">
-      <div class="gutter">
-        <span class="kind">thought</span>
-        <span class="when">${timeTag(entry.date, 'day')}</span>
-      </div>
-      <div>
-        <div class="${bodyClass}">${entry.html || esc(entry.body || '')}${(entry.tags && entry.tags.length && !entry.quote) ? ' ' + tagList(entry.tags) : ''}</div>
-        ${entry.id ? `<div class="actions"><a class="permalink" href="#${esc(entry.id)}" id="${esc(entry.id)}">#${esc(entry.id)}</a></div>` : ''}
-      </div>
-    </div>`;
-}
-
-function emptyRow() {
-  return `
-    <div class="row">
-      <div class="gutter"><span class="kind">—</span><span class="when"></span></div>
-      <div><div class="body muted">Nothing published yet.</div></div>
-    </div>`;
-}
+import { esc, safeUrl, relFor } from './_helpers.js';
+import { articleRow, thoughtRow, emptyState } from './rows.js';
 
 export function blogPage({ siteConfig, entries, nowPlaying }) {
   // Tally kinds + tags from the visible entry set so chips never show
@@ -63,9 +20,11 @@ export function blogPage({ siteConfig, entries, nowPlaying }) {
   const kinds   = [...kindCounts.entries()].sort((a, b) => b[1] - a[1]);
   const topTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
 
+  // /blog/ is the one mixed-kind timeline — showKind puts the kind label in
+  // the gutter and the data-kind attribute on the row for ?kind= filtering.
   const rows = entries.length
-    ? entries.map(e => e.kind === 'thought' ? thoughtRow(e) : articleRow(e)).join('\n')
-    : emptyRow();
+    ? entries.map(e => e.kind === 'thought' ? thoughtRow(e) : articleRow(e, { showKind: true })).join('\n')
+    : emptyState('blog');
 
   const filterBar = `
     <div class="filter">
