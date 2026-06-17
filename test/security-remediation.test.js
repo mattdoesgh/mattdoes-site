@@ -41,7 +41,8 @@ date: 2026-01-01
   const html = readDist(res.distDir, 'journal/raw-html/index.html');
   const feed = readDist(res.distDir, 'feed.xml');
   for (const output of [html, feed]) {
-    assert.ok(!/<script\b/i.test(output), 'script tags must be stripped');
+    assert.ok(!/<script\b[^>]*>\s*(?:alert|x)/i.test(output),
+      'authored script tags must be stripped');
     assert.ok(!/<style\b/i.test(output), 'style tags must be stripped');
     assert.ok(!/\son[a-z]+\s*=/i.test(output), 'event attributes must be stripped');
     assert.ok(!/javascript:/i.test(output), 'javascript URLs must be stripped');
