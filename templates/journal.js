@@ -1,7 +1,7 @@
 // Single article — journal post or making post. Same layout, different labels.
 
 import { base } from './base.js';
-import { esc, fmtDate, timeTag, tagList } from './_helpers.js';
+import { esc, fmtDate, timeTag, tagList, safeUrl } from './_helpers.js';
 
 export function articlePage({ site, note, recent, prev, next }) {
   const kind = note.kind || 'journal';
@@ -32,7 +32,7 @@ export function articlePage({ site, note, recent, prev, next }) {
     <div class="group">
       <h2>recent</h2>
       <ul>
-        ${recent.slice(0, 5).map(r => `<li><a href="${r.url}">${esc(r.title)}</a><span class="meta">${timeTag(r.date, 'day')}</span></li>`).join('\n        ')}
+        ${recent.slice(0, 5).map(r => `<li><a href="${esc(safeUrl(r.url))}">${esc(r.title)}</a><span class="meta">${timeTag(r.date, 'day')}</span></li>`).join('\n        ')}
       </ul>
     </div>` : ''}
   </aside>
@@ -61,8 +61,8 @@ export function articlePage({ site, note, recent, prev, next }) {
 
     ${(prev || next) ? `
     <nav class="pager" aria-label="post pager">
-      ${prev ? `<a href="${prev.url}"><span class="d">← older</span>${esc(prev.title)}</a>` : '<span></span>'}
-      ${next ? `<a href="${next.url}"><span class="d">newer →</span>${esc(next.title)}</a>` : '<span></span>'}
+      ${prev ? `<a href="${esc(safeUrl(prev.url))}"><span class="d">← older</span>${esc(prev.title)}</a>` : '<span></span>'}
+      ${next ? `<a href="${esc(safeUrl(next.url))}"><span class="d">newer →</span>${esc(next.title)}</a>` : '<span></span>'}
     </nav>` : ''}
   </article>
 

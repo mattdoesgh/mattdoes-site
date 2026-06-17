@@ -18,10 +18,11 @@
 // precision is never persisted anywhere.
 //
 // Env / bindings:
-//   GEO_CACHE — Workers KV (added in wrangler.toml after first deploy)
+//   GEO_CACHE — Workers KV for response cache, locks, and secondary budget
+//   GEO_RL    — native Workers rate-limit gate for cache-miss abuse
 
 import {
-  json, errorJson, withCache, corsPreflight, kvGet, kvPut, getClientIp, shortError,
+  json, errorJson, withCache, corsPreflight, kvPut, getClientIp,
 } from '../../lib/transport.js';
 
 const COORD_PRECISION  = 1;                          // ~11 km grid
@@ -90,6 +91,9 @@ export default {
     const lat = +rawLat.toFixed(COORD_PRECISION);
     const lng = +rawLng.toFixed(COORD_PRECISION);
     const key = `geo:${lat},${lng}`;
+    if (!env.GEO_CACHE) {
+      return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
+    }
 
     // Edge cache check.
     const edge = caches.default;
@@ -103,10 +107,12 @@ export default {
     // KV cache check. A polygon entry is a real hit; a negative marker means
     // "we already looked here recently and Nominatim had nothing" — serve a
     // cached 404 instead of re-hitting upstream for the same empty cell.
-    // kvGet fails OPEN (absent binding or a KV read error reads as a miss):
-    // a cache miss is recoverable, a crashed handler is not. Mirrors the
-    // lock/budget posture below.
-    const cached = await kvGet(env.GEO_CACHE, key, { type: 'json' });
+    let cached;
+    try {
+      cached = await env.GEO_CACHE.get(key, { type: 'json' });
+    } catch {
+      return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
+    }
     if (cached && cached.feature) {
       const res = toClient(json(cached));
       ctx.waitUntil(edge.put(cacheKey, res.clone()));
@@ -120,19 +126,25 @@ export default {
     // *hit* and costs us nothing upstream — only requests that reach here are
     // about to (potentially) call Nominatim. We gate exactly those so a caller
     // that fuzzes coordinates to dodge the per-key lock still can't fan out.
-    // Independent of the rounded location key by design. Fails OPEN: no
-    // binding, or any KV error, skips the limit so the Worker still works
-    // without GEO_CACHE — same posture as the lock code below.
-    const overBudget = await checkUpstreamBudget(request, env, ctx);
+    // Independent of the rounded location key by design.
+    const overBudget = await checkUpstreamBudget(request, env);
     if (overBudget) return overBudget;
 
     // 60s lock so a thundering herd doesn't fan out to Nominatim.
     // 503 busy: brief retry-after so polling clients back off instead of
-    // hammering the locked key in a tight loop. kvGet/kvPut fail OPEN —
-    // skip the lock rather than crash the handler.
-    const locked = await kvGet(env.GEO_CACHE, `lock:${key}`);
+    // hammering the locked key in a tight loop.
+    let locked;
+    try {
+      locked = await env.GEO_CACHE.get(`lock:${key}`);
+    } catch {
+      return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
+    }
     if (locked) return errorJson({ error: 'busy' }, 503, { edgeTtlS: ERROR_EDGE_TTL_S });
-    await kvPut(env.GEO_CACHE, `lock:${key}`, '1', { expirationTtl: LOCK_TTL_S });
+    try {
+      await env.GEO_CACHE.put(`lock:${key}`, '1', { expirationTtl: LOCK_TTL_S });
+    } catch {
+      return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
+    }
 
     let payload;
     try {
@@ -140,7 +152,7 @@ export default {
     } catch (err) {
       // 502 upstream_failed: brief edge cache + retry-after so a flapping
       // Nominatim doesn't get re-probed on every single request.
-      return errorJson({ error: 'upstream_failed', detail: shortError(err) }, 502, { edgeTtlS: ERROR_EDGE_TTL_S });
+      return errorJson({ error: 'upstream_failed' }, 502, { edgeTtlS: ERROR_EDGE_TTL_S });
     }
     if (!payload) {
       // No polygon for this cell. Remember that briefly so a repeated empty
@@ -170,25 +182,28 @@ export default {
  *
  * Only called on the cache-*miss* path, so edge/KV hits never consume budget.
  *
- * Fails OPEN: when `env.GEO_CACHE` is absent or KV throws, the limit is
- * skipped and the request proceeds — the Worker must keep functioning
- * without the binding, exactly like the in-flight lock code.
- *
  * @param {Request} request
- * @param {{ GEO_CACHE?: KVNamespace }} env
- * @param {ExecutionContext} ctx
+ * @param {{ GEO_CACHE?: KVNamespace, GEO_RL?: { limit: Function } }} env
  * @returns {Promise<Response|null>} a 429 response when over budget, else null
  */
-async function checkUpstreamBudget(request, env, ctx) {
-  if (!env.GEO_CACHE) return null;            // fail open — no binding
+async function checkUpstreamBudget(request, env) {
   const ip = getClientIp(request);
-  if (!ip) return null;                       // fail open — can't attribute
+  if (!ip) {
+    return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
+  }
+  if (!env.GEO_RL || typeof env.GEO_RL.limit !== 'function') {
+    return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
+  }
+  try {
+    const { success } = await env.GEO_RL.limit({ key: `${ip}:lookup` });
+    if (!success) return errorJson({ error: 'rate_limited' }, 429, { retryAfterS: 60 });
+  } catch {
+    return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
+  }
   // Bucket the window so the counter key naturally expires and resets:
   // every request inside the same RL_WINDOW_S slice shares one key.
   const bucket = Math.floor(Date.now() / 1000 / RL_WINDOW_S);
   const rlKey  = `rl:${ip}:${bucket}`;
-  // Deliberately NOT kvGet/kvPut: a read error must also skip the increment,
-  // so the read and the conditional write share one fail-open guard.
   try {
     const count = parseInt(await env.GEO_CACHE.get(rlKey), 10) || 0;
     if (count >= RL_MAX_LOOKUPS) {
@@ -198,12 +213,10 @@ async function checkUpstreamBudget(request, env, ctx) {
     }
     // Count this upcoming upstream lookup. expirationTtl gives the slot a
     // hard lifetime even if the bucket math and TTL drift slightly.
-    ctx.waitUntil(
-      env.GEO_CACHE.put(rlKey, String(count + 1), { expirationTtl: RL_WINDOW_S }),
-    );
+    await env.GEO_CACHE.put(rlKey, String(count + 1), { expirationTtl: RL_WINDOW_S });
     return null;
   } catch {
-    return null;                              // fail open — KV error
+    return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
   }
 }
 

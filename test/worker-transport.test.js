@@ -20,7 +20,9 @@ test('transport: json() emits the full CORS envelope', async () => {
   assert.equal(res.headers.get('access-control-allow-origin'),  ALLOWED_ORIGIN);
   assert.equal(res.headers.get('access-control-allow-methods'), 'GET, OPTIONS');
   assert.equal(res.headers.get('access-control-allow-headers'), 'content-type');
-  assert.equal(res.headers.get('vary'),                         'origin');
+  assert.equal(res.headers.get('vary'),                         null);
+  assert.equal(res.headers.get('x-content-type-options'),       'nosniff');
+  assert.equal(res.headers.get('referrer-policy'),              'strict-origin-when-cross-origin');
   assert.deepEqual(await res.json(), { a: 1 });
 });
 
@@ -41,7 +43,8 @@ test('transport: errorJson() defaults to no-store with no retry-after', () => {
   assert.equal(res.headers.get('access-control-allow-origin'),  ALLOWED_ORIGIN);
   assert.equal(res.headers.get('access-control-allow-methods'), 'GET, OPTIONS');
   assert.equal(res.headers.get('access-control-allow-headers'), 'content-type');
-  assert.equal(res.headers.get('vary'),                         'origin');
+  assert.equal(res.headers.get('vary'),                         null);
+  assert.equal(res.headers.get('x-content-type-options'),       'nosniff');
 });
 
 test('transport: errorJson() with edgeTtlS caches at the edge only', () => {
@@ -63,7 +66,7 @@ test('transport: withCache() stamps the given cache-control verbatim', async () 
   assert.equal(res.headers.get('access-control-allow-origin'), ALLOWED_ORIGIN);
   // Status, body, and the rest of the envelope pass through untouched.
   assert.equal(res.status, 200);
-  assert.equal(res.headers.get('vary'), 'origin');
+  assert.equal(res.headers.get('vary'), null);
   assert.deepEqual(await res.json(), { ok: true });
 });
 
@@ -76,6 +79,7 @@ test('transport: corsPreflight() is a cacheable 204', () => {
   assert.equal(res.headers.get('access-control-allow-methods'), 'GET, OPTIONS');
   assert.equal(res.headers.get('access-control-allow-headers'), 'content-type');
   assert.equal(res.headers.get('access-control-max-age'),       '86400');
+  assert.equal(res.headers.get('x-content-type-options'),       'nosniff');
 });
 
 // ── fail-open KV ────────────────────────────────────────────────────────

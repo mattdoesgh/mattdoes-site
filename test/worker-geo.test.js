@@ -34,6 +34,7 @@ const nominatimEmpty = () =>
   new Response(JSON.stringify({ display_name: 'nowhere' }), {
     status: 200, headers: { 'content-type': 'application/json' },
   });
+const allowRl = () => ({ limit: async () => ({ success: true }) });
 
 // ── coordinate range validation ─────────────────────────────────────────
 test('geo: latitude outside [-90, 90] is rejected with 400', async () => {
@@ -79,7 +80,7 @@ test('geo: a burst of distinct coordinates from one IP is rate-limited', async (
   const c = installCaches();
   const f = installFetch(nominatimOk);
   try {
-    const env = { GEO_CACHE: new KVStub() };
+    const env = { GEO_CACHE: new KVStub(), GEO_RL: allowRl() };
     const headers = { 'cf-connecting-ip': '203.0.113.7' };
     const statuses = [];
 
@@ -105,29 +106,24 @@ test('geo: a burst of distinct coordinates from one IP is rate-limited', async (
   } finally { c.restore(); f.restore(); }
 });
 
-// ── fail-open without the KV binding ────────────────────────────────────
-test('geo: works without the GEO_CACHE binding (fails open)', async () => {
+// ── required bindings fail closed ───────────────────────────────────────
+test('geo: fails closed without the GEO_CACHE binding', async () => {
   const c = installCaches();
   const f = installFetch(nominatimOk);
   try {
-    // No env.GEO_CACHE — the Worker must still serve, not crash.
     const ctx = makeCtx();
     const res = await geoWorker.fetch(
-      workerRequest(`${LOOKUP}?lat=29.76&lng=-95.37`), {}, ctx);
+      workerRequest(`${LOOKUP}?lat=29.76&lng=-95.37`,
+        { headers: { 'cf-connecting-ip': '198.51.100.1' } }),
+      { GEO_RL: allowRl() }, ctx);
     await ctx.settle();
-    assert.equal(res.status, 200,
-      'without KV the Worker should still answer a valid lookup');
-    const body = await res.json();
-    assert.ok(body.feature, 'response should carry a GeoJSON feature');
+    assert.equal(res.status, 503);
+    assert.deepEqual(await res.json(), { error: 'service_unavailable' });
+    assert.equal(f.calls.length, 0);
   } finally { c.restore(); f.restore(); }
 });
 
-// The Worker must fail OPEN not only when env.GEO_CACHE is *absent* (covered
-// above) but also when a present binding *throws*. The cache lookup, in-flight
-// lock, and per-IP budget KV calls are all wrapped in try/catch, so a KV that
-// rejects on every method still degrades to a direct Nominatim lookup rather
-// than crashing the fetch handler.
-test('geo: fails open even when KV throws on every call',
+test('geo: fails closed when KV throws on a cache-miss path',
   async () => {
     const c = installCaches();
     const f = installFetch(nominatimOk);
@@ -141,10 +137,28 @@ test('geo: fails open even when KV throws on every call',
       const res = await geoWorker.fetch(
         workerRequest(`${LOOKUP}?lat=29.76&lng=-95.37`,
           { headers: { 'cf-connecting-ip': '198.51.100.1' } }),
-        { GEO_CACHE: throwingKv }, ctx);
+        { GEO_CACHE: throwingKv, GEO_RL: allowRl() }, ctx);
       await ctx.settle();
-      assert.equal(res.status, 200,
-        'a failing KV must not break the Worker (fail open)');
+      assert.equal(res.status, 503);
+      assert.deepEqual(await res.json(), { error: 'service_unavailable' });
+      assert.equal(f.calls.length, 0);
+    } finally { c.restore(); f.restore(); }
+  });
+
+test('geo: fails closed without the native rate-limit binding',
+  async () => {
+    const c = installCaches();
+    const f = installFetch(nominatimOk);
+    try {
+      const ctx = makeCtx();
+      const res = await geoWorker.fetch(
+        workerRequest(`${LOOKUP}?lat=29.76&lng=-95.37`,
+          { headers: { 'cf-connecting-ip': '198.51.100.1' } }),
+        { GEO_CACHE: new KVStub() }, ctx);
+      await ctx.settle();
+      assert.equal(res.status, 503);
+      assert.deepEqual(await res.json(), { error: 'service_unavailable' });
+      assert.equal(f.calls.length, 0);
     } finally { c.restore(); f.restore(); }
   });
 
@@ -153,7 +167,7 @@ test('geo: a no-polygon result is cached so it is not re-fetched', async () => {
   const c = installCaches();
   const f = installFetch(nominatimEmpty);
   try {
-    const env = { GEO_CACHE: new KVStub() };
+    const env = { GEO_CACHE: new KVStub(), GEO_RL: allowRl() };
     const headers = { 'cf-connecting-ip': '192.0.2.5' };
 
     // First request for this cell — Nominatim is consulted, returns nothing.

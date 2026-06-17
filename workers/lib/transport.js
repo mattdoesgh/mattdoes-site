@@ -12,6 +12,13 @@
 
 export const ALLOWED_ORIGIN = 'https://mattdoes.online';
 
+function securityHeaders() {
+  return {
+    'x-content-type-options': 'nosniff',
+    'referrer-policy':       'strict-origin-when-cross-origin',
+  };
+}
+
 /**
  * JSON response with the site's CORS envelope. Every Worker payload —
  * success or error — goes through here so the header set stays uniform.
@@ -25,11 +32,11 @@ export function json(obj, status = 200, origin = ALLOWED_ORIGIN) {
   return new Response(JSON.stringify(obj), {
     status,
     headers: {
+      ...securityHeaders(),
       'content-type':                 'application/json; charset=utf-8',
       'access-control-allow-origin':  origin,
       'access-control-allow-methods': 'GET, OPTIONS',
       'access-control-allow-headers': 'content-type',
-      'vary':                         'origin',
     },
   });
 }
@@ -90,6 +97,7 @@ export function corsPreflight(origin = ALLOWED_ORIGIN) {
   return new Response(null, {
     status: 204,
     headers: {
+      ...securityHeaders(),
       'access-control-allow-origin':  origin,
       'access-control-allow-methods': 'GET, OPTIONS',
       'access-control-allow-headers': 'content-type',

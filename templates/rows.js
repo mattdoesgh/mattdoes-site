@@ -41,7 +41,7 @@ export function articleRow(entry, { showKind = false } = {}) {
       </div>
       <div>
         <div class="body">
-          <a href="${esc(entry.url)}"><strong>${esc(entry.title)}</strong></a>${entry.summary ? ` — ${esc(entry.summary)}` : ''}
+          <a href="${esc(safeUrl(entry.url))}"><strong>${esc(entry.title)}</strong></a>${entry.summary ? ` — ${esc(entry.summary)}` : ''}
           ${tags}
         </div>
       </div>

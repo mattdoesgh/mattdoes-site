@@ -45,7 +45,11 @@ async function callWorker(url, env, fetchHandler) {
   const fetchStub = installFetch(fetchHandler);
   try {
     const ctx = makeCtx();
-    const res = await listeningWorker.fetch(workerRequest(url), env, ctx);
+    const fullEnv = {
+      LISTEN_RL: { limit: async () => ({ success: true }) },
+      ...env,
+    };
+    const res = await listeningWorker.fetch(workerRequest(url), fullEnv, ctx);
     await ctx.settle();
     const body = await res.clone().json();
     return { status: res.status, body, upstreamCalls: fetchStub.calls.length };
@@ -115,9 +119,9 @@ test('listening: an upstream failure produces a payload with a truthy reason', a
 });
 
 test('listening: a missing-credentials payload carries a truthy reason', async () => {
-  // No LASTFM_API_KEY / LASTFM_USERNAME — the not_configured branch.
+  // No LASTFM_API_KEY / LASTFM_USERNAME — public reason stays generic.
   const { body } = await callWorker(RECENT, {}, () => jsonResponse(lastfmBody(1, 1)));
-  assert.ok(body.reason, 'not_configured payload MUST carry a truthy reason');
+  assert.equal(body.reason, 'unavailable');
   assert.equal(body.playcount, 0);
   assert.deepEqual(body.tracks, []);
 });
@@ -128,22 +132,26 @@ test('listening: the now endpoint also tags fallbacks with a reason', async () =
   assert.equal(body.nowPlaying, false);
 });
 
-// ── KV-missing direct-fetch branch still obeys the contract ─────────────
-test('listening: without KV, success still carries no reason', async () => {
+// ── Required bindings fail closed ───────────────────────────────────────
+test('listening: without KV, the Worker fails closed', async () => {
   const env = { LASTFM_API_KEY: 'k', LASTFM_USERNAME: 'u' }; // no LASTFM_CACHE
-  const { body } = await callWorker(RECENT, env,
+  const { status, body, upstreamCalls } = await callWorker(RECENT, env,
     () => jsonResponse(lastfmBody(2, 50)));
-  assert.equal('reason' in body, false,
-    'the KV-missing direct-fetch success path must carry no reason');
-  assert.equal(body.tracks.length, 2);
+  assert.equal(status, 503);
+  assert.deepEqual(body, { error: 'service_unavailable' });
+  assert.equal(upstreamCalls, 0, 'missing KV must not trigger a direct upstream fetch');
 });
 
-test('listening: without KV, an upstream failure still carries a reason', async () => {
-  const env = { LASTFM_API_KEY: 'k', LASTFM_USERNAME: 'u' }; // no LASTFM_CACHE
-  const { body } = await callWorker(RECENT, env,
-    () => new Response('err', { status: 503 }));
-  assert.ok(body.reason,
-    'the KV-missing direct-fetch failure path must carry a reason');
+test('listening: without the rate-limit binding, the Worker fails closed', async () => {
+  const caches = installCaches();
+  const fetchStub = installFetch(() => jsonResponse(lastfmBody(1, 1)));
+  try {
+    const env = { LASTFM_API_KEY: 'k', LASTFM_USERNAME: 'u', LASTFM_CACHE: new KVStub() };
+    const res = await listeningWorker.fetch(workerRequest(RECENT), env, makeCtx());
+    assert.equal(res.status, 503);
+    assert.deepEqual(await res.json(), { error: 'service_unavailable' });
+    assert.equal(fetchStub.calls.length, 0);
+  } finally { caches.restore(); fetchStub.restore(); }
 });
 
 // ── rate limit (the one deliberate header fix from the transport refactor) ─
@@ -161,12 +169,11 @@ test('listening: an over-limit caller gets a 429 with the full CORS envelope', a
     assert.deepEqual(await res.json(), { error: 'rate_limited' });
     assert.equal(res.headers.get('retry-after'),   '60');
     assert.equal(res.headers.get('cache-control'), 'no-store');
-    // Pre-refactor this hand-built response lacked the vary/allow-methods/
-    // allow-headers trio; it now goes through the shared errorJson envelope.
+    // The shared errorJson envelope supplies CORS without a misleading Vary.
     assert.equal(res.headers.get('access-control-allow-origin'),  'https://mattdoes.online');
     assert.equal(res.headers.get('access-control-allow-methods'), 'GET, OPTIONS');
     assert.equal(res.headers.get('access-control-allow-headers'), 'content-type');
-    assert.equal(res.headers.get('vary'),                         'origin');
+    assert.equal(res.headers.get('vary'),                         null);
   } finally { caches.restore(); fetchStub.restore(); }
 });
 

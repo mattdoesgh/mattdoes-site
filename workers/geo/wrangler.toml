@@ -22,6 +22,17 @@ routes = [
 binding = "GEO_CACHE"
 id      = "4368817cf07143268bdd3bb62874562c"
 
+# Native per-IP gate for cache-miss abuse. The Worker still keeps a secondary
+# KV-backed 10-minute counter for distinct upstream lookups, but this binding
+# is the race-free first line of defense before Nominatim can be reached.
+[[ratelimits]]
+name         = "GEO_RL"
+namespace_id = "2002"
+
+  [ratelimits.simple]
+  limit  = 15
+  period = 60
+
 # No [vars] block needed. The Worker uses public Nominatim with no key.
 # If we ever want to swap to a paid provider, set the API key as a
 # secret via `wrangler secret put`.

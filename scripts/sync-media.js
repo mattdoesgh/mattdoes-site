@@ -63,7 +63,10 @@ function walk(dir, out = []) {
   for (const name of fs.readdirSync(dir)) {
     if (name.startsWith('.')) continue;
     const full = path.join(dir, name);
-    const stat = fs.statSync(full);
+    const stat = fs.lstatSync(full);
+    if (stat.isSymbolicLink()) {
+      throw new Error(`Refusing to sync symlinked media file: ${full}`);
+    }
     if (stat.isDirectory()) walk(full, out);
     else out.push(full);
   }

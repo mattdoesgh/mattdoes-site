@@ -42,7 +42,15 @@ export function safeUrl(url) {
   if (url == null) return '';
   const s = String(url).trim();
   if (s === '') return '';
-  if (/^(https?:|mailto:|tel:|#|\/|\.\/|\.\.\/)/i.test(s)) return s;
+  if (/^(https?:|mailto:|tel:|#)/i.test(s)) return s;
+  if (s.startsWith('//')) return '#';
+  if (s.startsWith('/') || s.startsWith('./')) {
+    const pathPart = s.split(/[?#]/, 1)[0];
+    let decoded = pathPart;
+    try { decoded = decodeURIComponent(pathPart); } catch { /* keep raw */ }
+    if (decoded.split('/').includes('..')) return '#';
+    return s;
+  }
   return '#';
 }
 

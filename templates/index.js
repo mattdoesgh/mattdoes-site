@@ -20,7 +20,7 @@ function row(entry) {
   // into the href so an attribute-breaking or unsafe value can't slip through
   // (finding C1; build.js already routes external URLs through safeUrl()).
   const permalink = entry.url
-    ? `<a class="permalink" href="${esc(entry.url)}">${esc(permalinkLabel)}</a>`
+    ? `<a class="permalink" href="${esc(safeUrl(entry.url))}"${relFor(entry.url)}>${esc(permalinkLabel)}</a>`
     : '';
   const actions = `<div class="actions">${permalink}</div>`;
   let body;
@@ -32,7 +32,7 @@ function row(entry) {
     const album = entry.album ? ` <span class="meta">· ${esc(entry.album)}</span>` : '';
     body = `<div class="body"><strong>${title}</strong>${artist}${album}${entry.nowPlaying ? ' <span class="meta">· now</span>' : ''}</div>`;
   } else if ((kind === 'journal' || kind === 'making') && entry.url) {
-    body = `<div class="body"><a href="${esc(entry.url)}"><strong>${esc(entry.title)}</strong></a>${entry.summary ? ` — ${esc(entry.summary)}` : ''} ${tagList(entry.tags)}</div>`;
+    body = `<div class="body"><a href="${esc(safeUrl(entry.url))}"><strong>${esc(entry.title)}</strong></a>${entry.summary ? ` — ${esc(entry.summary)}` : ''} ${tagList(entry.tags)}</div>`;
   } else {
     body = `<div class="body">${entry.html || esc(entry.body || '')} ${tagList(entry.tags)}</div>`;
   }

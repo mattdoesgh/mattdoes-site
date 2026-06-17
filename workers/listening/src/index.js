@@ -44,7 +44,7 @@
 //     this client distinctly.
 
 import {
-  json, errorJson, withCache, corsPreflight, kvGet, kvPut, getClientIp, shortError,
+  json, errorJson, withCache, corsPreflight, kvGet, kvPut, getClientIp,
 } from '../../lib/transport.js';
 import { decodeTrack, decodeTracks, recentTracksUrl } from '../../../lib/lastfm.js';
 
@@ -63,14 +63,14 @@ const USER_AGENT   = 'mattdoes-site/1.0 (+https://mattdoes.online)';
  *   payloads and dedupe locks.
  * @property {string} LASTFM_USERNAME   Last.fm user to query.
  * @property {string} LASTFM_API_KEY    Last.fm API key.
- * @property {RateLimit} [LISTEN_RL]    Optional Workers Rate Limiting
- *   binding. Absent → rate limiting is skipped.
+ * @property {RateLimit} [LISTEN_RL]    Required Workers Rate Limiting
+ *   binding. Absent/throwing → fail closed.
  */
 
 /**
  * Per-IP rate limit gate. Uses the native Workers Rate Limiting binding
- * (GA Sep 2025); falls through silently when the binding isn't configured
- * so a partially-deployed Worker still serves data. The simple binding only
+ * (GA Sep 2025); fails closed when the binding isn't configured or healthy
+ * so a partially-deployed Worker cannot bypass abuse controls. The simple binding only
  * supports period=10 or period=60 (seconds), so the limit configured in
  * wrangler.toml is per-minute, not the 10-minute window mentioned in the
  * code review — wider windows would need the WAF rate-limiting rules
@@ -82,7 +82,9 @@ const USER_AGENT   = 'mattdoes-site/1.0 (+https://mattdoes.online)';
  *   limit, or `null` when the request should proceed
  */
 async function checkRateLimit(request, env) {
-  if (!env.LISTEN_RL || typeof env.LISTEN_RL.limit !== 'function') return null;
+  if (!env.LISTEN_RL || typeof env.LISTEN_RL.limit !== 'function') {
+    return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
+  }
   const ip = getClientIp(request) || 'unknown';
   // Key on IP + path so /now and /recent are budgeted independently.
   const key = `${ip}:${new URL(request.url).pathname}`;
@@ -90,8 +92,7 @@ async function checkRateLimit(request, env) {
     const { success } = await env.LISTEN_RL.limit({ key });
     if (success) return null;
   } catch {
-    // Binding error → fail open. The SWR cache still bounds upstream.
-    return null;
+    return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
   }
   // The binding's period is 60s, so retry-after points at the next window.
   return errorJson({ error: 'rate_limited' }, 429, { retryAfterS: 60 });
@@ -122,7 +123,6 @@ export default {
 
     // Per-IP rate limit. Runs before the edge-cache lookup so a flood of
     // requests from a single IP can't consume cache CPU even on cold paths.
-    // Returns null (proceed) when the binding isn't configured.
     const limited = await checkRateLimit(request, env);
     if (limited) return limited;
 
@@ -137,7 +137,7 @@ export default {
     if (hit) return hit;
 
     const res = await handle(env, ctx, kind);
-    // Only cache successful payloads — a transient `not_configured` or
+    // Only cache successful payloads — a transient unavailable/config or
     // upstream-failure response shouldn't lock in for the full window.
     if (res.status === 200) {
       ctx.waitUntil(cache.put(cacheKey, res.clone()));
@@ -159,12 +159,10 @@ export default {
  */
 async function handle(env, ctx, kind) {
   if (!env.LASTFM_API_KEY || !env.LASTFM_USERNAME) {
-    return toClient(json(emptyPayload(kind, 'not_configured')));
+    return toClient(json(emptyPayload(kind, 'unavailable')));
   }
   if (!env.LASTFM_CACHE) {
-    // KV binding missing — degrade to a direct fetch so the site still works.
-    const res = await refresh(env, kind);
-    return toClient(json(res.ok ? res.data : emptyPayload(kind, res.error)));
+    return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
   }
 
   const kvKey   = `${kind}:${env.LASTFM_USERNAME}`;
@@ -189,7 +187,7 @@ async function handle(env, ctx, kind) {
   }
   // Upstream failed — serve whatever stale copy we have rather than erroring.
   if (cached) return toClient(json(cached.data));
-  return toClient(json(emptyPayload(kind, fresh.error)));
+  return toClient(json(emptyPayload(kind, 'upstream_failed')));
 }
 
 /**
@@ -243,7 +241,7 @@ async function refresh(env, kind) {
     const { playcount, tracks } = decodeTracks(body, { limit: RECENT_LIMIT });
     return { ok: true, data: { playcount, tracks } };
   } catch (err) {
-    return { ok: false, error: shortError(err) };
+    return { ok: false, error: 'upstream_failed' };
   }
 }
 
@@ -297,10 +295,9 @@ async function writeCache(env, key, data) {
 //     previously-successful payload with no `reason`. Correct: it is real
 //     data, just stale, so the client should keep showing it.
 //   • emptyPayload() → always attaches a guaranteed-truthy `reason` (see
-//     below). Used for not_configured + every upstream/refresh failure.
-// The KV-missing "direct fetch" branch routes through exactly these two
-// shapes (refresh success data, or emptyPayload on failure), so it obeys the
-// contract automatically.
+//     below). Used for config + upstream/refresh failures that still return
+//     a client-facing fallback payload. Missing required bindings fail closed
+//     with a 503 envelope instead of a JSON fallback.
 
 /**
  * Build a non-authoritative fallback payload. Always carries a truthy

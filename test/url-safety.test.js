@@ -37,6 +37,13 @@ test('safeUrl preserves allowed schemes and relative paths', () => {
   assert.equal(safeUrl('./rel'), './rel');
 });
 
+test('safeUrl rejects protocol-relative URLs and parent traversal', () => {
+  assert.equal(safeUrl('//evil.example/path'), '#');
+  assert.equal(safeUrl('../escape'), '#');
+  assert.equal(safeUrl('/safe/../escape'), '#');
+  assert.equal(safeUrl('./safe/%2e%2e/escape'), '#');
+});
+
 test('safeUrl returns empty string for nullish/empty input', () => {
   assert.equal(safeUrl(null), '');
   assert.equal(safeUrl(undefined), '');
