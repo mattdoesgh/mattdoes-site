@@ -24,8 +24,11 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
+      # --ignore-scripts skips the root postinstall (which installs the
+      # design-system toolchain) — the audit job only needs root + workers, so
+      # bootstrapping React/Vite here would be pure waste.
       - name: Install (root)
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Audit (root, prod + dev)
         run: npm run audit
@@ -55,8 +58,17 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
+      # `npm ci` triggers the root `postinstall`, which installs the
+      # design-system deps (react/react-dom + build toolchain) so the `prebuild`
+      # hook can build the SSG bundle that lib/emit.js imports (ADR 0003/0005).
       - name: Install
         run: npm ci
+
+      # The site build transpiles the SSG bundle with esbuild (no type check),
+      # so type-check the design system explicitly to enforce the render*/page
+      # prop contracts (ADR 0005).
+      - name: Typecheck (design-system)
+        run: npm --prefix design-system run typecheck
 
       - name: Build against fixture vault
         env:
@@ -93,6 +105,8 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
+      # `npm ci` triggers the root `postinstall` (design-system deps), so the
+      # fixture builds in the suite can build + import the SSG bundle.
       - name: Install
         run: npm ci
 

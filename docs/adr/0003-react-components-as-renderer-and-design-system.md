@@ -1,5 +1,11 @@
 # React components as the build-time renderer and design system
 
+> **Status update:** the migration described here is complete — every public page
+> now renders through the React design system and `lib/emit.js` no longer calls
+> the `templates/*.js` page functions. See **ADR 0005** for the cutover details
+> (document shell, the SSG bundle, the listening-row exception). The text below is
+> the original decision record.
+
 The site's presentation layer is migrating from the `templates/*.js`
 template-literal functions to a React + TypeScript component library under
 `design-system/` (`@mattdoes/ds`). The library serves two roles from one source

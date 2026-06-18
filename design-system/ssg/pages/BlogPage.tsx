@@ -1,35 +1,32 @@
 // Blog page composition — the React mirror of templates/blog.js. Composes the
-// Layout shell with the page-specific main content (identity rail, filter bar,
-// the Row timeline, related rail). The page-only bits (filter bar, rails) are
-// authored here for now; they graduate to DS components in the "Everything"
-// pass.
+// PageShell chrome with the page-specific main content (identity rail, filter
+// bar, the Row timeline, related rail).
 import {
-  Layout,
+  PageShell,
+  IdentityRail,
+  ElsewhereLinks,
   ArticleRow,
   ThoughtRow,
   EmptyState,
-  StatusPill,
-  safeUrl,
-  relValue,
+  TagCloud,
   type ArticleRowProps,
   type ThoughtRowProps,
+  type ExternalLink,
 } from '../../src/index';
 
 type ArticleEntry = ArticleRowProps & { kind: string };
 type ThoughtEntry = ThoughtRowProps & { kind: 'thought' };
 export type BlogEntry = ArticleEntry | ThoughtEntry;
 
-export interface SiteLink {
-  label: string;
-  href: string;
-  meta?: string;
-}
+export type SiteLink = ExternalLink;
 
 export interface BlogPageProps {
   siteConfig: {
-    title: string;
+    title?: string;
     links?: SiteLink[];
     footerText?: string;
+    /** Manual topbar status override (siteConfig.status). */
+    status?: string;
   };
   entries: BlogEntry[];
   nowPlaying?: string;
@@ -66,50 +63,28 @@ export function BlogPage({ siteConfig, entries, nowPlaying = '' }: BlogPageProps
   }
   const kinds = [...kindCounts.entries()].sort((a, b) => b[1] - a[1]).map(([k]) => k);
   const topTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
-  const links = (siteConfig.links || []).filter((l) => l.href);
 
   return (
-    <Layout
-      topbar={{
-        siteTitle: siteConfig.title,
-        active: 'blog',
-        status: nowPlaying ? <StatusPill text={nowPlaying} dot live /> : undefined,
-      }}
-      footer={{ footerText: siteConfig.footerText ?? '' }}
+    <PageShell
+      active="blog"
+      siteTitle={siteConfig.title}
+      manualStatus={siteConfig.status}
+      nowPlaying={nowPlaying}
+      footerText={siteConfig.footerText ?? ''}
     >
       <main className="page" id="main">
         <h1 className="visually-hidden">blog</h1>
 
-        <aside className="side-left" aria-label="page meta">
-          <div className="ident">
-            <div className="who">blog</div>
-            <div className="bio">posts, micro-thoughts, building-in-public — one timeline, reverse-chronological.</div>
-            <div className="stats">
-              <span className="s">
-                <span className="n">{entries.length}</span>entries
-              </span>
-              <span className="s">
-                <span className="n">{tagCounts.size}</span>tags
-              </span>
-            </div>
-          </div>
-
-          {links.length ? (
-            <div className="group">
-              <h2>elsewhere</h2>
-              <ul>
-                {links.map((l) => (
-                  <li key={l.href}>
-                    <a href={safeUrl(l.href)} rel={relValue(l.href)}>
-                      {l.label}
-                    </a>
-                    {l.meta ? <span className="meta">{l.meta}</span> : null}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-        </aside>
+        <IdentityRail
+          who="blog"
+          bio="posts, micro-thoughts, building-in-public — one timeline, reverse-chronological."
+          stats={[
+            { n: entries.length, label: 'entries' },
+            { n: tagCounts.size, label: 'tags' },
+          ]}
+        >
+          <ElsewhereLinks links={siteConfig.links || []} />
+        </IdentityRail>
 
         <section className="timeline">
           <FilterBar kinds={kinds} topTags={topTags.map(([t]) => t)} count={entries.length} />
@@ -127,21 +102,7 @@ export function BlogPage({ siteConfig, entries, nowPlaying = '' }: BlogPageProps
         </section>
 
         <aside className="side-right" aria-label="related">
-          {topTags.length ? (
-            <div className="group">
-              <h2>by tag</h2>
-              <ul>
-                {topTags.map(([t, n]) => (
-                  <li key={t}>
-                    <a className="tg" href={`/blog/?tag=${encodeURIComponent(t)}`} data-tag={t}>
-                      {t}
-                    </a>
-                    <span className="meta">{n}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
+          <TagCloud tags={topTags} baseHref="/blog/" />
 
           <div className="group">
             <h2>subscribe</h2>
@@ -154,6 +115,6 @@ export function BlogPage({ siteConfig, entries, nowPlaying = '' }: BlogPageProps
           </div>
         </aside>
       </main>
-    </Layout>
+    </PageShell>
   );
 }

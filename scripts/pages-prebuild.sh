@@ -75,6 +75,12 @@ fi
 
 echo "✓ vault/ checked out ($(git -C "$VAULT_DIR" rev-parse --short HEAD))"
 
+# Note: design-system deps (react/react-dom + the build toolchain) are installed
+# by the root `postinstall` hook when Pages runs `npm ci`, so they're present
+# before the build command's `prebuild` step builds the SSG bundle. Nothing to do
+# here — and doing it here would be skipped on a warm vault cache (early-exit
+# above) anyway.
+
 # Media pipeline: generate optimized variants, then push originals + variants
 # to R2. Both steps no-op gracefully if their prereqs (sharp, R2 token) are
 # absent — build.js falls back to serving attachments out of dist/img/.

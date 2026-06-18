@@ -8,6 +8,12 @@ export interface TimeProps {
   format?: DateFormat;
   /** Optional `aria-label`, e.g. `"published"`. */
   ariaLabel?: string;
+  /**
+   * Override the rendered text while keeping the ISO `datetime` attribute — for
+   * relative labels like the home feed's `"2h"`/`"3d"`. When omitted the text
+   * is `fmtDate(date, format)`.
+   */
+  label?: string;
 }
 
 /**
@@ -15,7 +21,7 @@ export interface TimeProps {
  * `datetime`, rendered in Central Time. The `ts` class is the contract the
  * client local-time script keys on to layer a visitor-local tooltip.
  */
-export function Time({ date, format = 'day', ariaLabel }: TimeProps) {
+export function Time({ date, format = 'day', ariaLabel, label }: TimeProps) {
   const iso = isoAttr(date);
   if (!iso) return null;
   // Emit a lowercase `datetime` attribute (the canonical HTML the client
@@ -25,7 +31,7 @@ export function Time({ date, format = 'day', ariaLabel }: TimeProps) {
   const dateAttr = { datetime: iso } as Record<string, string>;
   return (
     <time className="ts" aria-label={ariaLabel} {...dateAttr}>
-      {fmtDate(date, format)}
+      {label ?? fmtDate(date, format)}
     </time>
   );
 }

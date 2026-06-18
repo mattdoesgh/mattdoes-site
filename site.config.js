@@ -90,7 +90,8 @@ export const siteConfig = {
 
   // Status pill in the topbar. When `status` is empty and a Last.fm track is
   // currently playing at build time, build.js injects 'now: <artist — track>'
-  // automatically. Set a fixed string here to override that behavior.
+  // automatically. Set a fixed string here to override that with a static
+  // site-notice pill (rendered by PageShell; the live poller leaves it alone).
   status: '',
 
   // Last.fm integration for /listening/.

@@ -120,8 +120,44 @@ export function isoAttr(d: DateInput): string {
   return date ? date.toISOString() : '';
 }
 
-function escHtml(s: string): string {
-  return s
+/**
+ * Format a bare `"YYYY-MM-DD"` (a group key already computed in CT) as
+ * `"mon dd"` with no timezone conversion. `fmtDate` can't be used here because
+ * it would re-parse the string as UTC midnight and shift the label back a day.
+ * Ported in behaviour from `fmtIsoDay()` in templates/_helpers.js.
+ */
+export function fmtIsoDay(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return '';
+  return `${MONTHS[Number(m[2]) - 1]} ${m[3]}`;
+}
+
+/**
+ * Compact "time ago" label for the home feed — `'2m'`, `'3h'`, `'4d'`, falling
+ * back to `'mon dd'` once the event is over a week old. Ported in behaviour
+ * from `relTime()` in templates/_helpers.js; relative to the build instant.
+ */
+export function relTime(iso: DateInput): string {
+  const d = toDate(iso);
+  if (!d) return '';
+  const diff = (Date.now() - d.getTime()) / 1000;
+  if (diff < 3600) return `${Math.max(1, Math.round(diff / 60))}m`;
+  if (diff < 86400) return `${Math.round(diff / 3600)}h`;
+  if (diff < 86400 * 7) return `${Math.round(diff / 86400)}d`;
+  return fmtDate(d, 'day');
+}
+
+/**
+ * HTML-escape a value for interpolation into element content or a
+ * double-quoted attribute. Coerces non-string input via `String()` (so
+ * `null`/`undefined` → `''`). The single escaper for every raw-HTML-string sink
+ * built outside JSX: the document `<head>` (document.tsx) and the homepage's
+ * pre-rendered row bodies (IndexPage). Ported in behaviour from `esc()` in
+ * templates/_helpers.js. Inside JSX, escaping is React's job — use components.
+ */
+export function escHtml(s: unknown): string {
+  return String(s ?? '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
