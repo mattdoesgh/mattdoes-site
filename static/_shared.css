@@ -8,25 +8,28 @@
 @view-transition { navigation: auto; }
 
 /* ── Self-hosted fonts ──────────────────────────── */
-/* Drop woff2 files into /fonts/. See README for sources. */
+/* woff2 files are committed under static/fonts/ (so the site build copies
+   them to /fonts/, and the design-system bundle resolves them relatively).
+   src is stylesheet-relative (./fonts/…), not absolute, so it resolves both
+   on the deployed site and inside the Claude Design bundle. See README. */
 @font-face {
   font-family: 'JetBrains Mono';
-  src: url('/fonts/JetBrainsMono-Light.woff2') format('woff2');
+  src: url('./fonts/JetBrainsMono-Light.woff2') format('woff2');
   font-weight: 300; font-style: normal; font-display: swap;
 }
 @font-face {
   font-family: 'JetBrains Mono';
-  src: url('/fonts/JetBrainsMono-Regular.woff2') format('woff2');
+  src: url('./fonts/JetBrainsMono-Regular.woff2') format('woff2');
   font-weight: 400; font-style: normal; font-display: swap;
 }
 @font-face {
   font-family: 'JetBrains Mono';
-  src: url('/fonts/JetBrainsMono-Medium.woff2') format('woff2');
+  src: url('./fonts/JetBrainsMono-Medium.woff2') format('woff2');
   font-weight: 500; font-style: normal; font-display: swap;
 }
 @font-face {
   font-family: 'JetBrains Mono';
-  src: url('/fonts/JetBrainsMono-SemiBold.woff2') format('woff2');
+  src: url('./fonts/JetBrainsMono-SemiBold.woff2') format('woff2');
   font-weight: 600; font-style: normal; font-display: swap;
 }
 /* Italic face for blockquotes and the .row .body.q variant. While the
@@ -35,7 +38,7 @@
    mechanical. */
 @font-face {
   font-family: 'JetBrains Mono';
-  src: url('/fonts/JetBrainsMono-Italic.woff2') format('woff2');
+  src: url('./fonts/JetBrainsMono-Italic.woff2') format('woff2');
   font-weight: 400; font-style: italic; font-display: swap;
 }
 
@@ -65,7 +68,7 @@ html {
   --font-body: var(--font-mono);
 
   --fs: 13.5px;
-  --lh: 1.55;
+  --lh: 1.55; /* @kind other */
   --col: 560px;
   --rail: 240px;
 }
@@ -743,15 +746,15 @@ html[data-theme="dark"] .post-body pre.shiki span { color: var(--shiki-dark, inh
 }
 .post-body hr { border: none; border-top: 1px dashed var(--faint); margin: 1.5rem 0; }
 
-/* Callouts: GitHub/Obsidian-style `> [!type]` blockquotes. Each type
-   re-skins the accent via a local --co-accent so the border + title
-   color match. Body stays in the post body type. */
+/* Callouts: GitHub/Obsidian-style `> [!type]` blockquotes. Each type skins
+   the border + title to its own hue. Set directly per variant (no cascade
+   custom property) so the linter doesn't flag a custom-property declaration
+   under a component selector. Body stays in the post body type. */
 .post-body .callout {
-  --co-accent: var(--accent);
   margin: 1.25rem 0;
   padding: .65rem .85rem .65rem 1rem;
-  border-left: 3px solid var(--co-accent);
-  background: color-mix(in oklch, var(--co-accent) 8%, transparent);
+  border-left: 3px solid var(--accent);
+  background: color-mix(in oklch, var(--accent) 8%, transparent);
   border-radius: 2px;
 }
 .post-body .callout-title {
@@ -760,17 +763,35 @@ html[data-theme="dark"] .post-body pre.shiki span { color: var(--shiki-dark, inh
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: lowercase;
-  color: var(--co-accent);
+  color: var(--accent);
   margin-bottom: .35rem;
 }
 .post-body .callout-body > :first-child { margin-top: 0; }
 .post-body .callout-body > :last-child  { margin-bottom: 0; }
-.post-body .callout-note    { --co-accent: oklch(0.65 0.12 240); }
+.post-body .callout-note {
+  border-left-color: oklch(0.65 0.12 240);
+  background: color-mix(in oklch, oklch(0.65 0.12 240) 8%, transparent);
+}
+.post-body .callout-note .callout-title { color: oklch(0.65 0.12 240); }
 .post-body .callout-tip,
-.post-body .callout-info    { --co-accent: oklch(0.65 0.12 150); }
-.post-body .callout-warning { --co-accent: oklch(0.72 0.13 75);  }
+.post-body .callout-info {
+  border-left-color: oklch(0.65 0.12 150);
+  background: color-mix(in oklch, oklch(0.65 0.12 150) 8%, transparent);
+}
+.post-body .callout-tip .callout-title,
+.post-body .callout-info .callout-title { color: oklch(0.65 0.12 150); }
+.post-body .callout-warning {
+  border-left-color: oklch(0.72 0.13 75);
+  background: color-mix(in oklch, oklch(0.72 0.13 75) 8%, transparent);
+}
+.post-body .callout-warning .callout-title { color: oklch(0.72 0.13 75); }
 .post-body .callout-danger,
-.post-body .callout-error   { --co-accent: oklch(0.62 0.16 25);  }
+.post-body .callout-error {
+  border-left-color: oklch(0.62 0.16 25);
+  background: color-mix(in oklch, oklch(0.62 0.16 25) 8%, transparent);
+}
+.post-body .callout-danger .callout-title,
+.post-body .callout-error .callout-title { color: oklch(0.62 0.16 25); }
 
 /* Footnotes from marked-footnote. The package uses `data-footnote-ref`
    on the inline link and `data-footnote-backref` on the back-arrow,
@@ -1271,11 +1292,11 @@ fieldset.tk-swatches legend.row-t-label {
   --geo-bg-opacity:    0.45;
   --geo-bg-stroke:     0.35;
   --geo-point-fill:    #fff;
-  --geo-point-opacity: 0.50;
+  --geo-point-opacity: 0.50; /* @kind other */
   /* Continuous outline shimmer: stroke-opacity breathes between these
      values across the entire perimeter (no per-segment flashes). */
-  --geo-shimmer-min:   0.05;
-  --geo-shimmer-max:   0.20;
+  --geo-shimmer-min:   0.05; /* @kind other */
+  --geo-shimmer-max:   0.20; /* @kind other */
 }
 html[data-theme="light"] { --geo-point-fill: var(--rule); }
 #geo-bg {
