@@ -15,13 +15,15 @@ source for [mattdoes.online](https://mattdoes.online) — my personal site. i wr
 
 ## how it's built
 
-static HTML generated from an Obsidian vault (`mattdoes-vault`, private repo). a pre-build script (`scripts/pages-prebuild.sh`) clones the vault into `./vault/` with a fine-grained PAT. no framework, no templating engine, no CMS. hosted on Cloudflare Pages.
+static HTML generated from an Obsidian vault (`mattdoes-vault`, private repo). a pre-build script (`scripts/pages-prebuild.sh`) clones the vault into `./vault/` with a fine-grained PAT. every page is a React component rendered to static HTML at build time — no client-side framework, no hydration, no CMS. hosted on Cloudflare Pages.
 
 the generator, in three parts:
 
 - **`build.js`** — the entrypoint. reads the vault, fetches Last.fm listening data (disk-cached under `.cache/`), and hands both to the modules below.
 - **`lib/intake.js`** — vault notes → content model. frontmatter parsing (`gray-matter`) and validation, splitting daily notes into thoughts, stable thought IDs, sorting, the slug index. pure: same notes in, same model out.
-- **`lib/emit.js`** — content model → `dist/`. markdown via `marked` (shiki for code highlighting), wikilink + embed resolution, page templates from `templates/`, CSS through `lightningcss`, JS through `terser`, content-hashed assets, RSS + sitemap.
+- **`lib/emit.js`** — content model → `dist/`. markdown via `marked` (shiki for code highlighting), wikilink + embed resolution, pages rendered by the React design system (`design-system/`), CSS through `lightningcss`, JS through `terser`, content-hashed assets, RSS + sitemap.
+
+the presentation layer is a React + TypeScript component library in `design-system/` (`@mattdoes/ds`). every public page (home, blog, listings, article, about, colophon) is a component there; emit imports the bundle's `render*` functions and renders each page to a static HTML string via `renderToStaticMarkup` — the shipped site is plain static HTML with no React at runtime. the same library is the design source synced to Claude Design (claude.ai/design) for visual editing, so the component set and the live site never drift. `design-system/` builds first (`npm run build:ssg`, wired in as the `prebuild` step), and its deps install via `postinstall`.
 
 two thin Cloudflare Workers serve the live bits, both same-origin under `/api/`; the site's CSP stays at `connect-src 'self'`:
 
