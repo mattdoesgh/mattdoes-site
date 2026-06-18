@@ -29,3 +29,9 @@ The rendered form of one timeline entry — one renderer per content kind (artic
 
 ## Edge transport
 The shared Worker response machinery in `workers/lib/transport.js`: the JSON+CORS envelope, preflight, error cache policy (`errorJson`), fail-open KV access, and request helpers. Caching *policy* (TTLs, cache-control strings) stays per-Worker; only the envelope is shared. Editing it means redeploying all Workers (`npm run deploy:workers`) — see ADR 0002.
+
+## Design system
+The React + TypeScript component library in `design-system/` (`@mattdoes/ds`). One source of truth playing two roles: it renders the site's pages to static HTML at build time (`renderToStaticMarkup`, replacing the `templates/*.js` layer page by page) and it is the component set synced to Claude Design (claude.ai/design) for visual editing. Components emit the same class names as the templates and reuse `static/_shared.css` verbatim, so the look is unchanged; content still comes from the vault via Intake. The presentation layer goes React; everything else (static output, Workers, CSP, enhancement scripts, feeds) is untouched — see ADR 0003. Fidelity is held to semantic+visual equivalence (not byte-identical) because React controls HTML serialization; `design-system/ssg/render.tsx` proves it by diffing React output against the original template for identical data.
+
+## design-sync
+The pipeline that uploads `@mattdoes/ds` to a Claude Design project so the components are editable visually. Config + notes live in `design-system/.design-sync/`; the converter builds `ds-bundle/` (the `window.MattdoesDS` bundle + preview cards) from the package's compiled `dist/`. Re-syncs run from `design-system/`. Brand fonts (JetBrains Mono) are committed under `static/fonts/` and ship into the bundle as real woff2 files — see ADR 0004 for why (and the `stripFontFace` Vite plugin it needs).

@@ -1,0 +1,6 @@
+/* The design system's stylesheet IS the site's stylesheet — re-exported
+   verbatim so there is exactly one source of truth for tokens, fonts, and
+   component rules. During the migration the canonical file still lives at
+   the repo root (static/_shared.css); it will move under design-system/
+   once the legacy build.js pipeline is retired (see docs/adr/0003). */
+@import "../../static/_shared.css";

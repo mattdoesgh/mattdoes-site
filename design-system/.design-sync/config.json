@@ -1,0 +1,16 @@
+{
+  "projectId": "60e197ae-4809-4fb7-b9ea-b578a1f13cd6",
+  "pkg": "@mattdoes/ds",
+  "globalName": "MattdoesDS",
+  "shape": "package",
+  "buildCmd": "npm run build",
+  "cssEntry": "dist/style.css",
+  "extraFonts": ["../static/_shared.css"],
+  "guidelinesGlob": [".design-sync/conventions.md"],
+  "overrides": {
+    "TweaksDialog": { "cardMode": "single", "primaryStory": "Open", "viewport": "380x560" },
+    "Layout": { "cardMode": "single", "primaryStory": "BlogTimeline", "viewport": "980x640" },
+    "Topbar": { "cardMode": "column" },
+    "Footer": { "cardMode": "column" }
+  }
+}
