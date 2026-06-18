@@ -139,6 +139,17 @@ test('listening: an upstream failure produces a payload with a truthy reason', a
   assert.equal(typeof body.reason, 'string');
 });
 
+test('listening: a Last.fm error JSON body is treated as upstream failure', async () => {
+  const env = { LASTFM_API_KEY: 'k', LASTFM_USERNAME: 'u', LASTFM_CACHE: new KVStub() };
+  const { body } = await callWorker(RECENT, env,
+    () => jsonResponse({ error: 10, message: 'Invalid API key' }));
+
+  assert.ok(body.reason,
+    'Last.fm error JSON must not be cached/served as an authoritative empty state');
+  assert.equal(body.playcount, 0);
+  assert.deepEqual(body.tracks, []);
+});
+
 test('listening: a missing-credentials payload carries a truthy reason', async () => {
   // No LASTFM_API_KEY / LASTFM_USERNAME — public reason stays generic.
   const { body } = await callWorker(RECENT, {}, () => jsonResponse(lastfmBody(1, 1)));

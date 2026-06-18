@@ -45,7 +45,7 @@
 import {
   json, errorJson, withCache, corsPreflight, kvGet, kvPut, getClientIp,
 } from '../../lib/transport.js';
-import { decodeTrack, decodeTracks, recentTracksUrl } from '../../../lib/lastfm.js';
+import { decodeTrack, decodeTracks, lastfmError, recentTracksUrl } from '../../../lib/lastfm.js';
 
 // Thresholds (milliseconds).
 const FRESH_MS    =  5 * 60 * 1000;   //  5 min — "medium" default
@@ -229,6 +229,7 @@ async function refresh(env, kind) {
     const res = await fetch(api, { headers: { 'User-Agent': USER_AGENT } });
     if (!res.ok) throw new Error(`lastfm ${res.status}`);
     const body = await res.json();
+    if (lastfmError(body)) throw new Error(body.message || `lastfm error ${body.error}`);
 
     if (kind === 'now') {
       const raw = body?.recenttracks?.track || [];

@@ -8,7 +8,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  decodeTrack, decodeTracks, decodePlaycount, recentTracksUrl, userInfoUrl,
+  decodeTrack, decodeTracks, decodePlaycount, lastfmError, recentTracksUrl, userInfoUrl,
 } from '../lib/lastfm.js';
 
 const RAW_TRACK = {
@@ -96,6 +96,12 @@ test('lastfm: decodeTracks caps at limit only when one is given', () => {
   // The build-time snapshot passes no limit and keeps the API's limit+1
   // now-playing overflow.
   assert.equal(decodeTracks(body).tracks.length, 3);
+});
+
+test('lastfm: lastfmError detects API error bodies', () => {
+  assert.equal(lastfmError({ error: 10, message: 'Invalid API key' }), true);
+  assert.equal(lastfmError({ user: { playcount: '1' } }), false);
+  assert.equal(lastfmError(undefined), false);
 });
 
 test('lastfm: decodeTracks and decodePlaycount survive empty bodies', () => {
