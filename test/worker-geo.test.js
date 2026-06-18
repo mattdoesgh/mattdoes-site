@@ -65,13 +65,22 @@ test('geo: longitude outside [-180, 180] is rejected with 400', async () => {
   } finally { c.restore(); f.restore(); }
 });
 
-test('geo: missing/non-numeric coordinates are rejected with 400', async () => {
+test('geo: missing/non-numeric or malformed coordinates are rejected with 400', async () => {
   const c = installCaches();
   const f = installFetch(nominatimOk);
   try {
-    const res = await geoWorker.fetch(
-      workerRequest(`${LOOKUP}?lat=abc`), {}, makeCtx());
-    assert.equal(res.status, 400);
+    for (const qs of [
+      'lat=abc',
+      'lat=29.7abc&lng=-95.3',
+      'lat=29.7&lng=-95.3x',
+      'lat=Infinity&lng=0',
+      'lat=1e2&lng=0',
+    ]) {
+      const res = await geoWorker.fetch(
+        workerRequest(`${LOOKUP}?${qs}`), {}, makeCtx());
+      assert.equal(res.status, 400, qs);
+    }
+    assert.equal(f.calls.length, 0);
   } finally { c.restore(); f.restore(); }
 });
 
@@ -103,6 +112,10 @@ test('geo: a burst of distinct coordinates from one IP is rate-limited', async (
     assert.equal(statuses[15], 429, 'the 16th distinct lookup must be 429');
     assert.ok(f.calls.length <= 15,
       `upstream calls must stay bounded (<=15), saw ${f.calls.length}`);
+    const keys = [...env.GEO_CACHE.store.keys()];
+    assert.ok(keys.some(k => k.startsWith('rl:')), 'secondary budget key should be stored');
+    assert.ok(!keys.some(k => k.includes('203.0.113.7')),
+      'raw client IP must not be embedded in KV rate-limit keys');
   } finally { c.restore(); f.restore(); }
 });
 

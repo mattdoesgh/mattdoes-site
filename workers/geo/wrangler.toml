@@ -1,6 +1,7 @@
 name = "mattdoes-geo"
 main = "src/index.js"
 compatibility_date = "2026-04-01"
+workers_dev = false
 
 # Same-origin route on mattdoes.online so the static client can call it
 # without loosening the site's `connect-src 'self'` CSP. Workers-on-Routes

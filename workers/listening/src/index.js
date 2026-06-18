@@ -31,10 +31,9 @@
 //   LASTFM_API_KEY   — Last.fm API key
 // Bindings (wrangler.toml):
 //   LASTFM_CACHE     — Workers KV namespace used for cached payloads + locks
-//   LISTEN_RL        — Workers Rate Limiting binding (optional). When absent,
-//                      rate limiting is skipped; the SWR cache already keeps
-//                      upstream call volume bounded, so this is belt-and-braces
-//                      against abusive clients hammering the public route.
+//   LISTEN_RL        — Workers Rate Limiting binding. Missing/unhealthy
+//                      bindings fail closed so abusive traffic cannot bypass
+//                      the public route budget.
 //
 // Notes on Last.fm API etiquette:
 //   • We always serve from KV on the request path; upstream calls happen

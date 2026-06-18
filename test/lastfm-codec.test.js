@@ -46,6 +46,15 @@ test('lastfm: decodeTrack key order is the Worker payload order', () => {
     ['artist', 'track', 'album', 'link', 'date', 'nowPlaying', 'image']);
 });
 
+test('lastfm: decodeTrack normalizes unsafe upstream track URLs', () => {
+  assert.equal(decodeTrack({ ...RAW_TRACK, url: 'javascript:alert(1)' }).link, '');
+  assert.equal(decodeTrack({ ...RAW_TRACK, url: 'data:text/html,<script>' }).link, '');
+  assert.equal(decodeTrack({ ...RAW_TRACK, url: '//evil.example/x' }).link, '');
+  assert.equal(decodeTrack({ ...RAW_TRACK, url: ' http://www.last.fm/music/a ' }).link,
+    'http://www.last.fm/music/a');
+});
+
+
 test('lastfm: a now-playing track is stamped with the injected instant', () => {
   const nowTrack = { ...RAW_TRACK, date: undefined, '@attr': { nowplaying: 'true' } };
   const decoded = decodeTrack(nowTrack, { now: '2026-06-10T12:00:00.000Z' });

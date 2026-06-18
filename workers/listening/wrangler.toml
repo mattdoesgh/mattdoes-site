@@ -1,6 +1,7 @@
 name = "mattdoes-listening"
 main = "src/index.js"
 compatibility_date = "2026-04-01"
+workers_dev = false
 
 # Workers-on-Routes take precedence over Pages, so /api/listening/* is
 # handled here instead of returning a 404 from the static site.

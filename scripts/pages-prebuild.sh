@@ -18,7 +18,7 @@ set -euo pipefail
 # Repo URL is hardcoded — letting it be env-overridable would mean a
 # compromised CF Pages env var could redirect the clone (and the PAT
 # along with it) to an attacker-controlled mirror. Branch + dir stay
-# overridable for legitimate dev use.
+# overridable for legitimate dev use, with validation before they reach git.
 VAULT_REPO="github.com/mattdoesgh/mattdoes-vault.git"
 VAULT_BRANCH="${VAULT_BRANCH:-main}"
 VAULT_DIR="${VAULT_DIR:-vault}"
@@ -40,13 +40,31 @@ if [[ -z "${VAULT_TOKEN:-}" ]]; then
   exit 1
 fi
 
+if [[ ! "$VAULT_BRANCH" =~ ^[A-Za-z0-9._/-]+$ ]] || [[ "$VAULT_BRANCH" == -* ]] || [[ "$VAULT_BRANCH" == *..* ]]; then
+  echo "✗ VAULT_BRANCH contains unsupported characters."
+  exit 1
+fi
+
 echo "→ Cloning vault from $VAULT_REPO (branch $VAULT_BRANCH)…"
-# The PAT acts as the username for token auth; 'x-access-token' is the
-# documented placeholder and any password is ignored by GitHub.
-git clone \
+# Avoid embedding the PAT in the clone URL, which can leak through process
+# listings and verbose git output. Git invokes this temporary askpass helper
+# only when GitHub challenges for credentials.
+ASKPASS="$(mktemp)"
+cleanup() { rm -f "$ASKPASS"; }
+trap cleanup EXIT
+chmod 700 "$ASKPASS"
+cat > "$ASKPASS" <<'EOF'
+#!/usr/bin/env bash
+case "$1" in
+  *Username*) printf '%s\n' 'x-access-token' ;;
+  *)          printf '%s\n' "${VAULT_TOKEN:?}" ;;
+esac
+EOF
+
+GIT_TERMINAL_PROMPT=0 GIT_ASKPASS="$ASKPASS" git clone \
   --depth 1 \
   --branch "$VAULT_BRANCH" \
-  "https://x-access-token:${VAULT_TOKEN}@${VAULT_REPO}" \
+  "https://${VAULT_REPO}" \
   "$VAULT_DIR"
 
 # Sanity check: vault should now exist and be non-empty.

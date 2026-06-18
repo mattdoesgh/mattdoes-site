@@ -36,7 +36,9 @@ const NOMINATIM_DELAY  = 1100;                       // ms; OSM 1 req/sec policy
 // varies coordinates produces a stream of distinct cache-miss keys and can
 // fan that out to Nominatim without bound. To cap that, we keep a per-IP
 // counter of how many *distinct upstream lookups* a single caller has
-// triggered inside a rolling window, independent of the location key.
+// triggered inside a rolling window, independent of the location key. The
+// raw IP is hashed before it is written to KV, so the secondary budget key is
+// useful for abuse control without storing the caller address verbatim.
 //
 // Cap rationale: a legitimate visitor opts in once via the tweaks panel and
 // (after rounding to an ~11 km grid) needs exactly one upstream lookup per
@@ -60,6 +62,7 @@ const ADMIN_LEVELS = [
 ];
 
 const USER_AGENT = 'mattdoes-site-geo/1.0 (+https://mattdoes.online)';
+const COORD_LITERAL_RE = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/;
 
 // Tolerance for in-worker simplification, in degrees. ~0.005° ≈ 500 m,
 // matches what we use for the baked home polygon.
@@ -73,9 +76,9 @@ export default {
     const url = new URL(request.url);
     if (!url.pathname.endsWith('/lookup')) return json({ error: 'not_found' }, 404);
 
-    const rawLat = parseFloat(url.searchParams.get('lat'));
-    const rawLng = parseFloat(url.searchParams.get('lng'));
-    if (!isFinite(rawLat) || !isFinite(rawLng)) {
+    const rawLat = parseCoord(url.searchParams.get('lat'));
+    const rawLng = parseCoord(url.searchParams.get('lng'));
+    if (rawLat == null || rawLng == null) {
       return json({ error: 'bad_request', detail: 'lat and lng required' }, 400);
     }
     // Range-validate before the coords are rounded or used as a cache key.
@@ -203,7 +206,8 @@ async function checkUpstreamBudget(request, env) {
   // Bucket the window so the counter key naturally expires and resets:
   // every request inside the same RL_WINDOW_S slice shares one key.
   const bucket = Math.floor(Date.now() / 1000 / RL_WINDOW_S);
-  const rlKey  = `rl:${ip}:${bucket}`;
+  const ipHash = await sha256Hex(ip);
+  const rlKey  = `rl:${ipHash}:${bucket}`;
   try {
     const count = parseInt(await env.GEO_CACHE.get(rlKey), 10) || 0;
     if (count >= RL_MAX_LOOKUPS) {
@@ -221,6 +225,14 @@ async function checkUpstreamBudget(request, env) {
 }
 
 // ── Nominatim lookup ───────────────────────────────────────────────────
+function parseCoord(value) {
+  if (value == null) return null;
+  const s = String(value).trim();
+  if (!COORD_LITERAL_RE.test(s)) return null;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+}
+
 async function lookup(lat, lng) {
   for (let i = 0; i < ADMIN_LEVELS.length; i++) {
     const { level, zoom } = ADMIN_LEVELS[i];
@@ -315,6 +327,11 @@ function simplifyGeometry(g, eps) {
 // Envelope helpers (json, errorJson, corsPreflight, …) come from
 // workers/lib/transport.js; only this Worker's caching POLICY lives here.
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+async function sha256Hex(value) {
+  const data = new TextEncoder().encode(String(value));
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
 function toClient(response) {
   // Polygons are stable for the lifetime of the cache key (a metro
   // doesn't move). Browser revalidates after 1h, edge holds for a day.

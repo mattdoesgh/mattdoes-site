@@ -93,6 +93,27 @@ test('listening: a genuine-success now payload carries no reason', async () => {
   assert.equal(body.nowPlaying, true);
 });
 
+test('listening: live now payload strips unsafe Last.fm links', async () => {
+  const env = { LASTFM_API_KEY: 'k', LASTFM_USERNAME: 'u', LASTFM_CACHE: new KVStub() };
+  const nowBody = {
+    recenttracks: {
+      track: [{
+        name: 'Live Song',
+        artist: { '#text': 'Live Artist' },
+        album:  { '#text': 'Live Album' },
+        url:    'javascript:alert(1)',
+        '@attr': { nowplaying: 'true' },
+      }],
+      '@attr': {},
+    },
+  };
+  const { status, body } = await callWorker(NOW, env, () => jsonResponse(nowBody));
+  assert.equal(status, 200);
+  assert.equal(body.nowPlaying, true);
+  assert.equal(body.link, '');
+});
+
+
 // ── authoritative empty state ───────────────────────────────────────────
 test('listening: a real empty result is authoritative (no reason, empty arrays)', async () => {
   const env = { LASTFM_API_KEY: 'k', LASTFM_USERNAME: 'u', LASTFM_CACHE: new KVStub() };

@@ -71,5 +71,17 @@ hello
 
   const res = runBuild({ vaultDir: vault });
   assert.notEqual(res.status, 0, 'build must fail when an attachment is a symlink');
-  assert.match(`${res.stdout}\n${res.stderr}`, /Refusing to copy symlinked asset/);
+  assert.match(`${res.stdout}\n${res.stderr}`,
+    /Refusing to (?:copy symlinked asset|read symlinked vault entry)/);
+});
+
+test('symlinked vault notes are rejected instead of read as content', () => {
+  const vault = makeTempDir('mattdoes-sec-vault-');
+  const notesDir = path.join(vault, 'notes');
+  fs.mkdirSync(notesDir, { recursive: true });
+  fs.symlinkSync('/etc/passwd', path.join(notesDir, 'external.md'));
+
+  const res = runBuild({ vaultDir: vault });
+  assert.notEqual(res.status, 0, 'build must fail when a note is a symlink');
+  assert.match(`${res.stdout}\n${res.stderr}`, /Refusing to read symlinked vault entry/);
 });
