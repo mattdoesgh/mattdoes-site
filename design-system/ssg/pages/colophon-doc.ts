@@ -21,8 +21,9 @@ export const COLOPHON_DOC_HTML = `<h2 id="folder" class="section-label"><span>fo
 <span class="b">┌</span> <span class="d">mattdoes-site</span> <span class="note">(public)</span>
 <span class="b">├──</span> <span class="f">build.js</span>             <span class="note"># the generator entrypoint</span>
 <span class="b">├──</span> <span class="d">lib</span>                  <span class="note"># intake (vault → model) · emit (model → dist) · listening · lastfm codec</span>
+<span class="b">├──</span> <span class="d">design-system</span>        <span class="note"># @mattdoes/ds — React page components · renders every page · syncs to Claude Design</span>
 <span class="b">├──</span> <span class="f">site.config.js</span>       <span class="note"># identity + last.fm</span>
-<span class="b">├──</span> <span class="d">templates</span>            <span class="note"># page templates · shared row renderers · helpers</span>
+<span class="b">├──</span> <span class="d">templates</span>            <span class="note"># shared row renderers · helpers · asset registry</span>
 <span class="b">├──</span> <span class="d">static</span>               <span class="note"># css, js (tweaks · geo-bg · live), fonts, baked geojson, _headers</span>
 <span class="b">├──</span> <span class="d">scripts</span>              <span class="note"># prebuild, optimize-media, sync-media, bake-geo</span>
 <span class="b">├──</span> <span class="d">workers</span>              <span class="note"># listening · geo · lib (shared edge transport)</span>
@@ -87,14 +88,14 @@ export const COLOPHON_DOC_HTML = `<h2 id="folder" class="section-label"><span>fo
   })
 
   <span class="k">const</span> route = <span class="v">routeFor</span>(note.path, data)
-  <span class="v">write</span>(<span class="s">\`dist</span><span class="d">\${</span>route<span class="d">}</span><span class="s">.html\`</span>, <span class="v">template</span>(data.publish, { data, html }))
+  <span class="v">write</span>(<span class="s">\`dist</span><span class="d">\${</span>route<span class="d">}</span><span class="s">.html\`</span>, <span class="v">renderPage</span>(data.publish, { data, html }))
 }
 
 <span class="v">writeIndex</span>(<span class="s">'dist/index.html'</span>)
 <span class="v">writeFeeds</span>(<span class="s">'dist/feed.xml'</span>)</div>
 
     <div class="doc-body">
-      <p>One pass, two modules. Intake turns notes into the content model — frontmatter validation, thought splitting, stable IDs, the slug index. Emit writes the model to <code>dist/</code> — markdown, templates, hashed assets, feeds. Four surfaces in the nav (home · blog · listening · about); a new section (say, <code>publish: recipes</code>) is a new template file and one line in <code>routeFor()</code>.</p>
+      <p>One pass, two modules. Intake turns notes into the content model — frontmatter validation, thought splitting, stable IDs, the slug index. Emit writes the model to <code>dist/</code> — markdown, React-rendered pages, hashed assets, feeds. Every public page is a React + TypeScript component in <code>design-system/</code> (<code>@mattdoes/ds</code>), rendered to static HTML at build time — no hydration, no client-side React; the same component library doubles as the design source synced to Claude Design for visual editing. Four surfaces in the nav (home · blog · listening · about); a new section (say, <code>publish: recipes</code>) is a new page component and one line in <code>routeFor()</code>.</p>
       <p>Two dynamic surfaces, both same-origin Workers; <code>connect-src 'self'</code> holds. <code>/api/listening/*</code> proxies Last.fm (now-playing for the topbar, recent tracks for the listening page) with a stale-while-revalidate KV cache out front. <code>/api/geo/lookup</code> reverse-geocodes a visitor's coords against Nominatim if they opt in via the tweaks panel — by default the animated background renders the home polygon baked into <code>static/home.geojson</code>, no prompt, no network call. Both Workers answer through one shared envelope (<code>workers/lib/transport.js</code>) — JSON + CORS, preflight, cached error responses — with caching policy kept per-Worker.</p>
       <p>Media takes the long way around. <code>scripts/optimize-media.js</code> hashes every attachment and emits <code>.webp</code> siblings into <code>.cache/media-build/</code>; <code>scripts/sync-media.js</code> PUTs originals + variants to R2 over <code>wrangler r2 object</code>, and the build emits <code>&lt;picture&gt;</code> tags pointed at <code>media.mattdoes.online</code>. CSS and JS are content-hashed and served immutable from Pages; CSP is strict, no inline scripts, no third-party connect. Mail is Fastmail, contact is a plain <code>mailto:</code>, no form worker.</p>
     </div>`;
