@@ -10,7 +10,7 @@
 // build entry (src/styles-entry.ts) and `static/_shared.css`.
 
 // URL/format helpers — used when composing pages from the components.
-export { safeUrl, relValue, fmtDate, fmtTime, isoAttr, SITE_TZ } from './lib/format';
+export { safeUrl, relValue, fmtDate, fmtTime, isoAttr, fmtIsoDay, relTime, tagsHtml, escHtml, SITE_TZ } from './lib/format';
 export type { DateInput, DateFormat } from './lib/format';
 
 export { ThemeProvider, ACCENTS } from './theme/ThemeProvider';
@@ -18,6 +18,15 @@ export type { ThemeProviderProps, Theme, Accent } from './theme/ThemeProvider';
 
 export { Layout } from './components/Layout';
 export type { LayoutProps } from './components/Layout';
+
+export { PageShell } from './components/PageShell';
+export type { PageShellProps } from './components/PageShell';
+
+export { IdentityRail } from './components/IdentityRail';
+export type { IdentityRailProps, IdentityStat } from './components/IdentityRail';
+
+export { ElsewhereLinks } from './components/ElsewhereLinks';
+export type { ElsewhereLinksProps, ExternalLink } from './components/ElsewhereLinks';
 
 export { Topbar, DEFAULT_NAV, DEFAULT_META } from './components/Topbar';
 export type { TopbarProps, NavItem } from './components/Topbar';
@@ -36,6 +45,9 @@ export type { TimeProps } from './components/Time';
 
 export { Tag, TagList } from './components/Tag';
 export type { TagProps, TagListProps } from './components/Tag';
+
+export { TagCloud } from './components/TagCloud';
+export type { TagCloudProps } from './components/TagCloud';
 
 export { ArticleRow } from './components/ArticleRow';
 export type { ArticleRowProps } from './components/ArticleRow';

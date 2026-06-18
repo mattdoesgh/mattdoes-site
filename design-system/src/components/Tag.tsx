@@ -10,12 +10,23 @@ export interface TagProps {
    * already filtered.
    */
   baseHref?: string;
+  /**
+   * Extra query params placed before `tag=` — e.g. `{ kind: 'journal' }` yields
+   * `?kind=journal&tag=…`. Used by article pages whose chips jump to a
+   * kind-filtered /blog/ view.
+   */
+  params?: Record<string, string>;
 }
 
 /** A single inline tag chip: `<a class="tg" href="…?tag=…" data-tag="…">`. */
-export function Tag({ tag, baseHref = '' }: TagProps) {
+export function Tag({ tag, baseHref = '', params }: TagProps) {
+  const prefix = params
+    ? Object.entries(params)
+        .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}&`)
+        .join('')
+    : '';
   return (
-    <a className="tg" href={`${baseHref}?tag=${encodeURIComponent(tag)}`} data-tag={tag}>
+    <a className="tg" href={`${baseHref}?${prefix}tag=${encodeURIComponent(tag)}`} data-tag={tag}>
       {tag}
     </a>
   );

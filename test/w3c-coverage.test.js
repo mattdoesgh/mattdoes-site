@@ -14,6 +14,12 @@
 //          no-inline-style ignores custom-property-only style attributes, but
 //          the rule is left off deliberately so a future Shiki upgrade that
 //          emits literal declarations does not break the build.)
+//        - attribute-empty-style  KEPT OFF  — pages are rendered by React
+//          (ADR 0003), and renderToStaticMarkup serializes boolean attributes
+//          as `hidden=""` (e.g. the idle now-playing pill) with no bare-form
+//          option. `hidden=""` and `hidden` are semantically identical valid
+//          HTML5; this joins the sibling serialization-style rules already off
+//          (attribute-boolean-style, void-style) for the same reason.
 //      This test asserts the config matches that decision, and that the
 //      generated fixture output still passes html-validate with the three
 //      re-enabled rules ON.
@@ -49,6 +55,11 @@ test('.htmlvalidate.json keeps the intended rule decisions', () => {
   // no-inline-style stays off — Shiki emits inline custom-property styles.
   assert.equal(rules['no-inline-style'], 'off',
     'no-inline-style must stay disabled (Shiki highlighted-code styles)');
+
+  // attribute-empty-style stays off — React serializes boolean attributes as
+  // `hidden=""` (renderToStaticMarkup has no bare-form option); ADR 0003.
+  assert.equal(rules['attribute-empty-style'], 'off',
+    'attribute-empty-style must stay disabled (React boolean-attr serialization)');
 });
 
 test('the fixture build still passes html-validate with the tightened rules', () => {
