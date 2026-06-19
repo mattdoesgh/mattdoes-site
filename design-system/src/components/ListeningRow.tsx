@@ -1,3 +1,18 @@
+// ListeningRow — the design-system / Claude Design mirror of one scrobble.
+//
+// SOURCE OF TRUTH IS templates/rows.js `listeningRow()`, NOT this file. The
+// shipped /listening/ page does NOT render through this component: the build
+// pre-renders rows with templates/rows.js and ListingPage injects them as
+// `rowsHtml` (see design-system/ssg/pages/ListingPage.tsx, ADR 0001, and
+// test/row-parity.test.js). That string module must stay byte-identical
+// between the server render and static/listening-live.js's in-browser
+// innerHTML swap — a guarantee React's serializer can't make, which is why
+// the SSG keeps rows.js on the listening path.
+//
+// This component exists only as the @mattdoes/ds public API synced to Claude
+// Design for visual editing. It is held to SEMANTIC (not byte) equivalence
+// with listeningRow(); nothing mechanically enforces that, so when you change
+// the scrobble markup, change templates/rows.js first and mirror it here.
 import type { DateInput } from '../lib/format';
 import { fmtDate, relValue, safeUrl } from '../lib/format';
 import { Time } from './Time';
@@ -17,7 +32,11 @@ export interface ListeningRowProps {
   nowPlaying?: boolean;
 }
 
-/** One scrobble (listening entry). Server- and client-rendered identically. */
+/**
+ * One scrobble (listening entry). Design-system / Claude Design mirror of
+ * templates/rows.js `listeningRow()` — semantic-equivalent, not the shipped
+ * renderer (see the file header).
+ */
 export function ListeningRow({
   track,
   artist,
