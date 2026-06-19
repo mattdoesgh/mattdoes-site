@@ -48,10 +48,10 @@ import {
 import { decodeTrack, decodeTracks, lastfmError, recentTracksUrl } from '../../../lib/lastfm.js';
 
 // Thresholds (milliseconds).
-const FRESH_MS    =  5 * 60 * 1000;   //  5 min — "medium" default
+const FRESH_MS    =      60 * 1000;   //  1 min — keep now-playing within ~a client poll of real time
 const HARD_MS     = 30 * 60 * 1000;   // 30 min — upper bound on served staleness
 const LOCK_TTL_S  = 60;               // KV minimum expirationTtl is 60s
-const EDGE_TTL_S  = 30;               // edge-cache window; must be ≪ FRESH_MS / 1000
+const EDGE_TTL_S  = 15;               // edge-cache window; must be ≪ FRESH_MS / 1000
 
 const RECENT_LIMIT = 25;
 const USER_AGENT   = 'mattdoes-site/1.0 (+https://mattdoes.online)';

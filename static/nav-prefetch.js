@@ -89,49 +89,12 @@
   }
 
   // ── Layer 1: Speculation Rules (Chrome) ─────────────────────────────
-  // The CSP is `script-src 'self'`, so a dynamically-created inline
-  // <script type="speculationrules"> MAY be blocked. We can't observe
-  // success directly, so instead we watch for the failure: if a
-  // script-src CSP violation fires shortly after we append the inline
-  // rules, install the Layer-2 fallback. (Without this, a blocked
-  // inline script would leave the page with no prefetching at all.)
-  if (HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) {
-    const rules = {
-      prerender: [{
-        source: 'document',
-        where: { and: [
-          { href_matches: '/*' },
-          { not: { href_matches: '/api/*' } },
-          { not: { selector_matches: '[data-prefetch="off"]' } },
-          { not: { selector_matches: '[rel~="external"]' } },
-        ]},
-        eagerness: 'moderate', // hover / viewport-dwell, not eager
-      }],
-      prefetch: [{
-        source: 'document',
-        where: { href_matches: '/*' },
-        eagerness: 'conservative',
-      }],
-    };
-
-    const onViolation = (e) => {
-      // Only react to a script-src family violation — that's the
-      // directive that would block our inline speculation rules.
-      if (e && typeof e.violatedDirective === 'string' &&
-          e.violatedDirective.indexOf('script-src') === 0) {
-        document.removeEventListener('securitypolicyviolation', onViolation);
-        installPrefetchFallback();
-      }
-    };
-    document.addEventListener('securitypolicyviolation', onViolation);
-
-    const tag = document.createElement('script');
-    tag.type = 'speculationrules';
-    tag.textContent = JSON.stringify(rules);
-    document.head.appendChild(tag);
-    return; // if the rules took, the browser handles the rest;
-            // if they were blocked, onViolation installs the fallback.
-  }
+  // Chromium reads the *static* <script type="speculationrules"> emitted in
+  // the document <head> (design-system/ssg/document.tsx) — the CSP now allows
+  // it via the `'inline-speculation-rules'` source. So for browsers that
+  // support the API there's nothing to do here: bail out before installing the
+  // fallback, otherwise we'd register a second, redundant set of hints.
+  if (HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) return;
 
   // No speculation-rules support at all (Safari, Firefox) — go straight
   // to the rel=prefetch fallback.

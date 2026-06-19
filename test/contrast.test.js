@@ -63,11 +63,11 @@ const lightBg   = tokenFrom('html[data-theme="light"]', 'bg');
 const lightInk  = tokenFrom('html[data-theme="light"]', 'ink');
 const lightSurf = tokenFrom('html[data-theme="light"]', 'surface');
 
-// The four selectable accents — parsed from the ACCENTS map in tweaks.js.
-function accentsFromTweaks() {
+// The four selectable accents — parsed from the ACCENTS map in a browser script.
+function accentsFrom(src) {
   // Match the ACCENTS object literal body.
-  const m = tweaksJs.match(/ACCENTS\s*=\s*\{([\s\S]*?)\}/);
-  assert.ok(m, 'could not find the ACCENTS map in tweaks.js');
+  const m = src.match(/ACCENTS\s*=\s*\{([\s\S]*?)\}/);
+  assert.ok(m, 'could not find an ACCENTS map');
   const out = {};
   for (const line of m[1].split('\n')) {
     const kv = line.match(/(\w+)\s*:\s*"([^"]+)"/);
@@ -75,7 +75,7 @@ function accentsFromTweaks() {
   }
   return out;
 }
-const ACCENTS = accentsFromTweaks();
+const ACCENTS = accentsFrom(tweaksJs);
 
 // ── colour resolution ───────────────────────────────────────────────────
 /** Parse any CSS colour string (hex or oklch) into a culori colour object. */
@@ -106,6 +106,17 @@ function color2(c) { return typeof c === 'string' ? color(c) : c; }
 // ── tests ───────────────────────────────────────────────────────────────
 test('the four selectable accents were parsed from tweaks.js', () => {
   assert.deepEqual(Object.keys(ACCENTS).sort(), ['blue', 'green', 'pink', 'warm']);
+});
+
+// static/theme-boot.js hand-duplicates the ACCENTS map (no shared module — the
+// site has no bundler, see ADR 0001) so it can apply the saved accent before
+// the stylesheet paints. Guard the "keep in sync" contract: a drift would make
+// the pre-paint accent differ from the hydrated one and flash on first paint —
+// the exact thing theme-boot exists to prevent.
+test('theme-boot.js ACCENTS stays in sync with tweaks.js', () => {
+  const bootJs = fs.readFileSync(path.join(REPO, 'static', 'theme-boot.js'), 'utf8');
+  assert.deepEqual(accentsFrom(bootJs), ACCENTS,
+    'theme-boot.js ACCENTS drifted from tweaks.js — pre-paint accent would mismatch');
 });
 
 const THEMES = [
