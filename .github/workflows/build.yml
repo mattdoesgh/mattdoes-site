@@ -74,6 +74,11 @@ jobs:
         env:
           VAULT_DIR: ${{ github.workspace }}/test/fixture-vault
           SITE_URL: https://mattdoes.online
+          # CI has no Last.fm creds and no cache; stay offline so the build
+          # never depends on the live Worker (lib/listening.js). The static
+          # listening snapshot is empty here — the deployed site builds with a
+          # real SITE_URL and reaches the Worker.
+          LISTENING_OFFLINE: '1'
         run: npm run build
 
       - name: Lint (html-validate)

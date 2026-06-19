@@ -66,6 +66,10 @@ export function runBuild({
       DIST_DIR: distDir,
       CACHE_DIR: cacheDir,
       SITE_URL: siteUrl,
+      // Keep build subprocesses hermetic: never let the listening snapshot
+      // reach out to the Worker/Last.fm. Tests that want listening data seed a
+      // fresh cache (seedLastfmCache), which short-circuits the network anyway.
+      LISTENING_OFFLINE: '1',
       ...env,
     },
     encoding: 'utf8',
