@@ -30,9 +30,8 @@ for the live bits.
   two roles: it renders every page (`ssg/pages/`, `renderToStaticMarkup`) **and** is
   the component set synced to Claude Design (`.design-sync/`), so they don't drift.
 - `templates/` — the browser Row module (`rows.js`), helpers (`_helpers.js`), asset
-  registry (`_assets.js`). The other `*.js` page modules are superseded, retained as
-  a rollback/parity reference, **not in the build path** — slated for removal after a
-  production soak.
+  registry (`_assets.js`). These three stay permanently; the old `*.js` page modules
+  were removed after the React cutover soaked (ADR 0005).
 - `workers/` — `mattdoes-listening` + `mattdoes-geo`, sharing
   `workers/lib/transport.js` (the JSON+CORS envelope).
 
@@ -63,7 +62,5 @@ Without `vault/` populated the build is empty but does not error.
   Workers** (`npm run deploy:workers`) — ADR 0002.
 - **CSP is strict** — no inline scripts, no third-party connect; both dynamic
   surfaces are same-origin Workers.
-- The colophon body lives in both `design-system/ssg/pages/colophon-doc.ts` and the
-  retained `templates/colophon.js` — keep them in sync until the latter is removed.
 - Keep `CONTEXT.md` and `docs/adr/` current. Run `/code-review` before pushing; open
   changes as PRs against `main`.

@@ -1,8 +1,9 @@
 // listening-live.js — keeps /listening/ fresh between deploys by polling
 // /api/listening/recent and re-rendering the scrobble counter + the 25-row
 // track list in place. Loaded as type="module" only where wired in
-// (templates/listing.js, templates/index.js); the Row module import below
-// resolves through the importmap emitted by templates/base.js, so the
+// (the ListingPage / IndexPage in the design system); the Row module import
+// below resolves through the importmap emitted by renderDocument
+// (design-system/ssg/document.tsx), so the
 // markup we swap in comes from the exact same code that rendered the page
 // (see CONTEXT.md: Row, docs/adr/0001). Fails silent on network hiccups.
 

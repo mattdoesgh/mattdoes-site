@@ -23,7 +23,6 @@
   "scripts": {
     "build": "vite build",
     "build:ssg": "vite build --config vite.ssg.config.ts",
-    "render": "tsx ssg/render.tsx",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
