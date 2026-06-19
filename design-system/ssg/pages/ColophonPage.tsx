@@ -150,7 +150,7 @@ export function ColophonPage({ siteConfig, stats = {}, updated, nowPlaying = '' 
                 <span className="meta">pages</span>
               </li>
               <li>
-                <span>marked + gray-matter</span>
+                <span>marked + yaml</span>
                 <span className="meta">md</span>
               </li>
               <li>

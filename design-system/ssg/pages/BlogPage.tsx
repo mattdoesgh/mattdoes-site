@@ -77,7 +77,7 @@ export function BlogPage({ siteConfig, entries, nowPlaying = '' }: BlogPageProps
 
         <IdentityRail
           who="blog"
-          bio="posts, micro-thoughts, building-in-public — one timeline, reverse-chronological."
+          bio="posts, micro-thoughts, and building-in-public on one reverse-chronological timeline."
           stats={[
             { n: entries.length, label: 'entries' },
             { n: tagCounts.size, label: 'tags' },
