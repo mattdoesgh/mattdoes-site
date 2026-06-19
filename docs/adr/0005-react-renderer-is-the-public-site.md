@@ -39,6 +39,16 @@ string (`rowsHtml`). React owns the page frame; `rows.js` owns the listening-row
 bytes. `templates/rows.js` and `templates/_helpers.js` therefore remain — they
 are the browser Row module, not dead presentation code.
 
+Because `rows.js` owns those bytes, the design system has **no `ListeningRow`
+component**. An early slice shipped one (a React mirror of `listeningRow()`,
+exported and synced to Claude Design), but nothing rendered from it — `ListingPage`
+injects `rowsHtml`, not a React row — so it could only drift from the byte-equal
+contract unnoticed, with no render path and no test to catch it. It was removed:
+the `/listening/` row is intentionally owned by `templates/rows.js` alone, and the
+`.row` visual language is still represented in the design surface by `ArticleRow`
+and `ThoughtRow` (real renderers sharing the same `.row`/`.gutter`/`.body` markup
+and CSS).
+
 ## Fidelity
 
 Held to **semantic + visual equivalence**, as ADR 0003 established (React
