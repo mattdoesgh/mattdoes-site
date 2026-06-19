@@ -8,7 +8,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  decodeTrack, decodeTracks, decodePlaycount, lastfmError, recentTracksUrl, userInfoUrl,
+  decodeTrack, decodeTracks, lastfmError, recentTracksUrl,
 } from '../lib/lastfm.js';
 
 const RAW_TRACK = {
@@ -104,19 +104,13 @@ test('lastfm: lastfmError detects API error bodies', () => {
   assert.equal(lastfmError(undefined), false);
 });
 
-test('lastfm: decodeTracks and decodePlaycount survive empty bodies', () => {
+test('lastfm: decodeTracks survives empty bodies', () => {
   assert.deepEqual(decodeTracks(undefined), { playcount: 0, tracks: [] });
   assert.deepEqual(decodeTracks({}),        { playcount: 0, tracks: [] });
-  assert.equal(decodePlaycount({ user: { playcount: '123' } }), 123);
-  assert.equal(decodePlaycount({}), 0);
-  assert.equal(decodePlaycount(undefined), 0);
 });
 
-test('lastfm: URL builders emit the exact pre-refactor query strings', () => {
+test('lastfm: the recent-tracks URL builder emits the exact query string', () => {
   assert.equal(
     recentTracksUrl('a user', 'k&y', 25),
     'https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=a%20user&api_key=k%26y&format=json&limit=25');
-  assert.equal(
-    userInfoUrl('a user', 'k&y'),
-    'https://ws.audioscrobbler.com/2.0/?method=user.getinfo&user=a%20user&api_key=k%26y&format=json');
 });

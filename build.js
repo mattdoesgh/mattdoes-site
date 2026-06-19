@@ -14,6 +14,9 @@
 //          tests build into per-test temp dirs).
 //          CACHE_DIR env var overrides the Last.fm cache directory
 //          (default <repo>/.cache; tests use temp dirs so runs are hermetic).
+//          LISTENING_OFFLINE=1 skips the listening snapshot's network sources
+//          (Worker + Last.fm), using only the disk cache — set by the test
+//          fixture builds and CI so they never reach out (see lib/listening.js).
 //          MEDIA_BASE env var overrides where ![[image.jpg]] URLs point
 //          (defaults to '/img'; set to 'https://media.mattdoes.online' for the R2 bucket).
 //          SITE_URL env var overrides the canonical origin.
@@ -23,7 +26,7 @@ import { fileURLToPath } from 'node:url';
 
 import { readVault, intake } from './lib/intake.js';
 import { emit } from './lib/emit.js';
-import { fetchLastfmTracks, fetchLastfmPlaycount } from './lib/listening.js';
+import { fetchListeningSnapshot } from './lib/listening.js';
 import { siteConfig } from './site.config.js';
 
 const __dirname  = path.dirname(fileURLToPath(import.meta.url));
@@ -37,8 +40,8 @@ const t0 = Date.now();
 
 const model = intake(readVault(VAULT_DIR));
 
-const lastfmTracks  = await fetchLastfmTracks({ cacheDir: CACHE_DIR });
-const scrobbleTotal = await fetchLastfmPlaycount({ cacheDir: CACHE_DIR });
+const { tracks: lastfmTracks, playcount: scrobbleTotal } =
+  await fetchListeningSnapshot({ siteUrl: SITE_URL, cacheDir: CACHE_DIR });
 
 const { distSize } = await emit(model, {
   distDir: DIST_DIR,
