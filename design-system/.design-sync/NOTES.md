@@ -102,8 +102,9 @@ Repo-specific gotchas for future syncs of the mattdoes.online design system.
   `cfg.overrides` single-card + `980x640` viewport like Layout. The rail previews
   (ElsewhereLinks/IdentityRail/TagCloud) render the muted `.group`/`.ident` rail
   styling — intentionally low-contrast secondary nav, not a defect.
-- The project has a user-created `uploads/` folder (full JetBrains Mono family, a
-  manual pre-fix workaround) OUTSIDE the sync's managed dirs — the reconciliation
-  never touches it. It's redundant now that `fonts/` ships the faces; safe to
-  delete from the project, but left in place (not ours to remove). Still present
-  after the 2026-06-19 sync.
+- A user-created folder of the full JetBrains Mono family (committed at the repo
+  root as `webfonts/`, a manual pre-fix workaround) sat OUTSIDE the sync's managed
+  dirs — the reconciliation never touched it. Redundant once `fonts/` shipped the
+  faces, it was **removed on 2026-06-19** (untracked, unreferenced, ~1.5 MB). The
+  5 weights the site uses live in `static/fonts/`; the sync sources fonts from
+  there, never from that folder.
