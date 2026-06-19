@@ -192,6 +192,12 @@
   }
 
   function samplePoints(geom, bbox) {
+    // featureBBox() returns null for non-polygon/empty geometry (e.g. a
+    // stale `mdo:geo:v1` cache entry or a worker feature missing its
+    // polygon). makeProjector() would then destructure null and throw
+    // "bbox is not iterable" — geoPathD already guards this (line ~141),
+    // so mirror that here rather than crash the whole background.
+    if (!bbox) return { points: [] };
     const project = makeProjector(bbox);
     const rings = collectRings(geom).map(r => r.map(project));
     if (!rings.length) return { points: [] };

@@ -14,7 +14,7 @@
   # CSP keeps style-src 'unsafe-inline': Shiki emits inline style attributes on
   # highlighted code and authored inline styles are only partially migrated.
   # Tightening style-src needs a report-only CSP trial first before enforcement.
-  Content-Security-Policy: default-src 'self'; script-src 'self'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'inline-speculation-rules'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
 
 # ── Immutable, content-hashed assets ────────────────────────────────────
 # Browser AND edge cache for a year. `immutable` tells browsers not to

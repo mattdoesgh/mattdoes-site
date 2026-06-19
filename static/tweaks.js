@@ -180,4 +180,24 @@
   postToParent({ type: '__edit_mode_available' });
 
   apply();
+
+  // A prerendered document (Speculation Rules) or a bfcache-restored one was
+  // built against whatever prefs existed at snapshot time. If the visitor
+  // changed a setting after that snapshot, re-read storage and re-apply on
+  // activation so the most recently saved theme/accent/geo always wins. The
+  // synchronous theme-boot.js handles the pre-paint case; this handles the
+  // "snapshot is stale" case the boot script can't see.
+  function applyFromStorage() {
+    Object.assign(state, loadPrefs() || {});
+    apply();
+  }
+  if (document.prerendering) {
+    document.addEventListener('prerenderingchange', applyFromStorage, { once: true });
+  }
+  // Only re-apply on a genuine bfcache restore (event.persisted) — the initial
+  // load already ran apply() above, and prerender activation is covered by
+  // prerenderingchange. Guarding here avoids a redundant apply() (and its two
+  // geo-bg CustomEvents) on every cold load — same reasoning as the persisted
+  // guard in listening-live.js.
+  window.addEventListener('pageshow', (e) => { if (e.persisted) applyFromStorage(); });
 })();

@@ -73,6 +73,7 @@ export function renderDocument({ page, children, siteConfig, assets = {} }: Rend
   // Resolve hashed asset URLs once — referenced both as <head> preload hints and
   // as the deferred <script> tags at the end of <body>.
   const cssHref = url('_shared.css');
+  const themeBootJs = url('theme-boot.js');
   const tweaksJs = url('tweaks.js');
   const geoBgJs = url('geo-background.js');
   const nowPlayingJs = url('now-playing.js');
@@ -84,6 +85,25 @@ export function renderDocument({ page, children, siteConfig, assets = {} }: Rend
       '/rows.js': url('rows.js'),
       '/_helpers.js': url('_helpers.js'),
     },
+  });
+
+  // Speculation Rules: Chromium prerenders/prefetches same-origin links on
+  // intent. `conservative` (pointerdown/focus) keeps speculative loads tightly
+  // scoped for the first rollout. Emitted as static head markup — the CSP
+  // allows it via the `'inline-speculation-rules'` source in static/_headers.
+  // nav-prefetch.js supplies the rel=prefetch fallback for Safari/Firefox.
+  // Same eligibility for both lists: same-origin pages only, never the JSON
+  // API, and honour the `data-prefetch="off"` / `rel="external"` opt-outs that
+  // nav-prefetch.js's rel=prefetch fallback also respects.
+  const speculateWhere = { and: [
+    { href_matches: '/*' },
+    { not: { href_matches: '/api/*' } },
+    { not: { selector_matches: '[data-prefetch="off"]' } },
+    { not: { selector_matches: '[rel~="external"]' } },
+  ] };
+  const speculationRules = JSON.stringify({
+    prerender: [{ source: 'document', where: speculateWhere, eagerness: 'conservative' }],
+    prefetch:  [{ source: 'document', where: speculateWhere, eagerness: 'conservative' }],
   });
 
   const body = renderToStaticMarkup(children);
@@ -117,11 +137,17 @@ export function renderDocument({ page, children, siteConfig, assets = {} }: Rend
 <!-- Shell scripts — hinted early, executed deferred. -->
 <link rel="preload" href="${tweaksJs}"      as="script" />
 <link rel="preload" href="${navPrefetchJs}" as="script" />
+<!-- Pre-paint theme boot: applies the visitor's saved theme/accent before the
+     stylesheet paints, so navigations don't flash the default. Synchronous on
+     purpose — must run before first paint (preloaded via Early Hints). -->
+<script src="${themeBootJs}"></script>
 <link rel="stylesheet" href="${cssHref}" />
 <!-- Importmap: lets module scripts import shared modules by their clean
      URLs (/rows.js, /_helpers.js) while the network fetches the hashed
      immutable copies. Must precede any module script. -->
 <script type="importmap">${importmap}</script>
+<!-- Prerender/prefetch same-origin links on intent (Chromium). -->
+<script type="speculationrules">${speculationRules}</script>
 ${page.headExtra || ''}
 </head>
 <body>
