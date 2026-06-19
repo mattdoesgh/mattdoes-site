@@ -55,8 +55,13 @@ export type { ArticleRowProps } from './components/ArticleRow';
 export { ThoughtRow } from './components/ThoughtRow';
 export type { ThoughtRowProps } from './components/ThoughtRow';
 
-export { ListeningRow } from './components/ListeningRow';
-export type { ListeningRowProps } from './components/ListeningRow';
+// NB: no ListeningRow. The /listening/ rows are rendered server-side by
+// templates/rows.js (the browser Row module) and injected into ListingPage as a
+// raw HTML string, because static/listening-live.js re-renders them in the
+// browser from that same module and dedupes by an innerHTML swap — so the
+// markup must byte-equal rows.js output, which React serialization can't.
+// rows.js owns the listening-row bytes; a React mirror here would only drift
+// from that contract unnoticed. See ADR 0005 + test/row-parity.test.js.
 
 export { EmptyState } from './components/EmptyState';
 export type { EmptyStateProps, EmptyKind } from './components/EmptyState';

@@ -15,9 +15,12 @@ code.
   accent-colored bits (kind labels, tag chips, the live dot) of everything
   inside. (Light/dark is currently scoped to the document `html` element, so the
   `theme` prop does not yet switch a nested subtree — accent does.)
-- **Timeline rows** (`ArticleRow`, `ThoughtRow`, `ListeningRow`, `EmptyState`)
-  are meant to sit inside `<section className="timeline">`. The whole-page shell
-  is `<Layout>` (top bar + footer + tweaks dialog around your `<main>`).
+- **Timeline rows** (`ArticleRow`, `ThoughtRow`, `EmptyState`) are meant to sit
+  inside `<section className="timeline">`. The whole-page shell is `<Layout>`
+  (top bar + footer + tweaks dialog around your `<main>`). (There is no
+  `ListeningRow` component: the `/listening/` rows are owned by the browser Row
+  module `templates/rows.js`, which the live updater re-renders byte-for-byte —
+  a React mirror can't match that serialization, so it isn't part of the system.)
 
 ## Styling idiom — semantic classes + design tokens
 
