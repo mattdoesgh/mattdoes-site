@@ -10,6 +10,7 @@
   "overrides": {
     "TweaksDialog": { "cardMode": "single", "primaryStory": "Open", "viewport": "380x560" },
     "Layout": { "cardMode": "single", "primaryStory": "BlogTimeline", "viewport": "980x640" },
+    "PageShell": { "cardMode": "single", "primaryStory": "Home", "viewport": "980x640" },
     "Topbar": { "cardMode": "column" },
     "Footer": { "cardMode": "column" }
   }

@@ -23,8 +23,8 @@ Repo-specific gotchas for future syncs of the mattdoes.online design system.
   the repo's `static/fonts/`. The `@font-face` block in `static/_shared.css` uses
   stylesheet-relative `url('./fonts/JetBrainsMono-*.woff2')`, which resolves both
   on the deployed site (static/ copies to dist root, so `./fonts/` → `/fonts/`,
-  matching the preload in `templates/base.js` + `static/_headers`) and inside the
-  design bundle.
+  matching the preload `renderDocument` emits (design-system/ssg/document.tsx) +
+  `static/_headers`) and inside the design bundle.
 - Vite library mode ALWAYS base64-inlines url() assets (`build.assetsInlineLimit`
   is ignored), which would bloat `dist/style.css` — and the design bundle's
   `_ds_bundle.css` — by ~600 KB. So `vite.config.ts` has a `stripFontFace` plugin
@@ -74,11 +74,36 @@ Repo-specific gotchas for future syncs of the mattdoes.online design system.
   go missing or `_ds_bundle.css` balloons past ~25 KB, the `stripFontFace` plugin
   or `cfg.extraFonts` regressed (see Fonts) — that's the thing to check, not
   `runtimeFontPrefixes`.
-- Render check NOT run on the 2026-06-18 re-sync — playwright/chromium wasn't
-  installed and component sources were unchanged (grades carried forward), so the
-  upload went on structural validation only. A future sync with a browser should
-  visually confirm the JetBrains Mono rendering (the whole point of that change).
+- Render check: the 2026-06-19 re-sync FINALLY ran the full browser render check
+  (playwright 1.61.0 + chromium installed; mac cache at
+  `~/Library/Caches/ms-playwright/`, NOT `~/.cache/`). 16/16 render cleanly and
+  JetBrains Mono is visibly applied across every card — the font fix is confirmed.
+  Playwright lives in `.ds-sync/node_modules` (gitignored, reinstall on a fresh
+  clone: `cd .ds-sync && npm i playwright && npx playwright install chromium`).
+  `package-validate`/`resync` import it relative to `.ds-sync/`, so a smoke test
+  must run from THERE, not from `design-system/` (where it won't resolve).
+- keyRecipe bump (anchor recipe 5 → staged-scripts recipe 7) on the 2026-06-19
+  re-copy made ALL existing components read as `changed`/`pendingGrade` and
+  cleared every carried grade (0 carried forward on the first capture). This is
+  scripts churn, NOT real source change — the previews were untouched and graded
+  identically. Expect the same whenever the staged `.ds-sync/` scripts advance a
+  recipe: the re-sync re-grades everything from the fresh sheets (which is also
+  what finally gave us the browser font confirmation). Not a regression.
+- TweaksDialog renders BLANK in-card without help: the shipped CSS anchors
+  `dialog#tweaks` `position: fixed` bottom-right (for `showModal()`'s top layer),
+  so an inline `open` dialog falls outside the capture's content slice (png <5KB →
+  `[RENDER_BLANK]`, even though the DOM text is all present). Fix lives in the
+  preview only — `previews/TweaksDialog.tsx` injects a `<style>` pinning
+  `dialog#tweaks{position:static;...}`. Don't "fix" the component; don't drop the
+  override or the card goes blank again.
+- 4 components from the 2026-06-18 "public-facing renderer" commit (ElsewhereLinks,
+  IdentityRail, PageShell, TagCloud) were added but NOT synced until 2026-06-19;
+  they now have authored previews. PageShell renders a full page → it has a
+  `cfg.overrides` single-card + `980x640` viewport like Layout. The rail previews
+  (ElsewhereLinks/IdentityRail/TagCloud) render the muted `.group`/`.ident` rail
+  styling — intentionally low-contrast secondary nav, not a defect.
 - The project has a user-created `uploads/` folder (full JetBrains Mono family, a
   manual pre-fix workaround) OUTSIDE the sync's managed dirs — the reconciliation
   never touches it. It's redundant now that `fonts/` ships the faces; safe to
-  delete from the project, but left in place (not ours to remove).
+  delete from the project, but left in place (not ours to remove). Still present
+  after the 2026-06-19 sync.
