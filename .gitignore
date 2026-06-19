@@ -26,7 +26,6 @@ vault/
 Thumbs.db
 
 # Claude scratch / local notes
-CLAUDE.md
 .claude/
 
 # Work-in-progress / build scratch

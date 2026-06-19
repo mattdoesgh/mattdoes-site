@@ -1,0 +1,69 @@
+# CLAUDE.md
+
+Working notes for agents in this repo. The architecture is documented elsewhere —
+read it before structural changes instead of re-deriving it here:
+
+- **`CONTEXT.md`** — the domain glossary (Vault, Note record, Intake, Content
+  model, Emit, Listening, Thought, Row, Edge transport, Design system, design-sync).
+- **`docs/adr/`** — the decisions behind the structure (0001–0007). Cite ADRs in
+  source comments, `CONTEXT.md`, and PRs only — never in shipped HTML, the README,
+  or the colophon.
+
+## What this is
+
+Static HTML for [mattdoes.online](https://mattdoes.online), built from a private
+Obsidian vault (`mattdoes-vault`). Every page is a React component rendered to
+static HTML at build time; the shipped site is plain HTML + small
+progressive-enhancement scripts. Cloudflare Pages, plus two same-origin Workers
+for the live bits.
+
+## Where things live
+
+- `build.js` — entrypoint: reads the vault, fetches Last.fm data (disk-cached under
+  `.cache/`), runs the pipeline.
+- `lib/intake.js` — vault notes → content model. **Pure** (no clock/fs/env); throws
+  with the offending vault-relative path.
+- `lib/emit.js` — content model → `dist/` (markdown, asset hashing, CSS/JS, RSS,
+  sitemap). Imports the `render*` functions from the built design-system bundle
+  (`design-system/dist-ssg/ssg.js`) for pages.
+- `design-system/` — `@mattdoes/ds`, the React + TS component library. One source,
+  two roles: it renders every page (`ssg/pages/`, `renderToStaticMarkup`) **and** is
+  the component set synced to Claude Design (`.design-sync/`), so they don't drift.
+- `templates/` — the browser Row module (`rows.js`), helpers (`_helpers.js`), asset
+  registry (`_assets.js`). The other `*.js` page modules are superseded, retained as
+  a rollback/parity reference, **not in the build path** — slated for removal after a
+  production soak.
+- `workers/` — `mattdoes-listening` + `mattdoes-geo`, sharing
+  `workers/lib/transport.js` (the JSON+CORS envelope).
+
+## Commands
+
+```
+npm install            # also installs design-system deps (postinstall)
+npm run build          # prebuild (SSG bundle) → node build.js → dist/
+npm test               # builds SSG + fixture-vault site, then node --test
+npm run lint           # html-validate dist/**/*.html
+npm run audit          # npm audit --audit-level=moderate
+npm run deploy:workers # deploy listening + geo Workers
+npm run bake-geo       # re-bake static/home.geojson
+npm run optimize-media # .webp variants under .cache/media-build/
+npm run sync-media     # push originals + variants to R2 (needs CF token)
+```
+
+Without `vault/` populated the build is empty but does not error.
+
+## Gotchas
+
+- **Determinism.** Intake is pure — keep it that way. Listening data is an input to
+  Emit, never fetched there.
+- **`/listening/` rows are the one React exception** — still server-rendered by
+  `templates/rows.js` to stay byte-equal for live in-browser updates (ADR 0001).
+  Deliberately no React `ListeningRow`.
+- **Editing shared worker code (`workers/lib/transport.js`) means redeploying both
+  Workers** (`npm run deploy:workers`) — ADR 0002.
+- **CSP is strict** — no inline scripts, no third-party connect; both dynamic
+  surfaces are same-origin Workers.
+- The colophon body lives in both `design-system/ssg/pages/colophon-doc.ts` and the
+  retained `templates/colophon.js` — keep them in sync until the latter is removed.
+- Keep `CONTEXT.md` and `docs/adr/` current. Run `/code-review` before pushing; open
+  changes as PRs against `main`.
