@@ -56,7 +56,9 @@ controls serialization). Verified by: diffing every generated page against the
 pre-cutover output (same class names / structure; only React serialization
 differences — empty-string boolean attributes, void self-closing, `&#x27;`), the
 full regression suite (a11y, contrast, CSP, privacy, feeds, **row-parity**,
-W3C/html-validate), and the `design-system/ssg/render.tsx` parity harness. One
+W3C/html-validate), and — during the migration — the
+`design-system/ssg/render.tsx` parity harness (removed with the old templates
+once the soak completed; see "Status of the old templates" below). One
 lint rule, `attribute-empty-style`, is now off — React emits `hidden=""` with no
 bare-form option; it joins the sibling serialization-style rules already off
 (`attribute-boolean-style`, `void-style`). See `test/w3c-coverage.test.js`.
@@ -88,13 +90,14 @@ built. `design-system/dist-ssg/` is gitignored (a build artifact, like `dist/`).
 
 ## Status of the old templates
 
-`templates/{base,index,journal,listing,about,blog,colophon}.js` are no longer
-imported by the build. They are retained for one release as the rollback unit and
-as the reference side of `render.tsx`'s parity diff, and are slated for removal
-after a production soak (the `emit.js` per-call-site swap is the rollback
-granularity). `templates/{rows,_helpers,_assets}.js` stay permanently —
-`rows.js`/`_helpers.js` are the browser Row module (above) and `_assets.js` is
-the hashed-asset registry the build and `renderDocument` both read.
+`templates/{base,index,journal,listing,about,blog,colophon}.js` have been
+**removed** after the production soak — they were retained for one release as the
+rollback unit and as the reference side of `render.tsx`'s parity diff, and that
+window has closed. `design-system/ssg/render.tsx` (the parity harness, whose only
+job was diffing React output against those templates) was removed with them.
+`templates/{rows,_helpers,_assets}.js` stay permanently — `rows.js`/`_helpers.js`
+are the browser Row module (above) and `_assets.js` is the hashed-asset registry
+the build and `renderDocument` both read.
 
 ## Considered alternatives
 

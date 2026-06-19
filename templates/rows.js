@@ -1,7 +1,7 @@
 // Row module — the rendered form of one timeline entry (see CONTEXT.md:
 // Row). One renderer per content kind plus a per-kind empty state, shared
 // verbatim by every timeline surface: /blog/, the section listings
-// (templates/listing.js), and the in-browser listening live updates
+// (the ListingPage), and the in-browser listening live updates
 // (static/listening-live.js). The homepage's compact feed is deliberately
 // not a Row consumer.
 //
@@ -9,7 +9,7 @@
 // ./_helpers.js (itself environment-agnostic) and must never touch node
 // builtins, the DOM, or the network. Emit ships both files as hashed static
 // assets; in the browser the relative import resolves via the importmap
-// emitted by templates/base.js (see docs/adr/0001).
+// emitted by renderDocument (design-system/ssg/document.tsx; see docs/adr/0001).
 
 import { esc, fmtDate, timeTag, tagList, safeUrl, relFor } from './_helpers.js';
 
