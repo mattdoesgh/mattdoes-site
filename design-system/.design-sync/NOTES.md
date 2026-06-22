@@ -17,6 +17,20 @@ Repo-specific gotchas for future syncs of the mattdoes.online design system.
   from the separate `src/styles-entry.ts` entry. `cfg.cssEntry` points at the
   emitted `dist/style.css`, which re-exports `static/_shared.css` MINUS its
   `@font-face` blocks (see Fonts — a Vite plugin strips them).
+- **The converter resolves component exports via `package.json` `types`
+  (`./dist/index.d.ts`). The dts MUST land FLAT at `dist/index.d.ts` (with
+  `dist/components/*.d.ts` etc.), NOT under `dist/src/`.** `vite.config.ts`
+  pins this with `dts({ ..., compilerOptions: { rootDir: 'src' } })`. Without
+  that, vite-plugin-dts 5 (unplugin-dts) derives the output root from the
+  tsconfig `include` (`["src","ssg"]`) → project root, prefixing every
+  declaration with `src/` (`dist/src/index.d.ts`) and leaving the `types` entry
+  dangling. The converter then parses the .d.ts files, finds **0** PascalCase
+  exports, logs `[ZERO_MATCH] … tokens-only DS`, and produces a 0-component
+  bundle whose diff marks ALL components `removed` — i.e. it would WIPE the
+  project. This regressed when #73 bumped vite-plugin-dts 4→5 (2026-06-22) and
+  was fixed the same day by adding `rootDir`. If a future sync ever reports
+  `[ZERO_MATCH]` / "tokens-only", check `dist/index.d.ts` exists FIRST — do not
+  upload a 0-component build.
 
 ## Fonts
 - JetBrains Mono woff2 (Light/Regular/Medium/SemiBold/Italic) are COMMITTED under
@@ -39,13 +53,16 @@ Repo-specific gotchas for future syncs of the mattdoes.online design system.
   committed `static/fonts/` files in sync.
 
 ## README / guidelines
-- The current converter schema has NO `readmeHeader` key (an older staged
-  `.ds-sync/` supported it; re-copying the current scripts removed it — strict
-  key validation fails the run with `unknown key "readmeHeader"`). The DS's
-  authored intro now ships via `cfg.guidelinesGlob: [".design-sync/conventions.md"]`
-  → the bundle's `guidelines/` (which the design agent reads); the bundle README
-  is the converter's template. Keep editing `.design-sync/conventions.md`; do not
-  re-add `readmeHeader`.
+- `readmeHeader` is supported again as of the 2026-06-22 staged scripts (it's in
+  `lib/common.mjs`'s validated key allowlist and handled in `package-build.mjs`);
+  the earlier "removed, fails with unknown key" note is obsolete. We deliberately
+  keep shipping the DS's authored intro via
+  `cfg.guidelinesGlob: [".design-sync/conventions.md"]` → the bundle's
+  `guidelines/` (which the design agent reads); the bundle README stays the
+  converter's template. Keep editing `.design-sync/conventions.md`. Switching to
+  `readmeHeader` (prepended to the README, inlined into the design agent's system
+  prompt) is now a viable option if guidelines/ ever stops being read — but it's
+  a change, not a fix; only do it deliberately.
 
 ## Tokens & callout (linter requirements)
 - `package-validate` / the design linter flags custom-property DECLARATIONS under
@@ -107,4 +124,23 @@ Repo-specific gotchas for future syncs of the mattdoes.online design system.
   dirs — the reconciliation never touched it. Redundant once `fonts/` shipped the
   faces, it was **removed on 2026-06-19** (untracked, unreferenced, ~1.5 MB). The
   5 weights the site uses live in `static/fonts/`; the sync sources fonts from
-  there, never from that folder.
+  there, never from that folder. NOTE: there is ALSO an `uploads/` folder IN THE
+  PROJECT (claude.ai/design) holding the full JetBrains family (Bold…Thin) — a
+  user manual upload, OUTSIDE the converter's managed dirs. The atomic delete
+  reconciliation only touches paths the diff lists, so `uploads/`,
+  `_adherence.oxlintrc.json`, `_ds_manifest.json`, and `.thumbnail` (app/user
+  managed) are correctly left alone; never hand-add them to deletes.
+- **Remote `_ds_sync.json` reads can be eventually-consistent.** On the
+  2026-06-22 re-sync the FIRST `get_file _ds_sync.json` returned a stale 15-key
+  anchor (no TagList) while two immediate re-fetches returned the authoritative
+  16-key anchor. Seeding the driver with the stale read made TagList show as
+  `added` (harmless here — atomic full-writes upload it anyway). The skill's
+  "re-fetch right before finalize_plan; if it moved, re-run the driver" rule
+  caught it. Always re-fetch the sidecar immediately before `finalize_plan` and
+  trust the later, stable read.
+- **Toolchain bumps churn the bundle/CSS bytes without touching components.** #73
+  (vite 8 / TS 6, 2026-06-22) left all 16 component sourceKeys/renderHashes
+  byte-identical (TS6 emits the same per-component .d.ts) but changed
+  `bundleSha12` and `styleSha` → the diff was `16 unchanged` yet
+  `upload.{bundle,styling}: true`. Expected; the atomic full-write re-uploads
+  bundle + CSS and re-anchors. Not a regression.
