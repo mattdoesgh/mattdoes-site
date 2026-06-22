@@ -38,7 +38,7 @@
     "html-validate": "^11.5.3",
     "jsdom": "^29.1.1",
     "lightningcss": "^1.32.0",
-    "sharp": "^0.35.1",
+    "sharp": "^0.35.2",
     "terser": "^5.48.0"
   }
 }
