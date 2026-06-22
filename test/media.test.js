@@ -11,13 +11,14 @@ import { JSDOM } from 'jsdom';
 import { runBuild, readDist, REPO_ROOT } from './helpers/run-build.js';
 
 const MEDIA_VAULT = path.join(REPO_ROOT, 'test', 'fixtures', 'media');
+const MEDIA_MANIFEST = path.join(REPO_ROOT, 'test', 'fixtures', 'media', 'media-manifest.json');
 
 let buildResult;
 let mediaDoc;
 let mediaHtml;
 
 test.before(() => {
-  buildResult = runBuild({ vaultDir: MEDIA_VAULT });
+  buildResult = runBuild({ vaultDir: MEDIA_VAULT, mediaManifest: MEDIA_MANIFEST });
   if (buildResult.status !== 0) {
     throw new Error(`media fixture build failed:\n${buildResult.stderr}`);
   }
@@ -53,6 +54,32 @@ test('the first image in a note is eager-loaded with high fetch priority', () =>
     'the first (likely-LCP) image must be eager-loaded');
   assert.equal(firstImg.getAttribute('fetchpriority'), 'high',
     'the first image should hint high fetch priority');
+});
+
+test('the hero image reserves layout space with intrinsic dimensions', () => {
+  const hero = mediaDoc.querySelector('img[src*="hero.jpg"]');
+  assert.ok(hero, 'hero.jpg must render as an <img>');
+  assert.equal(hero.getAttribute('width'), '1200',
+    'optimize-media manifest width must reach the <img> for CLS');
+  assert.equal(hero.getAttribute('height'), '800',
+    'optimize-media manifest height must reach the <img> for CLS');
+});
+
+test('images with webp variants render inside <picture> with a webp <source>', () => {
+  const heroPicture = mediaDoc.querySelector('picture');
+  assert.ok(heroPicture, 'a variant-backed image must render a <picture>');
+  const webp = heroPicture.querySelector('source[type="image/webp"]');
+  assert.ok(webp, 'the <picture> must include a webp <source>');
+  assert.match(webp.getAttribute('srcset') || '', /hero\.webp/,
+    'the webp source must point at the optimized variant');
+
+  const diagram = [...mediaDoc.querySelectorAll('img')]
+    .find(img => img.getAttribute('src')?.includes('diagram.png'));
+  assert.ok(diagram, 'diagram.png must render');
+  assert.equal(diagram.getAttribute('width'), '400',
+    'later images still carry intrinsic dimensions from the manifest');
+  assert.equal(diagram.getAttribute('height'), '300');
+  assert.equal(diagram.getAttribute('loading'), 'lazy');
 });
 
 test('later images are lazy-loaded', () => {

@@ -114,6 +114,6 @@ export function jsonResponse(obj, status = 200) {
 }
 
 /** Build a Request for a worker route. */
-export function workerRequest(url, { method = 'GET', headers = {} } = {}) {
-  return new Request(url, { method, headers });
+export function workerRequest(url, { method = 'GET', headers = {}, body } = {}) {
+  return new Request(url, { method, headers, body });
 }

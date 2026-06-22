@@ -15,6 +15,9 @@
   # highlighted code and authored inline styles are only partially migrated.
   # Tightening style-src needs a report-only CSP trial first before enforcement.
   Content-Security-Policy: default-src 'self'; script-src 'self' 'inline-speculation-rules'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
+  # Report-only twin of the enforced CSP — collects browser violations at the
+  # same-origin /api/csp-report Worker before tightening style-src.
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'inline-speculation-rules'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests; report-uri https://mattdoes.online/api/csp-report
 
 # ── Immutable, content-hashed assets ────────────────────────────────────
 # Browser AND edge cache for a year. `immutable` tells browsers not to

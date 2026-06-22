@@ -1,0 +1,18 @@
+{
+  "name": "mattdoes-csp-report-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "wrangler": "^4.101.0"
+  },
+  "overrides": {
+    "esbuild": "0.28.1",
+    "ws": "8.21.0"
+  }
+}

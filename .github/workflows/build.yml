@@ -25,13 +25,18 @@ jobs:
           cache: npm
 
       # --ignore-scripts skips the root postinstall (which installs the
-      # design-system toolchain) — the audit job only needs root + workers, so
-      # bootstrapping React/Vite here would be pure waste.
+      # design-system toolchain) — audit root + workers first, then pull in
+      # the design-system lockfile explicitly below.
       - name: Install (root)
         run: npm ci --ignore-scripts
 
       - name: Audit (root, prod + dev)
         run: npm run audit
+
+      - name: Install + audit (design-system)
+        run: |
+          npm --prefix design-system ci --include=dev
+          npm --prefix design-system audit --audit-level=moderate
 
       # Workers ship their own lockfile, so audit them too — same threshold.
       - name: Audit (workers/listening)
@@ -41,6 +46,23 @@ jobs:
       - name: Audit (workers/geo)
         working-directory: workers/geo
         run: npm audit --audit-level=moderate
+
+      - name: Audit (workers/csp-report)
+        working-directory: workers/csp-report
+        run: npm audit --audit-level=moderate
+
+  secrets:
+    name: secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     name: build + html-validate
@@ -84,6 +106,9 @@ jobs:
       - name: Lint (html-validate)
         run: npm run lint
 
+      - name: Check asset budget
+        run: npm run check:assets
+
       - name: Upload dist artifact
         uses: actions/upload-artifact@v7
         with:
@@ -117,3 +142,29 @@ jobs:
 
       - name: Run regression test suite
         run: npm test
+
+  # Lab Web Vitals on the fixture dist artifact. Warn-only — establishes a
+  # numeric baseline without blocking merges while the repo stays lean.
+  perf:
+    name: lighthouse (warn-only)
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download dist artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Run Lighthouse CI
+        run: npx --yes @lhci/cli@0.14.0 autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}

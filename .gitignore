@@ -20,6 +20,9 @@ vault/
 # Build-time API caches (Last.fm scrobbles etc.)
 .cache/
 
+# Lighthouse CI local run artifacts
+.lighthouseci/
+
 # Editor / OS
 .vscode/
 .idea/

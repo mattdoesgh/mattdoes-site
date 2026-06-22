@@ -47,6 +47,7 @@ export function seedLastfmCache(fixtureJson) {
  * @param {string} [opts.cacheDir]  Last.fm cache dir (default: fresh temp
  *                                  dir, so builds never see the repo .cache)
  * @param {string} [opts.siteUrl]   SITE_URL (default https://mattdoes.online)
+ * @param {string} [opts.mediaManifest] absolute path passed as MEDIA_MANIFEST
  * @param {Record<string,string>} [opts.env] extra env vars
  * @returns {{ status: number|null, stdout: string, stderr: string,
  *             distDir: string, cacheDir: string }}
@@ -56,6 +57,7 @@ export function runBuild({
   distDir = makeTempDir('mattdoes-dist-'),
   cacheDir = makeTempDir('mattdoes-cache-'),
   siteUrl = 'https://mattdoes.online',
+  mediaManifest,
   env = {},
 }) {
   const res = spawnSync(process.execPath, ['build.js'], {
@@ -66,6 +68,7 @@ export function runBuild({
       DIST_DIR: distDir,
       CACHE_DIR: cacheDir,
       SITE_URL: siteUrl,
+      ...(mediaManifest ? { MEDIA_MANIFEST: mediaManifest } : {}),
       // Keep build subprocesses hermetic: never let the listening snapshot
       // reach out to the Worker/Last.fm. Tests that want listening data seed a
       // fresh cache (seedLastfmCache), which short-circuits the network anyway.
