@@ -34,6 +34,9 @@ const VAULT_DIR  = process.env.VAULT_DIR || path.resolve(__dirname, 'vault');
 const DIST_DIR   = path.resolve(process.env.DIST_DIR || path.join(__dirname, 'dist'));
 const CACHE_DIR  = path.resolve(process.env.CACHE_DIR || path.join(__dirname, '.cache'));
 const MEDIA_BASE = process.env.MEDIA_BASE || '/img';
+const MEDIA_MANIFEST = process.env.MEDIA_MANIFEST
+  ? path.resolve(process.env.MEDIA_MANIFEST)
+  : path.join(CACHE_DIR, 'media-manifest.json');
 const SITE_URL   = process.env.SITE_URL || siteConfig.url || 'https://mattdoes.online';
 
 const t0 = Date.now();
@@ -51,6 +54,7 @@ const { distSize } = await emit(model, {
   lastfmTracks,
   scrobbleTotal,
   startedAt: t0,
+  mediaManifest: MEDIA_MANIFEST,
 });
 
 console.log(`✓ built in ${((Date.now() - t0) / 1000).toFixed(2)}s`);

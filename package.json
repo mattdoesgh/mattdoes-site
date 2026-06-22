@@ -12,9 +12,12 @@
     "clean": "rm -rf dist design-system/dist-ssg",
     "lint": "html-validate \"dist/**/*.html\"",
     "audit": "npm audit --audit-level=moderate",
+    "check:assets": "node scripts/check-asset-budget.js",
+    "perf:lighthouse": "npx --yes @lhci/cli autorun --config=testing-suites/lighthouse/lighthouserc.cjs",
+    "scan:secrets": "npx --yes gitleaks detect --source . --verbose",
     "pretest": "npm run build:ssg && LISTENING_OFFLINE=1 VAULT_DIR=test/fixture-vault SITE_URL=https://mattdoes.online node build.js",
     "test": "node --test \"test/**/*.test.js\"",
-    "deploy:workers": "cd workers/listening && npx wrangler deploy && cd ../geo && npx wrangler deploy",
+    "deploy:workers": "cd workers/listening && npx wrangler deploy && cd ../geo && npx wrangler deploy && cd ../csp-report && npx wrangler deploy",
     "bake-geo": "node scripts/bake-home-geojson.js",
     "optimize-media": "node scripts/optimize-media.js",
     "sync-media": "node --env-file-if-exists=.env scripts/sync-media.js"

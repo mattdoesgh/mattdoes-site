@@ -1,0 +1,27 @@
+name = "mattdoes-csp-report"
+main = "src/index.js"
+compatibility_date = "2026-04-01"
+workers_dev = false
+
+# Same-origin route so report-uri stays on https://mattdoes.online without
+# loosening connect-src. Workers-on-Routes take precedence over Pages.
+routes = [
+  { pattern = "mattdoes.online/api/csp-report", zone_name = "mattdoes.online" }
+]
+
+# Optional KV for short-lived violation payloads. One-time setup:
+#   npx wrangler kv namespace create CSP_REPORTS
+# then paste the id below.
+#
+# [[kv_namespaces]]
+# binding = "CSP_REPORTS"
+# id      = "..."
+
+# Light per-IP gate — CSP reports are cheap but shouldn't be a log sink.
+[[ratelimits]]
+name         = "CSP_RL"
+namespace_id = "2003"
+
+  [ratelimits.simple]
+  limit  = 60
+  period = 60

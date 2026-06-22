@@ -25,13 +25,18 @@ jobs:
           cache: npm
 
       # --ignore-scripts skips the root postinstall (which installs the
-      # design-system toolchain) — the audit job only needs root + workers, so
-      # bootstrapping React/Vite here would be pure waste.
+      # design-system toolchain) — audit root + workers first, then pull in
+      # the design-system lockfile explicitly below.
       - name: Install (root)
         run: npm ci --ignore-scripts
 
       - name: Audit (root, prod + dev)
         run: npm run audit
+
+      - name: Install + audit (design-system)
+        run: |
+          npm --prefix design-system ci --include=dev
+          npm --prefix design-system audit --audit-level=moderate
 
       # Workers ship their own lockfile, so audit them too — same threshold.
       - name: Audit (workers/listening)
@@ -40,6 +45,10 @@ jobs:
 
       - name: Audit (workers/geo)
         working-directory: workers/geo
+        run: npm audit --audit-level=moderate
+
+      - name: Audit (workers/csp-report)
+        working-directory: workers/csp-report
         run: npm audit --audit-level=moderate
 
   build:
@@ -83,6 +92,9 @@ jobs:
 
       - name: Lint (html-validate)
         run: npm run lint
+
+      - name: Check asset budget
+        run: npm run check:assets
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v7

@@ -1,0 +1,18 @@
+{
+  "entries": {
+    "hero.jpg": {
+      "variants": [
+        { "path": "hero.webp", "type": "image/webp" }
+      ],
+      "width": 1200,
+      "height": 800
+    },
+    "diagram.png": {
+      "variants": [
+        { "path": "diagram.webp", "type": "image/webp" }
+      ],
+      "width": 400,
+      "height": 300
+    }
+  }
+}
