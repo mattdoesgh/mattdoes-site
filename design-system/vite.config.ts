@@ -35,7 +35,12 @@ function stripFontFace() {
 export default defineConfig({
   plugins: [
     react(),
-    dts({ include: ['src'], rollupTypes: false, insertTypesEntry: true }),
+    // rootDir 'src' pins the declaration layout to dist/index.d.ts (matching
+    // package.json "types"). vite-plugin-dts 5 (unplugin-dts) otherwise derives
+    // the output root from tsconfig include (["src","ssg"]) → project root, which
+    // prefixes every .d.ts with src/ (dist/src/index.d.ts) and leaves the types
+    // entry dangling. include:['src'] keeps ssg/ out of the declaration program.
+    dts({ include: ['src'], compilerOptions: { rootDir: 'src' }, rollupTypes: false, insertTypesEntry: true }),
     stripFontFace(),
   ],
   build: {
