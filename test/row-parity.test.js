@@ -15,6 +15,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { listeningRow, emptyState } from '../templates/rows.js';
@@ -22,6 +23,7 @@ import { safeUrl } from '../templates/_helpers.js';
 import {
   buildFixtureVault, readDist, seedLastfmCache, makeTempDir, REPO_ROOT,
 } from './helpers/run-build.js';
+import { parseHeadersFile, headerValues } from './helpers/parse-headers.js';
 
 const fixtureCache = path.join(REPO_ROOT, 'test', 'fixtures', 'lastfm-cache', 'lastfm.json');
 
@@ -86,4 +88,31 @@ test('dist ships the Row module graph the importmap promises', () => {
     'unhashed rows.js must not ship');
   assert.ok(!fs.existsSync(path.join(distDir, '_helpers.js')),
     'unhashed _helpers.js must not ship');
+});
+
+test('the strict CSP admits the inline importmap by hash (the prod regression)', () => {
+  // The importmap is an inline script. script-src has no 'unsafe-inline', so
+  // the browser drops an unhashed inline importmap — then listening-live.js's
+  // `./rows.js` import resolves to the clean URL, which 404s as text/html, the
+  // module fails its MIME check, and the live scrobble updates never run (only
+  // the import-free now-playing pill survives). The build must therefore carry
+  // the importmap's own sha256 in script-src. Recompute it from the emitted
+  // bytes and require the directive to contain it — without weakening to
+  // 'unsafe-inline'.
+  const html = readDist(distDir, 'listening/index.html');
+  const im = html.match(/<script type="importmap">(.*?)<\/script>/s);
+  assert.ok(im, 'every page must carry the importmap');
+  const hash = "'sha256-" + crypto.createHash('sha256').update(im[1]).digest('base64') + "'";
+
+  const routes = parseHeadersFile(readDist(distDir, '_headers'));
+  for (const header of ['content-security-policy', 'content-security-policy-report-only']) {
+    const csp = headerValues(routes, '/*', header)[0];
+    assert.ok(csp, `/* must set ${header}`);
+    const scriptSrc = csp.split(';').find(d => d.trim().startsWith('script-src'));
+    assert.ok(scriptSrc, `${header} must declare a script-src`);
+    assert.ok(scriptSrc.includes(hash),
+      `${header} script-src must carry the importmap hash ${hash} or the browser drops it`);
+    assert.ok(!scriptSrc.includes("'unsafe-inline'"),
+      `${header} must admit the importmap by hash, not by weakening to 'unsafe-inline'`);
+  }
 });
