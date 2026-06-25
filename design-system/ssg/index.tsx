@@ -16,6 +16,9 @@
 // so the topbar brand and the document <title> share one source.
 import type { ReactNode } from 'react';
 import { renderDocument, assetUrl, type DocSiteConfig, type DocPage } from './document';
+// Re-exported for the build: lib/emit.js hashes this exact importmap string
+// into the CSP script-src so the strict CSP admits the inline importmap.
+export { buildImportmap } from './document';
 import { IndexPage, type IndexPageProps } from './pages/IndexPage';
 import { ArticlePage, type ArticlePageProps } from './pages/ArticlePage';
 import { BlogPage, type BlogEntry } from './pages/BlogPage';

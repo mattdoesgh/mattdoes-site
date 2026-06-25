@@ -28,6 +28,24 @@ export function assetUrl(assets: Record<string, string>, name: string): string {
   return `/${assets[name] || name}`;
 }
 
+/**
+ * The page importmap as the exact JSON string emitted inline in <head>
+ * (ADR 0001). Shared with the build so lib/emit.js can hash these same bytes
+ * into the CSP `script-src`: the strict CSP has no `'unsafe-inline'` and no
+ * importmap analogue of `'inline-speculation-rules'`, so an unhashed inline
+ * importmap is dropped — and every module that imports through it then resolves
+ * its clean URL to a 404 and dies. The bytes (and hash) move whenever a mapped
+ * asset's hash moves, so the build computes the hash per build, never pinned.
+ */
+export function buildImportmap(assets: Record<string, string>): string {
+  return JSON.stringify({
+    imports: {
+      '/rows.js': assetUrl(assets, 'rows.js'),
+      '/_helpers.js': assetUrl(assets, '_helpers.js'),
+    },
+  });
+}
+
 /** Per-page document metadata — the head-level half of templates/base.js `page`. */
 export interface DocPage {
   /** Page title; combined as `${title} — ${siteTitle}`. Empty → bare site title. */
@@ -82,12 +100,7 @@ export function renderDocument({ page, children, siteConfig, assets = {} }: Rend
   const localTimeJs = url('local-time.js');
   const navPrefetchJs = url('nav-prefetch.js');
 
-  const importmap = JSON.stringify({
-    imports: {
-      '/rows.js': url('rows.js'),
-      '/_helpers.js': url('_helpers.js'),
-    },
-  });
+  const importmap = buildImportmap(assets);
 
   // Speculation Rules: Chromium prerenders/prefetches same-origin links on
   // intent. `moderate` (hover / short viewport dwell) widens coverage once
