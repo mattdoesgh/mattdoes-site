@@ -12,6 +12,8 @@ export interface ArticleRef {
 
 export interface ArticleNote {
   kind?: string;
+  /** URL slug segment (from vault frontmatter or derived from title). */
+  slug?: string;
   /** The post's own route path — used for the canonical URL in renderArticle. */
   url?: string;
   title: string;
