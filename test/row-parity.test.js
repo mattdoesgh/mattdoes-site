@@ -90,19 +90,24 @@ test('dist ships the Row module graph the importmap promises', () => {
     'unhashed _helpers.js must not ship');
 });
 
-test('the strict CSP admits the inline importmap by hash (the prod regression)', () => {
-  // The importmap is an inline script. script-src has no 'unsafe-inline', so
-  // the browser drops an unhashed inline importmap — then listening-live.js's
-  // `./rows.js` import resolves to the clean URL, which 404s as text/html, the
-  // module fails its MIME check, and the live scrobble updates never run (only
-  // the import-free now-playing pill survives). The build must therefore carry
-  // the importmap's own sha256 in script-src. Recompute it from the emitted
-  // bytes and require the directive to contain it — without weakening to
-  // 'unsafe-inline'.
+test('the strict CSP admits EVERY inline script by hash (the prod regression)', () => {
+  // script-src has no 'unsafe-inline', and a hash source disables keyword inline
+  // allowances ('inline-speculation-rules' included) — so the build must carry a
+  // sha256 for *every* inline <script> the page emits, not just the importmap.
+  // Miss one and the browser silently drops it: an unhashed importmap kills
+  // listening-live.js (its `./rows.js` 404s as text/html → MIME failure → no
+  // live scrobble updates, only the import-free now-playing pill survives);
+  // unhashed speculation rules kill prerender/prefetch (ADR 0007). Extracting
+  // ALL inline scripts (not a hardcoded list) means a future inline <script>
+  // added without a matching hash fails this test instead of shipping broken.
   const html = readDist(distDir, 'listening/index.html');
-  const im = html.match(/<script type="importmap">(.*?)<\/script>/s);
-  assert.ok(im, 'every page must carry the importmap');
-  const hash = "'sha256-" + crypto.createHash('sha256').update(im[1]).digest('base64') + "'";
+  // Inline <script>…</script> = no src attribute (theme-boot etc. are external).
+  const inline = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)]
+    .map(m => m[1]);
+  assert.ok(inline.length >= 2,
+    'the page must carry the inline importmap + speculation rules');
+  const hashes = inline.map(
+    body => "'sha256-" + crypto.createHash('sha256').update(body).digest('base64') + "'");
 
   const routes = parseHeadersFile(readDist(distDir, '_headers'));
   for (const header of ['content-security-policy', 'content-security-policy-report-only']) {
@@ -110,9 +115,11 @@ test('the strict CSP admits the inline importmap by hash (the prod regression)',
     assert.ok(csp, `/* must set ${header}`);
     const scriptSrc = csp.split(';').find(d => d.trim().startsWith('script-src'));
     assert.ok(scriptSrc, `${header} must declare a script-src`);
-    assert.ok(scriptSrc.includes(hash),
-      `${header} script-src must carry the importmap hash ${hash} or the browser drops it`);
+    for (const hash of hashes) {
+      assert.ok(scriptSrc.includes(hash),
+        `${header} script-src must carry inline-script hash ${hash} or the browser drops it`);
+    }
     assert.ok(!scriptSrc.includes("'unsafe-inline'"),
-      `${header} must admit the importmap by hash, not by weakening to 'unsafe-inline'`);
+      `${header} must admit inline scripts by hash, not by weakening to 'unsafe-inline'`);
   }
 });
