@@ -10,7 +10,10 @@ export interface NavItem {
 export const DEFAULT_NAV: NavItem[] = [
   { id: 'home', href: '/', label: 'home' },
   { id: 'blog', href: '/blog/', label: 'blog' },
+  { id: 'thoughts', href: '/thoughts/', label: 'thoughts' },
+  { id: 'making', href: '/making/', label: 'making' },
   { id: 'listening', href: '/listening/', label: 'listening' },
+  { id: 'search', href: '/search/', label: 'search' },
   { id: 'about', href: '/about/', label: 'about' },
 ];
 

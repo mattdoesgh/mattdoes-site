@@ -566,6 +566,36 @@ a.tg:hover { color: var(--accent-fg); }
 .filter a.all::before { content: ""; }
 .filter .cnt { margin-left: auto; color: var(--faint); font-size: 10.5px; }
 
+/* ── search page ─────────────────────────────────── */
+.search-form {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 12px;
+  align-items: center;
+}
+.search-form input[type="search"] {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--faint);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+.search-form button {
+  padding: 8px 12px;
+  border: 1px solid var(--faint);
+  border-radius: 4px;
+  background: var(--hover);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+.search-form button:hover { border-color: var(--mute); }
+.search-status { margin: 0 0 16px; font-size: 11px; }
+.search-results .row { margin-bottom: 0; }
+
 /* The HTML `hidden` attribute is supposed to imply `display: none`, but the
    user-agent rule has the same specificity as our `.row { display: grid }`
    and `.tl-divider { display: flex }`, so it loses. Force the override here

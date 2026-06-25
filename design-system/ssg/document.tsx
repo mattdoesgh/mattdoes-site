@@ -40,6 +40,8 @@ export interface DocPage {
   canonical?: string;
   /** `'article'` for posts, otherwise `'website'`. */
   ogType?: 'article' | 'website';
+  /** Absolute or site-relative OG image URL (e.g. `/og/journal/foo.png`). */
+  ogImage?: string;
   /** Raw HTML injected at the end of `<head>` (rare per-page additions). */
   headExtra?: string;
   /** Raw HTML for page-specific scripts, appended after the shell scripts. */
@@ -88,13 +90,11 @@ export function renderDocument({ page, children, siteConfig, assets = {} }: Rend
   });
 
   // Speculation Rules: Chromium prerenders/prefetches same-origin links on
-  // intent. `conservative` (pointerdown/focus) keeps speculative loads tightly
-  // scoped for the first rollout. Emitted as static head markup — the CSP
-  // allows it via the `'inline-speculation-rules'` source in static/_headers.
+  // intent. `moderate` (hover / short viewport dwell) widens coverage once
+  // enhancement scripts defer work until prerender activation (ADR 0007).
+  // Emitted as static head markup — the CSP allows it via the
+  // `'inline-speculation-rules'` source in static/_headers.
   // nav-prefetch.js supplies the rel=prefetch fallback for Safari/Firefox.
-  // Same eligibility for both lists: same-origin pages only, never the JSON
-  // API, and honour the `data-prefetch="off"` / `rel="external"` opt-outs that
-  // nav-prefetch.js's rel=prefetch fallback also respects.
   const speculateWhere = { and: [
     { href_matches: '/*' },
     { not: { href_matches: '/api/*' } },
@@ -102,9 +102,19 @@ export function renderDocument({ page, children, siteConfig, assets = {} }: Rend
     { not: { selector_matches: '[rel~="external"]' } },
   ] };
   const speculationRules = JSON.stringify({
-    prerender: [{ source: 'document', where: speculateWhere, eagerness: 'conservative' }],
-    prefetch:  [{ source: 'document', where: speculateWhere, eagerness: 'conservative' }],
+    prerender: [{ source: 'document', where: speculateWhere, eagerness: 'moderate' }],
+    prefetch:  [{ source: 'document', where: speculateWhere, eagerness: 'moderate' }],
   });
+
+  const ogImageUrl = page.ogImage
+    ? (page.ogImage.startsWith('http') ? page.ogImage : (siteConfig.url || '') + page.ogImage)
+    : (siteConfig.url || '') + '/og/default.png';
+  const ogImageTags = `
+<meta property="og:image" content="${esc(ogImageUrl)}" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="${esc(ogImageUrl)}" />`;
 
   const body = renderToStaticMarkup(children);
 
@@ -124,7 +134,7 @@ export function renderDocument({ page, children, siteConfig, assets = {} }: Rend
 <meta property="og:type" content="${esc(ogType)}" />
 <meta property="og:url" content="${esc(canonicalUrl)}" />
 <meta property="og:site_name" content="${esc(siteTitle)}" />
-<meta name="twitter:card" content="summary" />
+${ogImageTags}
 <meta name="geo-endpoint" content="${esc(geoEndpoint)}" />
 <!-- View Transitions: cross-document fades on supported browsers. -->
 <meta name="view-transition" content="same-origin" />

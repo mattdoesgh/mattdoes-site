@@ -403,6 +403,8 @@
       })
       .catch(() => { /* offline / 404 — leave the page un-decorated */ });
   }
+
+  function boot() {
   if (typeof requestIdleCallback === 'function') {
     requestIdleCallback(loadHomePolygon, { timeout: 3000 });
   } else {
@@ -545,5 +547,13 @@
   // revert to 'home' in TWEAK_DEFAULTS.
   if (state.mode === 'mine') {
     tryUseMine({ prompt: false }).then(() => render());
+  }
+  }
+
+  // Defer fetches until a prerendered page is activated (ADR 0007).
+  if (document.prerendering) {
+    document.addEventListener('prerenderingchange', () => { if (!document.prerendering) boot(); }, { once: true });
+  } else {
+    boot();
   }
 })();
