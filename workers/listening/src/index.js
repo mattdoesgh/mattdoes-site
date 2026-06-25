@@ -1,44 +1,53 @@
-// /api/listening/* — Last.fm listening state via stale-while-revalidate.
+// /api/listening/* — Last.fm listening state, producer/reader split.
 //
-// Routes:
+// Routes (read path):
 //   GET /api/listening/now      → current scrobble (or { nowPlaying: false })
 //   GET /api/listening/recent   → playcount + 25 most recent tracks
 //
 // Called client-side by /now-playing.js (topbar pill) and /listening-live.js
-// (the /listening/ page). Response shapes are unchanged from the previous
-// edge-cache-only implementation so the static clients keep working.
+// (the /listening/ page). Response shapes are unchanged.
 //
-// Refresh policy per endpoint (medium defaults):
-//   FRESH (age <  5 min)           → serve KV, no upstream call
-//   SOFT  (age  5–30 min)          → serve stale KV immediately, kick off a
-//                                    background refresh via ctx.waitUntil
-//   HARD  (age ≥ 30 min, or empty) → block, refresh, write KV, serve fresh
+// Producer / reader split:
+//   • PRODUCER — a single-writer Durable Object (ListeningPoller) is the ONLY
+//     thing that calls Last.fm. It self-reschedules an alarm every
+//     POLL_INTERVAL_MS, makes ONE user.getrecenttracks call (limit=25),
+//     derives BOTH payloads (now + recent) from that one decode, and writes
+//     both KV keys. On upstream failure it writes nothing, so the last good
+//     snapshot survives, and the alarm is already re-armed (see alarm()).
+//   • READER — the fetch() handler is a pure KV reader. It never calls
+//     Last.fm, never blocks, and has zero Last.fm knowledge: rate-limit →
+//     edge cache → read KV → serve verbatim. Visitors never reach the DO, so
+//     upstream call volume is constant (~1 call / POLL_INTERVAL_MS),
+//     independent of how many people are on the site.
 //
-// A 60s KV lock key dedupes concurrent background refreshes so a burst of
-// polling clients only triggers one upstream call per SOFT window.
+// Bootstrap / liveness: a DO alarm is durable once set and self-perpetuates,
+// but nothing starts it on first deploy (or if the chain ever permanently
+// breaks). A cron watchdog (wrangler.toml [triggers]) pokes the DO once a
+// minute via scheduled() → it makes NO Last.fm call; it only arms the alarm
+// if none is pending. That is the active form of the "pure reader +
+// monitoring" resilience posture: detect-and-re-arm a dropped poller without
+// ever touching the read path (ADR 0008).
 //
-// On top of that, responses are stored in the Cloudflare edge cache for
+// On top of the reader, responses are stored in the Cloudflare edge cache for
 // EDGE_TTL_S (s-maxage). Concurrent visitors polling within the same window
-// collapse to a single Worker invocation; the rest are served from the edge
-// without ever entering this Worker. EDGE_TTL_S << FRESH_MS, so this never
-// widens the staleness budget set by the SWR layer above. The browser still
-// sees max-age=0 + must-revalidate, so each poll re-asks the edge — matching
-// the original design intent that scrobble updates aren't hidden by a stale
-// browser cache.
+// collapse to a single Worker invocation; the rest are served from the edge.
+// EDGE_TTL_S ≪ POLL_INTERVAL_MS so it never widens the staleness the poller
+// sets. The browser still sees max-age=0 + must-revalidate, so each poll
+// re-asks the edge — scrobble updates aren't hidden by a stale browser cache.
 //
 // Env (wrangler secrets):
 //   LASTFM_USERNAME  — Last.fm user to query
 //   LASTFM_API_KEY   — Last.fm API key
 // Bindings (wrangler.toml):
-//   LASTFM_CACHE     — Workers KV namespace used for cached payloads + locks
-//   LISTEN_RL        — Workers Rate Limiting binding. Missing/unhealthy
-//                      bindings fail closed so abusive traffic cannot bypass
-//                      the public route budget.
+//   LASTFM_CACHE     — Workers KV namespace used for cached payloads
+//   LISTEN_RL        — Workers Rate Limiting binding (read path). Missing/
+//                      unhealthy bindings fail closed so abusive traffic
+//                      cannot bypass the public route budget.
+//   LISTENING_POLLER — Durable Object namespace for the producer.
 //
 // Notes on Last.fm API etiquette:
-//   • We always serve from KV on the request path; upstream calls happen
-//     only during background refreshes, keeping call volume bounded by the
-//     FRESH window regardless of traffic.
+//   • The request path never calls Last.fm; only the DO alarm does, at a
+//     constant cadence regardless of traffic.
 //   • A descriptive User-Agent is sent so Last.fm can identify / rate-limit
 //     this client distinctly.
 
@@ -47,11 +56,9 @@ import {
 } from '../../lib/transport.js';
 import { decodeTrack, decodeTracks, lastfmError, recentTracksUrl } from '../../../lib/lastfm.js';
 
-// Thresholds (milliseconds).
-const FRESH_MS    =      60 * 1000;   //  1 min — keep now-playing within ~a client poll of real time
-const HARD_MS     = 30 * 60 * 1000;   // 30 min — upper bound on served staleness
-const LOCK_TTL_S  = 60;               // KV minimum expirationTtl is 60s
-const EDGE_TTL_S  = 15;               // edge-cache window; must be ≪ FRESH_MS / 1000
+// Poller cadence (milliseconds). ~25s keeps now-playing sub-minute.
+const POLL_INTERVAL_MS = 25 * 1000;
+const EDGE_TTL_S       = 15;          // edge-cache window; must be ≪ POLL_INTERVAL_MS / 1000
 
 const RECENT_LIMIT = 25;
 const USER_AGENT   = 'mattdoes-site/1.0 (+https://mattdoes.online)';
@@ -59,21 +66,21 @@ const USER_AGENT   = 'mattdoes-site/1.0 (+https://mattdoes.online)';
 /**
  * @typedef {object} Env
  * @property {KVNamespace} LASTFM_CACHE  Workers KV namespace for cached
- *   payloads and dedupe locks.
+ *   payloads written by the poller.
  * @property {string} LASTFM_USERNAME   Last.fm user to query.
  * @property {string} LASTFM_API_KEY    Last.fm API key.
  * @property {RateLimit} [LISTEN_RL]    Required Workers Rate Limiting
- *   binding. Absent/throwing → fail closed.
+ *   binding for the read path. Absent/throwing → fail closed.
+ * @property {DurableObjectNamespace} [LISTENING_POLLER]  The producer DO.
  */
 
 /**
- * Per-IP rate limit gate. Uses the native Workers Rate Limiting binding
- * (GA Sep 2025); fails closed when the binding isn't configured or healthy
- * so a partially-deployed Worker cannot bypass abuse controls. The simple binding only
- * supports period=10 or period=60 (seconds), so the limit configured in
- * wrangler.toml is per-minute, not the 10-minute window mentioned in the
- * code review — wider windows would need the WAF rate-limiting rules
- * product or a Durable Object / KV implementation.
+ * Per-IP rate limit gate for the read path. Uses the native Workers Rate
+ * Limiting binding (GA Sep 2025); fails closed when the binding isn't
+ * configured or healthy so a partially-deployed Worker cannot bypass abuse
+ * controls. The simple binding only supports period=10 or period=60
+ * (seconds), so the limit configured in wrangler.toml is per-minute; wider
+ * windows would need the WAF rate-limiting rules product.
  *
  * @param {Request} request
  * @param {Env} env
@@ -99,11 +106,11 @@ async function checkRateLimit(request, env) {
 
 export default {
   /**
-   * Worker entrypoint. Handles the two routes:
+   * Read path. Pure KV reader for:
    *   `GET /api/listening/now`     → current scrobble
    *   `GET /api/listening/recent`  → playcount + recent tracks
-   * Responses go through a two-layer cache (Workers Cache API + KV) so
-   * client polling collapses to a single upstream call per FRESH window.
+   * Never calls Last.fm. Responses go through the edge Cache API so client
+   * polling collapses to a single Worker invocation per EDGE_TTL_S window.
    *
    * @param {Request} request
    * @param {Env} env
@@ -127,36 +134,89 @@ export default {
 
     // Edge cache layer. Cache key is just the URL — there are no per-user or
     // per-origin variations (CORS only allows ALLOWED_ORIGIN). Workers
-    // responses bypass the edge cache by default, so we have to drive it via
-    // the Cache API explicitly. cache.put honours the s-maxage on the stored
-    // response (set in toClient).
+    // responses bypass the edge cache by default, so we drive it via the
+    // Cache API explicitly. cache.put honours the s-maxage set in toClient.
     const cache    = caches.default;
     const cacheKey = new Request(url.toString(), { method: 'GET' });
     const hit      = await cache.match(cacheKey);
     if (hit) return hit;
 
-    const res = await handle(env, ctx, kind);
-    // Only cache successful payloads — a transient unavailable/config or
-    // upstream-failure response shouldn't lock in for the full window.
+    const res = await handle(env, kind);
+    // Only cache successful payloads — a transient unavailable/warming
+    // response shouldn't lock in for the full window.
     if (res.status === 200) {
       ctx.waitUntil(cache.put(cacheKey, res.clone()));
     }
     return res;
   },
+
+  /**
+   * Cron watchdog (wrangler.toml [triggers]). Liveness only: ensure the
+   * singleton poller's alarm is armed. Makes NO Last.fm call — the actual
+   * polling is the DO alarm. If the alarm chain ever drops, the next tick
+   * re-arms it. No-ops when the DO binding is absent.
+   *
+   * @param {ScheduledController} event
+   * @param {Env} env
+   * @param {ExecutionContext} ctx
+   * @returns {Promise<void>}
+   */
+  async scheduled(event, env, ctx) {
+    if (!env.LISTENING_POLLER) return;
+    const id   = env.LISTENING_POLLER.idFromName('singleton');
+    const stub = env.LISTENING_POLLER.get(id);
+    ctx.waitUntil(stub.fetch('https://poller/ensure'));
+  },
 };
 
-// ── core SWR handler ────────────────────────────────────────────────────
+// ── producer: ListeningPoller Durable Object ─────────────────────────────
 /**
- * Stale-while-revalidate core: serves KV when possible, kicks off background
- * refreshes for the SOFT band, and blocks only when we truly have nothing
- * fresh enough (HARD band or empty KV).
+ * The single Last.fm writer. A classic (non-RPC) Durable Object class so the
+ * Worker module stays importable under `node --test` without the
+ * `cloudflare:workers` module (the read-path test harness imports this file
+ * directly). It owns exactly two behaviours:
+ *   • fetch('…/ensure') — bootstrap: arm the alarm if none is pending. Called
+ *     by the cron watchdog; idempotent, so repeated pokes never reset cadence.
+ *   • alarm() — the poll: reschedule FIRST (so an upstream error can never
+ *     break the self-perpetuating chain — alarms also auto-retry on a thrown
+ *     handler, and refreshBoth swallows its own errors so this never throws),
+ *     then refresh both KV payloads from one upstream call.
+ */
+export class ListeningPoller {
+  constructor(state, env) {
+    this.state = state;
+    this.env   = env;
+  }
+
+  async fetch() {
+    if ((await this.state.storage.getAlarm()) === null) {
+      // Kick almost immediately; alarm() takes over the ~25s cadence.
+      await this.state.storage.setAlarm(Date.now() + 1000);
+    }
+    return new Response(null, { status: 204 });
+  }
+
+  async alarm() {
+    // Self-perpetuate FIRST: the chain must outlive any single failed poll.
+    await this.state.storage.setAlarm(Date.now() + POLL_INTERVAL_MS);
+    await refreshBoth(this.env);
+  }
+}
+
+// ── reader ───────────────────────────────────────────────────────────────
+/**
+ * Pure KV reader. Serves the last snapshot the poller wrote; never calls
+ * Last.fm and never blocks. Before the first poll (e.g. right after deploy,
+ * until the watchdog arms the alarm) KV is empty and we return a `warming`
+ * fallback — a truthy `reason` so clients keep their last-known-good UI
+ * (contract C7) and the build-time snapshot (lib/listening.js) falls through
+ * to its disk cache rather than baking an empty page.
  *
  * @param {Env} env
- * @param {ExecutionContext} ctx
  * @param {'now'|'recent'} kind which payload to return
  * @returns {Promise<Response>}
  */
-async function handle(env, ctx, kind) {
+async function handle(env, kind) {
   if (!env.LASTFM_API_KEY || !env.LASTFM_USERNAME) {
     return toClient(json(emptyPayload(kind, 'unavailable')));
   }
@@ -164,84 +224,48 @@ async function handle(env, ctx, kind) {
     return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
   }
 
-  const kvKey   = `${kind}:${env.LASTFM_USERNAME}`;
-  const lockKey = `lock:${kvKey}`;
-  const cached  = await readCache(env, kvKey);
-  const age     = cached ? Date.now() - cached.fetchedAt : Infinity;
-
-  // FRESH — just serve.
-  if (cached && age < FRESH_MS) return toClient(json(cached.data));
-
-  // SOFT — serve stale, schedule background refresh (deduped by lock).
-  if (cached && age < HARD_MS) {
-    ctx.waitUntil(backgroundRefresh(env, kind, kvKey, lockKey));
-    return toClient(json(cached.data));
-  }
-
-  // HARD — block, refresh, write, serve.
-  const fresh = await refresh(env, kind);
-  if (fresh.ok) {
-    ctx.waitUntil(writeCache(env, kvKey, fresh.data));
-    return toClient(json(fresh.data));
-  }
-  // Upstream failed — serve whatever stale copy we have rather than erroring.
+  const cached = await readCache(env, `${kind}:${env.LASTFM_USERNAME}`);
   if (cached) return toClient(json(cached.data));
-  return toClient(json(emptyPayload(kind, 'upstream_failed')));
+  return toClient(json(emptyPayload(kind, 'warming')));
 }
 
+// ── producer fetch ───────────────────────────────────────────────────────
 /**
- * SOFT-band background refresh: deduped via a short-lived KV lock so a
- * burst of polling clients only triggers one upstream call per window.
+ * Call Last.fm's `user.getrecenttracks` ONCE and write BOTH payloads to KV
+ * from a single decode, so `/now` and `/recent` can never disagree and only
+ * one upstream call covers both. On any failure — bad creds/binding, non-200,
+ * Last.fm error JSON, parse error — write nothing: the last good snapshot
+ * survives in KV and the next alarm retries.
  *
  * @param {Env} env
- * @param {'now'|'recent'} kind
- * @param {string} kvKey  KV key for the cached payload
- * @param {string} lockKey KV key used purely as a mutex
  * @returns {Promise<void>}
  */
-async function backgroundRefresh(env, kind, kvKey, lockKey) {
-  // Short-lived lock: first Worker through claims it; subsequent clients
-  // within the TTL see the lock and skip. KV is eventually consistent so
-  // an occasional duplicate fetch is possible — within rate-limit budget.
-  const locked = await kvGet(env.LASTFM_CACHE, lockKey);
-  if (locked) return;
-  await kvPut(env.LASTFM_CACHE, lockKey, '1', { expirationTtl: LOCK_TTL_S });
-
-  const fresh = await refresh(env, kind);
-  if (fresh.ok) await writeCache(env, kvKey, fresh.data);
-}
-
-// ── upstream fetch ──────────────────────────────────────────────────────
-/**
- * Call Last.fm's `user.getrecenttracks` and reshape the response into the
- * payload our client expects. Returns a discriminated `{ ok, data }` /
- * `{ ok: false, error }` so callers can distinguish "fresh data" from
- * "upstream sad, keep serving stale".
- *
- * @param {Env} env
- * @param {'now'|'recent'} kind
- * @returns {Promise<{ ok: true, data: object } | { ok: false, error: string }>}
- */
-async function refresh(env, kind) {
+async function refreshBoth(env) {
+  if (!env.LASTFM_API_KEY || !env.LASTFM_USERNAME || !env.LASTFM_CACHE) return;
   try {
-    const limit = kind === 'now' ? 1 : RECENT_LIMIT;
-    const api = recentTracksUrl(env.LASTFM_USERNAME, env.LASTFM_API_KEY, limit);
+    const api = recentTracksUrl(env.LASTFM_USERNAME, env.LASTFM_API_KEY, RECENT_LIMIT);
     const res = await fetch(api, { headers: { 'User-Agent': USER_AGENT } });
     if (!res.ok) throw new Error(`lastfm ${res.status}`);
     const body = await res.json();
     if (lastfmError(body)) throw new Error(body.message || `lastfm error ${body.error}`);
 
-    if (kind === 'now') {
-      const raw = body?.recenttracks?.track || [];
-      const t   = Array.isArray(raw) ? raw[0] : raw;
-      const data = (t && t['@attr']?.nowplaying) ? trackToNow(t) : { nowPlaying: false };
-      return { ok: true, data };
-    }
-
+    // recent: full {playcount, tracks}, capped at RECENT_LIMIT.
     const { playcount, tracks } = decodeTracks(body, { limit: RECENT_LIMIT });
-    return { ok: true, data: { playcount, tracks } };
-  } catch (err) {
-    return { ok: false, error: 'upstream_failed' };
+
+    // now: derived from the RAW track[0] @attr.nowplaying flag (not the
+    // filtered `tracks` array), preserving the exact shape the old per-kind
+    // refresh produced.
+    const raw = body?.recenttracks?.track || [];
+    const t   = Array.isArray(raw) ? raw[0] : raw;
+    const now = (t && t['@attr']?.nowplaying) ? trackToNow(t) : { nowPlaying: false };
+
+    const user = env.LASTFM_USERNAME;
+    await Promise.all([
+      writeCache(env, `recent:${user}`, { playcount, tracks }),
+      writeCache(env, `now:${user}`, now),
+    ]);
+  } catch {
+    // Upstream sad — leave KV untouched; the alarm is already re-armed.
   }
 }
 
@@ -261,8 +285,8 @@ async function readCache(env, key) {
 }
 
 /**
- * Persist a fresh payload to KV. Errors are swallowed — the *next* tick's
- * refresh will retry, and the worst case is "extra upstream call".
+ * Persist a fresh payload to KV. Errors are swallowed — the next alarm's
+ * refresh will retry, and the worst case is a slightly older snapshot.
  *
  * @param {Env} env
  * @param {string} key
@@ -284,20 +308,20 @@ async function writeCache(env, key, data) {
 //   • truthy `reason` → ERROR / DEGRADED / FALLBACK. The client ignores the
 //     data and leaves the last-known-good content in place.
 //
-// Two invariants must therefore hold for *every* response this Worker emits:
+// Two invariants must hold for *every* response the reader emits:
 //   1. Every error / degraded / fallback payload carries a truthy `reason`.
 //   2. No genuine-success payload carries a `reason` at all.
 //
 // Where each branch lands:
-//   • refresh() success data → { playcount, tracks } / { nowPlaying, ... } —
+//   • poller-written data → { playcount, tracks } / { nowPlaying, ... } —
 //     never carries `reason`. Authoritative, including empty/zero results.
-//   • HARD band "upstream failed, serve stale `cached.data`" → that data is a
-//     previously-successful payload with no `reason`. Correct: it is real
-//     data, just stale, so the client should keep showing it.
-//   • emptyPayload() → always attaches a guaranteed-truthy `reason` (see
-//     below). Used for config + upstream/refresh failures that still return
-//     a client-facing fallback payload. Missing required bindings fail closed
-//     with a 503 envelope instead of a JSON fallback.
+//   • reader serves a surviving KV snapshot when the poller is stalled/down —
+//     that data is a previously-successful payload with no `reason`. Correct:
+//     it is real data, just stale, so the client keeps showing it.
+//   • emptyPayload() → always attaches a guaranteed-truthy `reason`. Used for
+//     missing creds (`unavailable`) and the pre-first-poll empty-KV window
+//     (`warming`). Missing required bindings fail closed with a 503 envelope
+//     instead of a JSON fallback.
 
 /**
  * Build a non-authoritative fallback payload. Always carries a truthy

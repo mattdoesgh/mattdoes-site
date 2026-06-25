@@ -31,24 +31,26 @@ counter and the 25-track list without a rebuild. Returns:
 `user.getrecenttracks` response that feeds `tracks`, so one upstream call
 covers both the counter and the list.
 
-## Refresh policy
+## Producer / reader split
 
-Both endpoints use stale-while-revalidate against a Workers KV cache
-(`LASTFM_CACHE`). Medium defaults:
+Last.fm polling is fully decoupled from visitor traffic:
 
-| State | Age              | Behavior                                         |
-|-------|------------------|--------------------------------------------------|
-| FRESH | < 5 min          | Serve from KV. No upstream call.                 |
-| SOFT  | 5–30 min         | Serve stale from KV, refresh in background.      |
-| HARD  | ≥ 30 min / empty | Block, fetch from Last.fm, write KV, serve.      |
+- **Producer** — a single-writer Durable Object (`ListeningPoller`) is the only
+  thing that calls Last.fm. A self-rescheduling alarm (~`POLL_INTERVAL_MS`, 25s)
+  makes one `user.getrecenttracks` call (limit 25), derives both the `/now` and
+  `/recent` payloads from one decode, and writes both KV keys. On any upstream
+  failure it writes nothing, so the last good snapshot survives and the alarm
+  (re-armed first) retries on the next tick. Upstream volume is therefore
+  constant (~1 call/25s ≈ 2,880/day), independent of how many people are on the
+  site.
+- **Reader** — the `fetch()` handler is a pure KV reader: rate-limit → edge cache
+  → read KV → serve verbatim. It never calls Last.fm and never blocks. Before the
+  first poll (e.g. right after deploy) KV is empty and it returns a `warming`
+  fallback — a truthy `reason` so clients keep their last-known-good UI.
 
-A 60-second KV lock (`lock:<key>`) dedupes concurrent background refreshes so
-a burst of polling clients only triggers one upstream call per SOFT window.
-If Last.fm is down and KV still has any cached entry, we serve the stale
-copy rather than erroring.
-
-To tighten or loosen, edit `FRESH_MS` / `HARD_MS` at the top of
-`src/index.js`.
+A cron watchdog (`[triggers]` in `wrangler.toml`) pokes the poller once a minute
+to arm its alarm if none is pending — liveness only, never an upstream call. The
+~25s cadence lives in `POLL_INTERVAL_MS` at the top of `src/index.js`.
 
 ## Deploy
 
@@ -69,12 +71,29 @@ npx wrangler secret put LASTFM_API_KEY
 npx wrangler deploy
 ```
 
-Both routes are served by the same Worker — see `wrangler.toml`.
+The first deploy runs the `v1` Durable Object migration (`new_sqlite_classes`)
+— migrations aren't casually reversible, so land it deliberately. Within a
+minute the cron watchdog arms the poller's alarm and KV warms; to skip the
+≤60s `warming` window, poke the poller once after deploy.
+
+Both read routes and the poller DO live in the same Worker — see `wrangler.toml`.
+
+### Local testing
+
+`wrangler dev --test-scheduled` exposes a `/__scheduled` endpoint that fires the
+cron watchdog (which arms the alarm); the alarm then polls Last.fm and populates
+KV, after which `/api/listening/now` and `/recent` serve it instantly:
+
+```bash
+npx wrangler dev --test-scheduled
+curl "http://localhost:8787/__scheduled?cron=*+*+*+*+*"
+curl http://localhost:8787/api/listening/now
+```
 
 ## Last.fm API etiquette
 
-- Upstream calls happen only during background refreshes; the request path
-  always reads from KV.
+- Upstream calls come only from the poller DO's ~25s alarm; the request path
+  always reads from KV, never from Last.fm.
 - A descriptive `User-Agent` (`mattdoes-site/1.0 (+https://mattdoes.online)`)
   is sent so Last.fm can identify and rate-limit this client distinctly.
 - `/listening/` on the site carries attribution linking back to Last.fm —

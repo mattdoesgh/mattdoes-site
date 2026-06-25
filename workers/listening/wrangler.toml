@@ -10,7 +10,8 @@ routes = [
   { pattern = "mattdoes.online/api/listening/recent", zone_name = "mattdoes.online" }
 ]
 
-# KV namespace for cached Last.fm payloads + in-flight refresh locks.
+# KV namespace for cached Last.fm payloads. The poller DO is the sole writer;
+# the request path only reads.
 #
 # One-time setup — wrangler validates the whole config before running any
 # command, so the binding block has to be commented out until the namespace
@@ -26,6 +27,31 @@ routes = [
 [[kv_namespaces]]
 binding = "LASTFM_CACHE"
 id      = "a6ea68e07a764aeba929a865d1d33a58"
+
+# Producer Durable Object — the single Last.fm writer. A self-rescheduling
+# alarm (~25s, see POLL_INTERVAL_MS in src/index.js) makes one
+# user.getrecenttracks call and writes both KV payloads, so upstream call
+# volume is constant and the request path never touches Last.fm.
+# A singleton instance (idFromName('singleton')); it serves no visitor traffic,
+# so it is a background poller, not a request bottleneck.
+[[durable_objects.bindings]]
+name       = "LISTENING_POLLER"
+class_name = "ListeningPoller"
+
+# SQLite-backed DO. The class holds no SQL tables — only its alarm — but the
+# storage backend must be declared. Migrations are not casually reversible;
+# land this deliberately.
+[[migrations]]
+tag                = "v1"
+new_sqlite_classes = ["ListeningPoller"]
+
+# Cron watchdog — liveness only. Pokes the poller's idFromName('singleton')
+# instance once a minute to arm its alarm if none is pending (e.g. first
+# deploy, or if the self-perpetuating chain ever drops). It makes NO Last.fm
+# call; the ~25s polling is the DO alarm. Cron invocations carry no client IP
+# and are not subject to LISTEN_RL.
+[triggers]
+crons = ["* * * * *"]
 
 # Workers Rate Limiting binding (GA Sep 2025). Belt-and-braces alongside the
 # SWR cache: blocks abusive single-IP floods before they touch KV or the edge
