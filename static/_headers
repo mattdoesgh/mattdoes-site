@@ -14,11 +14,13 @@
   # CSP keeps style-src strict: Shiki highlighted-code tokens are emitted as
   # build-time CSS classes (lib/shiki-csp.js) instead of inline style attributes.
   # Report-only twin collects any regressions before enforcement changes.
-  # The build (lib/emit.js → injectImportmapCsp) appends the inline importmap's
-  # sha256 to script-src in the emitted dist/_headers — script-src carries no
-  # inline keyword, so an unhashed importmap is dropped and every module that
-  # imports through it dies (ADR 0001). Don't hardcode that hash here: it moves
-  # with the hashed rows.js/_helpers.js URLs and is recomputed each build.
+  # The build (lib/emit.js → injectInlineScriptCsp) appends a sha256 for EACH
+  # inline <script> (the importmap + the speculation rules) to script-src in the
+  # emitted dist/_headers. A hash source disables keyword inline allowances, so
+  # 'inline-speculation-rules' stops working once the importmap is hashed — both
+  # inline scripts must be hashed together or one is silently dropped (ADR 0001,
+  # ADR 0007). Don't hardcode the hashes here: the importmap one moves with the
+  # hashed rows.js/_helpers.js URLs and they are recomputed each build.
   Content-Security-Policy: default-src 'self'; script-src 'self' 'inline-speculation-rules'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
   # Report-only twin of the enforced CSP — collects browser violations at the
   # same-origin /api/csp-report Worker before tightening style-src.

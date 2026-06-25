@@ -46,6 +46,28 @@ export function buildImportmap(assets: Record<string, string>): string {
   });
 }
 
+/**
+ * The speculation rules JSON emitted inline in <head> (ADR 0007): Chromium
+ * prerenders/prefetches same-origin links on intent. Exported as the exact
+ * inline-script string so the build can hash it into the CSP alongside the
+ * importmap. A hash source in `script-src` disables keyword inline allowances —
+ * `'inline-speculation-rules'` included — so once the importmap is hashed, the
+ * speculation rules MUST be hashed too or the browser blocks them. Asset-
+ * independent (constant per build), so the build hashes a fixed string.
+ */
+export function buildSpeculationRules(): string {
+  const where = { and: [
+    { href_matches: '/*' },
+    { not: { href_matches: '/api/*' } },
+    { not: { selector_matches: '[data-prefetch="off"]' } },
+    { not: { selector_matches: '[rel~="external"]' } },
+  ] };
+  return JSON.stringify({
+    prerender: [{ source: 'document', where, eagerness: 'moderate' }],
+    prefetch:  [{ source: 'document', where, eagerness: 'moderate' }],
+  });
+}
+
 /** Per-page document metadata — the head-level half of templates/base.js `page`. */
 export interface DocPage {
   /** Page title; combined as `${title} — ${siteTitle}`. Empty → bare site title. */
@@ -105,19 +127,12 @@ export function renderDocument({ page, children, siteConfig, assets = {} }: Rend
   // Speculation Rules: Chromium prerenders/prefetches same-origin links on
   // intent. `moderate` (hover / short viewport dwell) widens coverage once
   // enhancement scripts defer work until prerender activation (ADR 0007).
-  // Emitted as static head markup — the CSP allows it via the
-  // `'inline-speculation-rules'` source in static/_headers.
-  // nav-prefetch.js supplies the rel=prefetch fallback for Safari/Firefox.
-  const speculateWhere = { and: [
-    { href_matches: '/*' },
-    { not: { href_matches: '/api/*' } },
-    { not: { selector_matches: '[data-prefetch="off"]' } },
-    { not: { selector_matches: '[rel~="external"]' } },
-  ] };
-  const speculationRules = JSON.stringify({
-    prerender: [{ source: 'document', where: speculateWhere, eagerness: 'moderate' }],
-    prefetch:  [{ source: 'document', where: speculateWhere, eagerness: 'moderate' }],
-  });
+  // Emitted as static head markup. The CSP nominally allows it via the
+  // `'inline-speculation-rules'` source, but that keyword is disabled once the
+  // importmap hash lands in script-src, so the build hashes this string too
+  // (lib/emit.js → injectInlineScriptCsp). nav-prefetch.js supplies the
+  // rel=prefetch fallback for Safari/Firefox.
+  const speculationRules = buildSpeculationRules();
 
   const ogImageUrl = page.ogImage
     ? (page.ogImage.startsWith('http') ? page.ogImage : (siteConfig.url || '') + page.ogImage)

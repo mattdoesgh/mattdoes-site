@@ -24,13 +24,23 @@ fails the module MIME check, and the importer (`listening-live.js`) dies — the
 `/listening/` scrobble list and count stop updating while the import-free
 now-playing pill keeps working (the exact production regression this records).
 
-So the build hashes the importmap: `lib/emit.js` (`injectImportmapCsp`) derives
-the `sha256` of the same string `design-system/ssg/document.tsx`
+So the build hashes the importmap: `lib/emit.js` (`injectInlineScriptCsp`)
+derives the `sha256` of the same string `design-system/ssg/document.tsx`
 (`buildImportmap`) emits and appends `'sha256-…'` to `script-src` in the dist
 `_headers`. The hash moves with the hashed `rows.js`/`_helpers.js` URLs, so it is
-computed per build, never hardcoded. `test/row-parity.test.js` asserts the
-emitted CSP carries the matching hash (and no `'unsafe-inline'`) so a future CSP
-edit can't re-break it unnoticed.
+computed per build, never hardcoded.
+
+Subtlety, learned the hard way: **a hash source in a directive disables that
+directive's keyword inline allowances** — `'inline-speculation-rules'` included,
+not just `'unsafe-inline'`. So the moment the importmap hash lands in
+`script-src`, the speculation-rules `<script>` (ADR 0007) stops being admitted by
+its keyword and is itself blocked. The fix therefore hashes *every* inline script
+the document shell emits — importmap **and** speculation rules
+(`buildSpeculationRules`) — together. `test/row-parity.test.js` extracts all
+inline `<script>`s from a built page and asserts `script-src` carries each one's
+hash (and no `'unsafe-inline'`), so adding a new inline script without hashing
+it, or a CSP edit that drops a hash, fails the build/test rather than silently
+shipping a dead importmap or dead prerendering.
 
 ## Considered Options
 
