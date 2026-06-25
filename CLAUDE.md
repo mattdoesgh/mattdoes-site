@@ -32,8 +32,10 @@ for the live bits.
 - `templates/` — the browser Row module (`rows.js`), helpers (`_helpers.js`), asset
   registry (`_assets.js`). These three stay permanently; the old `*.js` page modules
   were removed after the React cutover soaked (ADR 0005).
-- `workers/` — `mattdoes-listening` + `mattdoes-geo`, sharing
-  `workers/lib/transport.js` (the JSON+CORS envelope).
+- `workers/` — `mattdoes-listening` (request path is a pure KV reader; a
+  `ListeningPoller` Durable Object is the sole Last.fm writer, ADR 0008),
+  `mattdoes-geo`, and `mattdoes-csp-report`, sharing `workers/lib/transport.js`
+  (the JSON+CORS envelope).
 
 ## Commands
 
@@ -43,7 +45,7 @@ npm run build          # prebuild (SSG bundle) → node build.js → dist/
 npm test               # builds SSG + fixture-vault site, then node --test
 npm run lint           # html-validate dist/**/*.html
 npm run audit          # npm audit --audit-level=moderate
-npm run deploy:workers # deploy listening + geo Workers
+npm run deploy:workers # deploy all three Workers (listening, geo, csp-report)
 npm run bake-geo       # re-bake static/home.geojson
 npm run optimize-media # .webp variants under .cache/media-build/
 npm run sync-media     # push originals + variants to R2 (needs CF token)
@@ -58,9 +60,11 @@ Without `vault/` populated the build is empty but does not error.
 - **`/listening/` rows are the one React exception** — still server-rendered by
   `templates/rows.js` to stay byte-equal for live in-browser updates (ADR 0001).
   Deliberately no React `ListeningRow`.
-- **Editing shared worker code (`workers/lib/transport.js`) means redeploying both
-  Workers** (`npm run deploy:workers`) — ADR 0002.
-- **CSP is strict** — no inline scripts, no third-party connect; both dynamic
-  surfaces are same-origin Workers.
+- **Editing shared worker code (`workers/lib/transport.js`) means redeploying all
+  three Workers** (`npm run deploy:workers`) — ADR 0002.
+- **CSP is strict** — no `'unsafe-inline'`, no third-party connect; both dynamic
+  surfaces are same-origin Workers. Inline `<head>` scripts (importmap +
+  speculation rules) are admitted by a per-build `sha256` (`injectInlineScriptCsp`);
+  add one without hashing it and the CSP silently drops it (ADR 0001/0007).
 - Keep `CONTEXT.md` and `docs/adr/` current. Run `/code-review` before pushing; open
   changes as PRs against `main`.

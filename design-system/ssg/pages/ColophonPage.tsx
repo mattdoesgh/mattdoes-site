@@ -44,7 +44,7 @@ export function ColophonPage({ siteConfig, stats = {}, updated, nowPlaying = '' 
       <main className="page" id="main">
         <IdentityRail
           who="colophon"
-          bio="How this site is put together. Obsidian vault → Node build → React-rendered static HTML. R2 holds media; two thin Workers — listening + geo — handle the live bits. KV caches both upstreams so request paths never block."
+          bio="How this site is put together. Obsidian vault → Node build → React-rendered static HTML. R2 holds media; two thin Workers — listening + geo — handle the live bits. Both serve from KV — a background poller keeps the listening data fresh — so request paths never block on an upstream."
         >
           <div className="group">
             <h2>on this page</h2>
@@ -188,6 +188,10 @@ export function ColophonPage({ siteConfig, stats = {}, updated, nowPlaying = '' 
               <li>
                 <span>CF Worker</span>
                 <span className="meta">csp-report</span>
+              </li>
+              <li>
+                <span>CF Durable Object</span>
+                <span className="meta">poller</span>
               </li>
               <li>
                 <span>CF KV</span>
