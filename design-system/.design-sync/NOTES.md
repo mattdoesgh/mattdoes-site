@@ -144,3 +144,17 @@ Repo-specific gotchas for future syncs of the mattdoes.online design system.
   `bundleSha12` and `styleSha` → the diff was `16 unchanged` yet
   `upload.{bundle,styling}: true`. Expected; the atomic full-write re-uploads
   bundle + CSS and re-anchors. Not a regression.
+- **A component's INTERNAL-default change reads as `unchanged` but still ships.**
+  2026-06-25 re-sync (after #75 + #76): #75 added `thoughts`/`making`/`search`
+  to `Topbar`'s `DEFAULT_NAV`, so the Topbar/Layout/PageShell *cards* visibly
+  gained those nav items — yet the verdict was `changed: []`, all 16
+  `unchanged`, `pendingGrade: []`. Why: `sourceKeys` hash the emitted `.jsx`
+  re-export stub + `.d.ts` + `.prompt.md`, none of which move when only an
+  in-component constant changes; the new nav lives in the compiled bundle, so it
+  shipped via `upload.{bundle,styling}: true` + the `render_churn` canary (5
+  picks: Footer/IdentityRail/PageShell/ThemeProvider/Time — all confirmed on the
+  contact sheet), with grades carried forward (0 cleared). #76's comment-only
+  `Time.tsx` edit + #75's `_shared.css` search styles also moved
+  `styleSha`/`bundleSha12` (expected). Lesson: do NOT be alarmed by `changed: []`
+  on a re-sync that obviously changed a card — eyeball the contact sheet / canary
+  and ship. 16/16 render clean.
