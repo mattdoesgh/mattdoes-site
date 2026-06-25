@@ -25,9 +25,14 @@ export function Time({ date, format = 'day', ariaLabel, label }: TimeProps) {
   const iso = isoAttr(date);
   if (!iso) return null;
   // Emit a lowercase `datetime` attribute (the canonical HTML the client
-  // local-time script and the rest of the codebase expect) rather than
-  // React's pass-through `dateTime`. A lowercase custom attribute is emitted
-  // verbatim by React.
+  // local-time script keys on — `time.ts[datetime]` — and the form
+  // `templates/_helpers.js` emits, so React- and string-rendered timestamps
+  // stay byte-identical). React 19's own `dateTime` prop serialises camelCase
+  // (`dateTime="…"`), so the spread is the only way to get lowercase. React's
+  // dev build warns "Invalid DOM property `datetime`" but still emits it
+  // verbatim; the warning is stripped in the production-mode build
+  // (`NODE_ENV=production node build.js`). Do NOT switch to `dateTime` to
+  // silence it — that breaks the lowercase contract.
   const dateAttr = { datetime: iso } as Record<string, string>;
   return (
     <time className="ts" aria-label={ariaLabel} {...dateAttr}>
