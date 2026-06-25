@@ -52,9 +52,9 @@ test('.htmlvalidate.json keeps the intended rule decisions', () => {
       `${rule} should be re-enabled (not "off") — see the comment in this file`);
   }
 
-  // no-inline-style stays off — Shiki emits inline custom-property styles.
-  assert.equal(rules['no-inline-style'], 'off',
-    'no-inline-style must stay disabled (Shiki highlighted-code styles)');
+  // no-inline-style re-enabled — Shiki tokens use build-time CSS classes.
+  assert.notEqual(rules['no-inline-style'], 'off',
+    'no-inline-style should be re-enabled (Shiki uses CSS classes)');
 
   // attribute-empty-style stays off — React serializes boolean attributes as
   // `hidden=""` (renderToStaticMarkup has no bare-form option); ADR 0003.

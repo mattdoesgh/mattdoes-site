@@ -174,6 +174,14 @@ export function IndexPage({ site, entries }: IndexPageProps) {
         </IdentityRail>
 
         <section className="timeline">
+          <div className="post-head">
+            <p className="lede">
+              Latest from the vault — journal, making, and thoughts. Browse{' '}
+              <a href="/thoughts/">thoughts</a> for micro-posts or{' '}
+              <a href="/making/">making</a> for project write-ups.
+            </p>
+          </div>
+
           {topTags.length ? (
             <div className="filter">
               <span className="label">filter</span>

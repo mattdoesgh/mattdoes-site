@@ -20,6 +20,7 @@ const listEl  = document.getElementById(LIST_ID);
 
 // Only wire up polling when there's something to update — if neither
 // element exists the page shape changed and this script should no-op.
+function start() {
 if (countEl || listEl) {
   // Polling lifecycle. We only run the interval while the tab is
   // visible — a backgrounded tab does no useful work and shouldn't
@@ -61,6 +62,14 @@ if (countEl || listEl) {
       if (document.visibilityState === 'visible') startPolling();
     }
   });
+}
+}
+
+// Defer network work until a prerendered page is activated (ADR 0007).
+if (document.prerendering) {
+  document.addEventListener('prerenderingchange', () => { if (!document.prerendering) start(); }, { once: true });
+} else {
+  start();
 }
 
 async function tick() {

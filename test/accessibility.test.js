@@ -156,5 +156,8 @@ test('<head> has Open Graph and Twitter sharing metadata', () => {
   assert.ok(d.querySelector('meta[property="og:title"]'),  'og:title present');
   assert.ok(d.querySelector('meta[property="og:type"]'),   'og:type present');
   assert.ok(d.querySelector('meta[property="og:url"]'),    'og:url present');
-  assert.ok(d.querySelector('meta[name="twitter:card"]'),  'twitter:card present');
+  assert.ok(d.querySelector('meta[property="og:image"]'),  'og:image present');
+  const card = d.querySelector('meta[name="twitter:card"]');
+  assert.ok(card, 'twitter:card present');
+  assert.equal(card.getAttribute('content'), 'summary_large_image');
 });

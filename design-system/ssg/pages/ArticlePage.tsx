@@ -12,6 +12,8 @@ export interface ArticleRef {
 
 export interface ArticleNote {
   kind?: string;
+  /** URL slug segment (from vault frontmatter or derived from title). */
+  slug?: string;
   /** The post's own route path — used for the canonical URL in renderArticle. */
   url?: string;
   title: string;
@@ -40,11 +42,12 @@ export interface ArticlePageProps {
   site: ArticleSite;
   note: ArticleNote;
   recent?: ArticleRef[];
+  related?: ArticleRef[];
   prev?: ArticleRef;
   next?: ArticleRef;
 }
 
-export function ArticlePage({ site, note, recent = [], prev, next }: ArticlePageProps) {
+export function ArticlePage({ site, note, recent = [], related = [], prev, next }: ArticlePageProps) {
   const kind = note.kind || 'journal';
   const section = site.config?.sections?.[kind] || {};
   const meta = { who: section.who || kind, bio: section.bio || '', kicker: section.kicker || kind };
@@ -148,6 +151,21 @@ export function ArticlePage({ site, note, recent = [], prev, next }: ArticlePage
         </article>
 
         <aside className="side-right" aria-label="related">
+          {related.length ? (
+            <div className="group">
+              <h2>related</h2>
+              <ul>
+                {related.map((r) => (
+                  <li key={r.url}>
+                    <a href={safeUrl(r.url)}>{r.title}</a>
+                    <span className="meta">
+                      <Time date={r.date} format="day" />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           {tags.length ? (
             <div className="group">
               <h2>tags</h2>

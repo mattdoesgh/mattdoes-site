@@ -43,3 +43,11 @@ rather than inline, so it needs no CSP hash to maintain.
   enhancement scripts speculatively. Deferred: start conservative, revisit once
   the speculative-execution behaviour of the geo/now-playing scripts is
   confirmed harmless before activation.
+
+## Follow-up (2026-06)
+
+`eagerness` was widened to **`moderate`** after `now-playing.js`,
+`geo-background.js`, and `listening-live.js` were taught to defer network work
+until `prerenderingchange` (same pattern as `tweaks.js`). Speculation rules now
+live in `design-system/ssg/document.tsx` with `moderate` for both prerender and
+prefetch.

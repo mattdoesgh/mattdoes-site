@@ -85,7 +85,7 @@ export function ListingPage({
 
   return (
     <PageShell
-      active={isListening ? 'listening' : 'blog'}
+      active={kind}
       siteTitle={siteConfig.title}
       manualStatus={siteConfig.status}
       nowPlaying={nowPlaying}

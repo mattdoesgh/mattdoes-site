@@ -22,6 +22,7 @@ import { BlogPage, type BlogEntry } from './pages/BlogPage';
 import { ListingPage, type ListingPageProps } from './pages/ListingPage';
 import { AboutPage, type AboutPageProps } from './pages/AboutPage';
 import { ColophonPage, type ColophonPageProps } from './pages/ColophonPage';
+import { SearchPage, type SearchPageProps } from './pages/SearchPage';
 
 export type Assets = Record<string, string>;
 
@@ -79,18 +80,19 @@ export function renderIndex(
 
 // ── single article ───────────────────────────────────────────────────────────
 export function renderArticle(
-  args: ArticlePageProps & { siteConfig: FullSiteConfig; assets: Assets },
+  args: ArticlePageProps & { siteConfig: FullSiteConfig; assets: Assets; ogImage?: string },
 ): string {
-  const { site, note, recent, prev, next, siteConfig, assets } = args;
+  const { site, note, recent, related, prev, next, siteConfig, assets, ogImage } = args;
   const kind = note.kind || 'journal';
   const section = siteConfig.sections?.[kind] || {};
   const who = section.who || kind;
   const bio = section.bio || '';
   const url = note.url || `${SECTION_PATH[kind] || '/'}`;
   const description = note.summary || bio || `${who} — ${note.title}`;
+  const image = ogImage || `/og/${kind}/${note.slug || 'post'}.png`;
   return doc(
-    { title: note.title, url, description, ogType: 'article' },
-    <ArticlePage site={site} note={note} recent={recent} prev={prev} next={next} />,
+    { title: note.title, url, description, ogType: 'article', ogImage: image },
+    <ArticlePage site={site} note={note} recent={recent} related={related} prev={prev} next={next} />,
     siteConfig,
     assets,
   );
@@ -173,6 +175,25 @@ export function renderColophon(
         'How mattdoes.online is put together — Obsidian vault, Node build, static HTML, and two thin Cloudflare Workers.',
     },
     <ColophonPage siteConfig={siteConfig} stats={stats} updated={updated} nowPlaying={nowPlaying} />,
+    siteConfig,
+    assets,
+  );
+}
+
+// ── search ───────────────────────────────────────────────────────────────────
+export function renderSearch(
+  args: SearchPageProps & { siteConfig: FullSiteConfig; assets: Assets },
+): string {
+  const { siteConfig, assets } = args;
+  const bodyScripts = scriptTag(assetUrl(assets, 'search.js'));
+  return doc(
+    {
+      title: 'search',
+      url: '/search/',
+      description: 'Search journal, making, and thoughts across mattdoes.online.',
+      bodyScripts,
+    },
+    <SearchPage siteConfig={siteConfig} />,
     siteConfig,
     assets,
   );

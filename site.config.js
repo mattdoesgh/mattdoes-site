@@ -63,10 +63,26 @@ export const siteConfig = {
   // subtitle; `intro` → lede shown above the listing. All blank by choice;
   // section titles in the topbar + URL carry the signal.
   sections: {
-    journal:   { who: 'journal',   bio: '', intro: '' },
-    making:    { who: 'making',    bio: '', intro: '' },
-    listening: { who: 'listening', bio: '', intro: '' },
-    thoughts:  { who: 'thoughts',  bio: '', intro: '' },
+    journal: {
+      who:   'journal',
+      bio:   'Longer-form notes — essays, dev logs, and things worth keeping.',
+      intro: 'Reverse-chronological archive of journal posts.',
+    },
+    making: {
+      who:   'making',
+      bio:   'Building in public — code, music, hardware, and side projects.',
+      intro: 'Project write-ups and experiments, newest first.',
+    },
+    listening: {
+      who:   'listening',
+      bio:   'A live log of recent listens, pulled from Last.fm.',
+      intro: 'Scrobbles update in the browser between deploys.',
+    },
+    thoughts: {
+      who:   'thoughts',
+      bio:   'Short posts split from daily notes — the lowest-friction publish path.',
+      intro: 'Micro-thoughts in reverse-chronological order.',
+    },
   },
 
   // Footer text on generic pages. Empty string = render nothing.

@@ -2,6 +2,7 @@
 // between deploys. Polls /api/listening/now, updates in place, fails silent.
 
 (() => {
+  function start() {
   const EL_ID     = 'now-playing';
   const ENDPOINT  = '/api/listening/now';
   const POLL_MS   = 60_000;      // one minute
@@ -73,4 +74,12 @@
       if (document.visibilityState === 'visible') startPolling();
     }
   });
+  }
+
+  // Defer network work until a prerendered page is activated (ADR 0007).
+  if (document.prerendering) {
+    document.addEventListener('prerenderingchange', () => { if (!document.prerendering) start(); }, { once: true });
+  } else {
+    start();
+  }
 })();
