@@ -5,11 +5,12 @@ source for [mattdoes.online](https://mattdoes.online) — my personal site. i wr
 ## what's on it
 
 - **home** — a summary, plus recent posts and thoughts.
-- **blog** — long-form and short, on one reverse-chronological timeline. three kinds:
+- **blog** — long-form and short, on one reverse-chronological timeline. three kinds, each also reachable as its own section page (`/journal/`, `/making/`, `/thoughts/`):
   - *journal* — reflective posts, usually weighing a tradeoff
   - *making* — building-in-public notes on projects, tools, and stack choices
   - *thoughts* — short, one-idea posts, time-stamped through the day
 - **listening** — recent plays pulled from Last.fm at build time and refreshed live between deploys.
+- **search** — client-side filter over a static index of every journal, making, and thoughts post.
 - **about** — who I am, what I work on.
 - **colophon** — how the whole thing fits together.
 
@@ -21,16 +22,20 @@ the generator, in three parts:
 
 - **`build.js`** — the entrypoint. reads the vault, fetches Last.fm listening data (disk-cached under `.cache/`), and hands both to the modules below.
 - **`lib/intake.js`** — vault notes → content model. frontmatter parsing (`yaml`) and validation, splitting daily notes into thoughts, stable thought IDs, sorting, the slug index. pure: same notes in, same model out.
-- **`lib/emit.js`** — content model → `dist/`. markdown via `marked` (shiki for code highlighting), wikilink + embed resolution, pages rendered by the React design system (`design-system/`), CSS through `lightningcss`, JS through `terser`, content-hashed assets, RSS + sitemap.
+- **`lib/emit.js`** — content model → `dist/`. markdown via `marked` (shiki for code highlighting, emitted as build-time CSS classes via `lib/shiki-csp.js` so `style-src` stays strict), wikilink + embed resolution, pages rendered by the React design system (`design-system/`), related-by-tag blocks on posts, a static search index (`search-index.json`, queried by `static/search.js`), build-time Open Graph card PNGs (`lib/og-image.js`, rasterized with `sharp`, under `/og/`), CSS through `lightningcss`, JS through `terser`, content-hashed assets, RSS + sitemap.
 
 the presentation layer is a React + TypeScript component library in `design-system/` (`@mattdoes/ds`). every public page (home, blog, listings, article, about, colophon) is a component there; emit imports the bundle's `render*` functions and renders each page to a static HTML string via `renderToStaticMarkup` — the shipped site is plain static HTML with no React at runtime. the same library is the design source synced to Claude Design (claude.ai/design) for visual editing, so the component set and the live site never drift. `design-system/` builds first (`npm run build:ssg`, wired in as the `prebuild` step), and its deps install via `postinstall`.
 
-two thin Cloudflare Workers serve the live bits, both same-origin under `/api/`; the site's CSP stays at `connect-src 'self'`:
+three thin Cloudflare Workers, all same-origin under `/api/`; the site's CSP stays at `connect-src 'self'`. two serve the live bits:
 
 - **`mattdoes-listening`** — proxies Last.fm for the topbar's now-playing pill and the live track list on `/listening/`. KV-cached with stale-while-revalidate. decodes Last.fm responses through `lib/lastfm.js`, the same pure codec the build uses.
 - **`mattdoes-geo`** — reverse-geocodes a visitor's city against Nominatim *only if* they opt in via the tweaks panel. Default page render uses `static/home.geojson` (Houston), baked once with `npm run bake-geo`. KV-cached for 7 days per metro.
 
-both Workers share their response machinery — JSON + CORS envelope, preflight, error responses with edge-TTL policy, fail-open KV reads — from `workers/lib/transport.js`. caching policy (TTLs, cache-control strings) stays in each Worker.
+and one is a passive sink:
+
+- **`mattdoes-csp-report`** — collects the `report-uri` POSTs from the Report-Only CSP in `static/_headers`, so a tightened directive (most recently `style-src 'self'`) can be validated against real traffic before it's enforced.
+
+all three Workers share their response machinery — JSON + CORS envelope, preflight, error responses with edge-TTL policy, fail-open KV reads — from `workers/lib/transport.js`. caching policy (TTLs, cache-control strings) stays in each Worker.
 
 media flows through R2: `scripts/optimize-media.js` produces `.webp` variants from `vault/attachments/`, `scripts/sync-media.js` PUTs originals + variants to the `mattdoes-media` bucket, and the build emits `<picture>` tags pointed at `media.mattdoes.online`. fonts are self-hosted (JetBrains Mono). contact is a plain `mailto:` to a Fastmail address. no tracker, no analytics, no third-party connect.
 
@@ -58,8 +63,9 @@ CI (`.github/workflows/build.yml`) runs the audit job before the build job on ev
 workers live under `workers/` and deploy on their own schedule:
 
 ```
-cd workers/listening && npx wrangler deploy
-cd workers/geo       && npx wrangler deploy
+cd workers/listening  && npx wrangler deploy
+cd workers/geo        && npx wrangler deploy
+cd workers/csp-report && npx wrangler deploy
 ```
 
-shared code under `workers/lib/` is bundled into every Worker that imports it — editing it means redeploying both. `npm run deploy:workers` from the repo root does that in one go. each Worker has its own README covering KV setup, secrets, and refresh policy.
+shared code under `workers/lib/` is bundled into every Worker that imports it — editing it means redeploying all three. `npm run deploy:workers` from the repo root does that in one go. each Worker has its own README covering KV setup, secrets, and refresh policy.

@@ -186,6 +186,10 @@ export function ColophonPage({ siteConfig, stats = {}, updated, nowPlaying = '' 
                 <span className="meta">geo</span>
               </li>
               <li>
+                <span>CF Worker</span>
+                <span className="meta">csp-report</span>
+              </li>
+              <li>
                 <span>CF KV</span>
                 <span className="meta">cache</span>
               </li>
