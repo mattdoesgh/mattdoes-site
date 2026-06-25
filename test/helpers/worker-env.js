@@ -35,6 +35,22 @@ export class KVStub {
   async delete(key) { this.store.delete(key); }
 }
 
+/**
+ * Durable Object state stub — the subset the ListeningPoller uses: the alarm
+ * API (`storage.getAlarm`/`setAlarm`/`deleteAlarm`). The scheduled alarm time
+ * is held in memory so tests can assert the poller re-armed itself.
+ */
+export class DurableStateStub {
+  constructor() {
+    this._alarm = null;
+    this.storage = {
+      getAlarm:    async () => this._alarm,
+      setAlarm:    async (time) => { this._alarm = time; },
+      deleteAlarm: async () => { this._alarm = null; },
+    };
+  }
+}
+
 /** ExecutionContext stub — runs waitUntil callbacks synchronously-ish. */
 export function makeCtx() {
   const pending = [];
