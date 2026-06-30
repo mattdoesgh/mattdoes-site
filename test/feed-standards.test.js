@@ -1,14 +1,14 @@
-// Audit backlog: "Feed standards — Atom validator and duplicate-scrobble ID
-// fixtures". Covers audit finding #5.
+// Audit backlog: "Feed standards — Atom validator". Covers audit finding #5.
 //
-// Builds the fixture vault with a seeded Last.fm cache (own temp CACHE_DIR,
-// so the repo .cache is never touched) that contains TWO plays of the same
-// track, parses the generated feed.xml, and asserts:
+// Builds the fixture vault with a seeded Last.fm cache (own temp CACHE_DIR, so
+// the repo .cache is never touched) so that scrobble data IS present at build
+// time, parses the generated feed.xml, and asserts:
 //   - the XML is well-formed (jsdom XML parse, no <parsererror>)
 //   - a feed-level <author> exists
 //   - every <entry> carries its own <author>
 //   - no entry link is double-prefixed (https://...https://...)
-//   - no two entries share an <id> (repeated scrobbles stay distinct)
+//   - no two entries share an <id>
+//   - listening/scrobble data never leaks into the feed (not a feed kind)
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -83,24 +83,25 @@ test('no two entries share an <id> (repeated scrobbles stay distinct)', () => {
     `${ids.filter((v, i) => ids.indexOf(v) !== i).join(', ')}`);
 });
 
-test('two plays of the same track produce two distinct listening ids', () => {
-  // The seeded cache has two plays of "Repeated Song" at different times.
+test('listening/scrobble data is excluded from the feed entirely', () => {
+  // The seeded cache contains scrobbles (including a track played twice), so a
+  // regression that re-admitted listening into the feed WOULD surface here.
+  // Listening is not a feed kind: no listening tag-URI <id>s, and no entry
+  // links to the /listening/ page.
   const doc = parseFeed(feedXml);
   const listeningIds = [...doc.querySelectorAll('entry id')]
     .map(n => n.textContent.trim())
     .filter(id => id.startsWith('tag:mattdoes.online'));
-  // At least the two repeated-song plays must each have a distinct tag URI.
-  assert.ok(listeningIds.length >= 2,
-    `expected >=2 listening entries, found ${listeningIds.length}`);
-  assert.equal(new Set(listeningIds).size, listeningIds.length,
-    'repeated plays of one track must not collapse to a single feed id');
-});
+  assert.equal(listeningIds.length, 0,
+    `feed must carry no listening entries, found ${listeningIds.length}`);
 
-test('transient now-playing entries are excluded from the feed', () => {
-  // None of the seeded tracks are nowPlaying; assert the feed carries no
-  // entry whose id/link suggests a now-playing placeholder leaked through.
-  const doc = parseFeed(feedXml);
-  const titles = [...doc.querySelectorAll('entry title')].map(n => n.textContent);
-  // Sanity: feed built and has entries.
-  assert.ok(titles.length > 0);
+  const listeningLinks = [...doc.querySelectorAll('entry link')]
+    .map(l => l.getAttribute('href') || '')
+    .filter(href => /\/listening\/?$/.test(href));
+  assert.equal(listeningLinks.length, 0,
+    `feed must carry no /listening/ entry links, found ${listeningLinks.length}`);
+
+  // Sanity: the feed still built and carries the article/thought entries.
+  assert.ok(doc.querySelectorAll('entry').length > 0,
+    'feed should still contain article/thought entries');
 });
