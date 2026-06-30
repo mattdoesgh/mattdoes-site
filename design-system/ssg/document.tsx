@@ -146,6 +146,21 @@ export function renderDocument({ page, children, siteConfig, assets = {} }: Rend
 
   const body = renderToStaticMarkup(children);
 
+  // Media-CDN warm-up (dns-prefetch + preconnect) only pays off when the page
+  // actually embeds an asset from it; on text-only pages (home, indexes, most
+  // prose) an unconditional preconnect opens an idle TCP+TLS connection the page
+  // never uses. Tie the hints to real usage by scanning the rendered body for a
+  // media-origin embed. In dev mediaBase is '/img', so embeds carry no origin
+  // and these are correctly absent.
+  const mediaOrigin = 'https://media.mattdoes.online';
+  const mediaHints = body.includes(`${mediaOrigin}/`)
+    ? `
+<!-- DNS warm-up + preconnect for the media CDN — emitted only when this page
+     embeds a media-CDN asset, so text-only pages don't open an idle connection. -->
+<link rel="dns-prefetch" href="${mediaOrigin}" />
+<link rel="preconnect"   href="${mediaOrigin}" crossorigin />`
+    : '';
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -165,10 +180,7 @@ export function renderDocument({ page, children, siteConfig, assets = {} }: Rend
 ${ogImageTags}
 <meta name="geo-endpoint" content="${esc(geoEndpoint)}" />
 <!-- View Transitions: cross-document fades on supported browsers. -->
-<meta name="view-transition" content="same-origin" />
-<!-- DNS warm-up for the media CDN; only matters when an article actually embeds. -->
-<link rel="dns-prefetch" href="https://media.mattdoes.online" />
-<link rel="preconnect"   href="https://media.mattdoes.online" crossorigin />
+<meta name="view-transition" content="same-origin" />${mediaHints}
 <!-- Critical font preloads — also emitted as Link: headers in /static/_headers
      for HTTP 103 Early Hints, but kept here so direct file:// + non-CF hosts work. -->
 <link rel="preload" href="/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin />
