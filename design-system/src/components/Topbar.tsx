@@ -56,7 +56,7 @@ export function Topbar({
   status,
 }: TopbarProps) {
   return (
-    <header className="topbar">
+    <header className="topbar" aria-label="site">
       <div className="inner">
         <a href="/" className="home">
           <Brand siteTitle={siteTitle} />

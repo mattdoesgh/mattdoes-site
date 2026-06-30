@@ -6,7 +6,7 @@ export interface TimeProps {
   date: DateInput;
   /** Display format. Defaults to `'day'` (`'mon DD'`). */
   format?: DateFormat;
-  /** Optional `aria-label`, e.g. `"published"`. */
+  /** Optional accessible name override (visually hidden), e.g. a full date when the visible `label` is relative. */
   ariaLabel?: string;
   /**
    * Override the rendered text while keeping the ISO `datetime` attribute — for
@@ -34,9 +34,11 @@ export function Time({ date, format = 'day', ariaLabel, label }: TimeProps) {
   // (`NODE_ENV=production node build.js`). Do NOT switch to `dateTime` to
   // silence it — that breaks the lowercase contract.
   const dateAttr = { datetime: iso } as Record<string, string>;
+  const text = label ?? fmtDate(date, format);
   return (
-    <time className="ts" aria-label={ariaLabel} {...dateAttr}>
-      {label ?? fmtDate(date, format)}
+    <time className="ts" {...dateAttr}>
+      {ariaLabel ? <span className="visually-hidden">{ariaLabel}</span> : null}
+      {ariaLabel ? <span aria-hidden="true">{text}</span> : text}
     </time>
   );
 }
