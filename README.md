@@ -5,7 +5,7 @@ source for [mattdoes.online](https://mattdoes.online) — my personal site. i wr
 ## what's on it
 
 - **home** — a summary, plus recent posts and thoughts.
-- **blog** — long-form and short, on one reverse-chronological timeline. three kinds, each also reachable as its own section page (`/journal/`, `/making/`, `/thoughts/`):
+- **writing** (`/blog/`) — long-form and short, on one reverse-chronological timeline. three kinds, each also reachable as its own section page (`/journal/`, `/making/`, `/thoughts/`):
   - *journal* — reflective posts, usually weighing a tradeoff
   - *making* — building-in-public notes on projects, tools, and stack choices
   - *thoughts* — short, one-idea posts, time-stamped through the day
@@ -24,7 +24,7 @@ the generator, in three parts:
 - **`lib/intake.js`** — vault notes → content model. frontmatter parsing (`yaml`) and validation, splitting daily notes into thoughts, stable thought IDs, sorting, the slug index. pure: same notes in, same model out.
 - **`lib/emit.js`** — content model → `dist/`. markdown via `marked` (shiki for code highlighting, emitted as build-time CSS classes via `lib/shiki-csp.js` so `style-src` stays strict), the inline `<head>` scripts (importmap + speculation rules) admitted under the strict CSP by a per-build `sha256` (`injectInlineScriptCsp`) so `script-src` needs no `'unsafe-inline'`, wikilink + embed resolution, pages rendered by the React design system (`design-system/`), related-by-tag blocks on posts, a static search index (`search-index.json`, queried by `static/search.js`), build-time Open Graph card PNGs (`lib/og-image.js`, rasterized with `sharp`, under `/og/`), CSS through `lightningcss`, JS through `terser`, content-hashed assets, RSS + sitemap.
 
-the presentation layer is a React + TypeScript component library in `design-system/` (`@mattdoes/ds`). every public page (home, blog, listings, article, about, colophon) is a component there; emit imports the bundle's `render*` functions and renders each page to a static HTML string via `renderToStaticMarkup` — the shipped site is plain static HTML with no React at runtime. the same library is the design source synced to Claude Design (claude.ai/design) for visual editing, so the component set and the live site never drift. `design-system/` builds first (`npm run build:ssg`, wired in as the `prebuild` step), and its deps install via `postinstall`.
+the presentation layer is a React + TypeScript component library in `design-system/` (`@mattdoes/ds`). every public page (home, writing archive, listings, article, about, colophon) is a component there; emit imports the bundle's `render*` functions and renders each page to a static HTML string via `renderToStaticMarkup` — the shipped site is plain static HTML with no React at runtime. the same library is the design source synced to Claude Design (claude.ai/design) for visual editing, so the component set and the live site never drift. `design-system/` builds first (`npm run build:ssg`, wired in as the `prebuild` step), and its deps install via `postinstall`.
 
 three thin Cloudflare Workers, all same-origin under `/api/`; the site's CSP stays at `connect-src 'self'`. two serve the live bits:
 

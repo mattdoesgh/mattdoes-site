@@ -10,9 +10,9 @@ export interface IdentityStat {
 }
 
 export interface IdentityRailProps {
-  /** Heading line (`<div class="who">`). */
+  /** Heading line (`<h2 class="who">`). */
   who?: string;
-  /** Subtitle (`<div class="bio">`). */
+  /** Subtitle (`<p class="bio">`). */
   bio?: string;
   /** Stat chips (`<div class="stats">`); omitted entirely when empty. */
   stats?: IdentityStat[];
@@ -29,8 +29,8 @@ export function IdentityRail({ who, bio, stats, children }: IdentityRailProps) {
   return (
     <aside className="side-left" aria-label="page meta">
       <div className="ident">
-        {who ? <div className="who">{who}</div> : null}
-        {bio ? <div className="bio">{bio}</div> : null}
+        {who ? <h2 className="who">{who}</h2> : null}
+        {bio ? <p className="bio">{bio}</p> : null}
         {stats && stats.length ? (
           <div className="stats">
             {stats.map((s) => (

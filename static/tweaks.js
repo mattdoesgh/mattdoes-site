@@ -119,8 +119,24 @@
   });
   panel.querySelectorAll('.tk-seg').forEach(grp => {
     const key = grp.dataset.key;
-    grp.querySelectorAll('button').forEach(btn => {
+    const btns = [...grp.querySelectorAll('button')];
+    btns.forEach(btn => {
       btn.addEventListener('click', () => persist({ [key]: btn.dataset.value }));
+    });
+    grp.addEventListener('keydown', (e) => {
+      const i = btns.indexOf(document.activeElement);
+      if (i < 0) return;
+      let next = i;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        next = (i + 1) % btns.length;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        next = (i - 1 + btns.length) % btns.length;
+      } else {
+        return;
+      }
+      e.preventDefault();
+      btns[next].focus();
+      persist({ [key]: btns[next].dataset.value });
     });
   });
   // The panel is a native <dialog>. showModal()/close() give us focus

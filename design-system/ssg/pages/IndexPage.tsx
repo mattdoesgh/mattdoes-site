@@ -57,7 +57,9 @@ export interface IndexPageProps {
 /** One compact homepage row. */
 function HomeRow({ entry }: { entry: HomeEntry }) {
   const { kind } = entry;
-  const when = <Time date={entry.date} label={relTime(entry.date)} />;
+  const when = (
+    <Time date={entry.date} label={relTime(entry.date)} ariaLabel={fmtDate(entry.date, 'long')} />
+  );
   const permalinkLabel =
     kind === 'thought'
       ? entry.permalinkLabel || '#'
@@ -135,6 +137,15 @@ function groupByDay(entries: HomeEntry[]): [string, HomeEntry[]][] {
   return [...groups.entries()].sort((a, b) => b[0].localeCompare(a[0]));
 }
 
+function latestWritingLink(entries: HomeEntry[], kind: 'journal' | 'making') {
+  const latest = entries.find((e) => e.kind === kind && e.url);
+  return {
+    href: latest?.url || `/${kind}/`,
+    label: latest ? `latest ${kind}` : `${kind} archive`,
+    meta: latest ? 'post' : 'archive',
+  };
+}
+
 export function IndexPage({ site, entries }: IndexPageProps) {
   const groups = groupByDay(entries).slice(0, 6); // most recent ~6 days
   const today = fmtDate(new Date(), 'iso');
@@ -148,6 +159,12 @@ export function IndexPage({ site, entries }: IndexPageProps) {
   const scrobbles = Number(counts.scrobbles || 0).toLocaleString('en-US');
   const identity = site.identity || {};
   const identityLine = [identity.name, identity.handle].filter(Boolean).join(' · ');
+  const startReadingLinks = [
+    latestWritingLink(entries, 'journal'),
+    latestWritingLink(entries, 'making'),
+    { href: '/thoughts/', label: 'thoughts archive', meta: 'short posts' },
+    { href: '/feed.xml', label: 'rss feed', meta: '.xml' },
+  ];
 
   return (
     <PageShell
@@ -158,8 +175,6 @@ export function IndexPage({ site, entries }: IndexPageProps) {
       footerText={site.config?.footerText ?? ''}
     >
       <main className="page" id="main">
-        <h1 className="visually-hidden">latest</h1>
-
         <IdentityRail
           who={identityLine || undefined}
           bio={site.bio}
@@ -175,11 +190,15 @@ export function IndexPage({ site, entries }: IndexPageProps) {
 
         <section className="timeline">
           <div className="post-head">
+            <h1>writing</h1>
             <p className="lede">
-              Latest from the vault — journal, making, and thoughts. Browse{' '}
-              <a href="/thoughts/">thoughts</a> for micro-posts or{' '}
-              <a href="/making/">making</a> for project write-ups.
+              Essays, project notes, and short thoughts from the vault. Start with the full archive, browse short
+              thoughts, or subscribe by RSS.
             </p>
+            <nav className="home-actions" aria-label="writing actions">
+              <a href="/blog/">read latest writing</a>
+              <a href="/feed.xml">subscribe via rss</a>
+            </nav>
           </div>
 
           {topTags.length ? (
@@ -226,10 +245,24 @@ export function IndexPage({ site, entries }: IndexPageProps) {
 
           {entries.length ? (
             <div className="loadmore">
-              <a href="/blog/">load older →</a>
+              <a href="/blog/">read older writing →</a>
             </div>
           ) : null}
         </section>
+
+        <aside className="side-right" aria-label="start reading">
+          <div className="group">
+            <h2>start reading</h2>
+            <ul>
+              {startReadingLinks.map((link) => (
+                <li key={link.href}>
+                  <a href={safeUrl(link.href)}>{link.label}</a>
+                  <span className="meta">{link.meta}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </aside>
       </main>
     </PageShell>
   );

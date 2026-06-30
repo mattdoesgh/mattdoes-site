@@ -18,7 +18,7 @@ export function TweaksDialog({ open = false }: TweaksDialogProps) {
   return (
     <dialog id="tweaks" aria-labelledby="tweaks-title" open={open}>
 
-      <header>
+      <header aria-labelledby="tweaks-title">
         <span id="tweaks-title">tweaks</span>
         <button type="button" className="close" aria-label="close tweaks">
           ×

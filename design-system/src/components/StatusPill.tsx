@@ -17,8 +17,8 @@ export function StatusPill({ text, dot = false, live = false }: StatusPillProps)
   if (live) {
     const playing = text !== '';
     return (
-      <span className="status" id="now-playing" hidden={!playing} data-state={playing ? 'playing' : 'idle'}>
-        {dot && playing ? <span className="dot"></span> : null}
+      <span className="status" id="now-playing" hidden={!playing} data-state={playing ? 'playing' : 'idle'} aria-live="polite" aria-atomic="true">
+        {dot && playing ? <span className="dot" aria-hidden="true"></span> : null}
         {text}
       </span>
     );
