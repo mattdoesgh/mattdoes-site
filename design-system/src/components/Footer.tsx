@@ -1,7 +1,7 @@
 import type { NavItem } from './Topbar';
 
 export const DEFAULT_FOOTER_NAV: NavItem[] = [
-  { href: '/blog/', label: 'blog' },
+  { href: '/blog/', label: 'writing' },
   { href: '/colophon/', label: 'colophon' },
   { href: 'mailto:matt@mattdoes.online', label: 'say hi' },
   { href: '/feed.xml', label: 'rss' },
@@ -10,7 +10,7 @@ export const DEFAULT_FOOTER_NAV: NavItem[] = [
 export interface FooterProps {
   /** Free-text line shown at the start of the footer (e.g. a copyright). */
   footerText?: string;
-  /** Footer links. Defaults to blog / colophon / say hi / rss. */
+  /** Footer links. Defaults to writing / colophon / say hi / rss. */
   nav?: NavItem[];
 }
 
@@ -28,7 +28,7 @@ export function Footer({ footerText = '', nav = DEFAULT_FOOTER_NAV }: FooterProp
             {n.label}
           </a>
         ))}
-        <button type="button" className="footer-link" data-tweaks-toggle="" aria-controls="tweaks" aria-expanded="false">
+        <button type="button" className="footer-link" data-tweaks-toggle="" aria-controls="tweaks" aria-expanded="false" aria-haspopup="dialog">
           tweaks
         </button>
       </nav>

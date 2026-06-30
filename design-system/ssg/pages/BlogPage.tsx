@@ -1,4 +1,4 @@
-// Blog page composition — the React mirror of templates/blog.js. Composes the
+// Writing page composition — the React mirror of templates/blog.js. Composes the
 // PageShell chrome with the page-specific main content (identity rail, filter
 // bar, the Row timeline, related rail).
 import {
@@ -73,11 +73,11 @@ export function BlogPage({ siteConfig, entries, nowPlaying = '' }: BlogPageProps
       footerText={siteConfig.footerText ?? ''}
     >
       <main className="page" id="main">
-        <h1 className="visually-hidden">blog</h1>
+        <h1 className="visually-hidden">writing</h1>
 
         <IdentityRail
-          who="blog"
-          bio="posts, micro-thoughts, and building-in-public on one reverse-chronological timeline."
+          who="writing"
+          bio="essays, project notes, and short thoughts on one reverse-chronological timeline."
           stats={[
             { n: entries.length, label: 'entries' },
             { n: tagCounts.size, label: 'tags' },

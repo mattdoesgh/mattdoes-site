@@ -114,13 +114,51 @@ test('the accent control is a native <fieldset> of radio inputs', () => {
   assert.deepEqual(values, ['blue', 'green', 'pink', 'warm']);
 });
 
+test('homepage makes reading and RSS subscription visible', () => {
+  const d = doc('index.html');
+  const main = d.querySelector('main#main');
+  assert.ok(main, 'homepage must render <main id="main">');
+
+  const h1 = main.querySelector('.post-head h1');
+  assert.ok(h1, 'homepage must render a visible writing heading');
+  assert.equal(h1.textContent.trim().toLowerCase(), 'writing');
+  assert.ok(!h1.classList.contains('visually-hidden'),
+    'homepage writing heading must not be visually hidden');
+
+  const readAction = main.querySelector('.home-actions a[href="/blog/"]');
+  assert.ok(readAction, 'homepage must link to the writing archive from the hero actions');
+  assert.equal(readAction.textContent.trim().toLowerCase(), 'read latest writing');
+
+  const rssAction = main.querySelector('.home-actions a[href="/feed.xml"]');
+  assert.ok(rssAction, 'homepage must link to the RSS feed from the hero actions');
+  assert.equal(rssAction.textContent.trim().toLowerCase(), 'subscribe via rss');
+
+  const topbarRss = d.querySelector('.topbar a.meta-link[href="/feed.xml"]');
+  assert.ok(topbarRss, 'topbar must expose RSS as a persistent meta link');
+  assert.equal(topbarRss.textContent.trim().toLowerCase(), 'rss');
+
+  const startReading = main.querySelector('.side-right[aria-label="start reading"]');
+  assert.ok(startReading, 'homepage must render a start-reading rail');
+  assert.ok(startReading.querySelector('a[href="/thoughts/"]'),
+    'start-reading rail must link to thoughts');
+  assert.ok(startReading.querySelector('a[href="/feed.xml"]'),
+    'start-reading rail must link to RSS');
+
+  const elsewhere = [...d.querySelectorAll('.side-left .group')]
+    .find(g => g.querySelector('h2')?.textContent.trim().toLowerCase() === 'elsewhere');
+  assert.ok(elsewhere, 'homepage must keep the generic elsewhere rail');
+  assert.equal(elsewhere.querySelector('a[href="/feed.xml"]'), null,
+    'generic elsewhere rail must not contain RSS');
+});
+
 test('the active nav link carries aria-current="page"', () => {
-  // /blog/ — the nav highlights "blog".
+  // /blog/ — the nav highlights the visible "writing" link.
   const d = doc('blog/index.html');
   const current = d.querySelectorAll('nav[aria-label="primary"] a[aria-current="page"]');
   assert.equal(current.length, 1,
     'exactly one primary-nav link should carry aria-current="page"');
   assert.match(current[0].getAttribute('href'), /\/blog\/?$/);
+  assert.equal(current[0].textContent.trim(), 'writing');
 });
 
 test('active filter chip carries aria-current="true"', () => {

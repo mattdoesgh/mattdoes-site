@@ -55,7 +55,6 @@ export const siteConfig = {
     { label: '𝕏',          href: 'https://x.com/mattdoes',                                     meta: '/mattdoes'   },
     { label: 'Spotify',     href: 'https://open.spotify.com/artist/617fKVTXkDafXJshlNUzF3',     meta: '↗'           },
     { label: 'Apple Music', href: 'https://music.apple.com/us/artist/verism-rip/1676956374',    meta: '↗'           },
-    { label: 'rss',         href: '/feed.xml',                                                  meta: '.xml'        },
     { label: 'say hi',      href: 'mailto:matt@mattdoes.online',                                meta: '↗'           },
   ],
 

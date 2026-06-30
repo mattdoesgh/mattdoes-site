@@ -103,7 +103,7 @@ export function renderArticle(
   );
 }
 
-// ── blog (unified timeline) ──────────────────────────────────────────────────
+// ── writing (unified /blog/ timeline) ────────────────────────────────────────
 export function renderBlog(args: {
   siteConfig: FullSiteConfig;
   entries: BlogEntry[];
@@ -113,9 +113,9 @@ export function renderBlog(args: {
   const { siteConfig, entries, nowPlaying = '', assets } = args;
   return doc(
     {
-      title: 'blog',
+      title: 'writing',
       url: '/blog/',
-      description: 'Posts, micro-thoughts, and building-in-public — one reverse-chronological timeline.',
+      description: 'Essays, project notes, and short thoughts on one reverse-chronological timeline.',
       bodyScripts: scriptTag(assetUrl(assets, 'tag-filter.js')),
     },
     <BlogPage siteConfig={siteConfig} entries={entries} nowPlaying={nowPlaying} />,

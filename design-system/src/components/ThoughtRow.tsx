@@ -56,7 +56,7 @@ export function ThoughtRow({ date, html, children, id, tags, quote }: ThoughtRow
         )}
         {id ? (
           <div className="actions">
-            <a className="permalink" href={`#${id}`} id={id}>
+            <a className="permalink" href={`#${id}`} id={id} aria-label="permalink to this thought">
               #{id}
             </a>
           </div>

@@ -9,7 +9,7 @@ export interface NavItem {
 
 export const DEFAULT_NAV: NavItem[] = [
   { id: 'home', href: '/', label: 'home' },
-  { id: 'blog', href: '/blog/', label: 'blog' },
+  { id: 'blog', href: '/blog/', label: 'writing' },
   { id: 'thoughts', href: '/thoughts/', label: 'thoughts' },
   { id: 'making', href: '/making/', label: 'making' },
   { id: 'listening', href: '/listening/', label: 'listening' },
@@ -18,6 +18,7 @@ export const DEFAULT_NAV: NavItem[] = [
 ];
 
 export const DEFAULT_META: NavItem[] = [
+  { id: 'rss', href: '/feed.xml', label: 'rss' },
   { id: 'colophon', href: '/colophon/', label: 'colophon' },
   { id: 'say-hi', href: 'mailto:matt@mattdoes.online', label: 'say hi' },
 ];
@@ -25,9 +26,9 @@ export const DEFAULT_META: NavItem[] = [
 export interface TopbarProps {
   /** Site title; the part after the first dot is dimmed in the brand mark. */
   siteTitle?: string;
-  /** Primary nav links. Defaults to home / blog / listening / about. */
+  /** Primary nav links. Defaults to home / writing / thoughts / making / listening / search / about. */
   nav?: NavItem[];
-  /** Right-aligned meta links. Defaults to colophon / say hi. */
+  /** Right-aligned meta links. Defaults to rss / colophon / say hi. */
   meta?: NavItem[];
   /** Active nav/meta id — marks the matching link current. */
   active?: string;
@@ -55,7 +56,7 @@ export function Topbar({
   status,
 }: TopbarProps) {
   return (
-    <div className="topbar">
+    <header className="topbar">
       <div className="inner">
         <a href="/" className="home">
           <Brand siteTitle={siteTitle} />
@@ -88,6 +89,6 @@ export function Topbar({
         })}
         {status}
       </div>
-    </div>
+    </header>
   );
 }

@@ -350,7 +350,7 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
   color: var(--mute);
   display: flex; justify-content: space-between; align-items: baseline;
 }
-.group h2 .m { color: var(--faint); font-size: 10px; }
+.group h2 .m { color: var(--mute); font-size: 10px; }
 .group ul { list-style: none; margin: 0; padding: 0; }
 .group li {
   padding: .3rem 0;
@@ -461,7 +461,7 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
 
 /* body */
 .row .body {
-  font-size: 13.5px;
+  font-size: 15px;
   line-height: 1.55;
   max-width: 60ch;
 }
@@ -495,33 +495,20 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
 /* F6 (WCAG 1.4.3): tag hover colours text → --accent-fg. */
 a.tg:hover { color: var(--accent-fg); }
 
-/* Actions — tiny, subtle, only on hover */
+/* Actions — secondary, but always visible navigation. */
 .row .actions {
   display: flex;
   gap: 1.25rem;
   margin-top: .5rem;
-  font-size: 10.5px;
-  color: var(--faint);
+  font-size: 11.5px;
+  color: var(--mute);
   letter-spacing: 0.04em;
-  opacity: 0;
-  transition: opacity .15s;
-}
-/* F7 (WCAG 2.4.7 / 2.4.11): actions are opacity:0 by default and were
-   revealed on hover only — a keyboard user could tab onto an invisible
-   permalink. Also reveal on :focus-within so a focused permalink is
-   visible. */
-.row:hover .actions,
-.row:focus-within .actions { opacity: 1; }
-/* F7: touch / coarse-pointer devices have no hover, so keep the actions
-   permanently visible there — the permalink is real navigation. */
-@media (hover: none) {
-  .row .actions { opacity: 1; }
 }
 .row .actions span { display: inline-flex; gap: 4px; align-items: baseline; }
 .row .actions .permalink {
   margin-left: auto;
   font-family: var(--font-mono);
-  color: var(--faint);
+  color: var(--mute);
 }
 /* F6 (WCAG 1.4.3): permalink hover colours text → --accent-fg. */
 .row .actions .permalink:hover { color: var(--accent-fg); }
@@ -564,7 +551,7 @@ a.tg:hover { color: var(--accent-fg); }
 }
 .filter a::before { content: "#"; opacity: .5; }
 .filter a.all::before { content: ""; }
-.filter .cnt { margin-left: auto; color: var(--faint); font-size: 10.5px; }
+.filter .cnt { margin-left: auto; color: var(--mute); font-size: 10.5px; }
 
 /* ── search page ─────────────────────────────────── */
 .search-form {
@@ -624,12 +611,16 @@ a.tg:hover { color: var(--accent-fg); }
 .loadmore {
   padding: 1.5rem 0 .5rem;
   text-align: center;
-  font-size: 11px;
-  color: var(--mute);
+  font-size: 12px;
+  color: var(--ink);
   letter-spacing: 0.06em;
   text-transform: lowercase;
 }
-.loadmore a { border-bottom: 1px dashed var(--faint); color: var(--mute); }
+.loadmore a {
+  border-bottom: 1px dashed var(--mute);
+  color: var(--ink);
+  font-weight: 500;
+}
 /* F6 (WCAG 1.4.3): load-more hover colours text → --accent-fg. */
 .loadmore a:hover { color: var(--accent-fg); border-bottom-color: var(--accent-fg); }
 
@@ -677,7 +668,7 @@ footer.site .footer-link:hover { color: var(--ink); }
   font-weight: 600;
   font-size: clamp(1.25rem, 2.6vw, 1.65rem);
   line-height: 1.25;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   color: var(--ink);
   max-width: 28ch;
   text-wrap: pretty;
@@ -687,6 +678,24 @@ footer.site .footer-link:hover { color: var(--ink); }
   font-size: 13.5px;
   max-width: 52ch;
   margin: 0;
+}
+.home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8rem 1rem;
+  margin-top: 1rem;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+}
+.home-actions a {
+  color: var(--ink);
+  border-bottom: 1px dashed var(--mute);
+  font-weight: 500;
+}
+.home-actions a:hover {
+  color: var(--accent-fg);
+  border-bottom-color: var(--accent-fg);
 }
 
 .fm-bar {
