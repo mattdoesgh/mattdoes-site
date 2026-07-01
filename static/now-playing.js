@@ -13,7 +13,11 @@
 
   async function tick() {
     try {
-      const res = await fetch(ENDPOINT, { headers: { accept: 'application/json' }});
+      // no-store: the Worker sends max-age=0, but Cloudflare's Browser Cache
+      // TTL can rewrite that to a long max-age on edge HITs, which would
+      // freeze the pill behind a stale browser cache. Force a fresh poll each
+      // time; the request path is a cheap KV read (ADR 0008).
+      const res = await fetch(ENDPOINT, { headers: { accept: 'application/json' }, cache: 'no-store' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       render(data);
