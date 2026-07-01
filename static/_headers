@@ -14,7 +14,7 @@
   # CSP keeps style-src strict: Shiki highlighted-code tokens are emitted as
   # build-time CSS classes (lib/shiki-csp.js) instead of inline style attributes.
   # Report-only twin collects any regressions before enforcement changes.
-  # The build (lib/emit.js → injectInlineScriptCsp) appends a sha256 for EACH
+  # The build (lib/emit/csp.js → injectInlineScriptCsp) appends a sha256 for EACH
   # inline <script> (the importmap + the speculation rules) to script-src in the
   # emitted dist/_headers. A hash source disables keyword inline allowances, so
   # 'inline-speculation-rules' stops working once the importmap is hashed — both

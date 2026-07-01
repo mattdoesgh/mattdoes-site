@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// SSG build — the bundle lib/emit.js imports to render the real site pages.
+// SSG build — the bundle Emit (lib/emit/) imports to render the real site pages.
 //
 // Separate from vite.config.ts (the design-sync / Claude Design bundle) so that
 // output stays untouched. Produces dist-ssg/ssg.js: the render* functions plus
@@ -11,7 +11,7 @@ import react from '@vitejs/plugin-react';
 // runtime from design-system/node_modules (this bundle lives under
 // design-system/dist-ssg/), so the root build runs on plain `node` with no
 // React dependency of its own. renderToStaticMarkup is called inside the bundle
-// (ssg/document.tsx), never by emit.js.
+// (ssg/document.tsx), never by Emit.
 export default defineConfig({
   plugins: [react()],
   build: {

@@ -33,7 +33,7 @@ test.before(() => { ({ distDir } = buildFixtureVault({ cacheDir: seedLastfmCache
 test('server-rendered listening rows byte-equal the Row module output', () => {
   const html = readDist(distDir, 'listening/index.html');
 
-  // Mirror Emit's snapshot→entry mapping (lib/emit.js `listening`): keep
+  // Mirror Emit's snapshot→entry mapping (lib/emit/index.js `listening`): keep
   // dated tracks, normalize the link through safeUrl, newest first.
   const cached = JSON.parse(fs.readFileSync(fixtureCache, 'utf8')).tracks;
   const entries = cached

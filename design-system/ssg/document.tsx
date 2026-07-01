@@ -9,7 +9,7 @@
 // scripts) are preserved verbatim.
 //
 // This module calls renderToStaticMarkup itself and returns a finished HTML
-// string, so the build (lib/emit.js, plain Node) never imports react-dom.
+// string, so the build (lib/emit/, plain Node) never imports react-dom.
 import type { ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { escHtml as esc } from '../src/index';
@@ -30,7 +30,7 @@ export function assetUrl(assets: Record<string, string>, name: string): string {
 
 /**
  * The page importmap as the exact JSON string emitted inline in <head>
- * (ADR 0001). Shared with the build so lib/emit.js can hash these same bytes
+ * (ADR 0001). Shared with the build so lib/emit/csp.js can hash these same bytes
  * into the CSP `script-src`: the strict CSP has no `'unsafe-inline'` and no
  * importmap analogue of `'inline-speculation-rules'`, so an unhashed inline
  * importmap is dropped — and every module that imports through it then resolves
@@ -93,7 +93,7 @@ export interface RenderDocumentOptions {
   /** The page body — typically `<Layout>…</Layout>`. */
   children: ReactNode;
   siteConfig: DocSiteConfig;
-  /** original→hashed asset filename map (from lib/emit.js after minify+hash). */
+  /** original→hashed asset filename map (from lib/emit/assets.js after minify+hash). */
   assets?: Record<string, string>;
 }
 
@@ -130,7 +130,7 @@ export function renderDocument({ page, children, siteConfig, assets = {} }: Rend
   // Emitted as static head markup. The CSP nominally allows it via the
   // `'inline-speculation-rules'` source, but that keyword is disabled once the
   // importmap hash lands in script-src, so the build hashes this string too
-  // (lib/emit.js → injectInlineScriptCsp). nav-prefetch.js supplies the
+  // (lib/emit/csp.js → injectInlineScriptCsp). nav-prefetch.js supplies the
   // rel=prefetch fallback for Safari/Firefox.
   const speculationRules = buildSpeculationRules();
 

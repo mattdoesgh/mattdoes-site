@@ -1,6 +1,6 @@
 // SSG entry — the build's bridge into the React design system.
 //
-// lib/emit.js (plain Node, no React) imports these render* functions and writes
+// Emit (lib/emit/, plain Node, no React) imports these render* functions and writes
 // their returned HTML strings to dist/. Each function composes a page from the
 // DS components, wraps it in the document shell (renderDocument: head, importmap,
 // preloads, enhancement scripts — see templates/base.js), and returns a finished
@@ -16,7 +16,7 @@
 // so the topbar brand and the document <title> share one source.
 import type { ReactNode } from 'react';
 import { renderDocument, assetUrl, type DocSiteConfig, type DocPage } from './document';
-// Re-exported for the build: lib/emit.js hashes these exact inline-script
+// Re-exported for the build: lib/emit/csp.js hashes these exact inline-script
 // strings into the CSP script-src so the strict CSP admits every inline script
 // (a hash source disables the 'inline-speculation-rules' keyword, so both must
 // be hashed once either is).

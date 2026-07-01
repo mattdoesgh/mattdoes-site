@@ -69,7 +69,7 @@ jobs:
 
       # `npm ci` triggers the root `postinstall`, which installs the
       # design-system deps (react/react-dom + build toolchain) so the `prebuild`
-      # hook can build the SSG bundle that lib/emit.js imports (ADR 0003/0005).
+      # hook can build the SSG bundle that lib/emit/ imports (ADR 0003/0005).
       - name: Install
         run: npm ci
 

@@ -23,7 +23,7 @@ for the live bits.
   `.cache/`), runs the pipeline.
 - `lib/intake.js` — vault notes → content model. **Pure** (no clock/fs/env); throws
   with the offending vault-relative path.
-- `lib/emit.js` — content model → `dist/` (markdown, asset hashing, CSS/JS, RSS,
+- `lib/emit/` — content model → `dist/` (markdown, asset hashing, CSS/JS, RSS,
   sitemap). Imports the `render*` functions from the built design-system bundle
   (`design-system/dist-ssg/ssg.js`) for pages.
 - `design-system/` — `@mattdoes/ds`, the React + TS component library. One source,
