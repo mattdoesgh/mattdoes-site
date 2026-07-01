@@ -31,6 +31,7 @@ testing-suites/
 # Editor / OS
 .vscode/
 .idea/
+.cursor/
 Thumbs.db
 
 # Claude scratch / local notes
