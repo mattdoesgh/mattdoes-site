@@ -9,6 +9,8 @@ import {
   ThoughtRow,
   EmptyState,
   TagCloud,
+  TimelineFilter,
+  TimelineHeader,
   type ArticleRowProps,
   type ThoughtRowProps,
   type ExternalLink,
@@ -33,25 +35,20 @@ export interface BlogPageProps {
 }
 
 function FilterBar({ kinds, topTags, count }: { kinds: string[]; topTags: string[]; count: number }) {
-  return (
-    <div className="filter">
-      <span className="label">filter</span>
-      <a href="/blog/" className="on all" data-filter="" data-kind-filter="" aria-current="true">
-        all
-      </a>
-      {kinds.map((k) => (
-        <a key={k} href={`/blog/?kind=${encodeURIComponent(k)}`} data-kind-filter={k}>
-          {k}
-        </a>
-      ))}
-      {topTags.slice(0, 8).map((t) => (
-        <a key={t} href={`/blog/?tag=${encodeURIComponent(t)}`} data-filter={t}>
-          {t}
-        </a>
-      ))}
-      <span className="cnt">{count} entries</span>
-    </div>
-  );
+  const links = [
+    { label: 'all', href: '/blog/', filter: '', kindFilter: '', all: true, current: true },
+    ...kinds.map((k) => ({
+      label: k,
+      href: `/blog/?kind=${encodeURIComponent(k)}`,
+      kindFilter: k,
+    })),
+    ...topTags.slice(0, 8).map((t) => ({
+      label: t,
+      href: `/blog/?tag=${encodeURIComponent(t)}`,
+      filter: t,
+    })),
+  ];
+  return <TimelineFilter links={links} count={count} countLabel="entries" />;
 }
 
 export function BlogPage({ siteConfig, entries, nowPlaying = '' }: BlogPageProps) {
@@ -73,8 +70,6 @@ export function BlogPage({ siteConfig, entries, nowPlaying = '' }: BlogPageProps
       footerText={siteConfig.footerText ?? ''}
     >
       <main className="page" id="main">
-        <h1 className="visually-hidden">writing</h1>
-
         <IdentityRail
           who="writing"
           bio="essays, project notes, and short thoughts on one reverse-chronological timeline."
@@ -87,6 +82,10 @@ export function BlogPage({ siteConfig, entries, nowPlaying = '' }: BlogPageProps
         </IdentityRail>
 
         <section className="timeline">
+          <TimelineHeader
+            title="writing"
+            lede="The full archive: journal entries, making notes, and short thoughts in one reverse-chronological stream."
+          />
           <FilterBar kinds={kinds} topTags={topTags.map(([t]) => t)} count={entries.length} />
           {entries.length ? (
             entries.map((e, i) =>

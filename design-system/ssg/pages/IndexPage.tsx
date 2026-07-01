@@ -1,14 +1,18 @@
 // Homepage — three-column feed mixing every content type in reverse-chrono.
 // The React mirror of templates/index.js. The homepage uses its own COMPACT
-// row (relative "2h"/"3d" timestamps, kind-led gutter) — deliberately not the
-// shared Row module — so the row markup is authored inline here, matching the
-// source.
-import { Fragment } from 'react';
+// row (relative "2h"/"3d" timestamps, kind-led gutter) — now composed through
+// the shared TimelineRow shell so visual variants stay consistent.
 import type { ReactNode } from 'react';
 import {
   PageShell,
   IdentityRail,
   ElsewhereLinks,
+  ActionLink,
+  RailSection,
+  TimelineFilter,
+  TimelineGroup,
+  TimelineHeader,
+  TimelineRow,
   Time,
   TagList,
   safeUrl,
@@ -55,7 +59,7 @@ export interface IndexPageProps {
 }
 
 /** One compact homepage row. */
-function HomeRow({ entry }: { entry: HomeEntry }) {
+function HomeRow({ entry, featured = false }: { entry: HomeEntry; featured?: boolean }) {
   const { kind } = entry;
   const when = (
     <Time date={entry.date} label={relTime(entry.date)} ariaLabel={fmtDate(entry.date, 'long')} />
@@ -114,16 +118,20 @@ function HomeRow({ entry }: { entry: HomeEntry }) {
   }
 
   return (
-    <div className="row" data-kind={kind} data-tags={(entry.tags || []).join(' ')}>
-      <div className="gutter">
+    <TimelineRow
+      kind={kind}
+      tags={entry.tags}
+      featured={featured}
+      gutter={
+        <>
         <span className="kind">{kind}</span>
         <span className="when">{when}</span>
-      </div>
-      <div>
-        {body}
-        <div className="actions">{permalink}</div>
-      </div>
-    </div>
+        </>
+      }
+      actions={permalink}
+    >
+      {body}
+    </TimelineRow>
   );
 }
 
@@ -160,11 +168,22 @@ export function IndexPage({ site, entries }: IndexPageProps) {
   const identity = site.identity || {};
   const identityLine = [identity.name, identity.handle].filter(Boolean).join(' · ');
   const startReadingLinks = [
-    latestWritingLink(entries, 'journal'),
-    latestWritingLink(entries, 'making'),
+    { ...latestWritingLink(entries, 'journal'), label: 'journal', meta: 'latest' },
+    { ...latestWritingLink(entries, 'making'), label: 'making', meta: 'latest' },
     { href: '/thoughts/', label: 'thoughts archive', meta: 'short posts' },
-    { href: '/feed.xml', label: 'rss feed', meta: '.xml' },
+    { href: '/feed.xml', label: 'rss', meta: 'subscribe' },
   ];
+  const featuredEntry = groups[0]?.[1]?.[0];
+  const filterLinks = topTags.length
+    ? [
+        { label: 'all', href: '/', filter: '', kindFilter: '', all: true, current: true },
+        ...topTags.slice(0, 6).map(([tag]) => ({
+          label: tag,
+          href: `/?tag=${encodeURIComponent(tag)}`,
+          filter: tag,
+        })),
+      ]
+    : [];
 
   return (
     <PageShell
@@ -189,58 +208,41 @@ export function IndexPage({ site, entries }: IndexPageProps) {
         </IdentityRail>
 
         <section className="timeline">
-          <div className="post-head">
-            <h1>writing</h1>
-            <p className="lede">
-              Essays, project notes, and short thoughts from the vault. Start with the full archive, browse short
-              thoughts, or subscribe by RSS.
-            </p>
-            <nav className="home-actions" aria-label="writing actions">
-              <a href="/blog/">read latest writing</a>
-              <a href="/feed.xml">subscribe via rss</a>
-            </nav>
-          </div>
+          <TimelineHeader
+            title="writing"
+            lede="Essays, project notes, and short thoughts from the vault: recent work, small observations, and notes from whatever is currently being built."
+            actions={
+              <>
+                <ActionLink href="/blog/" tone="primary">read latest writing</ActionLink>
+                <ActionLink href="/feed.xml">subscribe via rss</ActionLink>
+              </>
+            }
+          />
 
-          {topTags.length ? (
-            <div className="filter">
-              <span className="label">filter</span>
-              <a href="/" className="on all" data-filter="" aria-current="true">
-                all
-              </a>
-              {topTags.slice(0, 6).map(([tag]) => (
-                <a key={tag} href={`/?tag=${encodeURIComponent(tag)}`} data-filter={tag}>
-                  {tag}
-                </a>
-              ))}
-              <span className="cnt">{visibleEntries.length} entries</span>
-            </div>
-          ) : null}
+          <TimelineFilter links={filterLinks} count={visibleEntries.length} countLabel="entries" />
 
           {groups.length ? (
             groups.map(([day, rows]) => {
               const label = day === today ? `today · ${fmtIsoDay(day)}` : `${fmtIsoDay(day)} · ${day.slice(0, 4)}`;
               return (
-                <Fragment key={day}>
-                  <div className="tl-divider">
-                    <span>{label}</span>
-                    <span>{rows.length}</span>
-                  </div>
+                <TimelineGroup key={day} label={label} count={rows.length}>
                   {rows.map((e, i) => (
-                    <HomeRow key={i} entry={e} />
+                    <HomeRow key={i} entry={e} featured={e === featuredEntry} />
                   ))}
-                </Fragment>
+                </TimelineGroup>
               );
             })
           ) : (
-            <div className="row">
-              <div className="gutter">
-                <span className="kind">—</span>
-                <span className="when"></span>
-              </div>
-              <div>
-                <div className="body muted">Nothing published yet.</div>
-              </div>
-            </div>
+            <TimelineRow
+              gutter={
+                <>
+                  <span className="kind">—</span>
+                  <span className="when"></span>
+                </>
+              }
+            >
+              <div className="body muted">Nothing published yet.</div>
+            </TimelineRow>
           )}
 
           {entries.length ? (
@@ -251,8 +253,7 @@ export function IndexPage({ site, entries }: IndexPageProps) {
         </section>
 
         <aside className="side-right" aria-label="start reading">
-          <div className="group">
-            <h2>start reading</h2>
+          <RailSection heading="start here">
             <ul>
               {startReadingLinks.map((link) => (
                 <li key={link.href}>
@@ -261,7 +262,7 @@ export function IndexPage({ site, entries }: IndexPageProps) {
                 </li>
               ))}
             </ul>
-          </div>
+          </RailSection>
         </aside>
       </main>
     </PageShell>

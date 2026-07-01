@@ -3,6 +3,7 @@ import type { DateInput } from '../lib/format';
 import { tagsHtml } from '../lib/format';
 import { Time } from './Time';
 import { TagList } from './Tag';
+import { TimelineRow } from './TimelineRow';
 
 export interface ThoughtRowProps {
   /** Timestamp of the thought (absolute; rendered in Central Time). */
@@ -28,14 +29,23 @@ export function ThoughtRow({ date, html, children, id, tags, quote }: ThoughtRow
   const bodyClass = quote ? 'body q' : 'body';
   const showTags = !quote && !!tags && tags.length > 0;
   return (
-    <div className="row" data-kind="thought" data-tags={(tags || []).join(' ')}>
-      <div className="gutter">
+    <TimelineRow
+      kind="thought"
+      tags={tags}
+      gutter={
+        <>
         <span className="kind">thought</span>
         <span className="when">
           <Time date={date} />
         </span>
-      </div>
-      <div>
+        </>
+      }
+      actions={id ? (
+        <a className="permalink" href={`#${id}`} id={id} aria-label="permalink to this thought">
+          #{id}
+        </a>
+      ) : null}
+    >
         {html != null ? (
           <div
             className={bodyClass}
@@ -54,14 +64,6 @@ export function ThoughtRow({ date, html, children, id, tags, quote }: ThoughtRow
             ) : null}
           </div>
         )}
-        {id ? (
-          <div className="actions">
-            <a className="permalink" href={`#${id}`} id={id} aria-label="permalink to this thought">
-              #{id}
-            </a>
-          </div>
-        ) : null}
-      </div>
-    </div>
+    </TimelineRow>
   );
 }

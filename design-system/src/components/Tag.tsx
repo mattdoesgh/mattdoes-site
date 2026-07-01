@@ -5,7 +5,7 @@ export interface TagProps {
   tag: string;
   /**
    * Page the tag scopes to. `''` (default) means the current page, so the
-   * link is just `?tag=foo` and the client tag-filter can apply it in place.
+   * link is just `?tag=foo` and the timeline controls can apply it in place.
    * Article/section pages pass e.g. `'/journal/'` to jump to that index
    * already filtered.
    */

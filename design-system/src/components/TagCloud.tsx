@@ -1,4 +1,5 @@
 import { Tag } from './Tag';
+import { RailSection } from './RailSection';
 
 export interface TagCloudProps {
   /** `[tag, count]` pairs, already ordered. Renders nothing when empty. */
@@ -17,8 +18,7 @@ export interface TagCloudProps {
 export function TagCloud({ tags, baseHref = '', heading = 'by tag' }: TagCloudProps) {
   if (!tags.length) return null;
   return (
-    <div className="group">
-      <h2>{heading}</h2>
+    <RailSection heading={heading}>
       <ul>
         {tags.map(([t, n]) => (
           <li key={t}>
@@ -27,6 +27,6 @@ export function TagCloud({ tags, baseHref = '', heading = 'by tag' }: TagCloudPr
           </li>
         ))}
       </ul>
-    </div>
+    </RailSection>
   );
 }

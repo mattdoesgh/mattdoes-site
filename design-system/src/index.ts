@@ -49,6 +49,24 @@ export type { TagProps, TagListProps } from './components/Tag';
 export { TagCloud } from './components/TagCloud';
 export type { TagCloudProps } from './components/TagCloud';
 
+export { ActionLink } from './components/ActionLink';
+export type { ActionLinkProps } from './components/ActionLink';
+
+export { RailSection } from './components/RailSection';
+export type { RailSectionProps } from './components/RailSection';
+
+export { TimelineHeader } from './components/TimelineHeader';
+export type { TimelineHeaderProps } from './components/TimelineHeader';
+
+export { TimelineFilter } from './components/TimelineFilter';
+export type { TimelineFilterProps, TimelineFilterLink } from './components/TimelineFilter';
+
+export { TimelineGroup } from './components/TimelineGroup';
+export type { TimelineGroupProps } from './components/TimelineGroup';
+
+export { TimelineRow } from './components/TimelineRow';
+export type { TimelineRowProps } from './components/TimelineRow';
+
 export { ArticleRow } from './components/ArticleRow';
 export type { ArticleRowProps } from './components/ArticleRow';
 

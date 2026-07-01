@@ -2,6 +2,7 @@ import type { DateInput } from '../lib/format';
 import { safeUrl } from '../lib/format';
 import { Time } from './Time';
 import { TagList } from './Tag';
+import { TimelineRow } from './TimelineRow';
 
 export interface ArticleRowProps {
   /** Permalink to the post. Sanitized before use. */
@@ -38,17 +39,18 @@ export function ArticleRow({
   kind,
   showKind = false,
 }: ArticleRowProps) {
+  const rowKind = kind || (showKind ? kind : undefined);
   return (
-    <div
-      className="row"
-      data-kind={showKind ? kind : undefined}
-      data-tags={(tags || []).join(' ')}
-    >
-      <div className="gutter">
+    <TimelineRow
+      kind={rowKind}
+      tags={tags}
+      gutter={
+        <>
         <span className="kind">{showKind ? kind : <Time date={date} />}</span>
         <span className="when">{showKind ? <Time date={date} /> : readTime || ''}</span>
-      </div>
-      <div>
+        </>
+      }
+    >
         <div className="body">
           <a href={safeUrl(url)}>
             <strong>{title}</strong>
@@ -56,7 +58,6 @@ export function ArticleRow({
           {summary ? ` — ${summary}` : ''}{' '}
           <TagList tags={tags} />
         </div>
-      </div>
-    </div>
+    </TimelineRow>
   );
 }

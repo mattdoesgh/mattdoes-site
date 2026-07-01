@@ -19,5 +19,5 @@
     "declaration": true,
     "outDir": "dist"
   },
-  "include": ["src", "ssg"]
+  "include": ["src", "ssg", "client"]
 }

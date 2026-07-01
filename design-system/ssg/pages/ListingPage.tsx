@@ -17,6 +17,8 @@ import {
   ThoughtRow,
   EmptyState,
   TagCloud,
+  TimelineFilter,
+  TimelineHeader,
   type DateInput,
   type EmptyKind,
 } from '../../src/index';
@@ -82,6 +84,16 @@ export function ListingPage({
   if (!isListening) for (const e of entries) for (const t of e.tags || []) tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
   const topTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
   const sectionPath = SECTION_PATH[kind] || '/';
+  const filterLinks = topTags.length
+    ? [
+        { label: 'all', href: sectionPath, filter: '', all: true, current: true },
+        ...topTags.slice(0, 8).map(([tag]) => ({
+          label: tag,
+          href: `${sectionPath}?tag=${encodeURIComponent(tag)}`,
+          filter: tag,
+        })),
+      ]
+    : [];
 
   return (
     <PageShell
@@ -92,8 +104,6 @@ export function ListingPage({
       footerText={siteConfig.footerText ?? ''}
     >
       <main className="page" id="main">
-        <h1 className="visually-hidden">{kind}</h1>
-
         <IdentityRail
           who={section.who}
           bio={section.bio}
@@ -122,31 +132,13 @@ export function ListingPage({
         </IdentityRail>
 
         <section className="timeline">
-          {section.intro ? (
-            <div className="post-head">
-              <div className="kicker">
-                <span className="kind">{kind}</span>
-              </div>
-              <p className="lede">{section.intro}</p>
-            </div>
-          ) : null}
+          <TimelineHeader
+            title={section.who || kind}
+            kicker={<span className="kind">{kind}</span>}
+            lede={section.intro}
+          />
 
-          {topTags.length ? (
-            <div className="filter">
-              <span className="label">filter</span>
-              <a href={sectionPath} className="on all" data-filter="" aria-current="true">
-                all
-              </a>
-              {topTags.slice(0, 8).map(([tag]) => (
-                <a key={tag} href={`${sectionPath}?tag=${encodeURIComponent(tag)}`} data-filter={tag}>
-                  {tag}
-                </a>
-              ))}
-              <span className="cnt">
-                {entries.length} {statLabel}
-              </span>
-            </div>
-          ) : null}
+          <TimelineFilter links={filterLinks} count={entries.length} countLabel={statLabel} />
 
           {isListening ? (
             <div id="listening-rows" dangerouslySetInnerHTML={{ __html: rowsHtml }} />
@@ -163,6 +155,7 @@ export function ListingPage({
                   summary={e.summary}
                   readTime={e.readTime}
                   tags={e.tags}
+                  kind={kind}
                 />
               ),
             )

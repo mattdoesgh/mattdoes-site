@@ -334,7 +334,7 @@ References:
 - [`templates/base.js`](../templates/base.js#L89)
 - [`templates/index.js`](../templates/index.js#L80)
 - [`templates/blog.js`](../templates/blog.js#L70)
-- [`static/tag-filter.js`](../static/tag-filter.js#L57)
+- [`design-system/client/timeline-controls.tsx`](../design-system/client/timeline-controls.tsx)
 - [`static/_shared.css`](../static/_shared.css#L171)
 
 Primary navigation and filter chips use an `.on` class whose visible effect is
@@ -359,9 +359,7 @@ Severity: Medium
 
 References:
 
-- [`static/tag-filter.js`](../static/tag-filter.js#L36)
-- [`static/tag-filter.js`](../static/tag-filter.js#L76)
-- [`static/tag-filter.js`](../static/tag-filter.js#L94)
+- [`design-system/client/timeline-controls.tsx`](../design-system/client/timeline-controls.tsx)
 
 The filtering script hides and shows entries and updates counts without an
 accessible live-region notification. Screen-reader users may not know that
@@ -389,7 +387,7 @@ References:
 
 - [`static/_redirects`](../static/_redirects#L14)
 - [`templates/blog.js`](../templates/blog.js#L70)
-- [`static/tag-filter.js`](../static/tag-filter.js#L36)
+- [`design-system/client/timeline-controls.tsx`](../design-system/client/timeline-controls.tsx)
 
 Legacy section pages redirect to `/blog/?kind=...`, while the actual filtering
 is performed only in client JavaScript. With scripts disabled, a user reaching
@@ -404,7 +402,7 @@ Recommended fix:
 
 Verification:
 
-- Browse each redirected and tag-filtered URL with JavaScript disabled.
+- Browse each redirected and timeline-filtered URL with JavaScript disabled.
 - Confirm the returned content represents the requested archive subset.
 
 ### 13. Thought Fragment IDs Are Not Stable Under Backdated Content
@@ -661,7 +659,6 @@ URLs. Normalize or classify `//host/path` consistently.
 References:
 
 - [`static/listening-live-34f14954.js`](../static/listening-live-34f14954.js)
-- [`static/tag-filter-d3271eed.js`](../static/tag-filter-d3271eed.js)
 - [`static/_headers-cc098ab1`](../static/_headers-cc098ab1)
 
 Generated-looking siblings exist alongside canonical source assets and may be

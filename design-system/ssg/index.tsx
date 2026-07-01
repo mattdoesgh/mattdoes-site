@@ -60,6 +60,10 @@ function scriptTag(src: string, opts: { module?: boolean } = {}): string {
   return opts.module ? `<script src="${src}" type="module"></script>` : `<script src="${src}" defer></script>`;
 }
 
+function timelineControlsScript(assets: Assets): string {
+  return scriptTag(assetUrl(assets, 'timeline-controls.js'), { module: true });
+}
+
 function doc(page: DocPage, children: ReactNode, siteConfig: DocSiteConfig, assets: Assets): string {
   return renderDocument({ page, children, siteConfig, assets });
 }
@@ -74,7 +78,7 @@ export function renderIndex(
   const bodyScripts =
     scriptTag(assetUrl(assets, 'listening-live.js'), { module: true }) +
     '\n' +
-    scriptTag(assetUrl(assets, 'tag-filter.js'));
+    timelineControlsScript(assets);
   return doc(
     { title: '', url: '/', description, bodyScripts },
     <IndexPage site={site} entries={entries} />,
@@ -116,7 +120,7 @@ export function renderBlog(args: {
       title: 'writing',
       url: '/blog/',
       description: 'Essays, project notes, and short thoughts on one reverse-chronological timeline.',
-      bodyScripts: scriptTag(assetUrl(assets, 'tag-filter.js')),
+      bodyScripts: timelineControlsScript(assets),
     },
     <BlogPage siteConfig={siteConfig} entries={entries} nowPlaying={nowPlaying} />,
     siteConfig,
@@ -131,8 +135,8 @@ export function renderListing(
   const { siteConfig, kind, entries, nowPlaying = '', totalScrobbles = 0, rowsHtml = '', assets } = args;
   const isListening = kind === 'listening';
   const bodyScripts = isListening
-    ? scriptTag(assetUrl(assets, 'listening-live.js'), { module: true })
-    : scriptTag(assetUrl(assets, 'tag-filter.js'));
+    ? `${scriptTag(assetUrl(assets, 'listening-live.js'), { module: true })}\n${timelineControlsScript(assets)}`
+    : timelineControlsScript(assets);
   return doc(
     {
       title: kind,
