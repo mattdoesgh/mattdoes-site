@@ -1,8 +1,10 @@
 node_modules/
 dist/
-# design-system build outputs (Claude Design bundle + the SSG bundle emit.js
-# imports). Both are rebuilt by the prebuild step / CI / Pages, never committed.
+# design-system build outputs (Claude Design bundle, the SSG bundle emit.js
+# imports, and the browser timeline-controls island bundle). All rebuilt by the
+# prebuild step / CI / Pages, never committed.
 dist-ssg/
+dist-client/
 design-system/.preview/
 # Private vault content — cloned at build time by scripts/pages-prebuild.sh,
 # or cloned manually for local dev. Never committed to this repo.

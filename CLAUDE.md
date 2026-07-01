@@ -27,8 +27,10 @@ for the live bits.
   sitemap). Imports the `render*` functions from the built design-system bundle
   (`design-system/dist-ssg/ssg.js`) for pages.
 - `design-system/` — `@mattdoes/ds`, the React + TS component library. One source,
-  two roles: it renders every page (`ssg/pages/`, `renderToStaticMarkup`) **and** is
-  the component set synced to Claude Design (`.design-sync/`), so they don't drift.
+  three roles: it renders every page (`ssg/pages/`, `renderToStaticMarkup`), is the
+  component set synced to Claude Design (`.design-sync/`) so they don't drift, and
+  ships the one browser React island (`client/timeline-controls.tsx` → `dist-client/`,
+  the timeline filter/density controls — the site's only client-side React).
 - `templates/` — the browser Row module (`rows.js`), helpers (`_helpers.js`), asset
   registry (`_assets.js`). These three stay permanently; the old `*.js` page modules
   were removed after the React cutover soaked (ADR 0005).
@@ -41,7 +43,7 @@ for the live bits.
 
 ```
 npm install            # also installs design-system deps (postinstall)
-npm run build          # prebuild (SSG bundle) → node build.js → dist/
+npm run build          # prebuild (SSG + client bundles) → node build.js → dist/
 npm test               # builds SSG + fixture-vault site, then node --test
 npm run lint           # html-validate dist/**/*.html
 npm run audit          # npm audit --audit-level=moderate
