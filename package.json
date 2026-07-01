@@ -27,7 +27,7 @@
     "marked-footnote": "^1.4.0",
     "sanitize-html": "^2.17.5",
     "shiki": "^4.3.0",
-    "sharp": "^0.35.2",
+    "sharp": "^0.35.3",
     "yaml": "^2.9.0"
   },
   "engines": {
@@ -36,7 +36,7 @@
   "devDependencies": {
     "axe-core": "^4.12.1",
     "culori": "^4.0.2",
-    "html-validate": "^11.5.3",
+    "html-validate": "^11.5.5",
     "jsdom": "^29.1.1",
     "lightningcss": "^1.32.0",
     "terser": "^5.48.0"
