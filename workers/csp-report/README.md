@@ -13,7 +13,8 @@ Browsers send `application/csp-report` or `application/reports+json` bodies when
 ## Setup
 
 ```bash
-npm ci
+# wrangler is installed once for all Workers from workers/package.json:
+npm --prefix workers install
 npx wrangler deploy
 ```
 

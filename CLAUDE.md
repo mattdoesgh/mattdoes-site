@@ -37,7 +37,8 @@ for the live bits.
 - `workers/` — `mattdoes-listening` (request path is a pure KV reader; a
   `ListeningPoller` Durable Object is the sole Last.fm writer, ADR 0008),
   `mattdoes-geo`, and `mattdoes-csp-report`, sharing `workers/lib/transport.js`
-  (the JSON+CORS envelope).
+  (the JSON+CORS envelope). Tooling is shared: one `workers/package.json`
+  (wrangler devDep) serves all three — no per-Worker package files.
 
 ## Commands
 

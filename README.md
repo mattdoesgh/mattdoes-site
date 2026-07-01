@@ -68,4 +68,4 @@ cd workers/geo        && npx wrangler deploy
 cd workers/csp-report && npx wrangler deploy
 ```
 
-shared code under `workers/lib/` is bundled into every Worker that imports it — editing it means redeploying all three. `npm run deploy:workers` from the repo root does that in one go. each Worker has its own README covering KV setup, secrets, and refresh policy.
+shared code under `workers/lib/` is bundled into every Worker that imports it — editing it means redeploying all three. `npm run deploy:workers` from the repo root does that in one go. tooling is shared too: one `workers/package.json` holds the `wrangler` devDep for all three (`npm --prefix workers install` once; `npx` resolves it from any Worker directory). each Worker has its own README covering KV setup, secrets, and refresh policy.

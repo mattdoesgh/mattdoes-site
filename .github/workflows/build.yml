@@ -38,17 +38,10 @@ jobs:
           npm --prefix design-system ci --include=dev
           npm --prefix design-system audit --audit-level=moderate
 
-      # Workers ship their own lockfile, so audit them too — same threshold.
-      - name: Audit (workers/listening)
-        working-directory: workers/listening
-        run: npm audit --audit-level=moderate
-
-      - name: Audit (workers/geo)
-        working-directory: workers/geo
-        run: npm audit --audit-level=moderate
-
-      - name: Audit (workers/csp-report)
-        working-directory: workers/csp-report
+      # All three Workers share one tooling package root (workers/package.json,
+      # wrangler devDep) — audit it once, same threshold.
+      - name: Audit (workers)
+        working-directory: workers
         run: npm audit --audit-level=moderate
 
   build:

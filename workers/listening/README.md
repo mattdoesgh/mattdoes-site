@@ -55,8 +55,9 @@ to arm its alarm if none is pending — liveness only, never an upstream call. T
 ## Deploy
 
 ```bash
+# wrangler is installed once for all Workers from workers/package.json:
+npm --prefix workers install
 cd workers/listening
-npm install
 
 # One-time KV setup. Wrangler validates the full wrangler.toml before
 # running any command, so the [[kv_namespaces]] block stays commented out
