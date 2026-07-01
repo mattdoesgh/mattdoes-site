@@ -3,7 +3,7 @@
 // Wires the pipeline to the real filesystem and environment:
 //
 //   readVault(VAULT_DIR)  →  intake(records)  →  emit(model, opts)
-//     (lib/intake.js — Vault → Content model)     (lib/emit.js — model → dist/)
+//     (lib/intake.js — Vault → Content model)     (lib/emit/ — model → dist/)
 //
 // plus the Listening snapshot (lib/listening.js), fetched here and passed
 // into Emit as data. See CONTEXT.md for the vocabulary.
@@ -25,7 +25,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { readVault, intake } from './lib/intake.js';
-import { emit } from './lib/emit.js';
+import { emit } from './lib/emit/index.js';
 import { fetchListeningSnapshot } from './lib/listening.js';
 import { siteConfig } from './site.config.js';
 

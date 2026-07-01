@@ -21,7 +21,7 @@ migration: **every public page is now rendered by the React design system**, and
   preloads), the **importmap** (ADR 0001), and the trailing deferred enhancement
   `<script>`s. It calls `renderToStaticMarkup` itself and returns a finished HTML
   string.
-- **`lib/emit.js` imports `render*` functions** from a built SSG bundle
+- **Emit (now `lib/emit/index.js`) imports `render*` functions** from a built SSG bundle
   (`design-system/dist-ssg/ssg.js`, built by `ssg/index.tsx`). The bundle keeps
   `react` / `react-dom` external; they resolve at runtime from
   `design-system/node_modules` (the bundle lives under `design-system/`), so the

@@ -1,6 +1,6 @@
 # Importmap for shared browser modules
 
-The site has no bundler — `lib/emit.js` minifies and content-hashes each
+The site has no bundler — the build (now `lib/emit/assets.js`) minifies and content-hashes each
 static JS/CSS file individually. The Row module (`templates/rows.js`, which
 imports `templates/_helpers.js`) must run both in Node templates and in the
 browser (`static/listening-live.js`), so the browser needs a way to resolve
@@ -24,7 +24,7 @@ fails the module MIME check, and the importer (`listening-live.js`) dies — the
 `/listening/` scrobble list and count stop updating while the import-free
 now-playing pill keeps working (the exact production regression this records).
 
-So the build hashes the importmap: `lib/emit.js` (`injectInlineScriptCsp`)
+So the build hashes the importmap: `lib/emit/csp.js` (`injectInlineScriptCsp`)
 derives the `sha256` of the same string `design-system/ssg/document.tsx`
 (`buildImportmap`) emits and appends `'sha256-…'` to `script-src` in the dist
 `_headers`. The hash moves with the hashed `rows.js`/`_helpers.js` URLs, so it is
