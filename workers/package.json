@@ -1,0 +1,14 @@
+{
+  "name": "mattdoes-workers",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared tooling for the three Cloudflare Workers (listening, geo, csp-report). One wrangler install serves all of them — run wrangler from each Worker's directory (npx resolves it from here), or use `npm run deploy:workers` at the repo root.",
+  "devDependencies": {
+    "wrangler": "^4.105.0"
+  },
+  "overrides": {
+    "esbuild": "0.28.1",
+    "ws": "8.21.0"
+  }
+}
