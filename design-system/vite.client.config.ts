@@ -10,7 +10,7 @@ export default defineConfig({
       input: 'client/timeline-controls.tsx',
       output: {
         entryFileNames: 'timeline-controls.[hash].js',
-        chunkFileNames: 'timeline-vendor.[hash].js',
+        chunkFileNames: '[name].[hash].js',
         manualChunks(id) {
           return id.includes('/node_modules/') ? 'timeline-vendor' : undefined;
         },
