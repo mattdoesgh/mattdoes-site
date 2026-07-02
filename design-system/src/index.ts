@@ -25,6 +25,9 @@ export type { PageShellProps } from './components/PageShell';
 export { IdentityRail } from './components/IdentityRail';
 export type { IdentityRailProps, IdentityStat } from './components/IdentityRail';
 
+export { Hero } from './components/Hero';
+export type { HeroProps, HeroStat } from './components/Hero';
+
 export { ElsewhereLinks } from './components/ElsewhereLinks';
 export type { ElsewhereLinksProps, ExternalLink } from './components/ElsewhereLinks';
 

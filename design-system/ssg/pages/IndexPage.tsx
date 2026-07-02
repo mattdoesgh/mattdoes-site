@@ -5,7 +5,7 @@
 import type { ReactNode } from 'react';
 import {
   PageShell,
-  IdentityRail,
+  Hero,
   ElsewhereLinks,
   ActionLink,
   RailSection,
@@ -166,7 +166,17 @@ export function IndexPage({ site, entries }: IndexPageProps) {
   const counts = site.counts || {};
   const scrobbles = Number(counts.scrobbles || 0).toLocaleString('en-US');
   const identity = site.identity || {};
-  const identityLine = [identity.name, identity.handle].filter(Boolean).join(' · ');
+  // Wordmark: the brand segment before the first dot of the site title
+  // (e.g. "mattdoes" from "mattdoes.online"), split into a bold lead and a
+  // dimmed tail at the identity name when it prefixes the brand
+  // (case-insensitively, so a display-cased name still splits).
+  const brand = (site.config?.title || '').split('.')[0] || identity.name || '';
+  const nameLen =
+    identity.name && brand.toLowerCase().startsWith(identity.name.toLowerCase())
+      ? identity.name.length
+      : brand.length;
+  const name = brand.slice(0, nameLen);
+  const dim = brand.slice(nameLen);
   const startReadingLinks = [
     { ...latestWritingLink(entries, 'journal'), label: 'journal', meta: 'latest' },
     { ...latestWritingLink(entries, 'making'), label: 'making', meta: 'latest' },
@@ -194,29 +204,36 @@ export function IndexPage({ site, entries }: IndexPageProps) {
       footerText={site.config?.footerText ?? ''}
     >
       <main className="page" id="main">
-        <IdentityRail
-          who={identityLine || undefined}
-          bio={site.bio}
+        <Hero
+          name={name || undefined}
+          dim={dim || undefined}
+          kicker={identity.handle || undefined}
+          tagline={site.bio}
           stats={[
             { n: counts.journal || 0, label: 'journal' },
             { n: counts.thoughts || 0, label: 'thoughts' },
             { n: counts.making || 0, label: 'making' },
             { n: scrobbles, label: 'scrobbles', id: 'scrobble-count' },
           ]}
-        >
+          actions={
+            <>
+              <ActionLink href="/blog/" tone="primary">read latest writing</ActionLink>
+              <ActionLink href="/feed.xml">subscribe via rss</ActionLink>
+            </>
+          }
+        />
+
+        {/* Identity/stats moved into the Hero, so this rail is elsewhere-only —
+            labelled for what it now holds, unlike the IdentityRail "page meta"
+            asides on every other page. */}
+        <aside className="side-left" aria-label="elsewhere">
           <ElsewhereLinks links={site.links || []} />
-        </IdentityRail>
+        </aside>
 
         <section className="timeline">
           <TimelineHeader
             title="writing"
             lede="Essays, project notes, and short thoughts from the vault: recent work, small observations, and notes from whatever is currently being built."
-            actions={
-              <>
-                <ActionLink href="/blog/" tone="primary">read latest writing</ActionLink>
-                <ActionLink href="/feed.xml">subscribe via rss</ActionLink>
-              </>
-            }
           />
 
           <TimelineFilter links={filterLinks} count={visibleEntries.length} countLabel="entries" />
