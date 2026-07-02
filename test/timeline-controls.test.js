@@ -103,16 +103,38 @@ test('timeline controls update count and active filter on click', async () => {
     navigator: { value: dom.window.navigator, configurable: true },
   });
 
+  // The entry is a boot shim that dynamic-imports the React island, so the
+  // mount lands asynchronously — poll instead of racing it with fixed sleeps.
+  async function waitFor(check, label, timeoutMs = 5000) {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      if (check()) return;
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    }
+    assert.fail(`timed out waiting for ${label}`);
+  }
+
   try {
+    // The SSR markup already contains the filter anchors; React replaces them
+    // on mount. The mount signal is the SSR node being detached.
+    const ssrMeta = dom.window.document.querySelector('.filter a[data-filter="meta"]');
+    assert.ok(ssrMeta, 'fixture should render a server-side meta filter');
+
     const [asset] = topLevelJs().filter((name) => /^timeline-controls\.[\w-]+\.js$/.test(name));
     await import(`${pathToFileURL(path.join(distDir, asset)).href}?test=${Date.now()}`);
     dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded', { bubbles: true }));
-    await new Promise((resolve) => setTimeout(resolve, 20));
+    await waitFor(
+      () => !ssrMeta.isConnected,
+      'the timeline controls island to replace the SSR filter',
+    );
 
     const meta = dom.window.document.querySelector('.filter a[data-filter="meta"]');
     assert.ok(meta, 'fixture should expose a meta filter');
     meta.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }));
-    await new Promise((resolve) => setTimeout(resolve, 20));
+    await waitFor(
+      () => meta.getAttribute('aria-current') === 'true',
+      'the clicked filter to become active',
+    );
 
     assert.equal(meta.getAttribute('aria-current'), 'true',
       'clicked filter should become active');
