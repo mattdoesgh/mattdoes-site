@@ -37,6 +37,8 @@ class vocabulary you'll see (all defined in the stylesheet):
 | `.filter` / `.tg` | the filter bar and its tag chips (`.tg` is also a standalone tag chip) |
 | `.ident` / `.group` / `.side-left` / `.side-right` / `.meta` | the page rails: identity block, link groups, left/right asides, secondary text |
 | `.body.q` / `.permalink` / `.actions` | quote-thought body, a thought's permalink, its action row |
+| `.hero` / `.hero-kicker` / `.hero-title` / `.hero-dot` / `.hero-tagline` / `.hero-stats` / `.hero-actions` | the homepage intro band: handle line, split wordmark (bold lead + `.dim` tail + accent dot), bio, stat strip, action-link nav |
+| `.home-actions` / `.action-link` (`--primary` / `--secondary`) | an action-link nav and its pill-style links (used in the hero and section headers) |
 
 For **your own** layout glue (wrappers, spacing), use the design tokens as
 `var(--…)` rather than hardcoded values, so dark/light and accent stay

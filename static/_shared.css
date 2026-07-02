@@ -1566,3 +1566,174 @@ html[data-theme="light"] { --geo-point-fill: var(--rule); }
    names keeps them visually still while the timeline content fades. */
 .topbar { view-transition-name: topbar; }
 footer.site { view-transition-name: site-footer; }
+
+/* ── Hero band (homepage) ─────────────────────────
+   First child of main.page, spanning every grid column. Pure CSS —
+   entrance motion lives in the "chrome motion" block below and is
+   disabled under prefers-reduced-motion. Colors stay on the existing
+   tokens so theme + accent choices apply untouched. */
+.hero {
+  grid-column: 1 / -1;
+  padding: 2.4rem 0 2rem;
+  border-bottom: 1px solid var(--rule);
+  min-width: 0;
+}
+.hero .hero-kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--mute);
+  letter-spacing: 0.14em;
+  text-transform: lowercase;
+  margin: 0 0 .4rem;
+}
+.hero .hero-title {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: clamp(2.4rem, 6.5vw, 4rem);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  margin: 0 0 .85rem;
+  text-wrap: balance;
+}
+/* Weight 400, not 300: the Light face is declared but has never been
+   fetched by any page — using it here would add a whole woff2 to the
+   homepage's critical path and reflow the wordmark on swap. */
+.hero .hero-title .dim { color: var(--mute); font-weight: 400; }
+/* Decorative full stop — accent is fine here (not text carrying meaning). */
+.hero .hero-title .hero-dot { color: var(--accent); }
+.hero .hero-tagline {
+  font-family: var(--font-ui);
+  font-size: 16.5px;
+  line-height: 1.6;
+  color: var(--mute);
+  max-width: 52ch;
+  margin: 0;
+}
+.hero .hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem 1.8rem;
+  margin-top: 1.35rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--mute);
+  letter-spacing: 0.05em;
+  text-transform: lowercase;
+}
+.hero .hero-stats .s { white-space: nowrap; }
+.hero .hero-stats .s .n {
+  display: block;
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+.hero .hero-actions { margin-top: 1.4rem; }
+@media (max-width: 760px) {
+  .hero { padding: 1.4rem 0 1.5rem; }
+  .hero .hero-stats { gap: .4rem 1.2rem; }
+}
+
+/* ── Chrome motion + hover polish ─────────────────
+   CSS-only "snappiness": an entrance rise for the hero band plus sharper
+   hover states site-wide. The entrance is deliberately hero-only — the
+   cross-document view transition above already animates page-to-page
+   navigation, speculation-rules prerender runs animations to completion
+   before activation, and a page-wide rise would hold the content column
+   at opacity 0 through the crossfade and push LCP back on every page.
+   Entrances and press-feel are transform/opacity; the row wash fades an
+   overlay's opacity; link/chip hovers transition colors (paint, but tiny
+   regions). Everything is switched off under prefers-reduced-motion.
+   No JS, no CSP impact. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Entrance: hero pieces stagger in (homepage landing only). */
+.hero > * { animation: rise .45s cubic-bezier(.2, .7, .2, 1) both; }
+.hero > :nth-child(2) { animation-delay: .05s; }
+.hero > :nth-child(3) { animation-delay: .11s; }
+.hero > :nth-child(4) { animation-delay: .17s; }
+.hero > :nth-child(5) { animation-delay: .23s; }
+
+/* Rows: a surface tint + accent edge on hover, painted by an overlay
+   pseudo-element reaching .65rem past the text column. The row's own box
+   is untouched, so its border-bottom stays flush with the day dividers,
+   nothing bleeds into the mobile gutter, and the compact-density padding
+   needs no compensation. Opacity-only fade (compositor-friendly).
+   `isolation` keeps the negative-z overlay inside the row. Featured rows
+   keep their own background/border and get a border shift instead. */
+.row { position: relative; isolation: isolate; }
+.row::before {
+  content: "";
+  position: absolute;
+  inset: 0 -.65rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklch, var(--surface) 52%, transparent);
+  box-shadow: inset 2px 0 0 var(--accent);
+  opacity: 0;
+  transition: opacity .16s;
+  pointer-events: none;
+  z-index: -1;
+}
+.row:hover::before { opacity: 1; }
+.row[data-featured="true"]::before { content: none; }
+.row[data-featured="true"] { transition: border-color .16s; }
+.row[data-featured="true"]:hover {
+  border-color: color-mix(in oklch, var(--accent), var(--rule) 40%);
+}
+
+/* Topbar nav: accent underline sweeps in on hover (transform-only).
+   bottom: 0 keeps it inside the link box — at ≤480px the topbar becomes
+   an overflow-x scroll container that would clip anything hanging below. */
+.topbar nav a { position: relative; }
+.topbar nav a::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1.5px;
+  background: var(--accent-fg);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .18s cubic-bezier(.2, .7, .2, 1);
+}
+.topbar nav a:hover::after { transform: scaleX(1); }
+.topbar nav a.on::after,
+.topbar nav a[aria-current="page"]::after { display: none; }
+
+/* Action links: a crisper press-feel. */
+.home-actions a,
+.action-link {
+  transition: transform .14s, border-color .14s, background-color .14s, color .14s;
+}
+.home-actions a:hover,
+.action-link:hover { transform: translateY(-1px); }
+.home-actions a:active,
+.action-link:active { transform: translateY(0); }
+.action-link--primary::after {
+  display: inline-block;
+  transition: transform .14s;
+}
+.action-link--primary:hover::after { transform: translateX(3px); }
+
+/* Rail links: nudge right on hover, matching the accent color shift. */
+.group li a { transition: color .14s, translate .14s; }
+.group li a:hover { translate: 2px 0; }
+
+/* Filter chips + density buttons pick up the same timing. */
+.filter a, .timeline-density button { transition: color .14s, background-color .14s; }
+
+/* Motion off: entrances and hover transforms all collapse to static
+   (the row wash still appears, just instantly). */
+@media (prefers-reduced-motion: reduce) {
+  .hero > * { animation: none; }
+  .row::before { transition: none; }
+  .home-actions a:hover,
+  .action-link:hover { transform: none; }
+  .group li a:hover { translate: none; }
+  .action-link--primary:hover::after { transform: none; }
+  .topbar nav a::after { transition: none; }
+}
