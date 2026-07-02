@@ -30,11 +30,21 @@
     if (data && data.nowPlaying) {
       const line = `now: ${[data.artist, data.track].filter(Boolean).join(' — ')}`;
       const text = line.length > MAX_LEN ? line.slice(0, MAX_LEN - 1) + '…' : line;
-      el.textContent = text;
+      // Rebuild the pill's SSG structure (dot + .status-text) rather than
+      // flattening it to a text node — the dot would vanish and the CSS
+      // ellipsis clamp lives on .status-text.
+      el.replaceChildren();
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.setAttribute('aria-hidden', 'true');
+      const label = document.createElement('span');
+      label.className = 'status-text';
+      label.textContent = text;
+      el.append(dot, label);
       el.hidden      = false;
       el.dataset.state = 'playing';
     } else {
-      el.textContent = '';
+      el.replaceChildren();
       el.hidden      = true;
       el.dataset.state = 'idle';
     }
