@@ -152,22 +152,23 @@ Repo-specific gotchas for future syncs of the mattdoes.online design system.
   real exported components that predate this sync and were never uploaded before:
   `ActionLink`, `RailSection`, `TimelineFilter`, `TimelineGroup`, `TimelineHeader`,
   `TimelineRow` (added across the React-migration / timeline-controls / emit-split
-  work but after the 16-component syncs). They shipped this run as **floor cards**
-  (fully importable — real `.d.ts` + `.prompt.md` — just no authored preview). Only
-  `Hero` has an authored preview (`previews/Hero.tsx`, committed in #98), graded
-  `good` on both cells (HomepageHero + WordmarkHero). The Hero card renders MUTED
-  (low contrast) for the same reason the rail cards do: dark token set on the white
-  preview card (html-scoped tokens, ADR 0003) — not a defect; the real dark-bg site
-  shows the bright `--ink` "matt" lead + dimmed `--mute` "does" tail as intended.
-  **To author the 6 floor cards later:** write `previews/<Name>.tsx` and re-sync —
-  they carry forward at zero cost, no grade churn to the other 17.
-- **Known render warns (triaged legitimate — 2026-07-02):** the unauthored new
-  components are flagged as expected, NOT defects: `RailSection`, `TimelineGroup`,
-  `TimelineRow` → `[RENDER_THIN]` (wrapper components rendered alone with
-  crash-prevention props show minimal text); `ActionLink`, `TimelineHeader` → floor
-  card (`fallbackCard`); `TimelineFilter` renders a real filter bar (clean). A future
-  re-sync should treat these five warns as recorded, not new. Authoring their
-  previews clears the warns.
+  work but after the 16-component syncs). They shipped in a FIRST upload as **floor
+  cards**, then — same session — got **authored previews** and were re-uploaded, so
+  **all 23 components now have authored previews graded `good` (0 floor cards, 0
+  thin, 0 warns)**. Authored previews:
+  `previews/{ActionLink,RailSection,TimelineFilter,TimelineGroup,TimelineHeader,TimelineRow}.tsx`
+  (committed) + `previews/Hero.tsx` (#98). Compose faithfully from the real pages —
+  the `Timeline*` components wrap in `<section className="timeline">`; `RailSection`
+  wraps in `<aside className="side-right">` for the muted rail styling;
+  `TimelineGroup`/`TimelineRow` import the real `ArticleRow`/`ThoughtRow` for row
+  content. `Hero` is graded `good` on both cells (HomepageHero + WordmarkHero).
+- **Muted preview cards are expected (ADR 0003), not a defect.** Hero and the
+  rail-flavored cards (RailSection, TimelineHeader, TimelineRow) render low-contrast
+  because the dark token set applies on the white preview card (html-scoped tokens);
+  the real dark-bg site shows bright `--ink` + dimmed `--mute` as intended. Topbar,
+  TweaksDialog, StatusPill (own dark surfaces) and TimelineFilter render
+  full-contrast. All 23 graded `good` — a re-sync should not read the muted rail
+  cards as broken.
 - **Clean carry-forward this run (contrast the 2026-06-19 recipe-bump churn):**
   `keyRecipe` stayed 7 and `scriptsSha db90aa22b3ed1d3a` was unchanged from the
   anchor, so the 16 prior components verified as `unchanged` (0 re-graded), only
