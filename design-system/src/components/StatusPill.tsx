@@ -19,14 +19,14 @@ export function StatusPill({ text, dot = false, live = false }: StatusPillProps)
     return (
       <span className="status" id="now-playing" hidden={!playing} data-state={playing ? 'playing' : 'idle'} aria-live="polite" aria-atomic="true">
         {dot && playing ? <span className="dot" aria-hidden="true"></span> : null}
-        {text}
+        <span className="status-text">{text}</span>
       </span>
     );
   }
   return (
     <span className="status">
       {dot ? <span className="dot"></span> : null}
-      {text}
+      <span className="status-text">{text}</span>
     </span>
   );
 }

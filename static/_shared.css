@@ -238,9 +238,20 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
   font-size: 11px;
   display: inline-flex; gap: .55ch; align-items: center;
   letter-spacing: .03em;
+  /* A long "artist — track" must never wrap the bar or squeeze the nav:
+     the pill yields first, ellipsizing via .status-text. */
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 34ch;
+}
+.topbar .status-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .topbar .dot {
   width: 6px; height: 6px; border-radius: 50%;
+  flex-shrink: 0;
   background: var(--accent);
   animation: pulse 2.4s ease-in-out infinite;
 }
@@ -1213,7 +1224,9 @@ table.schema .req.y { color: var(--accent-fg); }
   .topbar .home { flex-shrink: 0; }
   .topbar .spacer { flex: 0 0 4px; }
   .topbar .meta-link { flex-shrink: 0; white-space: nowrap; }
-  .topbar .status { flex-shrink: 0; white-space: nowrap; }
+  /* In the scrollable mobile bar the pill is capped, not shrink-proof —
+     otherwise a long track title balloons the horizontal scroll extent. */
+  .topbar .status { flex-shrink: 0; max-width: 45vw; }
   .row { grid-template-columns: 1fr; gap: .2rem; }
   .row .gutter { flex-direction: row; gap: .8rem; }
 }
