@@ -46,7 +46,9 @@ Repo-specific gotchas for future syncs of the mattdoes.online design system.
   faces as real woff2 FILES via `cfg.extraFonts: ["../static/_shared.css"]`
   (extractFonts harvests the `@font-face` from `_shared.css`, copies the woff2 to
   `ds-bundle/fonts/`, and rewrites the urls to `./JetBrainsMono-*.woff2`).
-- Result: `_ds_bundle.css` stays ~25 KB and previews render in real JetBrains
+- Result: `_ds_bundle.css` is ~31.5 KB as of 2026-07-02 (was ~25 KB before the
+  Hero band + site-wide chrome-motion CSS landed in `static/_shared.css`; it tracks
+  `dist/style.css`) and previews render in real JetBrains
   Mono, not fallback. `cfg.runtimeFontPrefixes` is GONE (fonts are now bundled,
   not host-served); do not re-add it or `[FONT_MISSING]` checks get suppressed
   for no reason. Keep the `static/_shared.css` `@font-face` weights and the
@@ -88,9 +90,10 @@ Repo-specific gotchas for future syncs of the mattdoes.online design system.
   `npm run build` first (it's `cfg.buildCmd`) or `cssEntry` won't resolve.
 - After a re-sync, expect `ds-bundle/fonts/` to hold the 5 woff2 + a `fonts.css`
   with `./JetBrainsMono-*.woff2` refs, and `styles.css` to `@import` it. If fonts
-  go missing or `_ds_bundle.css` balloons past ~25 KB, the `stripFontFace` plugin
-  or `cfg.extraFonts` regressed (see Fonts) — that's the thing to check, not
-  `runtimeFontPrefixes`.
+  go missing or `_ds_bundle.css` balloons past ~600 KB (base64-inlined faces), the
+  `stripFontFace` plugin or `cfg.extraFonts` regressed (see Fonts) — that's the
+  thing to check, not `runtimeFontPrefixes`. (The ~31.5 KB baseline grows as
+  `_shared.css` grows; a few-KB drift is normal, a ~600 KB jump is the regression.)
 - Render check: the 2026-06-19 re-sync FINALLY ran the full browser render check
   (playwright 1.61.0 + chromium installed; mac cache at
   `~/Library/Caches/ms-playwright/`, NOT `~/.cache/`). 16/16 render cleanly and
@@ -144,6 +147,35 @@ Repo-specific gotchas for future syncs of the mattdoes.online design system.
   `bundleSha12` and `styleSha` → the diff was `16 unchanged` yet
   `upload.{bundle,styling}: true`. Expected; the atomic full-write re-uploads
   bundle + CSS and re-anchors. Not a regression.
+- **2026-07-02 re-sync (Hero + 6 previously-undiscovered components): project 16 → 23.**
+  Adding `Hero` (PR #98) was the intent, but the converter also newly discovered SIX
+  real exported components that predate this sync and were never uploaded before:
+  `ActionLink`, `RailSection`, `TimelineFilter`, `TimelineGroup`, `TimelineHeader`,
+  `TimelineRow` (added across the React-migration / timeline-controls / emit-split
+  work but after the 16-component syncs). They shipped this run as **floor cards**
+  (fully importable — real `.d.ts` + `.prompt.md` — just no authored preview). Only
+  `Hero` has an authored preview (`previews/Hero.tsx`, committed in #98), graded
+  `good` on both cells (HomepageHero + WordmarkHero). The Hero card renders MUTED
+  (low contrast) for the same reason the rail cards do: dark token set on the white
+  preview card (html-scoped tokens, ADR 0003) — not a defect; the real dark-bg site
+  shows the bright `--ink` "matt" lead + dimmed `--mute` "does" tail as intended.
+  **To author the 6 floor cards later:** write `previews/<Name>.tsx` and re-sync —
+  they carry forward at zero cost, no grade churn to the other 17.
+- **Known render warns (triaged legitimate — 2026-07-02):** the unauthored new
+  components are flagged as expected, NOT defects: `RailSection`, `TimelineGroup`,
+  `TimelineRow` → `[RENDER_THIN]` (wrapper components rendered alone with
+  crash-prevention props show minimal text); `ActionLink`, `TimelineHeader` → floor
+  card (`fallbackCard`); `TimelineFilter` renders a real filter bar (clean). A future
+  re-sync should treat these five warns as recorded, not new. Authoring their
+  previews clears the warns.
+- **Clean carry-forward this run (contrast the 2026-06-19 recipe-bump churn):**
+  `keyRecipe` stayed 7 and `scriptsSha db90aa22b3ed1d3a` was unchanged from the
+  anchor, so the 16 prior components verified as `unchanged` (0 re-graded), only
+  `Hero` was `pendingGrade`, and `deletePaths` was empty. `styleSha`/`bundleSha12`/
+  `auxSha` moved (Hero CSS + motion CSS + 7 new components in the bundle) →
+  `upload.{bundle,styling,aux}: true`, atomic full-write re-uploaded everything.
+  The remote `_ds_sync.json` re-fetch right before `finalize_plan` was byte-identical
+  to the first read (no eventual-consistency flake this time).
 - **A component's INTERNAL-default change reads as `unchanged` but still ships.**
   2026-06-25 re-sync (after #75 + #76): #75 added `thoughts`/`making`/`search`
   to `Topbar`'s `DEFAULT_NAV`, so the Topbar/Layout/PageShell *cards* visibly
