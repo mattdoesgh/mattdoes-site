@@ -8,7 +8,6 @@ import {
   ArticleRow,
   ThoughtRow,
   EmptyState,
-  TagCloud,
   TimelineFilter,
   TimelineHeader,
   type ArticleRowProps,
@@ -100,9 +99,9 @@ export function BlogPage({ siteConfig, entries, nowPlaying = '' }: BlogPageProps
           )}
         </section>
 
+        {/* No TagCloud rail: the filter bar above the stream already exposes
+            the top tags — a second aggregate tag list was pure repetition. */}
         <aside className="side-right" aria-label="related">
-          <TagCloud tags={topTags} baseHref="/blog/" />
-
           <div className="group">
             <h2>subscribe</h2>
             <ul>

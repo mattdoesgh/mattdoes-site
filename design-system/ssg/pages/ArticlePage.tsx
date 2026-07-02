@@ -150,8 +150,10 @@ export function ArticlePage({ site, note, recent = [], related = [], prev, next 
           ) : null}
         </article>
 
-        <aside className="side-right" aria-label="related">
-          {related.length ? (
+        {/* No rail tag list: the post's tags already render as chips at the
+            end of the body (`.post-tags`). */}
+        {related.length ? (
+          <aside className="side-right" aria-label="related">
             <div className="group">
               <h2>related</h2>
               <ul>
@@ -165,20 +167,8 @@ export function ArticlePage({ site, note, recent = [], related = [], prev, next 
                 ))}
               </ul>
             </div>
-          ) : null}
-          {tags.length ? (
-            <div className="group">
-              <h2>tags</h2>
-              <ul>
-                {tags.map((t) => (
-                  <li key={t}>
-                    <Tag tag={t} baseHref={sectionPath} params={{ kind }} />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-        </aside>
+          </aside>
+        ) : null}
       </main>
     </PageShell>
   );
