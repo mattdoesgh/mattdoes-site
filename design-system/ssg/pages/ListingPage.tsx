@@ -16,7 +16,6 @@ import {
   ArticleRow,
   ThoughtRow,
   EmptyState,
-  TagCloud,
   TimelineFilter,
   TimelineHeader,
   type DateInput,
@@ -164,9 +163,8 @@ export function ListingPage({
           )}
         </section>
 
-        <aside className="side-right" aria-label="related">
-          <TagCloud tags={topTags} baseHref={sectionPath} />
-        </aside>
+        {/* No TagCloud rail: the filter row above the stream already exposes
+            the top tags — a second aggregate tag list was pure repetition. */}
       </main>
     </PageShell>
   );

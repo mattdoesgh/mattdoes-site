@@ -204,10 +204,11 @@ export function IndexPage({ site, entries }: IndexPageProps) {
       footerText={site.config?.footerText ?? ''}
     >
       <main className="page" id="main">
+        {/* No kicker: the handle restated the brand already present in the
+            topbar and the wordmark line right below. */}
         <Hero
           name={name || undefined}
           dim={dim || undefined}
-          kicker={identity.handle || undefined}
           tagline={site.bio}
           stats={[
             { n: counts.journal || 0, label: 'journal' },
