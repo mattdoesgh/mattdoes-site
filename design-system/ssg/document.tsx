@@ -23,6 +23,26 @@ export interface DocSiteConfig {
   identity?: { bio?: string };
 }
 
+/**
+ * Every logical asset name the document shell references — the `url(...)`
+ * lookups in renderDocument plus the importmap targets in buildImportmap.
+ * Exported so the build (lib/emit/index.js) can assert each one resolved to a
+ * hashed filename in the asset map: an unresolved name here would otherwise
+ * ship as its clean URL and 404 silently. Add a `url('x')` below without
+ * listing it here and the build assertion won't cover it — keep in lockstep.
+ */
+export const DOCUMENT_ASSET_NAMES = [
+  '_shared.css',
+  'theme-boot.js',
+  'tweaks.js',
+  'geo-background.js',
+  'now-playing.js',
+  'local-time.js',
+  'nav-prefetch.js',
+  'rows.js',
+  '_helpers.js',
+] as const;
+
 /** Resolve a logical asset name to its leading-slash, content-hashed URL. */
 export function assetUrl(assets: Record<string, string>, name: string): string {
   return `/${assets[name] || name}`;

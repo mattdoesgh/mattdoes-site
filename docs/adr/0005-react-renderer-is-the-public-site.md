@@ -95,9 +95,11 @@ built. `design-system/dist-ssg/` is gitignored (a build artifact, like `dist/`).
 rollback unit and as the reference side of `render.tsx`'s parity diff, and that
 window has closed. `design-system/ssg/render.tsx` (the parity harness, whose only
 job was diffing React output against those templates) was removed with them.
-`templates/{rows,_helpers,_assets}.js` stay permanently — `rows.js`/`_helpers.js`
-are the browser Row module (above) and `_assets.js` is the hashed-asset registry
-the build and `renderDocument` both read.
+`templates/{rows,_helpers}.js` stay permanently — they are the browser Row
+module (above). `_assets.js`, the mutable hashed-asset registry singleton, was
+retired later: after the cutover the React side threads the asset map
+explicitly (`renderDocument`'s `assets` prop) and nothing imported `asset()`
+anymore, so the global went with it.
 
 ## Considered alternatives
 

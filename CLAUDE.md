@@ -31,9 +31,11 @@ for the live bits.
   component set synced to Claude Design (`.design-sync/`) so they don't drift, and
   ships the one browser React island (`client/timeline-controls.tsx` → `dist-client/`,
   the timeline filter/density controls — the site's only client-side React).
-- `templates/` — the browser Row module (`rows.js`), helpers (`_helpers.js`), asset
-  registry (`_assets.js`). These three stay permanently; the old `*.js` page modules
-  were removed after the React cutover soaked (ADR 0005).
+- `templates/` — the browser Row module (`rows.js`) and its helpers
+  (`_helpers.js`). These two stay permanently; the old `*.js` page modules were
+  removed after the React cutover soaked (ADR 0005), and the `_assets.js`
+  registry singleton was retired once nothing read it (the React side threads
+  the asset map explicitly).
 - `workers/` — `mattdoes-listening` (request path is a pure KV reader; a
   `ListeningPoller` Durable Object is the sole Last.fm writer, ADR 0008),
   `mattdoes-geo`, and `mattdoes-csp-report`, sharing `workers/lib/transport.js`
