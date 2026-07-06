@@ -10,6 +10,7 @@ Names the fs/pure seam: everything after the Note record is deterministic.
 ## Intake
 The pure module that turns Note records into the Content model. Owns all loud-failure validation (publish kinds, slug rules, date/tags/aliases shapes, duplicate routes, duplicate about), thought splitting, stable thought IDs, sorting, and the slug index.
 Invariant: same records in, same model out — no clock, no fs, no env. Error mode: throws with messages that name the offending `rel`.
+CT wall-clock math (frontmatter re-anchoring, thought timestamps/ids) comes from `lib/time.js`, the Node-side owner of the CT primitives. `templates/_helpers.js` ships to the browser via the importmap so it can't import `lib/`; it keeps a private duplicate of `tzParts` for display formatting, pinned by `test/time.test.js`.
 
 ## Content model
 Intake's output: articles + thoughts + about note + slug index, all carrying raw markdown (never HTML). Articles and thoughts are newest-first; thought IDs are assigned oldest-first from CT wall-clock timestamps.
