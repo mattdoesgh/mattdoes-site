@@ -43,3 +43,14 @@ Alternatives considered:
   the natural seams in the code are by *mechanism* (render, hash, headers,
   XML), which is how the file's own section markers were already organized;
   artifact-based modules would each re-import most of the mechanisms.
+
+Addendum (2026-07-06): the split was finished by pulling the remaining pure
+logic out of `index.js` into three more modules, each tested in-process at
+its interface (test/emit-units.test.js) instead of through the subprocess
+build: `search.js` (`buildSearchIndex`), `related.js` (`relatedByTags`), and
+`listening-entries.js` (`toListeningEntries` — the snapshot→entry mapping,
+now also imported by test/row-parity.test.js instead of being reimplemented
+there). `feeds.js` additionally exports `cdataSafe`, and `render.js` exports
+its Shiki-free string helpers (`resolveWikilinks`, `cleanMediaTarget`).
+Verified the same way: byte-diffed `dist/` before/after, identical except
+the colophon's line count and build timestamp.
