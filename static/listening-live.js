@@ -8,6 +8,7 @@
 // (see CONTEXT.md: Row, docs/adr/0001). Fails silent on network hiccups.
 
 import { listeningRow, emptyState } from './rows.js';
+import { formatScrobbleCount } from './_helpers.js';
 import { createPoller } from './poller.js';
 
 const COUNT_ID   = 'scrobble-count';
@@ -16,6 +17,9 @@ const ENDPOINT   = '/api/listening/recent';
 const POLL_MS    = 60_000;            // one minute — matches now-playing.js
 const MAX_ROWS   = 25;                // keep in sync with site.config.js lastfm.limit
 
+// getElementById returns the FIRST match, so exactly one #scrobble-count per
+// page is a precondition (currently true: Hero emits it on the homepage,
+// IdentityRail on /listening/ — never both on one page).
 const countEl = document.getElementById(COUNT_ID);
 const listEl  = document.getElementById(LIST_ID);
 
@@ -49,8 +53,9 @@ function render(data) {
 
   // Authoritative update: trust ANY numeric playcount, including 0.
   if (countEl && typeof data.playcount === 'number') {
-    // Match the server-side format: comma-grouped US locale.
-    const next = Number(data.playcount).toLocaleString('en-US');
+    // Same formatter the SSG pages rendered with (templates/_helpers.js),
+    // so this text-equality dedupe compares like with like.
+    const next = formatScrobbleCount(data.playcount);
     if (countEl.textContent !== next) countEl.textContent = next;
   }
 

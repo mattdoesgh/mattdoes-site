@@ -24,6 +24,10 @@ import {
   escHtml,
   type DateInput,
 } from '../../src/index';
+// The one owner of the #scrobble-count format string, shared with
+// static/listening-live.js so the live update can't drift (templates/_helpers.d.ts
+// carries the TS declaration). Bundled into dist-ssg/ssg.js by the vite build.
+import { formatScrobbleCount } from '../../../templates/_helpers.js';
 
 export interface HomeEntry {
   kind: string; // journal | making | thought | listening
@@ -164,7 +168,7 @@ export function IndexPage({ site, entries }: IndexPageProps) {
   const topTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
 
   const counts = site.counts || {};
-  const scrobbles = Number(counts.scrobbles || 0).toLocaleString('en-US');
+  const scrobbles = formatScrobbleCount(counts.scrobbles);
   const identity = site.identity || {};
   // Wordmark: the brand segment before the first dot of the site title
   // (e.g. "mattdoes" from "mattdoes.online"), split into a bold lead and a

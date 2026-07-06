@@ -28,6 +28,21 @@ export function esc(s) {
 }
 
 /**
+ * Format the total scrobble count for the `#scrobble-count` stat. The ONE
+ * owner of the format string: the SSG pages (Hero on the homepage,
+ * IdentityRail on /listening/) and static/listening-live.js all render the
+ * stat through this function, so the live client update can never drift
+ * from the server-rendered text (drift would break the text-equality dedupe
+ * and, worse, flash a differently-formatted number on the first poll).
+ *
+ * @param {unknown} n playcount (number or numeric string); nullish → 0
+ * @returns {string} comma-grouped US-locale integer, e.g. `'12,345'`
+ */
+export function formatScrobbleCount(n) {
+  return Number(n || 0).toLocaleString('en-US');
+}
+
+/**
  * Allowlist URL schemes for href attributes. Returns `'#'` for anything that
  * isn't http(s), mailto, tel, an anchor, or a same-origin path — so a
  * `javascript:`/`data:`/`vbscript:` URL slipping into vault content (or
