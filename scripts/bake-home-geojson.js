@@ -2,8 +2,9 @@
 //
 // Hits Nominatim once with the configured lat/lng, walks up to the city
 // admin level (admin_level 8, falling back to 6 then 4 if no city polygon
-// is available), fetches the boundary as GeoJSON, simplifies it with an
-// inline Ramer–Douglas–Peucker, and writes static/home.geojson.
+// is available), fetches the boundary as GeoJSON, simplifies it with the
+// shared Ramer–Douglas–Peucker (workers/lib/simplify.js), and writes
+// static/home.geojson.
 //
 // Usage:
 //   node scripts/bake-home-geojson.js
