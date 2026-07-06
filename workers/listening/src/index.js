@@ -249,19 +249,10 @@ async function refreshBoth(env) {
     const body = await res.json();
     if (lastfmError(body)) throw new Error(body.message || `lastfm error ${body.error}`);
 
-    // recent: full {playcount, tracks}, capped at RECENT_LIMIT.
-    const { playcount, tracks } = decodeTracks(body, { limit: RECENT_LIMIT });
-
-    // now: derived from the RAW track[0] @attr.nowplaying flag (not the
-    // filtered `tracks` array), preserving the exact shape the old per-kind
-    // refresh produced.
-    const raw = body?.recenttracks?.track || [];
-    const t   = Array.isArray(raw) ? raw[0] : raw;
-    const now = (t && t['@attr']?.nowplaying) ? trackToNow(t) : { nowPlaying: false };
-
+    const { now, recent } = deriveBoth(body);
     const user = env.LASTFM_USERNAME;
     await Promise.all([
-      writeCache(env, `recent:${user}`, { playcount, tracks }),
+      writeCache(env, `recent:${user}`, recent),
       writeCache(env, `now:${user}`, now),
     ]);
   } catch {
@@ -342,6 +333,31 @@ function emptyPayload(kind, reason) {
 }
 
 // ── shape helpers ───────────────────────────────────────────────────────
+/**
+ * Derive BOTH KV payloads from one parsed `user.getrecenttracks` body. Pure —
+ * no env, no network, no clock decisions of its own — so the two-source
+ * derivation (`/recent` from the decoded track list, `/now` from the raw
+ * track[0] `@attr.nowplaying` flag) is testable without fetch mocks.
+ * Exported for tests only; the poller is the sole runtime caller.
+ *
+ * @param {object} body  parsed JSON response (already checked for
+ *   {@link lastfmError} by the caller)
+ * @returns {{ now: object, recent: { playcount: number, tracks: object[] } }}
+ */
+export function deriveBoth(body) {
+  // recent: full {playcount, tracks}, capped at RECENT_LIMIT.
+  const recent = decodeTracks(body, { limit: RECENT_LIMIT });
+
+  // now: derived from the RAW track[0] @attr.nowplaying flag (not the
+  // filtered `tracks` array), preserving the exact shape the old per-kind
+  // refresh produced.
+  const raw = body?.recenttracks?.track || [];
+  const t   = Array.isArray(raw) ? raw[0] : raw;
+  const now = (t && t['@attr']?.nowplaying) ? trackToNow(t) : { nowPlaying: false };
+
+  return { now, recent };
+}
+
 /**
  * The /now payload contract: `nowPlaying: true` leads, no date, no image.
  * This is a payload shape owned by this Worker (the topbar pill client

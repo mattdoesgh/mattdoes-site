@@ -18,7 +18,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import listeningWorker, { ListeningPoller } from '../workers/listening/src/index.js';
+import listeningWorker, { ListeningPoller, deriveBoth } from '../workers/listening/src/index.js';
 import {
   KVStub, DurableStateStub, makeCtx, installCaches, installFetch,
   workerRequest, jsonResponse,
@@ -95,6 +95,89 @@ async function read(url, env) {
     fetchStub.restore();
   }
 }
+
+// ── deriveBoth: pure two-source derivation ────────────────────────────────
+// /recent comes from the decoded track list; /now from the raw track[0]
+// @attr.nowplaying flag. Divergence between the two sources is the bug class
+// these cases pin down — no fetch mocks required.
+for (const { name, body, now, recent } of [
+  {
+    name: 'empty track array → nowPlaying:false, empty recent',
+    body: { recenttracks: { track: [], '@attr': { total: '0' } } },
+    now: { nowPlaying: false },
+    recent: { playcount: 0, tracks: [] },
+  },
+  {
+    name: 'missing @attr on track[0] → not now-playing',
+    body: lastfmBody(1, 3),
+    now: { nowPlaying: false },
+    recent: { playcount: 3 },
+  },
+  {
+    name: 'nowplaying "true" → full now payload, no date/image',
+    body: nowPlayingBody(),
+    now: {
+      nowPlaying: true, artist: 'Live Artist', track: 'Live Song',
+      album: 'Live Album', link: 'https://www.last.fm/x',
+    },
+    recent: { playcount: 5 },
+  },
+  {
+    name: 'nowplaying "false" is truthy for Last.fm → treated as playing',
+    body: {
+      recenttracks: {
+        track: [{ name: 'S', artist: { '#text': 'A' }, '@attr': { nowplaying: 'false' } }],
+        '@attr': { total: '1' },
+      },
+    },
+    now: { nowPlaying: true, artist: 'A', track: 'S', album: '', link: '' },
+    recent: { playcount: 1 },
+  },
+  {
+    name: 'single track as bare object (Last.fm quirk) → still decoded',
+    body: {
+      recenttracks: {
+        track: { name: 'Solo', artist: { '#text': 'One' }, '@attr': { nowplaying: 'true' } },
+        '@attr': { total: '1' },
+      },
+    },
+    now: { nowPlaying: true, artist: 'One', track: 'Solo', album: '', link: '' },
+    recent: { playcount: 1 },
+  },
+  {
+    name: 'malformed entries (no artist/title) → dropped from recent, not now-playing',
+    body: {
+      recenttracks: {
+        track: [{ url: 'https://www.last.fm/x' }, { name: 'no artist' }],
+        '@attr': { total: '2' },
+      },
+    },
+    now: { nowPlaying: false },
+    recent: { playcount: 2, tracks: [] },
+  },
+  {
+    name: 'missing recenttracks entirely → empty authoritative payloads',
+    body: {},
+    now: { nowPlaying: false },
+    recent: { playcount: 0, tracks: [] },
+  },
+]) {
+  test(`deriveBoth: ${name}`, () => {
+    const derived = deriveBoth(body);
+    assert.deepEqual(derived.now, now);
+    for (const [k, v] of Object.entries(recent)) {
+      assert.deepEqual(derived.recent[k], v);
+    }
+    assert.equal('reason' in derived.now, false, 'derived payloads are authoritative');
+    assert.equal('reason' in derived.recent, false);
+  });
+}
+
+test('deriveBoth: recent is capped at the poll limit', () => {
+  const { recent } = deriveBoth(lastfmBody(30, 100));
+  assert.equal(recent.tracks.length, 25);
+  assert.equal(recent.playcount, 100);
+});
 
 // ── producer: one call, both payloads ────────────────────────────────────
 test('poller: one upstream call writes both now and recent from one response', async () => {
