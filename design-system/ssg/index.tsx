@@ -21,6 +21,10 @@ import { renderDocument, assetUrl, type DocSiteConfig, type DocPage } from './do
 // (a hash source disables the 'inline-speculation-rules' keyword, so both must
 // be hashed once either is).
 export { buildImportmap, buildSpeculationRules } from './document';
+// Re-exported for the build: lib/emit/index.js asserts every asset name the
+// document shell references exists in the hashed asset map (fail loudly at
+// build time instead of shipping a clean URL that 404s).
+export { DOCUMENT_ASSET_NAMES } from './document';
 import { IndexPage, type IndexPageProps } from './pages/IndexPage';
 import { ArticlePage, type ArticlePageProps } from './pages/ArticlePage';
 import { BlogPage, type BlogEntry } from './pages/BlogPage';
