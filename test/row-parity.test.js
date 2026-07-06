@@ -19,7 +19,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { listeningRow, emptyState } from '../templates/rows.js';
-import { safeUrl } from '../templates/_helpers.js';
+import { toListeningEntries } from '../lib/emit/listening-entries.js';
 import {
   buildFixtureVault, readDist, seedLastfmCache, makeTempDir, REPO_ROOT,
 } from './helpers/run-build.js';
@@ -33,14 +33,10 @@ test.before(() => { ({ distDir } = buildFixtureVault({ cacheDir: seedLastfmCache
 test('server-rendered listening rows byte-equal the Row module output', () => {
   const html = readDist(distDir, 'listening/index.html');
 
-  // Mirror Emit's snapshot→entry mapping (lib/emit/index.js `listening`): keep
-  // dated tracks, normalize the link through safeUrl, newest first.
+  // Run Emit's real snapshot→entry mapping (lib/emit/listening-entries.js)
+  // over the seeded cache, capped at the /listening/ page limit.
   const cached = JSON.parse(fs.readFileSync(fixtureCache, 'utf8')).tracks;
-  const entries = cached
-    .filter(t => t.date)
-    .map(t => ({ ...t, link: safeUrl(t.link), date: new Date(t.date) }))
-    .sort((a, b) => b.date - a.date)
-    .slice(0, 25);
+  const entries = toListeningEntries(cached, 25);
   assert.ok(entries.length >= 2, 'seeded cache should yield listening entries');
 
   const expected = entries.map(e => listeningRow(e)).join('\n');
