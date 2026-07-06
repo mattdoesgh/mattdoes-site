@@ -30,7 +30,10 @@ Last.fm knowledge. Before the first poll (e.g. right after deploy) KV is empty
 and it returns a `warming` fallback — a truthy `reason`, so under contract C7
 clients keep their last-known-good UI and the build-time snapshot
 (`lib/listening.js`) falls through to its disk cache instead of baking an empty
-page.
+page. Fail directions on the read path are deliberate: the rate-limit gate
+fails **closed** (abuse control must not be bypassable by a broken binding)
+while KV reads fail **open** (a cache miss is recoverable, a crashed reader is
+not).
 
 The poller writes *through* to the existing `LASTFM_CACHE` KV rather than serving
 reads itself, deliberately. Reads stay edge-replicated and fast globally, and the

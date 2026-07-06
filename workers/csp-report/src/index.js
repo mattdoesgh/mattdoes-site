@@ -8,7 +8,9 @@
 // Env / bindings:
 //   CSP_REPORTS — optional Workers KV for short-lived report storage
 
-import { corsPreflight, kvPut, getClientIp } from '../../lib/transport.js';
+import {
+  errorJson, corsPreflight, kvPut, getClientIp, securityHeaders,
+} from '../../lib/transport.js';
 
 const MAX_BODY_BYTES = 32 * 1024;
 const KV_TTL_S       = 7 * 24 * 60 * 60;
@@ -22,8 +24,7 @@ function acceptResponse() {
   return new Response(null, {
     status: 204,
     headers: {
-      'x-content-type-options': 'nosniff',
-      'referrer-policy': 'strict-origin-when-cross-origin',
+      ...securityHeaders(),
       'cache-control': 'no-store',
     },
   });
@@ -38,44 +39,26 @@ export default {
   async fetch(request, env, ctx) {
     if (request.method === 'OPTIONS') return corsPreflight();
     if (request.method !== 'POST') {
-      return new Response(JSON.stringify({ error: 'method_not_allowed' }), {
-        status: 405,
-        headers: {
-          'content-type': 'application/json; charset=utf-8',
-          'x-content-type-options': 'nosniff',
-        },
-      });
+      return errorJson({ error: 'method_not_allowed' }, 405);
     }
 
     const url = new URL(request.url);
     if (!url.pathname.endsWith('/csp-report')) {
-      return new Response(JSON.stringify({ error: 'not_found' }), {
-        status: 404,
-        headers: { 'content-type': 'application/json; charset=utf-8' },
-      });
+      return errorJson({ error: 'not_found' }, 404);
     }
 
     if (!isAllowedContentType(request.headers.get('content-type'))) {
-      return new Response(JSON.stringify({ error: 'unsupported_media_type' }), {
-        status: 415,
-        headers: { 'content-type': 'application/json; charset=utf-8' },
-      });
+      return errorJson({ error: 'unsupported_media_type' }, 415);
     }
 
     const len = Number(request.headers.get('content-length') || '0');
     if (len > MAX_BODY_BYTES) {
-      return new Response(JSON.stringify({ error: 'payload_too_large' }), {
-        status: 413,
-        headers: { 'content-type': 'application/json; charset=utf-8' },
-      });
+      return errorJson({ error: 'payload_too_large' }, 413);
     }
 
     const body = await request.text();
     if (body.length > MAX_BODY_BYTES) {
-      return new Response(JSON.stringify({ error: 'payload_too_large' }), {
-        status: 413,
-        headers: { 'content-type': 'application/json; charset=utf-8' },
-      });
+      return errorJson({ error: 'payload_too_large' }, 413);
     }
 
     if (env.CSP_REPORTS && body) {

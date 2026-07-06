@@ -12,7 +12,14 @@
 
 export const ALLOWED_ORIGIN = 'https://mattdoes.online';
 
-function securityHeaders() {
+/**
+ * Baseline security headers stamped on every Worker response. Exported so
+ * Workers that build non-JSON responses (e.g. a bodiless 204) keep the same
+ * set without re-hardcoding it.
+ *
+ * @returns {Record<string, string>}
+ */
+export function securityHeaders() {
   return {
     'x-content-type-options': 'nosniff',
     'referrer-policy':       'strict-origin-when-cross-origin',
@@ -151,15 +158,4 @@ export async function kvPut(namespace, key, value, opts) {
  */
 export function getClientIp(request) {
   return request.headers.get('cf-connecting-ip');
-}
-
-/**
- * Shorten an error for inclusion in a response body — message only,
- * capped so an exotic upstream error can't bloat the payload.
- *
- * @param {unknown} err
- * @returns {string}
- */
-export function shortError(err) {
-  return String(err?.message || err).slice(0, 200);
 }

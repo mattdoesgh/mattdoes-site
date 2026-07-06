@@ -46,9 +46,17 @@ test('csp-report: stores reports in KV when bound', async () => {
   assert.equal(kv.store.size, 1, 'one report should be written to KV');
 });
 
+// Rejections go through the shared transport envelope, so every 4xx wears
+// the same security headers as the rest of the Workers' responses.
+function assertSecurityHeaders(res) {
+  assert.equal(res.headers.get('x-content-type-options'), 'nosniff');
+  assert.equal(res.headers.get('referrer-policy'), 'strict-origin-when-cross-origin');
+}
+
 test('csp-report: rejects GET and oversize payloads', async () => {
   const getRes = await cspWorker.fetch(workerRequest(REPORT_URL), {}, makeCtx());
   assert.equal(getRes.status, 405);
+  assertSecurityHeaders(getRes);
 
   const big = 'x'.repeat(33 * 1024);
   const bigRes = await cspWorker.fetch(
@@ -61,6 +69,7 @@ test('csp-report: rejects GET and oversize payloads', async () => {
     makeCtx(),
   );
   assert.equal(bigRes.status, 413);
+  assertSecurityHeaders(bigRes);
 
   const badCt = await cspWorker.fetch(
     workerRequest(REPORT_URL, {
@@ -72,4 +81,13 @@ test('csp-report: rejects GET and oversize payloads', async () => {
     makeCtx(),
   );
   assert.equal(badCt.status, 415);
+  assertSecurityHeaders(badCt);
+
+  const wrongPath = await cspWorker.fetch(
+    workerRequest('https://mattdoes.online/api/other', { method: 'POST' }),
+    {},
+    makeCtx(),
+  );
+  assert.equal(wrongPath.status, 404);
+  assertSecurityHeaders(wrongPath);
 });

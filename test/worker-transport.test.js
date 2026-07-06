@@ -8,7 +8,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   ALLOWED_ORIGIN, json, errorJson, withCache, corsPreflight,
-  kvGet, kvPut, getClientIp, shortError,
+  kvGet, kvPut, getClientIp,
 } from '../workers/lib/transport.js';
 import { workerRequest } from './helpers/worker-env.js';
 
@@ -111,10 +111,4 @@ test('transport: getClientIp() reads cf-connecting-ip, null when absent', () => 
   const withIp = workerRequest('https://x.test/', { headers: { 'cf-connecting-ip': '203.0.113.9' } });
   assert.equal(getClientIp(withIp), '203.0.113.9');
   assert.equal(getClientIp(workerRequest('https://x.test/')), null);
-});
-
-test('transport: shortError() caps at 200 chars and survives non-Errors', () => {
-  assert.equal(shortError(new Error('boom')), 'boom');
-  assert.equal(shortError('plain string'), 'plain string');
-  assert.equal(shortError(new Error('x'.repeat(500))).length, 200);
 });
