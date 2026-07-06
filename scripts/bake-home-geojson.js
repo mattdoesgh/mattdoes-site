@@ -2,8 +2,9 @@
 //
 // Hits Nominatim once with the configured lat/lng, walks up to the city
 // admin level (admin_level 8, falling back to 6 then 4 if no city polygon
-// is available), fetches the boundary as GeoJSON, simplifies it with an
-// inline Ramer–Douglas–Peucker, and writes static/home.geojson.
+// is available), fetches the boundary as GeoJSON, simplifies it with the
+// shared Ramer–Douglas–Peucker (workers/lib/simplify.js), and writes
+// static/home.geojson.
 //
 // Usage:
 //   node scripts/bake-home-geojson.js
@@ -27,6 +28,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { siteConfig } from '../site.config.js';
+import { simplifyGeometry } from '../workers/lib/simplify.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT      = path.resolve(__dirname, '..');
@@ -72,68 +74,8 @@ async function fetchAdminPolygon(lat, lng, level) {
   };
 }
 
-// ── RDP polyline simplification ────────────────────────────────────────
-// Operates on lon/lat pairs. Tolerance is in degrees; treating ε
-// uniformly for lat and lon is fine at city scale (Houston is ~30°N
-// so lon-degrees are ~0.87× lat-degrees — close enough for visual art).
-function perpDist([px, py], [ax, ay], [bx, by]) {
-  const dx = bx - ax, dy = by - ay;
-  if (dx === 0 && dy === 0) {
-    return Math.hypot(px - ax, py - ay);
-  }
-  const t = ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy);
-  const cx = ax + t * dx;
-  const cy = ay + t * dy;
-  return Math.hypot(px - cx, py - cy);
-}
-
-function rdp(points, eps) {
-  if (points.length < 3) return points.slice();
-  let maxDist = 0;
-  let idx = 0;
-  for (let i = 1; i < points.length - 1; i++) {
-    const d = perpDist(points[i], points[0], points[points.length - 1]);
-    if (d > maxDist) { maxDist = d; idx = i; }
-  }
-  if (maxDist > eps) {
-    const left  = rdp(points.slice(0, idx + 1), eps);
-    const right = rdp(points.slice(idx),        eps);
-    return left.slice(0, -1).concat(right);
-  }
-  return [points[0], points[points.length - 1]];
-}
-
-function simplifyRing(ring, eps) {
-  // Polygon rings are closed; preserve the last point.
-  if (ring.length < 4) return ring;
-  const closed = ring[0][0] === ring[ring.length - 1][0]
-              && ring[0][1] === ring[ring.length - 1][1];
-  const open = closed ? ring.slice(0, -1) : ring;
-  const simplified = rdp(open, eps);
-  if (closed) simplified.push(simplified[0]);
-  return simplified;
-}
-
-// A simplified ring needs at least 4 points (3 unique + the repeat) to
-// define a closed polygon. Anything shorter has collapsed into a line
-// or a single point and would render as visual noise — drop it.
-function isValidRing(r) { return r.length >= 4; }
-
-function simplifyGeometry(g, eps) {
-  if (g.type === 'Polygon') {
-    const rings = g.coordinates.map(r => simplifyRing(r, eps)).filter(isValidRing);
-    return { type: 'Polygon', coordinates: rings };
-  }
-  if (g.type === 'MultiPolygon') {
-    const polys = g.coordinates
-      .map(poly => poly.map(r => simplifyRing(r, eps)).filter(isValidRing))
-      .filter(poly => poly.length > 0);
-    // If only one polygon survives, demote MultiPolygon → Polygon.
-    if (polys.length === 1) return { type: 'Polygon', coordinates: polys[0] };
-    return { type: 'MultiPolygon', coordinates: polys };
-  }
-  return g;
-}
+// RDP simplification lives in workers/lib/simplify.js, shared with the geo
+// Worker so both surfaces trim polygons with the same shapes.
 
 function countPoints(g) {
   if (g.type === 'Polygon') return g.coordinates.reduce((n, r) => n + r.length, 0);
@@ -200,6 +142,10 @@ if (fromPath) {
 
 const before = countPoints(result.geometry);
 const simplified = simplifyGeometry(result.geometry, TOLERANCE);
+if (!simplified) {
+  console.error('✗ Simplification collapsed the polygon; try a smaller GEO_TOLERANCE.');
+  process.exit(2);
+}
 const after = countPoints(simplified);
 
 const out = {

@@ -24,6 +24,7 @@
 import {
   json, errorJson, withCache, corsPreflight, kvPut, getClientIp,
 } from '../../lib/transport.js';
+import { simplifyGeometry } from '../../lib/simplify.js';
 
 const COORD_PRECISION  = 1;                          // ~11 km grid
 const KV_TTL_S         = 7 * 24 * 60 * 60;           // 7 days
@@ -197,6 +198,12 @@ async function checkUpstreamBudget(request, env) {
   if (!env.GEO_RL || typeof env.GEO_RL.limit !== 'function') {
     return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
   }
+  // Two limiters by design, not redundancy: the native Rate Limiting binding
+  // only supports 10s/60s windows (see the listening Worker's checkRateLimit),
+  // so it can gate short bursts but cannot express the 15-lookups-per-10-min
+  // upstream budget. The binding handles bursts; the KV bucket below holds
+  // the wide window. Both fail closed — abuse control must not be bypassable
+  // by breaking a binding.
   try {
     const { success } = await env.GEO_RL.limit({ key: `${ip}:lookup` });
     if (!success) return errorJson({ error: 'rate_limited' }, 429, { retryAfterS: 60 });
@@ -272,53 +279,6 @@ async function lookup(lat, lng) {
         label: data.display_name || '',
       };
     } catch { /* fall through to next level */ }
-  }
-  return null;
-}
-
-// ── inline RDP simplifier (same shape as scripts/bake-home-geojson.js) ─
-function perpDist([px, py], [ax, ay], [bx, by]) {
-  const dx = bx - ax, dy = by - ay;
-  if (dx === 0 && dy === 0) return Math.hypot(px - ax, py - ay);
-  const t = ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy);
-  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
-}
-function rdp(points, eps) {
-  if (points.length < 3) return points.slice();
-  let maxDist = 0, idx = 0;
-  for (let i = 1; i < points.length - 1; i++) {
-    const d = perpDist(points[i], points[0], points[points.length - 1]);
-    if (d > maxDist) { maxDist = d; idx = i; }
-  }
-  if (maxDist > eps) {
-    const left  = rdp(points.slice(0, idx + 1), eps);
-    const right = rdp(points.slice(idx),        eps);
-    return left.slice(0, -1).concat(right);
-  }
-  return [points[0], points[points.length - 1]];
-}
-function simplifyRing(ring, eps) {
-  if (ring.length < 4) return ring;
-  const closed = ring[0][0] === ring[ring.length - 1][0]
-              && ring[0][1] === ring[ring.length - 1][1];
-  const open = closed ? ring.slice(0, -1) : ring;
-  const simplified = rdp(open, eps);
-  if (closed) simplified.push(simplified[0]);
-  return simplified;
-}
-const isValidRing = (r) => r.length >= 4;
-function simplifyGeometry(g, eps) {
-  if (g.type === 'Polygon') {
-    const rings = g.coordinates.map(r => simplifyRing(r, eps)).filter(isValidRing);
-    return rings.length ? { type: 'Polygon', coordinates: rings } : null;
-  }
-  if (g.type === 'MultiPolygon') {
-    const polys = g.coordinates
-      .map(p => p.map(r => simplifyRing(r, eps)).filter(isValidRing))
-      .filter(p => p.length > 0);
-    if (!polys.length) return null;
-    if (polys.length === 1) return { type: 'Polygon', coordinates: polys[0] };
-    return { type: 'MultiPolygon', coordinates: polys };
   }
   return null;
 }
