@@ -21,6 +21,9 @@ import {
   type DateInput,
   type EmptyKind,
 } from '../../src/index';
+// The one owner of the #scrobble-count format string, shared with
+// static/listening-live.js so the live update can't drift.
+import { formatScrobbleCount } from '../../../templates/_helpers.js';
 
 const SECTION_PATH: Record<string, string> = {
   journal: '/journal/',
@@ -76,7 +79,7 @@ export function ListingPage({
   const showLastfm = isListening && siteConfig.lastfm?.showUser && siteConfig.lastfm?.username;
 
   const statLabel = isListening ? 'scrobbles' : 'posts';
-  const statValue = isListening ? Number(totalScrobbles || 0).toLocaleString('en-US') : String(entries.length);
+  const statValue = isListening ? formatScrobbleCount(totalScrobbles) : String(entries.length);
 
   // Tag index (only meaningful for article kinds).
   const tagCounts = new Map<string, number>();
