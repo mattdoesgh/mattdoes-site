@@ -39,10 +39,9 @@ export function ArticleRow({
   kind,
   showKind = false,
 }: ArticleRowProps) {
-  const rowKind = kind || (showKind ? kind : undefined);
   return (
     <TimelineRow
-      kind={rowKind}
+      kind={kind}
       tags={tags}
       gutter={
         <>
