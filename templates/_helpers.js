@@ -87,6 +87,10 @@ export function relFor(url) {
 
 // Wall-clock components of `instant` in America/Chicago. Intl emits "24"
 // for midnight under hour12:false, so we normalize that to "00".
+// DUPLICATED in lib/time.js (the Node-side CT owner used by Intake) —
+// this module ships to the browser via the importmap, so it can't import
+// repo-relative lib/ code. Keep the bodies identical; test/time.test.js
+// enforces the sync.
 function tzParts(instant, tz = SITE_TZ) {
   const d = instant instanceof Date ? instant : new Date(instant);
   const parts = new Intl.DateTimeFormat('en-US', {
@@ -102,38 +106,6 @@ function tzParts(instant, tz = SITE_TZ) {
     year: Number(o.year), month: Number(o.month), day: Number(o.day),
     hour: Number(o.hour), minute: Number(o.minute), second: Number(o.second || 0),
   };
-}
-
-// Offset (minutes east of UTC) of SITE_TZ at a given instant. CT ranges
-// from -360 (CST) to -300 (CDT).
-function tzOffsetMinutes(instant, tz = SITE_TZ) {
-  const d = instant instanceof Date ? instant : new Date(instant);
-  const name = new Intl.DateTimeFormat('en-US', {
-    timeZone: tz, timeZoneName: 'shortOffset', year: 'numeric',
-  }).formatToParts(d).find(p => p.type === 'timeZoneName')?.value || '';
-  const m = name.match(/GMT([+-])(\d{1,2})(?::(\d{2}))?/);
-  if (!m) return 0;
-  const sign = m[1] === '+' ? 1 : -1;
-  return sign * (Number(m[2]) * 60 + Number(m[3] || 0));
-}
-
-/**
- * Parse `(year, month, day, hour, minute)` interpreted as CT wall-clock
- * into the UTC `Date` that corresponds to that moment. Used by build.js
- * when splitting daily-note "## HH:MM" headings into thought entries —
- * those headings are Matt's local time, not UTC.
- *
- * @param {number} year  full year, e.g. 2026
- * @param {number} month 1-based month (1–12)
- * @param {number} day   day of month (1–31)
- * @param {number} [hour=0]   hour of day (0–23) in CT
- * @param {number} [minute=0] minute (0–59) in CT
- * @returns {Date} the UTC instant matching the given CT wall-clock
- */
-export function ctWallClockToDate(year, month, day, hour = 0, minute = 0) {
-  const naive = new Date(Date.UTC(year, month - 1, day, hour, minute));
-  const offset = tzOffsetMinutes(naive);
-  return new Date(naive.getTime() - offset * 60_000);
 }
 
 /**
