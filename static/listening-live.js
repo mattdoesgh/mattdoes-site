@@ -8,6 +8,7 @@
 // (see CONTEXT.md: Row, docs/adr/0001). Fails silent on network hiccups.
 
 import { listeningRow, emptyState } from './rows.js';
+import { createPoller } from './poller.js';
 
 const COUNT_ID   = 'scrobble-count';
 const LIST_ID    = 'listening-rows';
@@ -20,57 +21,9 @@ const listEl  = document.getElementById(LIST_ID);
 
 // Only wire up polling when there's something to update — if neither
 // element exists the page shape changed and this script should no-op.
-function start() {
-if (countEl || listEl) {
-  // Polling lifecycle. We only run the interval while the tab is
-  // visible — a backgrounded tab does no useful work and shouldn't
-  // burn network/CPU. startPolling()/stopPolling() are idempotent.
-  let pollId = 0;
-  const startPolling = () => {
-    if (pollId) return;
-    pollId = setInterval(tick, POLL_MS);
-  };
-  const stopPolling = () => {
-    if (!pollId) return;
-    clearInterval(pollId);
-    pollId = 0;
-  };
-
-  // Kick off immediately so the page reflects current state on load,
-  // then poll for as long as the tab stays visible.
-  tick();
-  if (document.visibilityState === 'visible') startPolling();
-
-  // On tab-hide, stop the interval entirely; on regaining visibility,
-  // tick once to catch up immediately and resume the interval.
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-      tick();
-      startPolling();
-    } else {
-      stopPolling();
-    }
-  });
-
-  // pageshow fires on the initial load too (right after our startup
-  // tick above), which would double-fire an identical request. Only
-  // re-tick when the page is genuinely restored from the bfcache
-  // (event.persisted) — the case that actually needs a refresh.
-  window.addEventListener('pageshow', (e) => {
-    if (e.persisted) {
-      tick();
-      if (document.visibilityState === 'visible') startPolling();
-    }
-  });
-}
-}
-
-// Defer network work until a prerendered page is activated (ADR 0007).
-if (document.prerendering) {
-  document.addEventListener('prerenderingchange', () => { if (!document.prerendering) start(); }, { once: true });
-} else {
-  start();
-}
+// createPoller owns the whole lifecycle: visibility, bfcache restore,
+// and prerender deferral (ADR 0007).
+if (countEl || listEl) createPoller({ tick, intervalMs: POLL_MS });
 
 async function tick() {
   try {

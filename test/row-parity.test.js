@@ -66,11 +66,15 @@ test('dist ships the Row module graph the importmap promises', () => {
   assert.ok(fs.existsSync(path.join(distDir, live[1])),
     `hashed ${live[1]} must exist in dist`);
 
-  // The importmap must remap both clean module URLs to on-disk hashed files.
+  // now-playing.js imports the shared poller, so it must load as a module too.
+  const now = html.match(/<script type="module" src="\/(now-playing\.[0-9a-f]{8}\.js)"><\/script>/);
+  assert.ok(now, 'the page must load hashed now-playing.js as type="module"');
+
+  // The importmap must remap every clean module URL to an on-disk hashed file.
   const im = html.match(/<script type="importmap">(.*?)<\/script>/s);
   assert.ok(im, 'every page must carry the importmap');
   const imports = JSON.parse(im[1]).imports;
-  for (const clean of ['/rows.js', '/_helpers.js']) {
+  for (const clean of ['/rows.js', '/_helpers.js', '/poller.js']) {
     const hashed = imports[clean];
     assert.match(hashed || '', /^\/[\w-]+\.[0-9a-f]{8}\.js$/,
       `importmap must remap ${clean} to a hashed filename (got ${hashed})`);
@@ -84,6 +88,8 @@ test('dist ships the Row module graph the importmap promises', () => {
     'unhashed rows.js must not ship');
   assert.ok(!fs.existsSync(path.join(distDir, '_helpers.js')),
     'unhashed _helpers.js must not ship');
+  assert.ok(!fs.existsSync(path.join(distDir, 'poller.js')),
+    'unhashed poller.js must not ship');
 });
 
 test('the strict CSP admits EVERY inline script by hash (the prod regression)', () => {
@@ -91,8 +97,8 @@ test('the strict CSP admits EVERY inline script by hash (the prod regression)', 
   // allowances ('inline-speculation-rules' included) — so the build must carry a
   // sha256 for *every* inline <script> the page emits, not just the importmap.
   // Miss one and the browser silently drops it: an unhashed importmap kills
-  // listening-live.js (its `./rows.js` 404s as text/html → MIME failure → no
-  // live scrobble updates, only the import-free now-playing pill survives);
+  // listening-live.js and now-playing.js (their `./rows.js`/`./poller.js`
+  // imports 404 as text/html → MIME failure → no live updates at all);
   // unhashed speculation rules kill prerender/prefetch (ADR 0007). Extracting
   // ALL inline scripts (not a hardcoded list) means a future inline <script>
   // added without a matching hash fails this test instead of shipping broken.

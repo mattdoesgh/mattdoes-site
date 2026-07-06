@@ -41,6 +41,7 @@ export const DOCUMENT_ASSET_NAMES = [
   'nav-prefetch.js',
   'rows.js',
   '_helpers.js',
+  'poller.js',
 ] as const;
 
 /** Resolve a logical asset name to its leading-slash, content-hashed URL. */
@@ -62,6 +63,7 @@ export function buildImportmap(assets: Record<string, string>): string {
     imports: {
       '/rows.js': assetUrl(assets, 'rows.js'),
       '/_helpers.js': assetUrl(assets, '_helpers.js'),
+      '/poller.js': assetUrl(assets, 'poller.js'),
     },
   });
 }
@@ -213,7 +215,7 @@ ${ogImageTags}
 <script src="${themeBootJs}"></script>
 <link rel="stylesheet" href="${cssHref}" />
 <!-- Importmap: lets module scripts import shared modules by their clean
-     URLs (/rows.js, /_helpers.js) while the network fetches the hashed
+     URLs (/rows.js, /_helpers.js, /poller.js) while the network fetches the hashed
      immutable copies. Must precede any module script. -->
 <script type="importmap">${importmap}</script>
 <!-- Prerender/prefetch same-origin links on intent (Chromium). -->
@@ -227,7 +229,7 @@ ${body}
 <script src="${tweaksJs}" defer></script>
 <script src="${navPrefetchJs}" defer></script>
 <script src="${geoBgJs}" defer></script>
-<script src="${nowPlayingJs}" defer></script>
+<script type="module" src="${nowPlayingJs}"></script>
 <script src="${localTimeJs}" defer></script>
 ${page.bodyScripts || ''}
 </body>

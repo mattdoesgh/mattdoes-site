@@ -7,10 +7,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { REPO_ROOT } from './helpers/run-build.js';
 
+// now-playing.js and listening-live.js get their deferral from the shared
+// poller lifecycle (static/poller.js); geo-background.js wires its own.
 const SCRIPTS = [
-  'static/now-playing.js',
+  'static/poller.js',
   'static/geo-background.js',
-  'static/listening-live.js',
 ];
 
 for (const rel of SCRIPTS) {
@@ -20,6 +21,17 @@ for (const rel of SCRIPTS) {
       `${rel} must check document.prerendering`);
     assert.match(src, /prerenderingchange/,
       `${rel} must listen for prerenderingchange`);
+  });
+}
+
+// The polling scripts must route their lifecycle through the shared poller —
+// a local reimplementation would dodge the deferral checks above.
+for (const rel of ['static/now-playing.js', 'static/listening-live.js']) {
+  test(`${rel} polls through the shared poller`, () => {
+    const src = fs.readFileSync(path.join(REPO_ROOT, rel), 'utf8');
+    assert.match(src, /createPoller/, `${rel} must use createPoller`);
+    assert.doesNotMatch(src, /setInterval/,
+      `${rel} must not run its own interval`);
   });
 }
 
