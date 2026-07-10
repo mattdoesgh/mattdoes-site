@@ -639,7 +639,7 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
   text-decoration-color: color-mix(in oklch, var(--mute), transparent 45%);
   text-underline-offset: 3px;
 }
-.row--thought::before {
+.row.row--thought::before {
   box-shadow: none;
   background: color-mix(in oklch, var(--surface) 28%, transparent);
 }
