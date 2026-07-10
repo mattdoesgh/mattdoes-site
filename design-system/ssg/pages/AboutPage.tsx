@@ -1,7 +1,5 @@
-// About — single static page; body comes from a vault note with
-// `publish: about`. React mirror of templates/about.js. Mirrors the article
-// shell but strips post-specific chrome (kicker, read time, tags, pager).
-import { PageShell, IdentityRail, ElsewhereLinks } from '../../src/index';
+// About — a single authored page with a small set of ways to connect after it.
+import { PageShell, safeUrl, relValue } from '../../src/index';
 
 export interface AboutNote {
   summary?: string;
@@ -21,6 +19,8 @@ export interface AboutPageProps {
 }
 
 export function AboutPage({ site, note }: AboutPageProps) {
+  const links = (site.links || []).filter((link) => link.href);
+
   return (
     <PageShell
       active="about"
@@ -29,18 +29,26 @@ export function AboutPage({ site, note }: AboutPageProps) {
       nowPlaying={site.nowPlaying || ''}
       footerText={site.config?.footerText ?? ''}
     >
-      <main className="page about" id="main">
-        <IdentityRail who="about" bio={site.identity?.bio}>
-          <ElsewhereLinks links={site.links || []} />
-        </IdentityRail>
-
-        <article className="timeline">
+      <main className="page page--single-column about about-page" id="main">
+        <article className="timeline" aria-labelledby="about-title">
           <div className="post-head">
-            <h1>About me</h1>
-            {note.summary ? <p className="lede">{note.summary}</p> : null}
+            <h1 id="about-title">about</h1>
           </div>
 
           <div className="post-body" dangerouslySetInnerHTML={{ __html: note.html }} />
+
+          {links.length ? (
+            <nav className="about-links" aria-label="contact and profiles">
+              <h2>elsewhere</h2>
+              <ul>
+                {links.map((link) => (
+                  <li key={link.href}>
+                    <a href={safeUrl(link.href)} rel={relValue(link.href)}>{link.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ) : null}
         </article>
       </main>
     </PageShell>

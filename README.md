@@ -4,7 +4,7 @@ source for [mattdoes.online](https://mattdoes.online) — my personal site. i wr
 
 ## what's on it
 
-- **home** — an editorial front door: featured long-form writing, current idea paths, and recent notebook days.
+- **home** — a quiet front door: one featured piece of writing and a short list of recent work.
 - **writing** (`/blog/`) — long-form and short, on one reverse-chronological timeline. three kinds, each also reachable as its own section page (`/journal/`, `/making/`, `/thoughts/`):
   - *journal* — reflective posts, usually weighing a tradeoff
   - *making* — building-in-public notes on projects, tools, and stack choices

@@ -1,7 +1,5 @@
 import {
   PageShell,
-  IdentityRail,
-  RailSection,
   Time,
   safeUrl,
   type DateInput,
@@ -32,11 +30,24 @@ export interface TopicPageProps {
   nowPlaying?: string;
 }
 
-/** One durable cross-kind idea path derived from the Content model. */
+/** One durable cross-kind topic projection derived from the Content model. */
 export function TopicPage({ siteConfig, topic, allTopics, nowPlaying = '' }: TopicPageProps) {
-  const kindSummary = Object.entries(topic.counts)
-    .map(([kind, count]) => `${count} ${kind}`)
-    .join(' · ');
+  const topicKey = topic.name.trim().toLowerCase();
+  const sharedCounts = new Map<string, number>();
+  for (const item of topic.items) {
+    for (const name of item.topics) {
+      const key = name.trim().toLowerCase();
+      if (key && key !== topicKey) sharedCounts.set(key, (sharedCounts.get(key) || 0) + 1);
+    }
+  }
+  // One accidental co-tag is not enough to imply a useful connection.
+  const relatedTopics = allTopics
+    .map((other) => ({ other, shared: sharedCounts.get(other.name.trim().toLowerCase()) || 0 }))
+    .filter(({ other, shared }) => other.path !== topic.path && shared >= 2)
+    .sort((a, b) => b.shared - a.shared || a.other.name.localeCompare(b.other.name))
+    .slice(0, 5)
+    .map(({ other }) => other);
+
   return (
     <PageShell
       active="blog"
@@ -45,12 +56,10 @@ export function TopicPage({ siteConfig, topic, allTopics, nowPlaying = '' }: Top
       nowPlaying={nowPlaying}
       footerText={siteConfig.footerText ?? ''}
     >
-      <main className="page page--reader-first page--topic" id="main">
+      <main className="page page--single-column topic-page" id="main">
         <section className="timeline topic-path" aria-labelledby="topic-title">
           <header className="post-head">
-            <div className="kicker"><span className="kind">idea path</span></div>
             <h1 id="topic-title">{topic.name}</h1>
-            <p className="lede">Writing and notebook fragments connected by this idea, ordered newest first.</p>
           </header>
           <div className="topic-path__entries">
             {topic.items.map((item, index) => (
@@ -64,28 +73,18 @@ export function TopicPage({ siteConfig, topic, allTopics, nowPlaying = '' }: Top
               </article>
             ))}
           </div>
+
+          {relatedTopics.length ? (
+            <nav className="topic-related" aria-label="related topics">
+              <h2>related</h2>
+              <ul>
+                {relatedTopics.map((other) => (
+                  <li key={other.path}><a href={safeUrl(other.path)}>{other.name}</a></li>
+                ))}
+              </ul>
+            </nav>
+          ) : null}
         </section>
-
-        <IdentityRail
-          who="idea path"
-          bio="A route through the archive based on meaning rather than publish date."
-          stats={[{ n: topic.count, label: topic.count === 1 ? 'entry' : 'entries' }]}
-        >
-          {kindSummary ? <p className="topic-kind-summary">{kindSummary}</p> : null}
-        </IdentityRail>
-
-        <aside className="side-right" aria-label="other idea paths">
-          <RailSection heading="other paths">
-            <ul>
-              {allTopics.filter(other => other.path !== topic.path).slice(0, 8).map(other => (
-                <li key={other.path}>
-                  <a href={other.path}>{other.name}</a>
-                  <span className="meta">{other.count}</span>
-                </li>
-              ))}
-            </ul>
-          </RailSection>
-        </aside>
       </main>
     </PageShell>
   );

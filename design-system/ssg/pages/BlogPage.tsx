@@ -3,8 +3,6 @@
 // bar, the Row timeline, related rail).
 import {
   PageShell,
-  IdentityRail,
-  ElsewhereLinks,
   ArticleRow,
   ThoughtRow,
   EmptyState,
@@ -47,7 +45,12 @@ function FilterBar({ kinds, topTags, count }: { kinds: string[]; topTags: string
       filter: t,
     })),
   ];
-  return <TimelineFilter links={links} count={count} countLabel="entries" />;
+  return (
+    <details className="archive-filters">
+      <summary>filter</summary>
+      <TimelineFilter links={links} count={count} countLabel="entries" label="browse" />
+    </details>
+  );
 }
 
 export function BlogPage({ siteConfig, entries, nowPlaying = '' }: BlogPageProps) {
@@ -68,23 +71,9 @@ export function BlogPage({ siteConfig, entries, nowPlaying = '' }: BlogPageProps
       nowPlaying={nowPlaying}
       footerText={siteConfig.footerText ?? ''}
     >
-      <main className="page" id="main">
-        <IdentityRail
-          who="writing"
-          bio="essays, project notes, and short thoughts on one reverse-chronological timeline."
-          stats={[
-            { n: entries.length, label: 'entries' },
-            { n: tagCounts.size, label: 'tags' },
-          ]}
-        >
-          <ElsewhereLinks links={siteConfig.links || []} />
-        </IdentityRail>
-
-        <section className="timeline">
-          <TimelineHeader
-            title="writing"
-            lede="The full archive: journal entries, making notes, and short thoughts in one reverse-chronological stream."
-          />
+      <main className="page page--archive" id="main">
+        <section className="timeline archive-listing">
+          <TimelineHeader title="writing" />
           <FilterBar kinds={kinds} topTags={topTags.map(([t]) => t)} count={entries.length} />
           {entries.length ? (
             entries.map((e, i) =>
@@ -99,19 +88,6 @@ export function BlogPage({ siteConfig, entries, nowPlaying = '' }: BlogPageProps
           )}
         </section>
 
-        {/* No TagCloud rail: the filter bar above the stream already exposes
-            the top tags — a second aggregate tag list was pure repetition. */}
-        <aside className="side-right" aria-label="related">
-          <div className="group">
-            <h2>subscribe</h2>
-            <ul>
-              <li>
-                <a href="/feed.xml">rss</a>
-                <span className="meta">.xml</span>
-              </li>
-            </ul>
-          </div>
-        </aside>
       </main>
     </PageShell>
   );
