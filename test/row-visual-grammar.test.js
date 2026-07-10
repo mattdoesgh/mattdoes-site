@@ -29,3 +29,12 @@ test('each writing kind has a distinct stylesheet treatment', () => {
   assert.match(css, /\.row--thought\s*\{/);
   assert.match(css, /\.row--thought \.body\s*\{/);
 });
+
+test('thought hover surface overrides the generic row accent edge', () => {
+  const css = read('static/_shared.css');
+
+  // The generic `.row::before` hover overlay is declared later in the file.
+  // Keep the thought override more specific so its inner notebook rule does
+  // not appear beside a second accent edge on hover.
+  assert.match(css, /\.row\.row--thought::before\s*\{[\s\S]*?box-shadow:\s*none;/);
+});
