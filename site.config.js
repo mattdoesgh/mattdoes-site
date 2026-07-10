@@ -78,9 +78,9 @@ export const siteConfig = {
       intro: 'Scrobbles update in the browser between deploys.',
     },
     thoughts: {
-      who:   'thoughts',
-      bio:   'Short posts split from daily notes — the lowest-friction publish path.',
-      intro: 'Micro-thoughts in reverse-chronological order.',
+      who:   'notebook',
+      bio:   'Short notes kept with the day and context they came from.',
+      intro: 'Observations, fragments, and ideas that may grow into longer work.',
     },
   },
 

@@ -18,9 +18,9 @@ test('a tracks-only cache still bakes the playcount into /listening/', () => {
     'playcount from lastfm.json must appear in the listening stat');
 });
 
-test('the homepage scrobble stat matches the listening cache playcount', () => {
+test('the editorial homepage does not present listening as an activity counter', () => {
   const { distDir } = buildFixtureVault({ cacheDir: seedLastfmCache(fixtureCache) });
   const html = readDist(distDir, 'index.html');
-  assert.match(html, /id="scrobble-count">12,345<\/span>/,
-    'homepage stat must reuse counts.scrobbles from the same cache');
+  assert.doesNotMatch(html, /id="scrobble-count"/,
+    'scrobble counts belong to /listening/, not the editorial front page');
 });

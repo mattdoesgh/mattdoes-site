@@ -26,6 +26,9 @@ for the live bits.
 - `lib/emit/` — content model → `dist/` (markdown, asset hashing, CSS/JS, RSS,
   sitemap). Imports the `render*` functions from the built design-system bundle
   (`design-system/dist-ssg/ssg.js`) for pages.
+- `lib/notebook.js`, `lib/topic-index.js`, `lib/editorial-home.js` — pure
+  reader-facing projections (Notebook days, Topic paths, editorial home) between
+  the content model and page rendering. See `CONTEXT.md`.
 - `design-system/` — `@mattdoes/ds`, the React + TS component library. One source,
   three roles: it renders every page (`ssg/pages/`, `renderToStaticMarkup`), is the
   component set synced to Claude Design (`.design-sync/`) so they don't drift, and

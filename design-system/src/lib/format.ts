@@ -171,11 +171,13 @@ export function escHtml(s: unknown): string {
  * `dangerouslySetInnerHTML`. Must stay byte-identical to the `<Tag>` markup.
  * Not needed when composing with `children` — use `<TagList>` there.
  */
-export function tagsHtml(tags: string[], baseHref = ''): string {
+export function tagsHtml(tags: string[], baseHref = '', tagPaths?: Record<string, string>): string {
   return tags
     .map(
-      (t) =>
-        `<a class="tg" href="${baseHref}?tag=${encodeURIComponent(t)}" data-tag="${escHtml(t)}">${escHtml(t)}</a>`,
+      (t) => {
+        const href = tagPaths?.[t.trim().toLowerCase()] || `${baseHref}?tag=${encodeURIComponent(t)}`;
+        return `<a class="tg" href="${escHtml(href)}" data-tag="${escHtml(t)}">${escHtml(t)}</a>`;
+      },
     )
     .join(' ');
 }

@@ -1,6 +1,5 @@
-// Listing — reverse-chrono index for /journal/, /making/, /thoughts/,
-// /listening/. The React mirror of templates/listing.js (one component, four
-// call sites).
+// Listing — reverse-chrono index for article kinds and /listening/.
+// Thoughts use the dedicated reader-shaped ThoughtsPage.
 //
 // LISTENING IS SPECIAL (ADR 0001 + test/row-parity.test.js): the /listening/
 // rows must byte-equal templates/rows.js `listeningRow()` output because
@@ -14,7 +13,6 @@ import {
   IdentityRail,
   ElsewhereLinks,
   ArticleRow,
-  ThoughtRow,
   EmptyState,
   TimelineFilter,
   TimelineHeader,
@@ -29,7 +27,6 @@ const SECTION_PATH: Record<string, string> = {
   journal: '/journal/',
   making: '/making/',
   listening: '/listening/',
-  thoughts: '/thoughts/',
 };
 
 export interface ListingEntry {
@@ -40,10 +37,7 @@ export interface ListingEntry {
   summary?: string;
   readTime?: string;
   tags?: string[];
-  // thought fields
-  id?: string;
-  html?: string;
-  quote?: boolean;
+  tagPaths?: Record<string, string>;
 }
 
 export interface ListingSiteConfig {
@@ -58,7 +52,7 @@ export interface ListingSiteConfig {
 
 export interface ListingPageProps {
   siteConfig: ListingSiteConfig;
-  kind: 'journal' | 'making' | 'thoughts' | 'listening';
+  kind: 'journal' | 'making' | 'listening';
   entries: ListingEntry[];
   nowPlaying?: string;
   totalScrobbles?: number;
@@ -145,22 +139,19 @@ export function ListingPage({
           {isListening ? (
             <div id="listening-rows" dangerouslySetInnerHTML={{ __html: rowsHtml }} />
           ) : entries.length ? (
-            entries.map((e, i) =>
-              kind === 'thoughts' ? (
-                <ThoughtRow key={e.id || i} date={e.date} html={e.html} id={e.id} tags={e.tags} quote={e.quote} />
-              ) : (
-                <ArticleRow
-                  key={e.url || i}
-                  url={e.url || ''}
-                  title={e.title || ''}
-                  date={e.date}
-                  summary={e.summary}
-                  readTime={e.readTime}
-                  tags={e.tags}
-                  kind={kind}
-                />
-              ),
-            )
+            entries.map((e, i) => (
+              <ArticleRow
+                key={e.url || i}
+                url={e.url || ''}
+                title={e.title || ''}
+                date={e.date}
+                summary={e.summary}
+                readTime={e.readTime}
+                tags={e.tags}
+                tagPaths={e.tagPaths}
+                kind={kind}
+              />
+            ))
           ) : (
             <EmptyState kind={kind as EmptyKind} />
           )}

@@ -121,17 +121,17 @@ test('homepage makes reading and RSS subscription visible', () => {
 
   const h1 = main.querySelector('.post-head h1');
   assert.ok(h1, 'homepage must render a visible writing heading');
-  assert.equal(h1.textContent.trim().toLowerCase(), 'writing');
+  assert.equal(h1.textContent.trim().toLowerCase(), 'writing worth starting with');
   assert.ok(!h1.classList.contains('visually-hidden'),
     'homepage writing heading must not be visually hidden');
 
-  const readAction = main.querySelector('.home-actions a[href="/blog/"]');
-  assert.ok(readAction, 'homepage must link to the writing archive from the hero actions');
-  assert.equal(readAction.textContent.trim().toLowerCase(), 'read latest writing');
+  const readAction = main.querySelector('.home-actions .action-link--primary');
+  assert.ok(readAction, 'homepage must link to featured writing from the hero actions');
+  assert.equal(readAction.textContent.trim().toLowerCase(), 'start with the latest');
 
-  const rssAction = main.querySelector('.home-actions a[href="/feed.xml"]');
-  assert.ok(rssAction, 'homepage must link to the RSS feed from the hero actions');
-  assert.equal(rssAction.textContent.trim().toLowerCase(), 'subscribe via rss');
+  const archiveAction = main.querySelector('.home-actions a[href="/blog/"]');
+  assert.ok(archiveAction, 'homepage must link to the writing archive from the hero actions');
+  assert.equal(archiveAction.textContent.trim().toLowerCase(), 'browse all writing');
 
   const topbarRss = d.querySelector('.topbar a.meta-link[href="/feed.xml"]');
   assert.ok(topbarRss, 'topbar must expose RSS as a persistent meta link');
@@ -144,7 +144,7 @@ test('homepage makes reading and RSS subscription visible', () => {
   assert.ok(startReading.querySelector('a[href="/feed.xml"]'),
     'start-reading rail must link to RSS');
 
-  const elsewhere = [...d.querySelectorAll('.side-left .group')]
+  const elsewhere = [...d.querySelectorAll('.side-right .group')]
     .find(g => g.querySelector('h2')?.textContent.trim().toLowerCase() === 'elsewhere');
   assert.ok(elsewhere, 'homepage must keep the generic elsewhere rail');
   assert.equal(elsewhere.querySelector('a[href="/feed.xml"]'), null,

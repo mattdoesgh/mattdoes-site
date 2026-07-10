@@ -31,11 +31,9 @@ test('timeline controls are emitted as hashed feed-only assets', () => {
     'the old tag-filter asset should not ship');
 
   for (const rel of [
-    'index.html',
     'blog/index.html',
     'journal/index.html',
     'making/index.html',
-    'thoughts/index.html',
     'listening/index.html',
   ]) {
     assert.match(readDist(distDir, rel), /timeline-controls\.[\w-]+\.js/,
@@ -44,6 +42,8 @@ test('timeline controls are emitted as hashed feed-only assets', () => {
 
   for (const rel of [
     'about/index.html',
+    'index.html',
+    'thoughts/index.html',
     'search/index.html',
     'colophon/index.html',
     'journal/hello-fixture-world/index.html',
@@ -69,8 +69,10 @@ test('timeline filter markup keeps accessible active and density controls', () =
 
 test('timeline rows preserve kind classes, data filters, and featured state', () => {
   const home = doc('index.html');
-  assert.equal(home.querySelectorAll('.timeline .row[data-featured="true"]').length, 1,
-    'homepage should feature exactly one current entry');
+  assert.equal(home.querySelectorAll('.feature-story').length, 1,
+    'homepage should feature exactly one long-form entry');
+  assert.equal(home.querySelectorAll('[data-timeline-controls]').length, 0,
+    'editorial homepage should not expose archive controls');
 
   const blog = doc('blog/index.html');
   const rows = [...blog.querySelectorAll('.timeline .row[data-kind]')];

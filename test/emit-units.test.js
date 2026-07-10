@@ -1,6 +1,6 @@
 // In-process unit tests for Emit's pure helpers (lib/emit/), exercised at
 // their interface instead of through the full subprocess build:
-// buildSearchIndex, relatedByTags, toListeningEntries, the feeds emitters
+// buildSearchIndex, toListeningEntries, the feeds emitters
 // (cdataSafe's ']]>' escape included), and the wikilink/media-target string
 // helpers in render.js (safe to import — Shiki only initializes lazily via
 // initHighlighter(), which these tests never call; renderBody-free bodies
@@ -9,7 +9,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildSearchIndex } from '../lib/emit/search.js';
-import { relatedByTags } from '../lib/emit/related.js';
 import { toListeningEntries } from '../lib/emit/listening-entries.js';
 import { atomFeed, sitemapXml, robotsTxt, cdataSafe } from '../lib/emit/feeds.js';
 import { configureRender, resolveWikilinks, cleanMediaTarget } from '../lib/emit/render.js';
@@ -33,32 +32,10 @@ test('buildSearchIndex indexes articles and thoughts with searchable text', () =
   assert.equal(idx[1].summary, '');
   assert.deepEqual(idx[1].tags, []);
   assert.equal(idx[1].text, 'Bare');
-  // Thoughts: anchored blog URL, body truncated to 160 chars for the summary.
-  assert.equal(idx[2].url, '/blog/#t1');
+  // Thoughts: anchored notebook URL, body truncated to 160 chars for the summary.
+  assert.equal(idx[2].url, '/thoughts/#t1');
   assert.equal(idx[2].kind, 'thought');
   assert.equal(idx[2].summary.length, 160);
-});
-
-// ── relatedByTags ────────────────────────────────────────────────────────
-test('relatedByTags ranks by overlap, breaks ties newest-first, caps at limit', () => {
-  const mk = (url, tags, date, kind = 'journal') =>
-    ({ url, title: url, tags, date, kind });
-  const article = mk('/j/a/', ['x', 'y'], '2026-01-05');
-  const pool = [
-    article,                                     // self — excluded
-    mk('/j/b/', ['x', 'y'], '2026-01-01'),       // overlap 2
-    mk('/j/c/', ['x'],      '2026-01-03'),       // overlap 1, newer
-    mk('/j/d/', ['x'],      '2026-01-02'),       // overlap 1, older
-    mk('/j/e/', ['z'],      '2026-01-04'),       // overlap 0 — excluded
-    mk('/m/f/', ['x', 'y'], '2026-01-04', 'making'), // wrong kind — excluded
-  ];
-  const rel = relatedByTags(article, pool);
-  assert.deepEqual(rel.map(r => r.url), ['/j/b/', '/j/c/', '/j/d/']);
-  // Overlap is an internal ranking detail, not part of the result shape.
-  assert.deepEqual(Object.keys(rel[0]).sort(), ['date', 'title', 'url']);
-  assert.deepEqual(relatedByTags(article, pool, 1).map(r => r.url), ['/j/b/']);
-  // No tags → no related, regardless of the pool.
-  assert.deepEqual(relatedByTags(mk('/j/g/', [], '2026-01-01'), pool), []);
 });
 
 // ── toListeningEntries ───────────────────────────────────────────────────

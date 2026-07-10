@@ -1,5 +1,9 @@
 # Build-time listening snapshot sourced from the Worker
 
+> **Status update (2026-07-10):** the editorial homepage no longer shows a
+> scrobble counter. This decision still governs the static and live content on
+> `/listening/`; now-playing remains in shared page chrome.
+
 The static `/listening/` page (and the homepage scrobble stat) baked
 `count: 0` and the "No scrobbles yet" empty state in production. The build
 fetched Last.fm directly, but the production Cloudflare Pages build has no

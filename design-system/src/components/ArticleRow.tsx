@@ -26,6 +26,8 @@ export interface ArticleRowProps {
    * read time instead.
    */
   showKind?: boolean;
+  /** Normalized tag name → canonical Topic path. */
+  tagPaths?: Record<string, string>;
 }
 
 /** One article entry on a timeline (journal / making). */
@@ -38,25 +40,31 @@ export function ArticleRow({
   tags,
   kind,
   showKind = false,
+  tagPaths,
 }: ArticleRowProps) {
   return (
     <TimelineRow
       kind={kind}
       tags={tags}
+      className="article-row"
       gutter={
         <>
-        <span className="kind">{showKind ? kind : <Time date={date} />}</span>
-        <span className="when">{showKind ? <Time date={date} /> : readTime || ''}</span>
+          <span className="kind">{showKind ? kind : <Time date={date} />}</span>
+          <span className="when">{showKind ? <Time date={date} /> : readTime || ''}</span>
         </>
       }
     >
-        <div className="body">
-          <a href={safeUrl(url)}>
-            <strong>{title}</strong>
-          </a>
-          {summary ? ` — ${summary}` : ''}{' '}
-          <TagList tags={tags} />
-        </div>
+      <div className="body article-row__body">
+        <a className="article-row__title" href={safeUrl(url)}>
+          <strong>{title}</strong>
+        </a>
+        {summary ? <span className="article-row__summary">{summary}</span> : null}
+        {tags?.length ? (
+          <span className="article-row__tags">
+            <TagList tags={tags} tagPaths={tagPaths} />
+          </span>
+        ) : null}
+      </div>
     </TimelineRow>
   );
 }

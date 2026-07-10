@@ -10,6 +10,15 @@ export interface ArticleRef {
   date: DateInput;
 }
 
+export interface RelatedRef {
+  url: string;
+  title?: string;
+  excerpt?: string;
+  kind?: string;
+  date: DateInput;
+  sharedTopics?: string[];
+}
+
 export interface ArticleNote {
   kind?: string;
   /** URL slug segment (from vault frontmatter or derived from title). */
@@ -25,6 +34,7 @@ export interface ArticleNote {
   sourcePath?: string;
   words?: number;
   updated?: DateInput;
+  tagPaths?: Record<string, string>;
 }
 
 export interface ArticleSite {
@@ -42,7 +52,7 @@ export interface ArticlePageProps {
   site: ArticleSite;
   note: ArticleNote;
   recent?: ArticleRef[];
-  related?: ArticleRef[];
+  related?: RelatedRef[];
   prev?: ArticleRef;
   next?: ArticleRef;
 }
@@ -51,8 +61,6 @@ export function ArticlePage({ site, note, recent = [], related = [], prev, next 
   const kind = note.kind || 'journal';
   const section = site.config?.sections?.[kind] || {};
   const meta = { who: section.who || kind, bio: section.bio || '', kicker: section.kicker || kind };
-  // Tag chips jump to /blog/ pre-filtered by this post's kind and the tag.
-  const sectionPath = '/blog/';
   const postCount = site.counts?.[kind === 'making' ? 'making' : 'journal'] || 0;
   const tags = note.tags || [];
 
@@ -110,7 +118,7 @@ export function ArticlePage({ site, note, recent = [], related = [], prev, next 
                 {tags.map((t, i) => (
                   <Fragment key={t}>
                     {i > 0 ? ' ' : null}
-                    <Tag tag={t} baseHref={sectionPath} params={{ kind }} />
+                    <Tag tag={t} href={note.tagPaths?.[t.trim().toLowerCase()]} baseHref="/blog/" params={{ kind }} />
                   </Fragment>
                 ))}
               </p>
@@ -159,9 +167,9 @@ export function ArticlePage({ site, note, recent = [], related = [], prev, next 
               <ul>
                 {related.map((r) => (
                   <li key={r.url}>
-                    <a href={safeUrl(r.url)}>{r.title}</a>
+                    <a href={safeUrl(r.url)}>{r.title || r.excerpt || 'related note'}</a>
                     <span className="meta">
-                      <Time date={r.date} format="day" />
+                      {r.kind ? `${r.kind} · ` : ''}<Time date={r.date} format="day" />
                     </span>
                   </li>
                 ))}
