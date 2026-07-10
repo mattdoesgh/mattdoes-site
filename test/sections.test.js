@@ -26,17 +26,20 @@ test('rows.js empty-state copy matches the Section descriptor', () => {
 test('design-system SECTION_PATH maps match the Section descriptor', () => {
   // The SSG builds under its own tsconfig rootDir, so it keeps inline
   // SECTION_PATH maps instead of importing lib/sections.js — pin them.
-  const files = [
-    path.join(REPO_ROOT, 'design-system', 'ssg', 'index.tsx'),
-    path.join(REPO_ROOT, 'design-system', 'ssg', 'pages', 'ListingPage.tsx'),
-  ];
-  for (const file of files) {
-    const src = fs.readFileSync(file, 'utf8');
-    for (const [kind, section] of Object.entries(SECTIONS)) {
-      assert.ok(src.includes(`${kind}: '${section.route}'`),
-        `${path.relative(REPO_ROOT, file)} must map ${kind} → ${section.route}`);
-    }
+  const ssgFile = path.join(REPO_ROOT, 'design-system', 'ssg', 'index.tsx');
+  const ssg = fs.readFileSync(ssgFile, 'utf8');
+  for (const [kind, section] of Object.entries(SECTIONS)) {
+    assert.ok(ssg.includes(`${kind}: '${section.route}'`),
+      `${path.relative(REPO_ROOT, ssgFile)} must map ${kind} → ${section.route}`);
   }
+
+  const listingFile = path.join(REPO_ROOT, 'design-system', 'ssg', 'pages', 'ListingPage.tsx');
+  const listing = fs.readFileSync(listingFile, 'utf8');
+  for (const [kind, section] of Object.entries(SECTIONS).filter(([name]) => name !== 'thoughts')) {
+    assert.ok(listing.includes(`${kind}: '${section.route}'`),
+      `${path.relative(REPO_ROOT, listingFile)} must map ${kind} → ${section.route}`);
+  }
+  assert.ok(ssg.includes("url: '/thoughts/'"), 'dedicated ThoughtsPage must own /thoughts/');
 });
 
 test('sitemap <loc> set equals the index.html pages actually written', () => {

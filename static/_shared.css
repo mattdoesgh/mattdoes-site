@@ -275,6 +275,37 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
   min-width: 0;
 }
 
+/* Reader-first pages put authored content first in the DOM. Explicit grid
+   placement restores the desktop rails without making CSS order disagree with
+   keyboard and screen-reader order on narrow screens. */
+.page--reader-first > .timeline {
+  grid-column: 2;
+  grid-row: 1;
+}
+.page--reader-first > .side-left {
+  grid-column: 1;
+  grid-row: 1;
+}
+.page--reader-first > .side-right {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+/* The front page follows the same reader-first rule after its full-width Hero. */
+.page--editorial > .home-main {
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 0;
+}
+.page--editorial > .side-left {
+  grid-column: 1;
+  grid-row: 2;
+}
+.page--editorial > .side-right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
 @media (max-width: 1100px) {
   .page {
     max-width: calc(var(--rail) + var(--col) + 40px);
@@ -296,6 +327,13 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
     margin-top: .5rem;
     border-top: 1px solid var(--rule);
   }
+  .page--reader-first > .timeline,
+  .page--editorial > .home-main { grid-column: 2; }
+  .page--reader-first > .side-left,
+  .page--editorial > .side-left { grid-column: 1; }
+  .page--reader-first > .side-right,
+  .page--editorial > .side-right { grid-column: 1 / -1; grid-row: 2; }
+  .page--editorial > .side-right { grid-row: 3; }
 }
 @media (max-width: 760px) {
   :root { --col: 100%; }
@@ -309,6 +347,21 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
   .side-left { order: 0; }
   .timeline { order: 1; }
   .side-right { order: 2; display: grid; }
+  .page--reader-first > .timeline,
+  .page--reader-first > .side-left,
+  .page--reader-first > .side-right,
+  .page--editorial > .home-main,
+  .page--editorial > .side-left,
+  .page--editorial > .side-right {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .page--reader-first > .timeline,
+  .page--editorial > .home-main { order: 0; }
+  .page--reader-first > .side-left,
+  .page--editorial > .side-left { order: 1; }
+  .page--reader-first > .side-right,
+  .page--editorial > .side-right { order: 2; }
 }
 
 /* ── Identity block (replaces heavy profile card) ── */
@@ -500,6 +553,97 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
 .row .body img,
 .row .body picture { max-width: 100%; height: auto; display: block; }
 
+/* Writing kinds share the Row interface, but not one undifferentiated feed
+   treatment. Journal is an editorial index, Making is a working log, and a
+   Thought is a notebook fragment. These classes live inside the React Row
+   mirrors; the data attributes above remain the filter island's contract. */
+.article-row__title {
+  display: block;
+  width: fit-content;
+  border-bottom: none;
+  line-height: 1.28;
+  text-wrap: pretty;
+}
+.article-row__summary {
+  display: block;
+  margin-top: .3rem;
+  color: var(--mute);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.article-row__tags {
+  display: block;
+  margin-top: .45rem;
+  line-height: 1.35;
+}
+
+/* Journal: a small table of contents for essays, with the title carrying the
+   hierarchy instead of every field competing on one feed-like line. */
+.row--journal {
+  padding-block: 1.35rem;
+  align-items: start;
+}
+.row--journal .article-row__body { max-width: 58ch; }
+.row--journal .article-row__title {
+  font-size: 18px;
+  letter-spacing: -.012em;
+}
+.row--journal .article-row__summary { max-width: 54ch; }
+
+/* Making: a bounded project-log entry. The technical mono title and inset
+   rule make artifacts/progress read differently from reflective journal
+   writing without adding a new content field or changing the Row interface. */
+.row--making {
+  margin-block: .45rem;
+  padding: 1rem .9rem;
+  border: 1px solid color-mix(in oklch, var(--rule), transparent 20%);
+  border-left: 3px solid color-mix(in oklch, var(--accent), var(--rule) 48%);
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklch, var(--surface) 36%, transparent);
+  align-items: start;
+}
+.row--making:last-child { border-bottom: 1px solid color-mix(in oklch, var(--rule), transparent 20%); }
+.row--making .article-row__title {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: -.015em;
+}
+.row--making .article-row__summary {
+  color: var(--ink);
+  font-size: 13.5px;
+}
+.row--making .gutter .kind { letter-spacing: .11em; }
+
+/* Thoughts: quieter notebook fragments. A fine inner rule binds the prose to
+   its timestamp, while subdued metadata and a plain-language link avoid the
+   visual grammar of handles, counters, and machine-id permalinks. */
+.row--thought {
+  padding-block: 1.2rem;
+  align-items: start;
+}
+.row--thought .gutter { opacity: .76; }
+.row--thought .body {
+  max-width: 58ch;
+  padding-left: 1rem;
+  border-left: 1px solid color-mix(in oklch, var(--rule), transparent 12%);
+  font-size: 15.5px;
+  line-height: 1.72;
+}
+.row--thought .body > :first-child { margin-top: 0; }
+.row--thought .body > :last-child { margin-bottom: 0; }
+.row--thought .actions { margin-top: .35rem; }
+.row--thought .actions .permalink {
+  font-size: 10.5px;
+  letter-spacing: .06em;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklch, var(--mute), transparent 45%);
+  text-underline-offset: 3px;
+}
+.row--thought::before {
+  box-shadow: none;
+  background: color-mix(in oklch, var(--surface) 28%, transparent);
+}
+
 /* Quote variant — mono italic. */
 .row .body.q {
   font-family: var(--font-mono);
@@ -631,6 +775,134 @@ a.tg:hover { color: var(--accent-fg); }
 }
 .timeline[data-density="compact"] .row .actions {
   margin-top: .3rem;
+}
+
+/* ── Editorial home ──────────────────────────────── */
+.home-main__head { margin-bottom: 1.25rem; }
+.feature-story {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid color-mix(in oklch, var(--accent), var(--rule) 62%);
+  border-radius: var(--radius);
+  background: color-mix(in oklch, var(--surface) 58%, transparent);
+}
+.feature-story__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem .8rem;
+  color: var(--mute);
+  font: 10.5px/1.4 var(--font-mono);
+  letter-spacing: .06em;
+  text-transform: lowercase;
+}
+.feature-story__meta .kind { color: var(--accent-fg); }
+.feature-story h2 {
+  margin-top: .7rem;
+  max-width: 24ch;
+  font-size: clamp(24px, 4vw, 34px);
+  line-height: 1.08;
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+.feature-story h2 a { border-bottom: none; }
+.feature-story > p {
+  margin-top: .8rem;
+  max-width: 58ch;
+  color: var(--mute);
+  font-size: 15px;
+  line-height: 1.65;
+}
+.feature-story__foot {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.15rem;
+}
+.feature-story__read {
+  flex: 0 0 auto;
+  font: 11px/1.4 var(--font-mono);
+}
+.home-section { margin-top: 2.5rem; }
+.home-section__head,
+.notebook-day__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: .55rem;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-mono);
+}
+.home-section__head h2,
+.notebook-day__head h2 {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: lowercase;
+}
+.home-section__head a,
+.notebook-day__head > span {
+  color: var(--mute);
+  font-size: 10.5px;
+}
+
+/* ── Notebook ────────────────────────────────────── */
+.notebook-head { margin-bottom: 2rem; }
+.notebook-day { margin-top: 2.2rem; }
+.notebook-day:first-of-type { margin-top: 0; }
+.notebook-day__entries .row--thought {
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+.notebook-day__entries .row--thought .gutter { display: none; }
+.notebook-day__entries .row--thought .body {
+  padding-left: 1.1rem;
+  border-left-color: color-mix(in oklch, var(--accent), var(--rule) 78%);
+}
+.notebook-day__entries .row--thought .actions { padding-left: 1.1rem; }
+.home-notebook .notebook-day:nth-of-type(n+3) { display: none; }
+
+/* ── Topic paths ─────────────────────────────────── */
+.topic-kind-summary {
+  color: var(--mute);
+  font: 10.5px/1.6 var(--font-mono);
+}
+.topic-path__entries { margin-top: 1.75rem; }
+.topic-entry {
+  padding: 1.35rem 0;
+  border-bottom: 1px solid color-mix(in oklch, var(--rule), transparent 30%);
+}
+.topic-entry__meta {
+  display: flex;
+  gap: .75rem;
+  color: var(--mute);
+  font: 10.5px/1.4 var(--font-mono);
+  text-transform: lowercase;
+}
+.topic-entry__meta .kind { color: var(--accent-fg); }
+.topic-entry h2 {
+  margin-top: .45rem;
+  font-size: 18px;
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+.topic-entry h2 a { border-bottom: none; }
+.topic-entry p {
+  margin-top: .35rem;
+  max-width: 58ch;
+  color: var(--mute);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.topic-entry--thought h2 {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+@media (max-width: 480px) {
+  .feature-story__foot { align-items: start; flex-direction: column; }
+  .notebook-day__entries .row--thought .body,
+  .notebook-day__entries .row--thought .actions { padding-left: .75rem; }
 }
 
 /* ── search page ─────────────────────────────────── */
@@ -1229,6 +1501,8 @@ table.schema .req.y { color: var(--accent-fg); }
   .topbar .status { flex-shrink: 0; max-width: 45vw; }
   .row { grid-template-columns: 1fr; gap: .2rem; }
   .row .gutter { flex-direction: row; gap: .8rem; }
+  .row--making { padding: .9rem; }
+  .row--thought .body { padding-left: .75rem; }
 }
 
 /* ── Tweaks panel ───────────────────────────────── */

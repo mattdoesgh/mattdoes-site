@@ -54,3 +54,8 @@ there). `feeds.js` additionally exports `cdataSafe`, and `render.js` exports
 its Shiki-free string helpers (`resolveWikilinks`, `cleanMediaTarget`).
 Verified the same way: byte-diffed `dist/` before/after, identical except
 the colophon's line count and build timestamp.
+
+Addendum (2026-07-10): `related.js` was superseded by the deeper
+`lib/topic-index.js` projection. Topic paths own normalization, durable routes,
+cross-kind excerpts/counts, and related-writing ranking behind one interface;
+the old same-kind tag-overlap module was deleted rather than retained unused.

@@ -22,16 +22,19 @@ export interface ThoughtRowProps {
   tags?: string[];
   /** Render the body as a pull-quote (italic `.body.q` variant). */
   quote?: boolean;
+  /** Normalized tag name → canonical Topic path. */
+  tagPaths?: Record<string, string>;
 }
 
-/** One micro-post (thought) on a timeline. */
-export function ThoughtRow({ date, html, children, id, tags, quote }: ThoughtRowProps) {
+/** One short public note, usable in a timeline or inside a Notebook day. */
+export function ThoughtRow({ date, html, children, id, tags, quote, tagPaths }: ThoughtRowProps) {
   const bodyClass = quote ? 'body q' : 'body';
   const showTags = !quote && !!tags && tags.length > 0;
   return (
     <TimelineRow
       kind="thought"
       tags={tags}
+      className="thought-row"
       gutter={
         <>
         <span className="kind">thought</span>
@@ -42,7 +45,7 @@ export function ThoughtRow({ date, html, children, id, tags, quote }: ThoughtRow
       }
       actions={id ? (
         <a className="permalink" href={`#${id}`} id={id} aria-label="permalink to this thought">
-          #{id}
+          note link
         </a>
       ) : null}
     >
@@ -50,7 +53,7 @@ export function ThoughtRow({ date, html, children, id, tags, quote }: ThoughtRow
           <div
             className={bodyClass}
             dangerouslySetInnerHTML={{
-              __html: showTags ? `${html} ${tagsHtml(tags!)}` : html,
+              __html: showTags ? `${html} ${tagsHtml(tags!, '', tagPaths)}` : html,
             }}
           />
         ) : (
@@ -59,7 +62,7 @@ export function ThoughtRow({ date, html, children, id, tags, quote }: ThoughtRow
             {showTags ? (
               <>
                 {' '}
-                <TagList tags={tags} />
+                <TagList tags={tags} tagPaths={tagPaths} />
               </>
             ) : null}
           </div>

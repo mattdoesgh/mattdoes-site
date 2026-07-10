@@ -32,6 +32,8 @@ import { ListingPage, type ListingPageProps } from './pages/ListingPage';
 import { AboutPage, type AboutPageProps } from './pages/AboutPage';
 import { ColophonPage, type ColophonPageProps } from './pages/ColophonPage';
 import { SearchPage, type SearchPageProps } from './pages/SearchPage';
+import { ThoughtsPage, type ThoughtsPageProps } from './pages/ThoughtsPage';
+import { TopicPage, type TopicPageProps } from './pages/TopicPage';
 
 export type Assets = Record<string, string>;
 
@@ -57,7 +59,7 @@ const SECTION_DESCRIPTION: Record<string, string> = {
   journal: 'Journal entries — longer-form notes, reverse-chronological.',
   making: 'Building-in-public posts — projects, experiments, and dev notes.',
   listening: 'A live-updating log of recent listens, pulled from Last.fm.',
-  thoughts: 'Micro-thoughts — short posts split out of the daily notes.',
+  thoughts: 'Short notes kept with the daily context they came from.',
 };
 
 function scriptTag(src: string, opts: { module?: boolean } = {}): string {
@@ -76,16 +78,46 @@ function doc(page: DocPage, children: ReactNode, siteConfig: DocSiteConfig, asse
 export function renderIndex(
   args: IndexPageProps & { siteConfig: FullSiteConfig; assets: Assets },
 ): string {
-  const { site, entries, siteConfig, assets } = args;
+  const { site, editorial, siteConfig, assets } = args;
   const identity = siteConfig.identity || {};
   const description = site.bio || (identity.name ? `${identity.name} — developer, musician, tinkerer.` : '');
-  const bodyScripts =
-    scriptTag(assetUrl(assets, 'listening-live.js'), { module: true }) +
-    '\n' +
-    timelineControlsScript(assets);
   return doc(
-    { title: '', url: '/', description, bodyScripts },
-    <IndexPage site={site} entries={entries} />,
+    { title: '', url: '/', description },
+    <IndexPage site={site} editorial={editorial} />,
+    siteConfig,
+    assets,
+  );
+}
+
+// ── notebook ────────────────────────────────────────────────────────────────
+export function renderThoughts(
+  args: ThoughtsPageProps & { siteConfig: FullSiteConfig; assets: Assets },
+): string {
+  const { siteConfig, days, topics = [], nowPlaying = '', assets } = args;
+  return doc(
+    {
+      title: 'thoughts',
+      url: '/thoughts/',
+      description: 'Short notes kept with the day and context they came from.',
+    },
+    <ThoughtsPage siteConfig={siteConfig} days={days} topics={topics} nowPlaying={nowPlaying} />,
+    siteConfig,
+    assets,
+  );
+}
+
+// ── Topic paths ─────────────────────────────────────────────────────────────
+export function renderTopic(
+  args: TopicPageProps & { siteConfig: FullSiteConfig; assets: Assets },
+): string {
+  const { siteConfig, topic, allTopics, nowPlaying = '', assets } = args;
+  return doc(
+    {
+      title: topic.name,
+      url: topic.path,
+      description: `Writing and notebook fragments connected by ${topic.name}.`,
+    },
+    <TopicPage siteConfig={siteConfig} topic={topic} allTopics={allTopics} nowPlaying={nowPlaying} />,
     siteConfig,
     assets,
   );

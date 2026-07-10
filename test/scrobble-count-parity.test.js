@@ -1,8 +1,7 @@
 // #scrobble-count parity (see CONTEXT.md: Design system).
 //
-// The stat is emitted by two SSG components — Hero on the homepage,
-// IdentityRail on /listening/ — and re-stamped in the browser by
-// static/listening-live.js, which dedupes by text equality. All three render
+// The stat is emitted by IdentityRail on /listening/ and re-stamped in the
+// browser by static/listening-live.js, which dedupes by text equality. Both render
 // through the ONE shared formatter, formatScrobbleCount
 // (templates/_helpers.js); this test pins both server-rendered stats to that
 // formatter's output for the fixture playcount, so a format drift in either
@@ -37,8 +36,8 @@ test('server-rendered scrobble counts equal the shared formatter output', () => 
   // the locale formatting actually happened.
   assert.ok(expected.includes(','), 'fixture playcount should exercise comma grouping');
 
-  assert.equal(scrobbleText(readDist(distDir, 'index.html')), expected,
-    'homepage Hero stat must match formatScrobbleCount');
   assert.equal(scrobbleText(readDist(distDir, 'listening/index.html')), expected,
     '/listening/ IdentityRail stat must match formatScrobbleCount');
+  assert.doesNotMatch(readDist(distDir, 'index.html'), /id="scrobble-count"/,
+    'the editorial homepage must not emit an activity counter');
 });

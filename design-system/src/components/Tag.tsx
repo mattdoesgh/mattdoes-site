@@ -16,17 +16,19 @@ export interface TagProps {
    * kind-filtered /blog/ view.
    */
   params?: Record<string, string>;
+  /** Canonical Topic path. When present it replaces the timeline-filter URL. */
+  href?: string;
 }
 
-/** A single inline tag chip: `<a class="tg" href="…?tag=…" data-tag="…">`. */
-export function Tag({ tag, baseHref = '', params }: TagProps) {
+/** A single inline topic link, retaining `data-tag` for archive filtering. */
+export function Tag({ tag, baseHref = '', params, href }: TagProps) {
   const prefix = params
     ? Object.entries(params)
         .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}&`)
         .join('')
     : '';
   return (
-    <a className="tg" href={`${baseHref}?${prefix}tag=${encodeURIComponent(tag)}`} data-tag={tag}>
+    <a className="tg" href={href || `${baseHref}?${prefix}tag=${encodeURIComponent(tag)}`} data-tag={tag}>
       {tag}
     </a>
   );
@@ -37,17 +39,19 @@ export interface TagListProps {
   tags?: string[];
   /** Forwarded to each `Tag` — the page tag clicks scope to. */
   baseHref?: string;
+  /** Normalized tag name → canonical Topic path. */
+  tagPaths?: Record<string, string>;
 }
 
 /** A run of inline tag chips, space-separated (matches `tagList()` output). */
-export function TagList({ tags, baseHref = '' }: TagListProps) {
+export function TagList({ tags, baseHref = '', tagPaths }: TagListProps) {
   if (!tags || !tags.length) return null;
   return (
     <>
       {tags.map((t, i) => (
         <Fragment key={t}>
           {i > 0 ? ' ' : null}
-          <Tag tag={t} baseHref={baseHref} />
+          <Tag tag={t} baseHref={baseHref} href={tagPaths?.[t.trim().toLowerCase()]} />
         </Fragment>
       ))}
     </>

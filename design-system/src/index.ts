@@ -76,6 +76,9 @@ export type { ArticleRowProps } from './components/ArticleRow';
 export { ThoughtRow } from './components/ThoughtRow';
 export type { ThoughtRowProps } from './components/ThoughtRow';
 
+export { NotebookDay } from './components/NotebookDay';
+export type { NotebookDayProps, NotebookThought } from './components/NotebookDay';
+
 // NB: no ListeningRow. The /listening/ rows are rendered server-side by
 // templates/rows.js (the browser Row module) and injected into ListingPage as a
 // raw HTML string, because static/listening-live.js re-renders them in the

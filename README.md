@@ -4,11 +4,12 @@ source for [mattdoes.online](https://mattdoes.online) — my personal site. i wr
 
 ## what's on it
 
-- **home** — a full-width hero (intro + stat strip), plus recent posts and thoughts.
+- **home** — an editorial front door: featured long-form writing, current idea paths, and recent notebook days.
 - **writing** (`/blog/`) — long-form and short, on one reverse-chronological timeline. three kinds, each also reachable as its own section page (`/journal/`, `/making/`, `/thoughts/`):
   - *journal* — reflective posts, usually weighing a tradeoff
   - *making* — building-in-public notes on projects, tools, and stack choices
-  - *thoughts* — short, one-idea posts, time-stamped through the day
+  - *thoughts* — short notes grouped with the daily context they came from
+- **topic paths** (`/topics/<topic>/`) — durable cross-kind routes connecting journal, making, and notebook entries by idea.
 - **listening** — recent plays pulled from Last.fm at build time and refreshed live between deploys.
 - **search** — client-side filter over a static index of every journal, making, and thoughts post.
 - **about** — who I am, what I work on.
@@ -22,9 +23,9 @@ the generator, in three parts:
 
 - **`build.js`** — the entrypoint. reads the vault, fetches Last.fm listening data (disk-cached under `.cache/`), and hands both to the modules below.
 - **`lib/intake.js`** — vault notes → content model. frontmatter parsing (`yaml`) and validation, splitting daily notes into thoughts, stable thought IDs, sorting, the slug index. pure: same notes in, same model out.
-- **`lib/emit/`** — content model → `dist/`. markdown via `marked` (shiki for code highlighting, emitted as build-time CSS classes via `lib/shiki-csp.js` so `style-src` stays strict), the inline `<head>` scripts (importmap + speculation rules) admitted under the strict CSP by a per-build `sha256` (`injectInlineScriptCsp`) so `script-src` needs no `'unsafe-inline'`, wikilink + embed resolution, pages rendered by the React design system (`design-system/`), related-by-tag blocks on posts, a static search index (`search-index.json`, queried by `static/search.js`), build-time Open Graph card PNGs (`lib/og-image.js`, rasterized with `sharp`, under `/og/`), CSS through `lightningcss`, JS through `terser`, content-hashed assets, RSS + sitemap.
+- **`lib/emit/`** — content model → `dist/`. markdown via `marked` (shiki for code highlighting, emitted as build-time CSS classes via `lib/shiki-csp.js` so `style-src` stays strict), the inline `<head>` scripts (importmap + speculation rules) admitted under the strict CSP by a per-build `sha256` (`injectInlineScriptCsp`) so `script-src` needs no `'unsafe-inline'`, wikilink + embed resolution, pages rendered by the React design system (`design-system/`), editorial-home/notebook/topic projections, a static search index (`search-index.json`, queried by `static/search.js`), build-time Open Graph card PNGs (`lib/og-image.js`, rasterized with `sharp`, under `/og/`), CSS through `lightningcss`, JS through `terser`, content-hashed assets, RSS + sitemap.
 
-the presentation layer is a React + TypeScript component library in `design-system/` (`@mattdoes/ds`). every public page (home, writing archive, listings, article, about, colophon) is a component there; emit imports the bundle's `render*` functions and renders each page to a static HTML string via `renderToStaticMarkup` — the shipped pages are plain static HTML. the one runtime-React exception is the timeline filter/density controls: a small client-side island (`design-system/client/timeline-controls.tsx`) that mounts over the server-rendered timeline as progressive enhancement, replacing the old hand-written `static/tag-filter.js`; it builds as a separate vite bundle into `design-system/dist-client/` and ships as one hashed `<script type="module">`. the same library is the design source synced to Claude Design (claude.ai/design) for visual editing, so the component set and the live site never drift. `design-system/` builds first (`npm run build:ssg`, which emits both the render bundle and the client island, wired in as the `prebuild` step), and its deps install via `postinstall`.
+the presentation layer is a React + TypeScript module library in `design-system/` (`@mattdoes/ds`). every public page (home, writing archive, notebook, Topic paths, listings, article, about, colophon) renders there to a static HTML string via `renderToStaticMarkup` — the shipped pages are plain static HTML. the one runtime-React exception is the filter/density island on exhaustive archive timelines; the editorial homepage, Notebook, and Topic paths need no client rendering. the same library is the design source synced to Claude Design (claude.ai/design) for visual editing. `design-system/` builds first (`npm run build:ssg`, which emits both the render bundle and client island, wired in as the `prebuild` step), and its deps install via `postinstall`.
 
 three thin Cloudflare Workers, all same-origin under `/api/`; the site's CSP stays at `connect-src 'self'`. two serve the live bits:
 
