@@ -12,12 +12,13 @@ function doc(rel) {
 
 test('homepage is an editorial projection rather than the exhaustive timeline', () => {
   const d = doc('index.html');
-  assert.ok(d.querySelector('.feature-story h2 a[href="/journal/reader-features-fixture/"]'));
-  assert.ok(d.querySelector('.home-notebook .notebook-day'));
-  assert.ok(d.querySelector('.side-left a[href="/topics/meta/"]'));
+  assert.ok(d.querySelector('.home-lead h2 a[href="/journal/reader-features-fixture/"]'));
+  assert.ok(d.querySelector('.home-content > .home-recent'));
+  assert.equal(d.querySelector('.side-left'), null);
+  assert.equal(d.querySelector('.side-right'), null);
   assert.equal(d.querySelector('[data-timeline-controls]'), null);
-  assert.equal(d.querySelector('main')?.children[1]?.className, 'home-main',
-    'authored content should precede the rails in DOM order');
+  assert.equal(d.querySelector('main')?.firstElementChild?.classList.contains('home-content'), true,
+    'the primary reading path should be the first thing in the main landmark');
 });
 
 test('/thoughts/ groups fragments by source day and keeps stable anchors', () => {
@@ -30,7 +31,7 @@ test('/thoughts/ groups fragments by source day and keeps stable anchors', () =>
   assert.doesNotMatch(d.body.textContent, /daily\/2026-01-02\.md/,
     'vault provenance must remain implementation data');
   assert.equal(d.querySelector('main')?.firstElementChild?.classList.contains('notebook'), true,
-    'notebook content should precede page metadata in DOM order');
+    'notebook content should be the complete primary content path');
 });
 
 test('Topic paths connect articles and Thoughts across writing kinds', () => {

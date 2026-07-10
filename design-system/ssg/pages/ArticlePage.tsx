@@ -1,8 +1,8 @@
-// Single article — journal or making post. React mirror of templates/journal.js.
-// Same layout, different labels. The post body is pre-rendered markdown HTML
-// (from the build's marked pipeline) injected via dangerouslySetInnerHTML.
+// Single article — journal or making post. The post body is pre-rendered
+// markdown HTML (from the build's marked pipeline) injected via
+// dangerouslySetInnerHTML.
 import { Fragment } from 'react';
-import { PageShell, IdentityRail, Time, Tag, safeUrl, type DateInput } from '../../src/index';
+import { PageShell, Time, Tag, safeUrl, type DateInput } from '../../src/index';
 
 export interface ArticleRef {
   url: string;
@@ -51,18 +51,21 @@ export interface ArticleSite {
 export interface ArticlePageProps {
   site: ArticleSite;
   note: ArticleNote;
+  /** Retained at the render boundary for backwards-compatible emit callers. */
   recent?: ArticleRef[];
   related?: RelatedRef[];
   prev?: ArticleRef;
   next?: ArticleRef;
 }
 
-export function ArticlePage({ site, note, recent = [], related = [], prev, next }: ArticlePageProps) {
+export function ArticlePage({ site, note, related = [], next }: ArticlePageProps) {
   const kind = note.kind || 'journal';
   const section = site.config?.sections?.[kind] || {};
-  const meta = { who: section.who || kind, bio: section.bio || '', kicker: section.kicker || kind };
-  const postCount = site.counts?.[kind === 'making' ? 'making' : 'journal'] || 0;
+  const kicker = section.kicker || kind;
   const tags = note.tags || [];
+  const archiveHref = kind === 'making' ? '/making/' : '/journal/';
+  const continuation = next || related[0];
+  const relatedReading = related.filter((item) => item.url !== continuation?.url).slice(0, 3);
 
   return (
     <PageShell
@@ -72,111 +75,73 @@ export function ArticlePage({ site, note, recent = [], related = [], prev, next 
       nowPlaying={site.nowPlaying || ''}
       footerText={site.config?.footerText ?? ''}
     >
-      <main className="page" id="main">
-        <IdentityRail who={meta.who} bio={meta.bio} stats={[{ n: postCount, label: 'posts' }]}>
-          {recent.length ? (
-            <div className="group">
-              <h2>recent</h2>
-              <ul>
-                {recent.slice(0, 5).map((r) => (
-                  <li key={r.url}>
-                    <a href={safeUrl(r.url)}>{r.title}</a>
-                    <span className="meta">
-                      <Time date={r.date} format="day" />
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-        </IdentityRail>
-
-        <article className="timeline">
+      <main className="page page--single-column article-page" id="main">
+        <article className="timeline" aria-labelledby="article-title">
           <div className="post-head">
             <div className="kicker">
-              <span className="kind">{meta.kicker}</span>
+              <span className="kind">{kicker}</span>
               <span className="dot">·</span>
               <span>
                 <Time date={note.date} format="long" />
               </span>
-              {note.readTime ? (
-                <>
-                  <span className="dot">·</span>
-                  <span>{note.readTime}</span>
-                </>
-              ) : null}
             </div>
-            <h1>{note.title}</h1>
+            <h1 id="article-title">{note.title}</h1>
             {note.summary ? <p className="lede">{note.summary}</p> : null}
           </div>
 
           <div className="post-body">
             <div dangerouslySetInnerHTML={{ __html: note.html }} />
-
-            {tags.length ? (
-              <p className="post-tags">
-                {tags.map((t, i) => (
-                  <Fragment key={t}>
-                    {i > 0 ? ' ' : null}
-                    <Tag tag={t} href={note.tagPaths?.[t.trim().toLowerCase()]} baseHref="/blog/" params={{ kind }} />
-                  </Fragment>
-                ))}
-              </p>
-            ) : null}
-
-            <p className="post-source">
-              ↳ {note.sourcePath}
-              {note.words ? ` · ${note.words} words` : ''}
-              {note.updated ? (
-                <>
-                  {' · last edited '}
-                  <Time date={note.updated} format="day" />
-                </>
-              ) : null}
-            </p>
           </div>
 
-          {prev || next ? (
-            <nav className="pager" aria-label="post pager">
-              {prev ? (
-                <a href={safeUrl(prev.url)}>
-                  <span className="d">← older</span>
-                  {prev.title}
-                </a>
-              ) : (
-                <span></span>
-              )}
-              {next ? (
-                <a href={safeUrl(next.url)}>
-                  <span className="d">newer →</span>
-                  {next.title}
-                </a>
-              ) : (
-                <span></span>
-              )}
-            </nav>
-          ) : null}
-        </article>
+          {(tags.length || note.words || note.updated || relatedReading.length) ? (
+            <footer className="article-endmatter" aria-label="article details">
+              {tags.length ? (
+                <div className="article-endmatter__row article-endmatter__tags">
+                  <span>tags</span>
+                  <p className="post-tags">
+                    {tags.map((tag, index) => (
+                      <Fragment key={tag}>
+                        {index > 0 ? ' ' : null}
+                        <Tag tag={tag} href={note.tagPaths?.[tag.trim().toLowerCase()]} baseHref="/blog/" params={{ kind }} />
+                      </Fragment>
+                    ))}
+                  </p>
+                </div>
+              ) : null}
 
-        {/* No rail tag list: the post's tags already render as chips at the
-            end of the body (`.post-tags`). */}
-        {related.length ? (
-          <aside className="side-right" aria-label="related">
-            <div className="group">
-              <h2>related</h2>
-              <ul>
-                {related.map((r) => (
-                  <li key={r.url}>
-                    <a href={safeUrl(r.url)}>{r.title || r.excerpt || 'related note'}</a>
-                    <span className="meta">
-                      {r.kind ? `${r.kind} · ` : ''}<Time date={r.date} format="day" />
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </aside>
-        ) : null}
+              {note.words || note.updated ? (
+                <p className="article-endmatter__meta">
+                  {note.words ? `${note.words} words` : null}
+                  {note.words && note.updated ? ' · ' : null}
+                  {note.updated ? <><span>updated </span><Time date={note.updated} format="day" /></> : null}
+                </p>
+              ) : null}
+
+              {relatedReading.length ? (
+                <section className="article-endmatter__related" aria-labelledby="related-reading-title">
+                  <h2 id="related-reading-title">related reading</h2>
+                  <ul>
+                    {relatedReading.map((item) => (
+                      <li key={item.url}>
+                        <a href={safeUrl(item.url)}>{item.title || item.excerpt || 'related note'}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null}
+            </footer>
+          ) : null}
+
+          <nav className="article-continuation" aria-label="continue reading">
+            {continuation ? (
+              <a href={safeUrl(continuation.url)}>
+                <span>continue reading</span>
+                {continuation.title || 'another note'}
+              </a>
+            ) : null}
+            <a href={archiveHref}>view {kind} archive</a>
+          </nav>
+        </article>
       </main>
     </PageShell>
   );

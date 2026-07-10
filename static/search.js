@@ -41,7 +41,7 @@
   function render(matches, q) {
     results.innerHTML = '';
     if (!q.trim()) {
-      if (status) status.textContent = 'Type to search the archive.';
+      if (status) status.textContent = '';
       return;
     }
     if (!matches.length) {
@@ -102,8 +102,6 @@
       if (q) {
         input.value = q;
         runSearch();
-      } else if (status) {
-        status.textContent = 'Type to search the archive.';
       }
     })
     .catch(() => {

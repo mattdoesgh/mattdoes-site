@@ -114,41 +114,29 @@ test('the accent control is a native <fieldset> of radio inputs', () => {
   assert.deepEqual(values, ['blue', 'green', 'pink', 'warm']);
 });
 
-test('homepage makes reading and RSS subscription visible', () => {
+test('homepage keeps one quiet reading path and moves RSS to the footer', () => {
   const d = doc('index.html');
   const main = d.querySelector('main#main');
   assert.ok(main, 'homepage must render <main id="main">');
 
-  const h1 = main.querySelector('.post-head h1');
-  assert.ok(h1, 'homepage must render a visible writing heading');
-  assert.equal(h1.textContent.trim().toLowerCase(), 'writing worth starting with');
+  const h1 = main.querySelector('.home-intro h1');
+  assert.ok(h1, 'homepage must render a visible site heading');
   assert.ok(!h1.classList.contains('visually-hidden'),
-    'homepage writing heading must not be visually hidden');
+    'homepage heading must not be visually hidden');
 
-  const readAction = main.querySelector('.home-actions .action-link--primary');
-  assert.ok(readAction, 'homepage must link to featured writing from the hero actions');
-  assert.equal(readAction.textContent.trim().toLowerCase(), 'start with the latest');
+  assert.equal(main.querySelector('.side-left, .side-right'), null,
+    'homepage must not add competing rail navigation');
 
-  const archiveAction = main.querySelector('.home-actions a[href="/blog/"]');
-  assert.ok(archiveAction, 'homepage must link to the writing archive from the hero actions');
-  assert.equal(archiveAction.textContent.trim().toLowerCase(), 'browse all writing');
+  const lead = main.querySelector('.home-lead h2 a');
+  assert.ok(lead, 'homepage must start with one clear lead story');
 
-  const topbarRss = d.querySelector('.topbar a.meta-link[href="/feed.xml"]');
-  assert.ok(topbarRss, 'topbar must expose RSS as a persistent meta link');
-  assert.equal(topbarRss.textContent.trim().toLowerCase(), 'rss');
+  const archiveLink = main.querySelector('.home-archive-link[href="/blog/"]');
+  assert.ok(archiveLink, 'homepage must link to the full writing archive after its content');
 
-  const startReading = main.querySelector('.side-right[aria-label="start reading"]');
-  assert.ok(startReading, 'homepage must render a start-reading rail');
-  assert.ok(startReading.querySelector('a[href="/thoughts/"]'),
-    'start-reading rail must link to thoughts');
-  assert.ok(startReading.querySelector('a[href="/feed.xml"]'),
-    'start-reading rail must link to RSS');
-
-  const elsewhere = [...d.querySelectorAll('.side-right .group')]
-    .find(g => g.querySelector('h2')?.textContent.trim().toLowerCase() === 'elsewhere');
-  assert.ok(elsewhere, 'homepage must keep the generic elsewhere rail');
-  assert.equal(elsewhere.querySelector('a[href="/feed.xml"]'), null,
-    'generic elsewhere rail must not contain RSS');
+  assert.equal(d.querySelector('.topbar a[href="/feed.xml"]'), null,
+    'RSS must not compete with primary reading navigation');
+  assert.ok(d.querySelector('footer.site a[href="/feed.xml"]'),
+    'footer must retain RSS subscription');
 });
 
 test('the active nav link carries aria-current="page"', () => {

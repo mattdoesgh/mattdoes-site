@@ -10,8 +10,6 @@
 // React owns the page frame; rows.js owns the listening row bytes.
 import {
   PageShell,
-  IdentityRail,
-  ElsewhereLinks,
   ArticleRow,
   EmptyState,
   TimelineFilter,
@@ -43,8 +41,6 @@ export interface ListingEntry {
 export interface ListingSiteConfig {
   title?: string;
   sections?: Record<string, { who?: string; bio?: string; intro?: string }>;
-  links?: { label: string; href: string; meta?: string }[];
-  lastfm?: { username?: string; showUser?: boolean };
   footerText?: string;
   /** Manual topbar status override (siteConfig.status). */
   status?: string;
@@ -70,10 +66,6 @@ export function ListingPage({
 }: ListingPageProps) {
   const section = siteConfig.sections?.[kind] || {};
   const isListening = kind === 'listening';
-  const showLastfm = isListening && siteConfig.lastfm?.showUser && siteConfig.lastfm?.username;
-
-  const statLabel = isListening ? 'scrobbles' : 'posts';
-  const statValue = isListening ? formatScrobbleCount(totalScrobbles) : String(entries.length);
 
   // Tag index (only meaningful for article kinds).
   const tagCounts = new Map<string, number>();
@@ -99,42 +91,18 @@ export function ListingPage({
       nowPlaying={nowPlaying}
       footerText={siteConfig.footerText ?? ''}
     >
-      <main className="page" id="main">
-        <IdentityRail
-          who={section.who}
-          bio={section.bio}
-          stats={[{ n: statValue, label: statLabel, id: isListening ? 'scrobble-count' : undefined }]}
-        >
-          {showLastfm ? (
-            <div className="group">
-              <h2>
-                source <span className="m">last.fm</span>
-              </h2>
-              <ul>
-                <li>
-                  <a
-                    href={`https://www.last.fm/user/${encodeURIComponent(siteConfig.lastfm!.username!)}`}
-                    rel="noopener noreferrer"
-                  >
-                    last.fm/{siteConfig.lastfm!.username}
-                  </a>
-                  <span className="meta">↗</span>
-                </li>
-              </ul>
-            </div>
+      <main className={`page page--archive${isListening ? ' page--listening' : ''}`} id="main">
+        <section className="timeline archive-listing">
+          <TimelineHeader title={section.who || kind} />
+
+          {!isListening && filterLinks.length ? (
+            <details className="archive-filters">
+              <summary>filter</summary>
+              <TimelineFilter links={filterLinks} count={entries.length} countLabel="posts" label="browse" />
+            </details>
           ) : null}
 
-          <ElsewhereLinks links={siteConfig.links || []} />
-        </IdentityRail>
-
-        <section className="timeline">
-          <TimelineHeader
-            title={section.who || kind}
-            kicker={<span className="kind">{kind}</span>}
-            lede={section.intro}
-          />
-
-          <TimelineFilter links={filterLinks} count={entries.length} countLabel={statLabel} />
+          {isListening ? <span id="scrobble-count">{formatScrobbleCount(totalScrobbles)}</span> : null}
 
           {isListening ? (
             <div id="listening-rows" dangerouslySetInnerHTML={{ __html: rowsHtml }} />
@@ -156,9 +124,6 @@ export function ListingPage({
             <EmptyState kind={kind as EmptyKind} />
           )}
         </section>
-
-        {/* No TagCloud rail: the filter row above the stream already exposes
-            the top tags — a second aggregate tag list was pure repetition. */}
       </main>
     </PageShell>
   );

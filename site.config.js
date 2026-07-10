@@ -58,29 +58,28 @@ export const siteConfig = {
     { label: 'say hi',      href: 'mailto:matt@mattdoes.online',                                meta: '↗'           },
   ],
 
-  // Per-section landing copy. `who` → left-rail heading; `bio` → left-rail
-  // subtitle; `intro` → lede shown above the listing. All blank by choice;
-  // section titles in the topbar + URL carry the signal.
+  // Per-section labels. Page components may use `who` as a concise title;
+  // descriptions stay empty because the writing itself explains each section.
   sections: {
     journal: {
       who:   'journal',
-      bio:   'Longer-form notes — essays, dev logs, and things worth keeping.',
-      intro: 'Reverse-chronological archive of journal posts.',
+      bio:   '',
+      intro: '',
     },
     making: {
       who:   'making',
-      bio:   'Building in public — code, music, hardware, and side projects.',
-      intro: 'Project write-ups and experiments, newest first.',
+      bio:   '',
+      intro: '',
     },
     listening: {
       who:   'listening',
-      bio:   'A live log of recent listens, pulled from Last.fm.',
-      intro: 'Scrobbles update in the browser between deploys.',
+      bio:   '',
+      intro: '',
     },
     thoughts: {
-      who:   'notebook',
-      bio:   'Short notes kept with the day and context they came from.',
-      intro: 'Observations, fragments, and ideas that may grow into longer work.',
+      who:   'thoughts',
+      bio:   '',
+      intro: '',
     },
   },
 

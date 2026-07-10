@@ -69,8 +69,7 @@ html {
 
   --fs: 15px;
   --lh: 1.6; /* @kind other */
-  --col: 640px;
-  --rail: 232px;
+  --col: 720px;
   --radius: 6px;
   --radius-sm: 4px;
 }
@@ -178,23 +177,23 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
 }
 .skip-link:focus { transform: translateY(0); }
 
-/* ── Minimal top bar ─────────────────────────────── */
+/* ── Shared site frame ───────────────────────────── */
 .topbar {
-  background: color-mix(in oklch, var(--bg) 85%, transparent);
-  border-bottom: 1px solid var(--rule);
-  height: 48px;
+  background: color-mix(in oklch, var(--bg) 94%, transparent);
+  border-bottom: 1px solid color-mix(in oklch, var(--rule), transparent 35%);
+  min-height: 46px;
   display: flex; align-items: center;
   padding: 0 16px;
   font-size: 12px;
   font-family: var(--font-mono);
   position: sticky; top: 0; z-index: 30;
-  backdrop-filter: saturate(1.2) blur(6px);
+  backdrop-filter: blur(5px);
 }
 .topbar .inner {
   width: 100%;
-  max-width: calc(var(--rail) + var(--col) + var(--rail) + 36px);
+  max-width: 960px;
   margin: 0 auto;
-  display: flex; align-items: center; gap: 22px;
+  display: flex; align-items: center; gap: 18px;
 }
 .topbar a { border-bottom: none; }
 .topbar .home {
@@ -203,36 +202,44 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
   color: var(--ink);
 }
 .topbar .home .dim { color: var(--mute); font-weight: 400; }
-.topbar nav { display: flex; gap: 18px; }
-.topbar nav a {
+.topbar nav { display: flex; gap: 16px; }
+.topbar nav a,
+.topbar .mobile-menu summary {
   color: var(--mute);
   text-transform: lowercase;
   letter-spacing: 0.04em;
   font-size: 12px;
 }
 .topbar nav a:hover { color: var(--ink); }
-/* F10 (WCAG 1.4.1): active nav must not rely on colour alone. The .on
-   class (and the aria-current the template/client agents add) gets a
-   colour-independent cue — a heavier weight plus an underline that
-   survives grayscale / high-contrast rendering. */
+.topbar nav a.on,
+.topbar nav a[aria-current="page"],
+.topbar .search-control.on,
+.topbar .search-control[aria-current="page"] { color: var(--ink); }
+/* Active links retain a non-colour cue without adding another decorative
+   layer to the header. */
 .topbar nav a.on,
 .topbar nav a[aria-current="page"] {
-  color: var(--ink);
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 4px;
   text-decoration-thickness: 1.5px;
 }
 .topbar .spacer { flex: 1; }
-.topbar .meta-link {
+.topbar .search-control {
+  width: 1.8rem; height: 1.8rem;
+  display: inline-grid; place-items: center;
   color: var(--mute);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: lowercase;
-  border-bottom: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
 }
-.topbar .meta-link:hover { color: var(--ink); }
-.topbar .meta-link.on { color: var(--ink); }
+.topbar .search-control:hover { color: var(--ink); border-color: var(--rule); }
+.topbar .search-control.on,
+.topbar .search-control[aria-current="page"] { border-color: var(--rule); }
+.topbar .search-control svg {
+  width: 14px; height: 14px;
+  fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round;
+}
+.topbar .mobile-menu { display: none; }
 .topbar .status {
   color: var(--mute);
   font-size: 11px;
@@ -253,234 +260,55 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
   width: 6px; height: 6px; border-radius: 50%;
   flex-shrink: 0;
   background: var(--accent);
-  animation: pulse 2.4s ease-in-out infinite;
+  opacity: .75;
 }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-/* ── Layout ──────────────────────────────────────── */
+/* The standard frame is intentionally one column. Page components may retain
+   old rail markup during migration, but rails are not part of the reading
+   surface and never take up a persistent column. */
 .page {
-  max-width: calc(var(--rail) + var(--col) + var(--rail) + 48px);
+  width: min(100%, var(--col));
   margin: 0 auto;
-  padding: 34px 16px 64px;
-  display: grid;
-  grid-template-columns: var(--rail) var(--col) var(--rail);
-  gap: 36px;
-  align-items: start;
+  padding: clamp(2rem, 5vw, 3.5rem) 16px 4.5rem;
 }
 .side-left, .side-right {
-  display: grid; gap: 24px;
-  font-family: var(--font-mono);
-  position: sticky; top: 64px;
-  align-self: start;
-  min-width: 0;
-}
-
-/* Reader-first pages put authored content first in the DOM. Explicit grid
-   placement restores the desktop rails without making CSS order disagree with
-   keyboard and screen-reader order on narrow screens. */
-.page--reader-first > .timeline {
-  grid-column: 2;
-  grid-row: 1;
-}
-.page--reader-first > .side-left {
-  grid-column: 1;
-  grid-row: 1;
-}
-.page--reader-first > .side-right {
-  grid-column: 3;
-  grid-row: 1;
-}
-
-/* The front page follows the same reader-first rule after its full-width Hero. */
-.page--editorial > .home-main {
-  grid-column: 2;
-  grid-row: 2;
-  min-width: 0;
-}
-.page--editorial > .side-left {
-  grid-column: 1;
-  grid-row: 2;
-}
-.page--editorial > .side-right {
-  grid-column: 3;
-  grid-row: 2;
-}
-
-@media (max-width: 1100px) {
-  .page {
-    max-width: calc(var(--rail) + var(--col) + 40px);
-    grid-template-columns: var(--rail) 1fr;
-    gap: 28px;
-  }
-  /* F21: previously `.side-right { display: none }` removed tag/category
-     discovery entirely on tablet. Instead keep it reachable — drop it
-     below the timeline as a full-width block (it spans both grid
-     columns) so the "by tag" list stays accessible. */
-  .side-right {
-    display: grid;
-    grid-column: 1 / -1;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(180px, 1fr);
-    gap: 24px 32px;
-    position: static;
-    padding-top: 1.5rem;
-    margin-top: .5rem;
-    border-top: 1px solid var(--rule);
-  }
-  .page--reader-first > .timeline,
-  .page--editorial > .home-main { grid-column: 2; }
-  .page--reader-first > .side-left,
-  .page--editorial > .side-left { grid-column: 1; }
-  .page--reader-first > .side-right,
-  .page--editorial > .side-right { grid-column: 1 / -1; grid-row: 2; }
-  .page--editorial > .side-right { grid-row: 3; }
+  display: none;
 }
 @media (max-width: 760px) {
-  :root { --col: 100%; }
   .page {
-    max-width: 640px;
-    grid-template-columns: 1fr;
     padding: 20px 16px 40px;
-    gap: 24px;
+    padding-inline: 16px;
   }
-  .side-left, .side-right { position: static; gap: 20px; }
-  .side-left { order: 0; }
-  .timeline { order: 1; }
-  .side-right { order: 2; display: grid; }
-  .page--reader-first > .timeline,
-  .page--reader-first > .side-left,
-  .page--reader-first > .side-right,
-  .page--editorial > .home-main,
-  .page--editorial > .side-left,
-  .page--editorial > .side-right {
-    grid-column: 1;
-    grid-row: auto;
+  .topbar .status { display: none; }
+}
+@media (max-width: 640px) {
+  .topbar { padding-inline: 12px; }
+  .topbar .inner { gap: 10px; }
+  .topbar .primary-nav { display: none; }
+  .topbar .mobile-menu { display: block; position: relative; }
+  .topbar .mobile-menu summary {
+    color: var(--mute);
+    cursor: pointer;
+    list-style: none;
+    padding: .3rem .15rem;
   }
-  .page--reader-first > .timeline,
-  .page--editorial > .home-main { order: 0; }
-  .page--reader-first > .side-left,
-  .page--editorial > .side-left { order: 1; }
-  .page--reader-first > .side-right,
-  .page--editorial > .side-right { order: 2; }
-}
-
-/* ── Identity block (replaces heavy profile card) ── */
-.ident {
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--rule);
-}
-.ident .who {
-  font-size: 11px;
-  color: var(--mute);
-  letter-spacing: 0.08em;
-  text-transform: lowercase;
-  margin-bottom: .4rem;
-}
-.ident .name {
-  font-weight: 500;
-  font-size: 14px;
-  letter-spacing: 0;
-  color: var(--ink);
-}
-.ident .name .dim { color: var(--mute); font-weight: 400; }
-.ident .bio {
-  font-size: 12.5px;
-  color: var(--mute);
-  margin: .6rem 0 0;
-  line-height: 1.55;
-}
-.ident .stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .35rem .9rem;
-  margin-top: .9rem;
-  font-size: 11px;
-  color: var(--mute);
-  letter-spacing: 0.04em;
-}
-.ident .stats .s { white-space: nowrap; }
-.ident .stats .s .n {
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-  margin-right: 3px;
-}
-
-/* ── Rail groups (replace the heavy widget cards) ── */
-.group { font-family: var(--font-mono); }
-.group h2 {
-  margin: 0 0 .55rem;
-  padding-bottom: .3rem;
-  border-bottom: 1px solid var(--rule);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: lowercase;
-  color: var(--mute);
-  display: flex; justify-content: space-between; align-items: baseline;
-}
-.group h2 .m { color: var(--mute); font-size: 10px; }
-.group ul { list-style: none; margin: 0; padding: 0; }
-.group li {
-  padding: .45rem 0;
-  font-size: 12px;
-  display: flex; justify-content: space-between; gap: 8px;
-  border-bottom: 1px solid color-mix(in oklch, var(--rule), transparent 32%);
-  line-height: 1.45;
-}
-.group li:last-child { border-bottom: none; }
-.group li .meta {
-  color: var(--mute);
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-.group li a { color: var(--ink); border-bottom: none; }
-/* F6 (WCAG 1.4.3): rail link hover colours text → --accent-fg. */
-.group li a:hover { color: var(--accent-fg); }
-
-/* Now-playing mini, inline */
-.np-mini {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: .7rem;
-  align-items: center;
-  padding: .4rem 0;
-}
-.np-mini .sleeve {
-  width: 36px; height: 36px;
-  background: repeating-linear-gradient(45deg, var(--faint) 0 4px, transparent 4px 8px);
-  border: 1px solid var(--rule);
-  position: relative;
-}
-.np-mini .sleeve::after {
-  content: ""; position: absolute; top: 50%; left: 50%;
-  width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
-  transform: translate(-50%, -50%);
-}
-.np-mini .t { font-size: 12px; font-weight: 500; line-height: 1.3; }
-.np-mini .a { color: var(--mute); font-size: 11px; margin-top: 1px; }
-.np-mini .live {
-  /* F6 (WCAG 1.4.3): "live" label is small foreground text → --accent-fg. */
-  color: var(--accent-fg);
-  font-size: 10px;
-  letter-spacing: 0.05em;
-  text-transform: lowercase;
-  display: inline-flex; align-items: center; gap: 3px;
-}
-.np-mini .bars {
-  display: inline-flex; gap: 2px; vertical-align: -1px;
-  height: 8px; align-items: end;
-}
-.np-mini .bars i {
-  width: 2px; background: var(--accent); display: block;
-  animation: bar 1s ease-in-out infinite;
-}
-.np-mini .bars i:nth-child(1){ height:40%; animation-delay:-.9s; }
-.np-mini .bars i:nth-child(2){ height:100%; animation-delay:-.3s; }
-.np-mini .bars i:nth-child(3){ height:60%; animation-delay:-.6s; }
-@keyframes bar {
-  0%,100% { transform: scaleY(.4); transform-origin: bottom; }
-  50%     { transform: scaleY(1);  transform-origin: bottom; }
+  .topbar .mobile-menu summary::-webkit-details-marker { display: none; }
+  .topbar .mobile-menu[open] summary { color: var(--ink); }
+  .topbar .mobile-menu nav {
+    position: absolute;
+    z-index: 1;
+    top: calc(100% + .55rem);
+    left: -.5rem;
+    min-width: 10rem;
+    display: grid;
+    gap: 0;
+    padding: .35rem;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 10px 24px color-mix(in oklch, var(--bg), transparent 30%);
+  }
+  .topbar .mobile-menu nav a { padding: .45rem .55rem; }
 }
 
 /* ── Timeline (no card; just the page) ───────────── */
@@ -640,8 +468,7 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
   text-underline-offset: 3px;
 }
 .row.row--thought::before {
-  box-shadow: none;
-  background: color-mix(in oklch, var(--surface) 28%, transparent);
+  content: none;
 }
 
 /* Quote variant — mono italic. */
@@ -777,53 +604,6 @@ a.tg:hover { color: var(--accent-fg); }
   margin-top: .3rem;
 }
 
-/* ── Editorial home ──────────────────────────────── */
-.home-main__head { margin-bottom: 1.25rem; }
-.feature-story {
-  padding: clamp(1.25rem, 3vw, 2rem);
-  border: 1px solid color-mix(in oklch, var(--accent), var(--rule) 62%);
-  border-radius: var(--radius);
-  background: color-mix(in oklch, var(--surface) 58%, transparent);
-}
-.feature-story__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .45rem .8rem;
-  color: var(--mute);
-  font: 10.5px/1.4 var(--font-mono);
-  letter-spacing: .06em;
-  text-transform: lowercase;
-}
-.feature-story__meta .kind { color: var(--accent-fg); }
-.feature-story h2 {
-  margin-top: .7rem;
-  max-width: 24ch;
-  font-size: clamp(24px, 4vw, 34px);
-  line-height: 1.08;
-  letter-spacing: -.035em;
-  text-wrap: balance;
-}
-.feature-story h2 a { border-bottom: none; }
-.feature-story > p {
-  margin-top: .8rem;
-  max-width: 58ch;
-  color: var(--mute);
-  font-size: 15px;
-  line-height: 1.65;
-}
-.feature-story__foot {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1.15rem;
-}
-.feature-story__read {
-  flex: 0 0 auto;
-  font: 11px/1.4 var(--font-mono);
-}
-.home-section { margin-top: 2.5rem; }
-.home-section__head,
 .notebook-day__head {
   display: flex;
   align-items: baseline;
@@ -833,18 +613,90 @@ a.tg:hover { color: var(--accent-fg); }
   border-bottom: 1px solid var(--rule);
   font-family: var(--font-mono);
 }
-.home-section__head h2,
 .notebook-day__head h2 {
   font-size: 11px;
   font-weight: 500;
   letter-spacing: .1em;
   text-transform: lowercase;
 }
-.home-section__head a,
 .notebook-day__head > span {
   color: var(--mute);
   font-size: 10.5px;
 }
+
+/* ── Primary content surfaces ───────────────────── */
+/* These pages deliberately keep their own composition light; the shared page
+   frame supplies the reading width while the surfaces only establish rhythm. */
+.home-content { min-width: 0; }
+.home-intro { padding: .25rem 0 2.5rem; }
+.home-intro h1 {
+  margin: 0;
+  font: 600 clamp(1.65rem, 4vw, 2.35rem)/1 var(--font-mono);
+  letter-spacing: -.04em;
+}
+.home-intro h1 .dim,
+.home-intro p { color: var(--mute); font-weight: 400; }
+.home-intro__dot { color: var(--accent); }
+.home-intro p {
+  max-width: 52ch;
+  margin: .7rem 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.home-lead { padding-bottom: 2.25rem; }
+.home-lead__meta {
+  display: flex;
+  gap: .7rem;
+  color: var(--mute);
+  font: 10.5px/1.4 var(--font-mono);
+  letter-spacing: .06em;
+  text-transform: lowercase;
+}
+.home-lead__meta .kind { color: var(--accent-fg); }
+.home-lead h2 {
+  max-width: 24ch;
+  margin-top: .65rem;
+  font-size: clamp(2rem, 4.2vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -.04em;
+  text-wrap: balance;
+}
+.home-lead h2 a { border-bottom: none; }
+.home-lead > p {
+  max-width: 58ch;
+  margin-top: .8rem;
+  color: var(--mute);
+  font-size: 15px;
+  line-height: 1.65;
+}
+.home-recent { border-top: 1px solid var(--rule); }
+.home-archive-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  color: var(--mute);
+  font: 11px/1.4 var(--font-mono);
+}
+
+.archive-listing { min-width: 0; }
+.archive-listing .timeline-head,
+.archive-title { margin-bottom: 1.5rem; }
+.archive-filters { margin: 0 0 1.5rem; }
+.archive-filters > summary {
+  width: fit-content;
+  cursor: pointer;
+  color: var(--mute);
+  font: 11px/1.4 var(--font-mono);
+  letter-spacing: .06em;
+  text-transform: lowercase;
+}
+.archive-filters[open] > summary { margin-bottom: .65rem; color: var(--ink); }
+.archive-filters .filter {
+  margin-bottom: 0;
+  background: transparent;
+}
+.page--listening #scrobble-count { display: none; }
+.page--thoughts .notebook-day__head > span { display: none; }
+.page--thoughts .notebook-day { margin-top: 1.7rem; }
 
 /* ── Notebook ────────────────────────────────────── */
 .notebook-head { margin-bottom: 2rem; }
@@ -978,16 +830,17 @@ a.tg:hover { color: var(--accent-fg); }
 
 /* ── Footer ──────────────────────────────────── */
 footer.site {
-  max-width: calc(var(--rail) + var(--col) + var(--rail) + 48px);
+  width: min(100%, var(--col));
   margin: 3rem auto 0;
-  padding: 1.25rem 16px 2rem;
-  border-top: 1px solid var(--rule);
+  padding: 1.25rem 16px 2.5rem;
+  border-top: 1px solid color-mix(in oklch, var(--rule), transparent 30%);
   font-size: 11px;
   color: var(--mute);
-  display: flex; justify-content: space-between; gap: 2rem;
+  display: flex; align-items: baseline; justify-content: space-between; gap: 1rem 2rem;
   flex-wrap: wrap;
 }
-footer.site nav { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+footer.site .footer-copy { margin: 0; }
+footer.site nav { display: flex; gap: .9rem 1.25rem; flex-wrap: wrap; }
 footer.site a { color: var(--mute); border-bottom: none; }
 footer.site a:hover { color: var(--ink); }
 footer.site .footer-link {
@@ -1482,23 +1335,6 @@ table.schema .req.y { color: var(--accent-fg); }
   }
 }
 @media (max-width: 480px) {
-  .topbar .inner {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;          /* Firefox */
-    -ms-overflow-style: none;       /* IE/Edge */
-    flex-wrap: nowrap;
-    gap: 16px;
-  }
-  .topbar .inner::-webkit-scrollbar { display: none; }  /* Chrome/Safari */
-  .topbar nav { gap: 12px; flex-shrink: 0; }
-  .topbar nav a { font-size: 11px; white-space: nowrap; }
-  .topbar .home { flex-shrink: 0; }
-  .topbar .spacer { flex: 0 0 4px; }
-  .topbar .meta-link { flex-shrink: 0; white-space: nowrap; }
-  /* In the scrollable mobile bar the pill is capped, not shrink-proof —
-     otherwise a long track title balloons the horizontal scroll extent. */
-  .topbar .status { flex-shrink: 0; max-width: 45vw; }
   .row { grid-template-columns: 1fr; gap: .2rem; }
   .row .gutter { flex-direction: row; gap: .8rem; }
   .row--making { padding: .9rem; }
@@ -1695,6 +1531,208 @@ fieldset.tk-swatches legend.row-t-label {
   border-radius: 2px;
 }
 
+/* ── Single-column reading and document pages ────── */
+/* These classes are page-local escape hatches from the archive grid. They
+   keep a reader's eye on one piece of content rather than filling the unused
+   space with rails or explanatory widgets. */
+.page--single-column {
+  display: block;
+  max-width: 46rem;
+}
+.page--single-column > .timeline { min-width: 0; }
+
+/* Article pages make the authored reading surface the largest, quietest thing
+   on the screen. Metadata waits until after the body. */
+.article-page { max-width: 48rem; }
+.article-page .post-head {
+  margin-bottom: 2.2rem;
+  padding-bottom: 1.7rem;
+}
+.article-page .post-head h1 {
+  max-width: 22ch;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.06;
+}
+.article-page .post-body {
+  max-width: 68ch;
+  font-size: 18px;
+  line-height: 1.82;
+}
+.article-endmatter {
+  max-width: 64ch;
+  margin-top: 3.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  color: var(--mute);
+  font: 11.5px/1.65 var(--font-mono);
+}
+.article-endmatter__row {
+  display: flex;
+  align-items: baseline;
+  gap: .85rem;
+}
+.article-endmatter__row > span {
+  flex: 0 0 4.5rem;
+  letter-spacing: .06em;
+  text-transform: lowercase;
+}
+.article-endmatter__tags p { margin: 0; }
+.article-endmatter__meta { margin: .55rem 0 0; }
+.article-endmatter__related { margin-top: 1.25rem; }
+.article-endmatter__related h2,
+.about-links h2,
+.topic-related h2,
+.colophon-build-stats h2 {
+  margin: 0 0 .5rem;
+  color: var(--mute);
+  font: 500 10.5px/1.4 var(--font-mono);
+  letter-spacing: .08em;
+  text-transform: lowercase;
+}
+.article-endmatter__related ul,
+.about-links ul,
+.topic-related ul,
+.colophon-toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.article-endmatter__related li + li { margin-top: .35rem; }
+.article-endmatter__related a { color: var(--ink); }
+.article-continuation {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .75rem 2rem;
+  max-width: 64ch;
+  margin-top: 2.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  font: 12px/1.5 var(--font-mono);
+}
+.article-continuation a {
+  color: var(--ink);
+  border-bottom: none;
+}
+.article-continuation a:first-child { max-width: 34ch; }
+.article-continuation a span {
+  display: block;
+  margin-bottom: .2rem;
+  color: var(--mute);
+  font-size: 10.5px;
+  letter-spacing: .07em;
+  text-transform: lowercase;
+}
+.article-continuation a:hover,
+.article-endmatter__related a:hover { color: var(--accent-fg); }
+
+/* About is the authored introduction followed by a restrained set of links. */
+.about-page .post-head { margin-bottom: 2rem; }
+.about-page .post-body { max-width: 64ch; font-size: 17px; line-height: 1.76; }
+.about-links {
+  max-width: 64ch;
+  margin-top: 2.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+.about-links ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem 1rem;
+  font: 12px/1.5 var(--font-mono);
+}
+.about-links a { color: var(--ink); border-bottom: none; }
+.about-links a:hover { color: var(--accent-fg); }
+
+/* Topic pages are one named collection; relationship links only appear after
+   the entries and only when the data says they are meaningful. */
+.topic-page .post-head { margin-bottom: .25rem; }
+.topic-page .post-head h1 { max-width: none; }
+.topic-page .topic-path__entries { margin-top: 0; }
+.topic-related {
+  margin-top: 2.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+.topic-related ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem 1rem;
+  font: 12px/1.5 var(--font-mono);
+}
+.topic-related a { color: var(--ink); border-bottom: none; }
+.topic-related a:hover { color: var(--accent-fg); }
+
+/* Search opens with one action. Status text stays empty until there is a
+   query outcome or a real loading error. */
+.search-page { max-width: 42rem; }
+.search-page h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  line-height: 1.1;
+}
+.search-page .search-form { margin-bottom: 1.1rem; }
+.search-page .search-form input[type="search"] {
+  min-height: 2.85rem;
+  padding: .65rem .8rem;
+  border-color: var(--rule);
+  font-size: 16px;
+}
+.search-page .search-form input[type="search"]:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.search-page .search-results { border-top: 1px solid var(--rule); }
+.search-page .search-status { min-height: 0; }
+
+/* The colophon remains deliberately dense, just inside one document rather
+   than in competing rails. */
+.colophon-page { max-width: 52rem; }
+.colophon-document .post-head { margin-bottom: 1rem; }
+.colophon-document .post-head h1 { max-width: none; }
+.colophon-updated {
+  margin: 0;
+  color: var(--mute);
+  font: 11px/1.5 var(--font-mono);
+}
+.colophon-toc {
+  margin: 0 0 1.5rem;
+  padding: .75rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.colophon-toc ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem 1rem;
+  font: 11px/1.5 var(--font-mono);
+}
+.colophon-toc a { color: var(--mute); border-bottom: none; }
+.colophon-toc a:hover { color: var(--ink); }
+.colophon-build-stats {
+  max-width: 60ch;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+.colophon-build-stats dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .5rem 1.5rem;
+  margin: 0;
+  font: 11.5px/1.5 var(--font-mono);
+}
+.colophon-build-stats dl div { display: flex; justify-content: space-between; gap: 1rem; }
+.colophon-build-stats dt { color: var(--mute); }
+.colophon-build-stats dd { margin: 0; color: var(--ink); }
+
+@media (max-width: 560px) {
+  .article-page .post-body { font-size: 17px; line-height: 1.78; }
+  .article-endmatter__row { display: block; }
+  .article-endmatter__row > span { display: block; margin-bottom: .25rem; }
+  .article-continuation { display: grid; }
+  .colophon-build-stats dl { grid-template-columns: 1fr; }
+}
+
 /* ── Animated GeoJSON background ─────────────────── */
 /* #geo-bg sits behind every page. The SVG fills the viewport; an
    inner <g class="geo-drift"> applies a slow keyframe transform so
@@ -1705,14 +1743,14 @@ fieldset.tk-swatches legend.row-t-label {
    - Opacity is tunable via --geo-bg-opacity (set on :root) so the
      drift never competes with body copy. */
 :root {
-  --geo-bg-opacity:    0.45;
-  --geo-bg-stroke:     0.35;
+  --geo-bg-opacity:    0.14;
+  --geo-bg-stroke:     0.28;
   --geo-point-fill:    #fff;
-  --geo-point-opacity: 0.50; /* @kind other */
+  --geo-point-opacity: 0.32; /* @kind other */
   /* Continuous outline shimmer: stroke-opacity breathes between these
      values across the entire perimeter (no per-segment flashes). */
-  --geo-shimmer-min:   0.05; /* @kind other */
-  --geo-shimmer-max:   0.20; /* @kind other */
+  --geo-shimmer-min:   0.03; /* @kind other */
+  --geo-shimmer-max:   0.10; /* @kind other */
 }
 html[data-theme="light"] { --geo-point-fill: var(--rule); }
 #geo-bg {
@@ -1743,7 +1781,7 @@ html[data-theme="light"] { --geo-point-fill: var(--rule); }
 #geo-bg[data-shape="solid"] .geo-drift {
   transform-origin: 50% 50%;
   transform-box: view-box;
-  animation: geo-drift 180s ease-in-out infinite;
+  animation: geo-drift 300s ease-in-out infinite;
   will-change: transform;
 }
 #geo-bg[data-shape="solid"] .geo-points { display: none; }
@@ -1752,7 +1790,7 @@ html[data-theme="light"] { --geo-point-fill: var(--rule); }
    the full perimeter (the "shimmer"), and the points dance around it. */
 #geo-bg[data-shape="points"] .geo-path {
   stroke-opacity: var(--geo-shimmer-min);
-  animation: geo-shimmer 9s ease-in-out infinite;
+  animation: geo-shimmer 18s ease-in-out infinite;
   will-change: stroke-opacity;
 }
 .geo-edges { display: none; } /* swallow stale edge layers from bfcache snapshots */
@@ -1973,24 +2011,6 @@ footer.site { view-transition-name: site-footer; }
   border-color: color-mix(in oklch, var(--accent), var(--rule) 40%);
 }
 
-/* Topbar nav: accent underline sweeps in on hover (transform-only).
-   bottom: 0 keeps it inside the link box — at ≤480px the topbar becomes
-   an overflow-x scroll container that would clip anything hanging below. */
-.topbar nav a { position: relative; }
-.topbar nav a::after {
-  content: "";
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 1.5px;
-  background: var(--accent-fg);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform .18s cubic-bezier(.2, .7, .2, 1);
-}
-.topbar nav a:hover::after { transform: scaleX(1); }
-.topbar nav a.on::after,
-.topbar nav a[aria-current="page"]::after { display: none; }
-
 /* Action links: a crisper press-feel. */
 .home-actions a,
 .action-link {
@@ -2022,5 +2042,4 @@ footer.site { view-transition-name: site-footer; }
   .action-link:hover { transform: none; }
   .group li a:hover { translate: none; }
   .action-link--primary:hover::after { transform: none; }
-  .topbar nav a::after { transition: none; }
 }

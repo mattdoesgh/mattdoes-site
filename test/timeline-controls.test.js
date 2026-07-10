@@ -67,9 +67,9 @@ test('timeline filter markup keeps accessible active and density controls', () =
     'compact density control should be labelled and inactive');
 });
 
-test('timeline rows preserve kind classes, data filters, and featured state', () => {
+test('timeline rows preserve kind classes, data filters, and a single home lead', () => {
   const home = doc('index.html');
-  assert.equal(home.querySelectorAll('.feature-story').length, 1,
+  assert.equal(home.querySelectorAll('.home-lead').length, 1,
     'homepage should feature exactly one long-form entry');
   assert.equal(home.querySelectorAll('[data-timeline-controls]').length, 0,
     'editorial homepage should not expose archive controls');
