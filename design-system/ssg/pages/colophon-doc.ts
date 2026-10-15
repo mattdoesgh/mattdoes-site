@@ -40,7 +40,7 @@ export const COLOPHON_DOC_HTML = `<h2 id="folder" class="section-label"><span>fo
         <tr><th>key</th><th>type</th><th>req</th><th>description</th></tr>
       </thead>
       <tbody>
-        <tr><td class="key">publish</td><td class="type">enum</td><td class="req y">req</td><td>journal · making · thoughts · about · draft <span class="note">(listening is pulled from last.fm)</span></td></tr>
+        <tr><td class="key">publish</td><td class="type">enum</td><td class="req y">req</td><td>journal · making · about · draft <span class="note">(listening is last.fm; posts are baked from x. publish: thoughts is accepted and not shown.)</span></td></tr>
         <tr><td class="key">title</td><td class="type">string</td><td class="req">opt</td><td>Display title. Defaults to filename.</td></tr>
         <tr><td class="key">date</td><td class="type">date</td><td class="req">opt</td><td>Bare <code>YYYY-MM-DD</code> is anchored to CT midnight (so the post lands on the day you wrote, not UTC's). Full ISO timestamps are used as-is. Defaults to file mtime.</td></tr>
         <tr><td class="key">slug</td><td class="type">string</td><td class="req">opt</td><td>URL path segment. Defaults to kebab filename.</td></tr>
@@ -56,7 +56,7 @@ export const COLOPHON_DOC_HTML = `<h2 id="folder" class="section-label"><span>fo
     <div class="routes">
       <span class="from">publish: journal</span><span class="arr">→</span><span class="to">/journal/<span class="dim">&lt;slug&gt;</span>/ <span class="dim">· /blog/?kind=journal</span></span>
       <span class="from">publish: making</span><span class="arr">→</span><span class="to">/making/<span class="dim">&lt;slug&gt;</span>/ <span class="dim">· /blog/?kind=making</span></span>
-      <span class="from">publish: thoughts <span class="dim">(daily/YYYY-MM-DD.md, split on ##HH:MM)</span></span><span class="arr">→</span><span class="to">/thoughts/<span class="dim">#t-&lt;timestamp&gt;</span> <span class="dim">(grouped by notebook day)</span></span>
+      <span class="from">x posts <span class="dim">(original only)</span></span><span class="arr">→</span><span class="to">/posts/ <span class="dim">(build-time bake · /thoughts/ redirects here)</span></span>
       <span class="from">tags across kinds</span><span class="arr">→</span><span class="to">/topics/<span class="dim">&lt;topic&gt;</span>/ <span class="dim">(durable cross-kind paths)</span></span>
       <span class="from">publish: about</span><span class="arr">→</span><span class="to">/about/</span>
       <span class="from">attachments/&lt;file&gt;</span><span class="arr">→</span><span class="to">/img/<span class="dim">&lt;file&gt;</span> <span class="dim">(R2 in prod via media.mattdoes.online)</span></span>

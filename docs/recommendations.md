@@ -8,7 +8,8 @@ Three public pages. One copy of each piece of data.
 | movies | `/movies/` | Recent Letterboxd watches. Not recommendations. |
 | grok says… | `/grok/` | Recommendations hub. Favorite digs, plus anything else. |
 
-The reading nav (writing, thoughts, listening, about) stays as it is. These
+The reading nav is writing, posts, listening, about. Posts is the X feed
+(`/posts/`), not a notes section. These
 three pages, and the Letterboxd / X / Instagram / Last.fm profile links, are
 in the footer on every page.
 

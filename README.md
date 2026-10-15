@@ -5,15 +5,15 @@ source for [mattdoes.online](https://mattdoes.online) — my personal site. i wr
 ## what's on it
 
 - **home** — a quiet front door: one featured piece of writing and a short list of recent work.
-- **writing** (`/blog/`) — long-form and short, on one reverse-chronological timeline. three kinds, each also reachable as its own section page (`/journal/`, `/making/`, `/thoughts/`):
+- **writing** (`/blog/`) — journal and making on one reverse-chronological timeline. each kind also has its own section page (`/journal/`, `/making/`):
   - *journal* — reflective posts, usually weighing a tradeoff
   - *making* — building-in-public notes on projects, tools, and stack choices
-  - *thoughts* — short notes grouped with the daily context they came from
-- **topic paths** (`/topics/<topic>/`) — durable cross-kind routes connecting journal, making, and notebook entries by idea.
+- **posts** (`/posts/`) — original posts from @mattdoes on X, baked at build time. reposts are left out. `/thoughts/` redirects here.
+- **topic paths** (`/topics/<topic>/`) — durable routes connecting journal and making by idea.
 - **listening** — recent plays pulled from Last.fm at build time and refreshed live between deploys.
 - **digs** (`/digs/`) — weekly music picks, authored in the repo. favorite digs also show up on **grok says…** (`/grok/`).
 - **movies** (`/movies/`) — the last 25 Letterboxd watches, fetched from the diary RSS at build time.
-- **search** — client-side filter over a static index of every journal, making, and thoughts post.
+- **search** — client-side filter over a static index of journal and making.
 - **about** — who I am, what I work on.
 - **colophon** — how the whole thing fits together.
 
@@ -26,7 +26,7 @@ how to add a digs week, or anything else on grok says…, is in [`docs/recommend
 the generator, in three parts:
 
 - **`build.js`** — the entrypoint. reads the vault, fetches Last.fm listening data (disk-cached under `.cache/`), and hands both to the modules below.
-- **`lib/intake.js`** — vault notes → content model. frontmatter parsing (`yaml`) and validation, splitting daily notes into thoughts, stable thought IDs, sorting, the slug index. pure: same notes in, same model out.
+- **`lib/intake.js`** — vault notes → content model. frontmatter parsing (`yaml`) and validation, sorting, the slug index. pure: same notes in, same model out. `publish: thoughts` is still accepted so an older vault builds; those notes are not a public section.
 - **`lib/emit/`** — content model → `dist/`. markdown via `marked` (shiki for code highlighting, emitted as build-time CSS classes via `lib/shiki-csp.js` so `style-src` stays strict), the inline `<head>` scripts (importmap + speculation rules) admitted under the strict CSP by a per-build `sha256` (`injectInlineScriptCsp`) so `script-src` needs no `'unsafe-inline'`, wikilink + embed resolution, pages rendered by the React design system (`design-system/`), editorial-home/notebook/topic projections, a static search index (`search-index.json`, queried by `static/search.js`), build-time Open Graph card PNGs (`lib/og-image.js`, rasterized with `sharp`, under `/og/`), CSS through `lightningcss`, JS through `terser`, content-hashed assets, RSS + sitemap.
 
 the presentation layer is a React + TypeScript module library in `design-system/` (`@mattdoes/ds`). every public page (home, writing archive, notebook, Topic paths, listings, article, about, colophon) renders there to a static HTML string via `renderToStaticMarkup` — the shipped pages are plain static HTML. the one runtime-React exception is the filter/density island on exhaustive archive timelines; the editorial homepage, Notebook, and Topic paths need no client rendering. the same library is the design source synced to Claude Design (claude.ai/design) for visual editing. `design-system/` builds first (`npm run build:ssg`, which emits both the render bundle and client island, wired in as the `prebuild` step), and its deps install via `postinstall`.
