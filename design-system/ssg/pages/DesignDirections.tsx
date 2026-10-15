@@ -60,8 +60,8 @@ const DIRECTIONS = [
     href: '/design/b/',
     nav: 'B · lain',
     title: 'B · Lain / soft cyberpunk',
-    vibe: 'Glass only where it floats: the nav and the shelf tiles. The writing sits on the weather, with a thin light along the glass edge.',
-    a11y: 'One glass recipe. Reduced transparency drops the blur, and higher contrast goes solid. Pause and reduced motion stop the drift and the tile lift. The mist and rain are decorative.',
+    vibe: 'Glass only where it floats: the nav and the shelf tiles. A quiet code field sits behind the page, and a thin light runs along the glass edge.',
+    a11y: 'One glass recipe. Reduced transparency drops the blur, and higher contrast goes solid and hides the field. Pause and reduced motion stop the pattern and the tile lift. The field is decorative.',
   },
   {
     id: 'c' as const,
