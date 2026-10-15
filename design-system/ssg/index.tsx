@@ -37,6 +37,10 @@ import { TopicPage, type TopicPageProps } from './pages/TopicPage';
 import { DigsPage, type DigWeek } from './pages/DigsPage';
 import { MoviesPage, type Watch } from './pages/MoviesPage';
 import { GrokPage, type GrokFavorite, type GrokPick } from './pages/GrokPage';
+import {
+  DesignIndex, DesignA, DesignB, DesignC,
+  type DesignPageProps, type DirectionId,
+} from './pages/DesignDirections';
 
 export type Assets = Record<string, string>;
 
@@ -285,6 +289,67 @@ export function renderGrok(args: {
       description: 'Recommendations — favorite digs, and anything else worth passing on.',
     },
     <GrokPage siteConfig={siteConfig} favorites={favorites} picks={picks} nowPlaying={nowPlaying} />,
+    siteConfig,
+    assets,
+  );
+}
+
+// ── homepage design bake-off (/design/, /design/a|b|c/) ─────────────────────
+// Isolated sketches. They share the document shell (skip link lives in the
+// page, not PageShell) and load design-directions.css only on these routes.
+function designHead(assets: Assets): string {
+  return `<meta name="robots" content="noindex" />\n<link rel="stylesheet" href="${assetUrl(assets, 'design-directions.css')}" />`;
+}
+
+const DESIGN_META: Record<DirectionId | 'index', { title: string; url: string; description: string }> = {
+  index: {
+    title: 'homepage directions',
+    url: '/design/',
+    description: 'Three homepage sketches for mattdoes.online. The live homepage is unchanged.',
+  },
+  a: {
+    title: 'direction A · neo-GeoCities',
+    url: '/design/a/',
+    description: 'Playful personal-web sketch of the mattdoes.online homepage.',
+  },
+  b: {
+    title: 'direction B · Lain',
+    url: '/design/b/',
+    description: 'Soft-cyberpunk sketch of the mattdoes.online homepage.',
+  },
+  c: {
+    title: 'direction C · hybrid',
+    url: '/design/c/',
+    description: 'Quieter editorial sketch of the mattdoes.online homepage.',
+  },
+};
+
+export function renderDesignIndex(
+  args: DesignPageProps & { siteConfig: FullSiteConfig; assets: Assets },
+): string {
+  const { site, featured, recent, shelf, siteConfig, assets } = args;
+  const meta = DESIGN_META.index;
+  return doc(
+    { title: meta.title, url: meta.url, description: meta.description, headExtra: designHead(assets) },
+    <DesignIndex site={site} featured={featured} recent={recent} shelf={shelf} />,
+    siteConfig,
+    assets,
+  );
+}
+
+export function renderDesignDirection(
+  args: DesignPageProps & { id: DirectionId; siteConfig: FullSiteConfig; assets: Assets },
+): string {
+  const { id, site, featured, recent, shelf, siteConfig, assets } = args;
+  const meta = DESIGN_META[id];
+  const page = id === 'a'
+    ? <DesignA site={site} featured={featured} recent={recent} shelf={shelf} />
+    : id === 'b'
+      ? <DesignB site={site} featured={featured} recent={recent} shelf={shelf} />
+      : <DesignC site={site} featured={featured} recent={recent} shelf={shelf} />;
+  return doc(
+    { title: meta.title, url: meta.url, description: meta.description, headExtra: designHead(assets) },
+    page,
     siteConfig,
     assets,
   );
