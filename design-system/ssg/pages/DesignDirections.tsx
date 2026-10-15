@@ -60,8 +60,8 @@ const DIRECTIONS = [
     href: '/design/b/',
     nav: 'B · lain',
     title: 'B · Lain / soft cyberpunk',
-    vibe: 'Glass only where it floats: the nav and the shelf tiles. A quiet code field sits behind the page, and a thin light runs along the glass edge.',
-    a11y: 'One glass recipe. Reduced transparency drops the blur, and higher contrast goes solid and hides the field. Pause and reduced motion stop the pattern and the tile lift. The field is decorative.',
+    vibe: 'Glass buttons on the shelf tiles and the nav chips. A faint code field sits behind the page, and the writing stays bare.',
+    a11y: 'One glass recipe. Reduced transparency drops the blur, and higher contrast goes solid and hides the field. Pause and reduced motion stop the field, the sheen, and the press. The field is decorative.',
   },
   {
     id: 'c' as const,
@@ -80,9 +80,9 @@ const COMPARE_NAME: Record<DesignCurrent, string> = {
   c: 'Direction C · editorial flow',
 };
 
-function MotionToggle() {
+function MotionToggle({ glass = false }: { glass?: boolean }) {
   return (
-    <label className="motion-toggle">
+    <label className={glass ? 'motion-toggle gb' : 'motion-toggle'}>
       <input id="pause-motion" type="checkbox" />
       <span className="motion-toggle__on">Pause motion</span>
       <span className="motion-toggle__off">Play motion</span>
@@ -106,21 +106,22 @@ function Compare({ current }: { current: DesignCurrent }) {
   return (
     <header className="design-compare">
       <p className="design-compare__name">{COMPARE_NAME[current]}</p>
-      <MotionToggle />
+      <MotionToggle glass={current === 'b'} />
       <nav aria-label="design directions">
-        <a href="/design/" aria-current={current === 'index' ? 'page' : undefined}>
+        <a className={current === 'b' ? 'gb' : undefined} href="/design/" aria-current={current === 'index' ? 'page' : undefined}>
           index
         </a>
         {DIRECTIONS.map((direction) => (
           <a
             key={direction.id}
+            className={current === 'b' ? 'gb' : undefined}
             href={direction.href}
             aria-current={current === direction.id ? 'page' : undefined}
           >
             {direction.nav}
           </a>
         ))}
-        <a href="/">current site</a>
+        <a className={current === 'b' ? 'gb' : undefined} href="/">current site</a>
       </nav>
     </header>
   );
@@ -264,12 +265,12 @@ function Lately({ site, shelf }: { site: DesignSite; shelf: DesignShelf }) {
   );
 }
 
-function ShelfList({ className, numbered = true }: { className: string; numbered?: boolean }) {
+function ShelfList({ className, numbered = true, glass = false }: { className: string; numbered?: boolean; glass?: boolean }) {
   return (
     <ul className={className}>
       {SHELVES.map((shelf, index) => (
         <li key={shelf.href}>
-          <a href={shelf.href}>
+          <a className={glass ? 'gb' : undefined} href={shelf.href}>
             {numbered ? (
               <span className="idx" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
             ) : null}
@@ -400,7 +401,7 @@ export function DesignB({ site, featured, recent, shelf }: DesignPageProps) {
 
         <section className="shelves" aria-labelledby="shelves-heading">
           <h2 id="shelves-heading" className="flow flow-2">around here</h2>
-          <ShelfList className="rooms" numbered={false} />
+          <ShelfList className="rooms" numbered={false} glass />
         </section>
 
         <Recent pieces={recent} />

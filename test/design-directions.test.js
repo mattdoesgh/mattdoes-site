@@ -112,7 +112,7 @@ test('direction colors clear WCAG AA for text and the focus ring', () => {
   assert.match(css, /prefers-reduced-motion:\s*no-preference/);
   assert.match(css, /#pause-motion:checked/);
   assert.match(css, /animation-timeline:\s*view\(\)/);
-  assert.match(css, /\.db :is\(\.design-compare, \.rooms a\) \{[^}]*backdrop-filter:\s*blur\(40px\) saturate\(200%\)/);
+  assert.match(css, /\.db \.gb \{[^}]*backdrop-filter:\s*blur\(40px\) saturate\(200%\)/);
   assert.match(css, /-webkit-backdrop-filter:\s*blur\(40px\) saturate\(200%\)/);
   assert.match(css, /prefers-reduced-transparency:\s*reduce/);
   assert.match(css, /prefers-contrast:\s*more/);
