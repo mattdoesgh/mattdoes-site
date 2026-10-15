@@ -103,7 +103,7 @@ test('direction colors clear WCAG AA for text and the focus ring', () => {
   assert.match(css, /prefers-reduced-motion:\s*no-preference/);
   assert.match(css, /#pause-motion:checked/);
   assert.match(css, /animation-timeline:\s*view\(\)/);
-  assert.match(css, /\.design-dir--b \.ticker--b \{[^}]*backdrop-filter:\s*blur\(18px\)/);
+  assert.match(css, /\.design-dir--b \.ticker--b \{[^}]*backdrop-filter:\s*blur\(24px\)/);
   assert.match(css, /\.design-dir--c \.top \{ grid-template-columns: minmax\(0, 1fr\)/);
   assert.doesNotMatch(css, /<marquee|animation:[^;]*steps\(/);
 
