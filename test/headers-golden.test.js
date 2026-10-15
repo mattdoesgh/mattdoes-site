@@ -56,11 +56,51 @@ test('report-only CSP points at the same-origin report collector', () => {
 });
 
 test('hashed JS and CSS assets are immutable for one year', () => {
-  for (const pattern of ['/*.js', '/*.css', '/fonts/*']) {
-    const cc = headerValues(routes, pattern, 'cache-control')[0];
-    assert.match(cc, /max-age=31536000/, `${pattern} must cache for one year`);
-    assert.match(cc, /immutable/, `${pattern} must be marked immutable`);
+  const cc = headerValues(routes, '/fonts/*', 'cache-control')[0];
+  assert.match(cc, /max-age=31536000/, '/fonts/* must cache for one year');
+  assert.match(cc, /immutable/, '/fonts/* must be marked immutable');
+
+  const source = fs.readFileSync(path.join(process.cwd(), 'static', '_headers'), 'utf8');
+  assert.doesNotMatch(source, /^\/\*\.css$/m, 'static/_headers must not wildcard CSS');
+  assert.doesNotMatch(source, /^\/\*\.js$/m, 'static/_headers must not wildcard JS');
+  assert.equal(routes.has('/*.css'), false, 'dist _headers must not wildcard CSS');
+  assert.equal(routes.has('/*.js'), false, 'dist _headers must not wildcard JS');
+
+  const assets = fs.readdirSync(distDir).filter((name) => name.endsWith('.css') || name.endsWith('.js'));
+  assert.ok(assets.length > 0, 'dist must contain hashed CSS and JS');
+  for (const name of assets) {
+    const cache = headerValues(routes, `/${name}`, 'cache-control')[0];
+    assert.match(cache, /max-age=31536000/, `/${name} must cache for one year`);
+    assert.match(cache, /immutable/, `/${name} must be marked immutable`);
+    const type = headerValues(routes, `/${name}`, 'content-type')[0];
+    if (name.endsWith('.css')) {
+      assert.match(type, /^text\/css/, `/${name} must be served as text/css`);
+    } else {
+      assert.match(type, /javascript/, `/${name} must be served as javascript`);
+    }
   }
+});
+
+test('a missing hashed asset cannot fall through to the HTML shell', () => {
+  // Cloudflare Pages serves /index.html with 200 for unknown paths when the
+  // project has no top-level 404.html, and _headers then stamps the /*.css
+  // immutable policy onto that HTML. After deploy:
+  //   curl -sI https://mattdoes.online/_shared.DOESNOTEXIST.css
+  // must be HTTP 404, content-type must not be a stylesheet, and the
+  // response must not include "immutable".
+  const notFound = fs.readFileSync(path.join(distDir, '404.html'), 'utf8');
+  assert.match(notFound, /<h1>Not found<\/h1>/);
+  assert.match(notFound, /<main id="main">/);
+  assert.doesNotMatch(notFound, /site-field|class="topbar"/,
+    'the 404 page must not be the homepage shell');
+
+  const shared = fs.readdirSync(distDir).find((name) => /^_shared\.[0-9a-f]{8}\.css$/.test(name));
+  assert.ok(shared, 'hashed shared stylesheet must exist');
+  assert.notEqual(shared, '_shared.48d881a1.css',
+    'the poisoned immutable filename must not ship again');
+  const css = fs.readFileSync(path.join(distDir, shared), 'utf8');
+  assert.match(css, /--css-rev:"2026-10-15-asset-404"/);
+  assert.match(css, /syntax:"<angle>"/);
 });
 
 test('HTML routes carry edge cache policy and Early Hint preloads', () => {

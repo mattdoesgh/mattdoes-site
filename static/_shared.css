@@ -72,6 +72,11 @@ html {
   --col: 720px;
   --radius: 6px;
   --radius-sm: 4px;
+  /* Cache-bust. Immutable responses are never revalidated, so a browser
+     that stored the HTML shell at /_shared.48d881a1.css stays unstyled
+     until the filename changes. Keep this token; deleting it can recreate
+     that hash. */
+  --css-rev: "2026-10-15-asset-404";
 }
 
 /* Light-mode override */
