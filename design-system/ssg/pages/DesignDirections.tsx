@@ -60,7 +60,7 @@ const DIRECTIONS = [
     href: '/design/b/',
     nav: 'B · lain',
     title: 'B · Lain / soft cyberpunk',
-    vibe: 'Glass buttons on the shelf tiles and the nav chips. A faint code field sits behind the page, and the writing stays bare.',
+    vibe: 'Clear glass on the shelf tiles and the nav chips. A faint code field shows through, and the writing stays bare.',
     a11y: 'One glass recipe. Reduced transparency drops the blur, and higher contrast goes solid and hides the field. Pause and reduced motion stop the field, the sheen, and the press. The field is decorative.',
   },
   {
