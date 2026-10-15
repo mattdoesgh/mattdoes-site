@@ -29,24 +29,16 @@
   # same-origin /api/csp-report Worker before tightening style-src.
   Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'inline-speculation-rules'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; frame-src https://embed.music.apple.com https://bandcamp.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests; report-uri https://mattdoes.online/api/csp-report
 
-# ── Immutable, content-hashed assets ────────────────────────────────────
-# Browser AND edge cache for a year. `immutable` tells browsers not to
-# revalidate on reload. CDN-Cache-Control lets us tune the edge tier
-# independently if we ever want to (Cloudflare reads it ahead of
-# Cache-Control). Source: https://developers.cloudflare.com/cache/concepts/cache-control/
+# ── Fonts ───────────────────────────────────────────────────────────────
+# Stable filenames, cached for a year. Hashed CSS and JS are not listed
+# here: Emit writes one exact rule per real file (ADR 0013). Do not add
+# `/*.css` or `/*.js` — Pages would attach this cache policy to the HTML
+# document it used to serve for a missing hash.
 
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
   CDN-Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
-
-/*.css
-  Cache-Control: public, max-age=31536000, immutable
-  CDN-Cache-Control: public, max-age=31536000, immutable
-
-/*.js
-  Cache-Control: public, max-age=31536000, immutable
-  CDN-Cache-Control: public, max-age=31536000, immutable
 
 # ── Build-baked data ────────────────────────────────────────────────────
 # Day-long edge cache, 1h browser cache. Re-baked GeoJSON propagates with
