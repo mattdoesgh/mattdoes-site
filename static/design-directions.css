@@ -738,7 +738,7 @@ html:has(.design-dir--c) {
   .design-dir--a .webring a { transition: transform 180ms ease; }
   .design-dir--a .webring a:hover { transform: translate(-3px, -3px); }
 
-  .db .field-track { animation: dir-field 46s linear infinite; }
+  .db .field-track { animation: dir-field 210s linear infinite; }
   .db :is(.rooms a, .design-compare a) { transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease; }
   .db .rooms a:hover { --b-hi: rgba(255, 255, 255, 0.78); transform: translateY(-1px) scale(1.015); }
   .db .rooms a:active { --b-hi: rgba(255, 255, 255, 0.92); transform: scale(0.98); }
