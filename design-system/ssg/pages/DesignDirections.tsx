@@ -52,38 +52,61 @@ const DIRECTIONS = [
     href: '/design/a/',
     nav: 'A · geo cities',
     title: 'A · neo-GeoCities',
-    vibe: 'A playful personal homepage. Stickers, a webring, color on the frame. The links go to the real pages.',
-    a11y: 'Color sits on borders and badges. Reading text stays on the paper color, at AA contrast. Hover motion turns off when reduced motion is on.',
+    vibe: 'A personal homepage with a pulse: a drifting ribbon, bobbing stickers, and a barber-pole stripe. The links stay still after they arrive.',
+    a11y: 'The ribbon is decorative and hidden from screen readers. Pause motion stops every loop. Reduced motion freezes it. Text stays on the paper color.',
   },
   {
     id: 'b' as const,
     href: '/design/b/',
     nav: 'B · lain',
     title: 'B · Lain / soft cyberpunk',
-    vibe: 'A cool, quiet terminal. Static scanlines, one short glitch on the name, no flashing.',
-    a11y: 'Scanlines are a faint background, not a filter over the type. The glitch is a one-second text shadow and does not run under reduced motion.',
+    vibe: 'Soft cyberpunk with flow: scanlines crawl, a side current drifts, and the index eases in. Nothing flashes.',
+    a11y: 'Motion is slow translation, not a strobe. Pause motion stops it. Reduced motion leaves a still field. The current is decorative.',
   },
   {
     id: 'c' as const,
     href: '/design/c/',
     nav: 'C · hybrid',
     title: 'C · quieter hybrid',
-    vibe: 'Editorial, with the oddness kept in a margin note. Less decoration, same shelves.',
-    a11y: 'No motion. One accent color, checked for contrast. The margin note is in the page, in reading order.',
+    vibe: 'Editorial, but not a poster. A slow ribbon, a traveling rule, and a margin mark that drifts as you scroll.',
+    a11y: 'The reading column stays put. Scroll-linked drift is on the ornament only, and it stops under reduced motion or Pause motion.',
   },
 ];
 
 const COMPARE_NAME: Record<DesignCurrent, string> = {
   index: 'Compare the three directions',
-  a: 'Direction A · playful neo-GeoCities',
-  b: 'Direction B · Lain / soft cyberpunk',
-  c: 'Direction C · quieter hybrid',
+  a: 'Direction A · neo-GeoCities in motion',
+  b: 'Direction B · Lain, drifting',
+  c: 'Direction C · editorial flow',
 };
+
+function MotionToggle() {
+  return (
+    <label className="motion-toggle">
+      <input id="pause-motion" type="checkbox" />
+      <span className="motion-toggle__on">Pause motion</span>
+      <span className="motion-toggle__off">Play motion</span>
+    </label>
+  );
+}
+
+function Ticker({ text, pace }: { text: string; pace: 'a' | 'b' | 'c' }) {
+  const line = `${text} · `;
+  return (
+    <div className={`ticker ticker--${pace}`} aria-hidden="true">
+      <div className="ticker-track">
+        <span>{line.repeat(4)}</span>
+        <span>{line.repeat(4)}</span>
+      </div>
+    </div>
+  );
+}
 
 function Compare({ current }: { current: DesignCurrent }) {
   return (
     <header className="design-compare">
       <p className="design-compare__name">{COMPARE_NAME[current]}</p>
+      <MotionToggle />
       <nav aria-label="design directions">
         <a href="/design/" aria-current={current === 'index' ? 'page' : undefined}>
           index
@@ -167,7 +190,7 @@ function Lead({ piece }: { piece: DesignPiece | null }) {
     );
   }
   return (
-    <article className="lead">
+    <article className="lead flow flow-3">
       <p className="kicker">
         <span className="kind">{piece.kind || 'note'}</span>
         {piece.date ? <> · <Time date={piece.date} format="day" /></> : null}
@@ -181,7 +204,7 @@ function Lead({ piece }: { piece: DesignPiece | null }) {
 function Recent({ pieces }: { pieces: DesignPiece[] }) {
   if (!pieces.length) return null;
   return (
-    <section className="recent" aria-labelledby="recent-heading">
+    <section className="recent flow flow-4" aria-labelledby="recent-heading">
       <h2 id="recent-heading">recent writing</h2>
       <ol>
         {pieces.map((piece) => (
@@ -250,8 +273,9 @@ export function DesignIndex({ site, featured }: DesignPageProps) {
       <main className="design-wrap" id="main" aria-labelledby="page-title">
         <h1 id="page-title">Homepage directions</h1>
         <p className="lede">
-          Three sketches for a new front page of mattdoes.online. The live homepage is unchanged.
-          Each one keeps keyboard access, a visible focus ring, and AA contrast. Motion is garnish.
+          Three kinetic sketches for a new front page of mattdoes.online. The live homepage is unchanged.
+          Each one moves, and each one can be paused. Reduced motion stops the movement. Keyboard access,
+          a visible focus ring, and AA contrast stay in place.
         </p>
         {featured ? (
           <p className="using">
@@ -262,7 +286,7 @@ export function DesignIndex({ site, featured }: DesignPageProps) {
         <ul className="direction-list">
           {DIRECTIONS.map((direction) => (
             <li key={direction.id}>
-              <article className={`direction-card direction-card--${direction.id}`}>
+              <article className={`direction-card direction-card--${direction.id} flow flow-${direction.id === 'a' ? '1' : direction.id === 'b' ? '2' : '3'}`}>
                 <h2>{direction.title}</h2>
                 <p>{direction.vibe}</p>
                 <p className="a11y">{direction.a11y}</p>
@@ -280,7 +304,13 @@ export function DesignA({ site, featured, recent, shelf }: DesignPageProps) {
   return (
     <Stage current="a" className="design-stage design-dir design-dir--a" site={site}>
       <main className="design-wrap" id="main" aria-labelledby="page-title">
-        <header className="mast">
+        <header className="mast flow">
+          <div className="sky" aria-hidden="true">
+            <span className="float float-1">★</span>
+            <span className="float float-2">new</span>
+            <span className="float float-3">✦</span>
+            <span className="float float-4">hi</span>
+          </div>
           <p className="kicker">you have reached a personal homepage</p>
           <h1 id="page-title" className="wordmark">matt <span className="does">does</span></h1>
           <p className="domain">mattdoes.online</p>
@@ -292,16 +322,17 @@ export function DesignA({ site, featured, recent, shelf }: DesignPageProps) {
             <li className="chip-d">no guest book</li>
           </ul>
         </header>
+        <Ticker pace="a" text="welcome · under construction · a personal web · mattdoes.online" />
 
         <section className="shelves" aria-labelledby="shelves-heading">
-          <h2 id="shelves-heading">around the site</h2>
+          <h2 id="shelves-heading" className="flow flow-2">around the site</h2>
           <ShelfList className="webring" />
         </section>
 
         <Lead piece={featured} />
         <Recent pieces={recent} />
 
-        <section className="wire" aria-labelledby="wire-heading">
+        <section className="wire flow flow-5" aria-labelledby="wire-heading">
           <h2 id="wire-heading">right now</h2>
           <CurrentNotes site={site} shelf={shelf} />
         </section>
@@ -313,8 +344,9 @@ export function DesignA({ site, featured, recent, shelf }: DesignPageProps) {
 export function DesignB({ site, featured, recent, shelf }: DesignPageProps) {
   return (
     <Stage current="b" className="design-stage design-dir design-dir--b" site={site}>
+      <div className="rain" aria-hidden="true"></div>
       <main className="design-wrap" id="main" aria-labelledby="page-title">
-        <header className="mast">
+        <header className="mast flow">
           <p className="kicker">present time</p>
           <h1 id="page-title" className="wordmark">
             <span className="prompt" aria-hidden="true">&gt; </span>
@@ -337,17 +369,18 @@ export function DesignB({ site, featured, recent, shelf }: DesignPageProps) {
             </div>
           </dl>
         </header>
+        <Ticker pace="b" text="present time · wired · mattdoes.online · signal" />
 
         <Lead piece={featured} />
 
         <section className="shelves" aria-labelledby="shelves-heading">
-          <h2 id="shelves-heading">index</h2>
+          <h2 id="shelves-heading" className="flow flow-2">index</h2>
           <ShelfList className="protocol" />
         </section>
 
         <Recent pieces={recent} />
 
-        <section className="wire" aria-labelledby="wire-heading">
+        <section className="wire flow flow-5" aria-labelledby="wire-heading">
           <h2 id="wire-heading">signal</h2>
           <CurrentNotes site={site} shelf={shelf} />
         </section>
@@ -361,14 +394,16 @@ export function DesignC({ site, featured, recent, shelf }: DesignPageProps) {
     <Stage current="c" className="design-stage design-dir design-dir--c" site={site}>
       <main className="design-wrap" id="main" aria-labelledby="page-title">
         <div className="top">
-          <header className="mast">
+          <header className="mast flow">
             <p className="kicker">mattdoes.online</p>
             <h1 id="page-title" className="wordmark">matt does</h1>
             <p className="bio">{bioOf(site)}</p>
+            <Ticker pace="c" text="a personal site · still moving · mattdoes.online" />
           </header>
           <aside className="margin" aria-label="margin note">
+            <span className="margin-mark" aria-hidden="true"></span>
             <p className="place">{placeOf(site)}</p>
-            <p>A quieter front page. The strange part stays in the margin.</p>
+            <p>A quieter front page. The strange part stays in the margin, and it drifts.</p>
             <CurrentNotes site={site} shelf={shelf} />
           </aside>
         </div>
@@ -376,7 +411,7 @@ export function DesignC({ site, featured, recent, shelf }: DesignPageProps) {
         <Lead piece={featured} />
         <Recent pieces={recent} />
 
-        <section className="shelves" aria-labelledby="shelves-heading">
+        <section className="shelves flow flow-5" aria-labelledby="shelves-heading">
           <h2 id="shelves-heading">sections</h2>
           <nav aria-label="sections">
             <ShelfList className="quiet-nav" />

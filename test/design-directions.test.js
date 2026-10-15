@@ -80,6 +80,12 @@ test('the index and three directions are labelled, linked, and isolated', () => 
     assert.match(page.body.textContent, /Reader features fixture/, `${rel} shows the editorial lead`);
     assert.equal(page.querySelectorAll('[id="now-playing"], [id="scrobble-count"]').length, 0,
       'sketches do not take over the live listening targets');
+    const pause = page.querySelector('label.motion-toggle input#pause-motion');
+    assert.equal(pause?.getAttribute('type'), 'checkbox', `${rel} has a pause control`);
+    assert.match(page.querySelector('label.motion-toggle')?.textContent || '', /Pause motion/);
+    const ticker = page.querySelector('.ticker');
+    assert.equal(ticker?.getAttribute('aria-hidden'), 'true', `${rel} ticker is decorative`);
+    assert.equal(ticker?.querySelector('a'), null, `${rel} ticker has no links`);
   }
 });
 
@@ -88,6 +94,10 @@ test('direction colors clear WCAG AA for text and the focus ring', () => {
   assert.match(css, /@media \(prefers-reduced-motion:\s*reduce\)/);
   assert.match(css, /animation:\s*none !important/);
   assert.match(css, /prefers-reduced-motion:\s*no-preference/);
+  assert.match(css, /#pause-motion:checked/);
+  assert.match(css, /animation-timeline:\s*view\(\)/);
+  assert.match(css, /\.design-dir--c \.top \{ grid-template-columns: minmax\(0, 1fr\)/);
+  assert.doesNotMatch(css, /<marquee|animation:[^;]*steps\(/);
 
   for (const selector of SELECTORS) {
     const token = tokens(css, selector);
