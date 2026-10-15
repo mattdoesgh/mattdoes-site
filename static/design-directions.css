@@ -338,9 +338,9 @@ html:has(.design-dir--c) {
 .design-dir--a .float-3 { right: 22%; top: 0.1rem; color: var(--dir-chip-b-ink); background: var(--dir-chip-b); }
 .design-dir--a .float-4 { right: 4%; top: 0.9rem; color: var(--dir-chip-c-ink); background: var(--dir-chip-c); }
 
-/* ── B: Lain / soft cyberpunk ────────────────────── */
+/* ── B: Lain / soft cyberpunk, atmospheric ───────── */
 .design-dir--b {
-  font-family: var(--font-mono);
+  font-family: "Avenir Next", "Segoe UI", "Gill Sans", sans-serif;
   background-color: var(--dir-bg);
   background-image: repeating-linear-gradient(
     to bottom,
@@ -350,63 +350,80 @@ html:has(.design-dir--c) {
     rgba(190, 230, 240, 0.04) 4px
   );
 }
+.design-dir--b .kicker,
+.design-dir--b .recent time,
+.design-dir--b .ticker-track span {
+  font-family: inherit;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
 .design-dir--b .wordmark {
-  font-size: clamp(2.3rem, 6vw, 4rem);
+  font-size: clamp(3.2rem, 8vw, 5.6rem);
   font-weight: 500;
-  margin: 0;
+  letter-spacing: -0.035em;
+  margin: 0 0 0.45rem;
   text-shadow: 1px 0 0 rgba(255, 90, 160, 0.45), -1px 0 0 rgba(120, 220, 255, 0.45);
 }
-.design-dir--b .wordmark::after {
-  content: "";
-  display: inline-block;
-  width: 0.55em;
-  height: 0.82em;
-  margin-left: 0.2em;
-  background: currentColor;
-  vertical-align: -0.05em;
+.design-dir--b .bio { font-size: 1.2rem; max-width: 34rem; }
+.design-dir--b .where { color: var(--dir-mute); margin-top: -0.2rem; }
+.design-dir--b .lead {
+  border: none;
+  background: color-mix(in srgb, var(--dir-surface) 86%, transparent);
 }
-.design-dir--b .signals {
+.design-dir--b .lead h2 { font-weight: 500; font-size: clamp(1.7rem, 3.4vw, 2.4rem); }
+.design-dir--b .rooms {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 0.75rem;
-  margin: 1.2rem 0 0;
 }
-.design-dir--b .signals div {
-  padding: 0.55rem 0.7rem;
+.design-dir--b .rooms a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-height: 5.75rem;
+  padding: 0.9rem 1rem;
   background: var(--dir-surface);
-  border-left: 3px solid var(--dir-link);
-}
-.design-dir--b .signals dt { color: var(--dir-mute); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
-.design-dir--b .signals dd { margin: 0.15rem 0 0; }
-.design-dir--b .lead { border: none; border-left: 3px solid #ff8ab8; }
-.design-dir--b .protocol a {
-  display: grid;
-  grid-template-columns: 2.4rem minmax(6rem, 0.8fr) minmax(0, 1.4fr);
-  gap: 0.75rem;
-  align-items: baseline;
-  min-height: 44px;
-  padding: 0.65rem 0;
   color: var(--dir-ink);
   text-decoration: none;
-  border-bottom: 1px solid rgba(183, 208, 214, 0.35);
+  border: 1px solid rgba(158, 231, 255, 0.35);
 }
-.design-dir--b .protocol .idx { color: var(--dir-link); }
-.design-dir--b .protocol .note { color: var(--dir-mute); }
-.design-dir--b .protocol a:hover .label,
-.design-dir--b .protocol a:focus-visible .label { text-decoration: underline; text-underline-offset: 0.18em; }
+.design-dir--b .rooms .label {
+  font-size: 1.2rem;
+  color: var(--dir-link);
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+}
+.design-dir--b .rooms .note { color: var(--dir-mute); font-size: 0.92rem; }
+.design-dir--b .mist {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.design-dir--b .mist span {
+  position: absolute;
+  width: 16rem;
+  height: 16rem;
+  border-radius: 50%;
+  filter: blur(36px);
+  opacity: 0.45;
+}
+.design-dir--b .mist-a { left: -7rem; top: 7rem; background: #16445c; }
+.design-dir--b .mist-b { right: -8rem; bottom: 4rem; background: #3a2348; }
 .design-dir--b .rain {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 0;
-  width: 2.4rem;
+  width: 3.2rem;
   pointer-events: none;
   background: repeating-linear-gradient(
     to bottom,
-    transparent 0 18px,
-    rgba(158, 231, 255, 0.28) 18px 20px
+    transparent 0 20px,
+    rgba(158, 231, 255, 0.22) 20px 21px
   );
 }
+.design-dir--b .rain-left { left: 0; }
+.design-dir--b .rain-right { right: 0; }
 
 /* ── C: quieter hybrid ───────────────────────────── */
 .design-dir--c { font-family: Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif; }
@@ -464,9 +481,8 @@ html:has(.design-dir--c) {
 .design-dir--c .quiet-nav .note { color: var(--dir-mute); text-decoration: none; }
 @media (max-width: 760px) {
   .design-dir--c .top { grid-template-columns: minmax(0, 1fr); }
-  .design-dir--b .protocol a { grid-template-columns: 2.4rem 1fr; }
-  .design-dir--b .protocol .note { grid-column: 2; }
-  .design-dir--b .rain { display: none; }
+  .design-dir--b .rain,
+  .design-dir--b .mist { display: none; }
 }
 
 /* ── motion ──────────────────────────────────────── */
@@ -547,6 +563,10 @@ html:has(.design-dir--c) {
   from { transform: translateY(28px); }
   to { transform: translateY(-36px); }
 }
+@keyframes dir-mist {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(22px, -28px, 0); }
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .flow { animation: dir-rise 0.85s ease both; }
@@ -560,12 +580,12 @@ html:has(.design-dir--c) {
   .design-dir--a .webring li:nth-child(4) { animation-delay: 0.18s; }
   .design-dir--a .webring li:nth-child(5) { animation-delay: 0.24s; }
   .design-dir--a .webring li:nth-child(6) { animation-delay: 0.3s; }
-  .design-dir--b .protocol li { animation: dir-rise 0.7s ease both; }
-  .design-dir--b .protocol li:nth-child(2) { animation-delay: 0.07s; }
-  .design-dir--b .protocol li:nth-child(3) { animation-delay: 0.14s; }
-  .design-dir--b .protocol li:nth-child(4) { animation-delay: 0.21s; }
-  .design-dir--b .protocol li:nth-child(5) { animation-delay: 0.28s; }
-  .design-dir--b .protocol li:nth-child(6) { animation-delay: 0.35s; }
+  .design-dir--b .rooms li { animation: dir-rise 0.7s ease both; }
+  .design-dir--b .rooms li:nth-child(2) { animation-delay: 0.07s; }
+  .design-dir--b .rooms li:nth-child(3) { animation-delay: 0.14s; }
+  .design-dir--b .rooms li:nth-child(4) { animation-delay: 0.21s; }
+  .design-dir--b .rooms li:nth-child(5) { animation-delay: 0.28s; }
+  .design-dir--b .rooms li:nth-child(6) { animation-delay: 0.35s; }
 
   .ticker-track { animation: dir-ticker 32s linear infinite; }
   .ticker--b .ticker-track { animation-duration: 26s; }
@@ -582,6 +602,8 @@ html:has(.design-dir--c) {
   .design-dir--b { animation: dir-scan 16s linear infinite; }
   .design-dir--b .rain { animation: dir-rain 14s linear infinite; }
   .design-dir--b .wordmark { animation: dir-chroma 9s ease-in-out infinite; }
+  .design-dir--b .mist span { animation: dir-mist 18s ease-in-out infinite; }
+  .design-dir--b .mist-b { animation: dir-mist 24s ease-in-out -7s infinite; }
 
   .design-dir--c .mast::after {
     content: "";
@@ -624,6 +646,7 @@ html:has(.design-dir--c) {
   }
   .design-dir--a .webring a:hover,
   .design-dir--b .wordmark,
+  .design-dir--b .mist span,
   .design-dir--a .float,
   .design-dir--c .margin-mark {
     transform: none;

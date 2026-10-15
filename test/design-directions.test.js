@@ -87,6 +87,13 @@ test('the index and three directions are labelled, linked, and isolated', () => 
     assert.equal(ticker?.getAttribute('aria-hidden'), 'true', `${rel} ticker is decorative`);
     assert.equal(ticker?.querySelector('a'), null, `${rel} ticker has no links`);
   }
+
+  const lain = doc('design/b/index.html');
+  assert.equal(lain.querySelector('.prompt, .protocol, .signals'), null, 'B is not a terminal');
+  assert.equal(lain.querySelector('.rooms .idx'), null, 'B rooms are not a numbered shell index');
+  assert.ok(lain.querySelector('.mist[aria-hidden="true"]'));
+  assert.ok(lain.querySelector('.rain[aria-hidden="true"]'));
+  assert.doesNotMatch(lain.querySelector('h1')?.textContent || '', />/);
 });
 
 test('direction colors clear WCAG AA for text and the focus ring', () => {

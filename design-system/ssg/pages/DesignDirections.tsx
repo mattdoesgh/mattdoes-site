@@ -60,8 +60,8 @@ const DIRECTIONS = [
     href: '/design/b/',
     nav: 'B · lain',
     title: 'B · Lain / soft cyberpunk',
-    vibe: 'Soft cyberpunk with flow: scanlines crawl, a side current drifts, and the index eases in. Nothing flashes.',
-    a11y: 'Motion is slow translation, not a strobe. Pause motion stops it. Reduced motion leaves a still field. The current is decorative.',
+    vibe: 'Soft cyberpunk as weather, not a terminal. Scanlines crawl, mist drifts at the edges, and the name breathes color. The rooms of the site are plain language.',
+    a11y: 'Motion is slow drift, not a strobe. Pause motion stops it. Reduced motion leaves a still field. The mist and the ribbon are decorative.',
   },
   {
     id: 'c' as const,
@@ -76,7 +76,7 @@ const DIRECTIONS = [
 const COMPARE_NAME: Record<DesignCurrent, string> = {
   index: 'Compare the three directions',
   a: 'Direction A · neo-GeoCities in motion',
-  b: 'Direction B · Lain, drifting',
+  b: 'Direction B · Lain, atmospheric',
   c: 'Direction C · editorial flow',
 };
 
@@ -243,13 +243,15 @@ function CurrentNotes({ site, shelf }: { site: DesignSite; shelf: DesignShelf })
   );
 }
 
-function ShelfList({ className }: { className: string }) {
+function ShelfList({ className, numbered = true }: { className: string; numbered?: boolean }) {
   return (
     <ul className={className}>
       {SHELVES.map((shelf, index) => (
         <li key={shelf.href}>
           <a href={shelf.href}>
-            <span className="idx" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+            {numbered ? (
+              <span className="idx" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+            ) : null}
             <span className="label">{shelf.label}</span>
             <span className="note">{shelf.note}</span>
           </a>
@@ -344,44 +346,32 @@ export function DesignA({ site, featured, recent, shelf }: DesignPageProps) {
 export function DesignB({ site, featured, recent, shelf }: DesignPageProps) {
   return (
     <Stage current="b" className="design-stage design-dir design-dir--b" site={site}>
-      <div className="rain" aria-hidden="true"></div>
+      <div className="mist" aria-hidden="true">
+        <span className="mist-a"></span>
+        <span className="mist-b"></span>
+      </div>
+      <div className="rain rain-left" aria-hidden="true"></div>
+      <div className="rain rain-right" aria-hidden="true"></div>
       <main className="design-wrap" id="main" aria-labelledby="page-title">
         <header className="mast flow">
-          <p className="kicker">present time</p>
-          <h1 id="page-title" className="wordmark">
-            <span className="prompt" aria-hidden="true">&gt; </span>
-            matt does
-          </h1>
-          <p className="domain">mattdoes.online</p>
+          <p className="kicker">mattdoes.online</p>
+          <h1 id="page-title" className="wordmark">matt does</h1>
           <p className="bio">{bioOf(site)}</p>
-          <dl className="signals">
-            <div>
-              <dt>site</dt>
-              <dd>mattdoes.online</dd>
-            </div>
-            <div>
-              <dt>place</dt>
-              <dd>{placeOf(site)}</dd>
-            </div>
-            <div>
-              <dt>handle</dt>
-              <dd>{site.identity?.handle || '@mattdoes'}</dd>
-            </div>
-          </dl>
+          <p className="where">{placeOf(site)}</p>
         </header>
-        <Ticker pace="b" text="present time · wired · mattdoes.online · signal" />
+        <Ticker pace="b" text="somewhere quiet on the wired · a personal site · still drifting" />
 
         <Lead piece={featured} />
 
         <section className="shelves" aria-labelledby="shelves-heading">
-          <h2 id="shelves-heading" className="flow flow-2">index</h2>
-          <ShelfList className="protocol" />
+          <h2 id="shelves-heading" className="flow flow-2">around here</h2>
+          <ShelfList className="rooms" numbered={false} />
         </section>
 
         <Recent pieces={recent} />
 
         <section className="wire flow flow-5" aria-labelledby="wire-heading">
-          <h2 id="wire-heading">signal</h2>
+          <h2 id="wire-heading">lately</h2>
           <CurrentNotes site={site} shelf={shelf} />
         </section>
       </main>
