@@ -338,9 +338,9 @@ html:has(.design-dir--c) {
 .design-dir--a .float-3 { right: 22%; top: 0.1rem; color: var(--dir-chip-b-ink); background: var(--dir-chip-b); }
 .design-dir--a .float-4 { right: 4%; top: 0.9rem; color: var(--dir-chip-c-ink); background: var(--dir-chip-c); }
 
-/* ── B: Lain / soft cyberpunk, atmospheric ───────── */
+/* ── B: Lain under liquid glass ─────────────────── */
 .design-dir--b {
-  font-family: "Avenir Next", "Segoe UI", "Gill Sans", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background-color: var(--dir-bg);
   background-image: repeating-linear-gradient(
     to bottom,
@@ -350,6 +350,9 @@ html:has(.design-dir--c) {
     rgba(190, 230, 240, 0.04) 4px
   );
 }
+.design-dir--b .design-wrap { padding-top: 2.8rem; }
+.design-dir--b .design-compare,
+.design-dir--b .design-foot,
 .design-dir--b .kicker,
 .design-dir--b .recent time,
 .design-dir--b .ticker-track span {
@@ -357,38 +360,71 @@ html:has(.design-dir--c) {
   letter-spacing: 0.01em;
   text-transform: none;
 }
+.design-dir--b .design-compare {
+  background: color-mix(in srgb, var(--dir-surface) 68%, transparent);
+  border-bottom: 1px solid rgba(230, 246, 248, 0.16);
+  backdrop-filter: blur(22px) saturate(1.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+.design-dir--b .design-foot { border-top-color: rgba(230, 246, 248, 0.16); }
+.design-dir--b .kicker { font-size: 0.95rem; margin-bottom: 0.75rem; }
 .design-dir--b .wordmark {
-  font-size: clamp(3.2rem, 8vw, 5.6rem);
+  font-size: clamp(2.85rem, 6.4vw, 4.5rem);
   font-weight: 500;
-  letter-spacing: -0.035em;
-  margin: 0 0 0.45rem;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  margin: 0 0 0.55rem;
   text-shadow: 1px 0 0 rgba(255, 90, 160, 0.45), -1px 0 0 rgba(120, 220, 255, 0.45);
 }
-.design-dir--b .bio { font-size: 1.2rem; max-width: 34rem; }
-.design-dir--b .where { color: var(--dir-mute); margin-top: -0.2rem; }
-.design-dir--b .lead {
-  border: none;
-  background: color-mix(in srgb, var(--dir-surface) 86%, transparent);
+.design-dir--b .bio { font-size: 1.125rem; line-height: 1.55; max-width: 36rem; }
+.design-dir--b .where { color: var(--dir-mute); margin-top: -0.15rem; }
+.design-dir--b h2 {
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--dir-mute);
 }
-.design-dir--b .lead h2 { font-weight: 500; font-size: clamp(1.7rem, 3.4vw, 2.4rem); }
+.design-dir--b .lead,
+.design-dir--b .rooms a,
+.design-dir--b .recent,
+.design-dir--b .wire,
+.design-dir--b .ticker--b {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 1.15rem;
+  background-color: color-mix(in srgb, var(--dir-surface) 78%, transparent);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.14), transparent 42%);
+  backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(158, 231, 255, 0.2),
+    0 14px 34px rgba(0, 0, 0, 0.24);
+}
+.design-dir--b .ticker--b { border-radius: 999px; color: var(--dir-link); }
+.design-dir--b .lead { padding: 1.35rem 1.45rem 1.2rem; }
+.design-dir--b .lead h2 {
+  font-weight: 500;
+  font-size: clamp(1.55rem, 3vw, 2.15rem);
+  color: var(--dir-ink);
+}
+.design-dir--b .recent,
+.design-dir--b .wire { padding: 1.15rem 1.25rem 0.45rem; margin-top: 1.35rem; }
+.design-dir--b .recent li { border-bottom-color: rgba(230, 246, 248, 0.14); }
 .design-dir--b .rooms {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+  gap: 0.85rem;
 }
 .design-dir--b .rooms a {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.25rem;
   min-height: 5.75rem;
-  padding: 0.9rem 1rem;
-  background: var(--dir-surface);
+  padding: 1.05rem 1.1rem 1rem;
   color: var(--dir-ink);
   text-decoration: none;
-  border: 1px solid rgba(158, 231, 255, 0.35);
 }
 .design-dir--b .rooms .label {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   color: var(--dir-link);
   text-decoration: underline;
   text-underline-offset: 0.16em;

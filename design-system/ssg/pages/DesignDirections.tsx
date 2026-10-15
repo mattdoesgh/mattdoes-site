@@ -60,8 +60,8 @@ const DIRECTIONS = [
     href: '/design/b/',
     nav: 'B · lain',
     title: 'B · Lain / soft cyberpunk',
-    vibe: 'Soft cyberpunk as weather, not a terminal. Scanlines crawl, mist drifts at the edges, and the name breathes color. The rooms of the site are plain language.',
-    a11y: 'Motion is slow drift, not a strobe. Pause motion stops it. Reduced motion leaves a still field. The mist and the ribbon are decorative.',
+    vibe: 'The same weather, seen through glass. Frosted panels, a lit edge, and the scanlines and mist still moving behind them.',
+    a11y: 'Glass is a surface, not a strobe. Text stays on a dark translucent panel. Pause motion and reduced motion stop the drift. The mist and the ribbon are decorative.',
   },
   {
     id: 'c' as const,
@@ -76,7 +76,7 @@ const DIRECTIONS = [
 const COMPARE_NAME: Record<DesignCurrent, string> = {
   index: 'Compare the three directions',
   a: 'Direction A · neo-GeoCities in motion',
-  b: 'Direction B · Lain, atmospheric',
+  b: 'Direction B · Lain, under glass',
   c: 'Direction C · editorial flow',
 };
 
