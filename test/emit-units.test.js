@@ -91,7 +91,7 @@ test('sitemapXml covers the static routes and dated article URLs', () => {
     articles: [{ url: '/journal/a/', date: '2026-01-02T00:00:00Z' }],
     aboutWritten: false,
   });
-  for (const r of ['/', '/blog/', '/search/', '/listening/', '/colophon/', '/journal/', '/making/', '/thoughts/']) {
+  for (const r of ['/', '/blog/', '/search/', '/listening/', '/colophon/', '/journal/', '/making/', '/thoughts/', '/digs/', '/movies/', '/grok/']) {
     assert.ok(xml.includes(`<loc>https://mattdoes.online${r}</loc>`), `sitemap must list ${r}`);
   }
   assert.ok(!xml.includes('/about/'), 'no /about/ entry when the note is absent');

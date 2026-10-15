@@ -21,10 +21,13 @@
   # inline scripts must be hashed together or one is silently dropped (ADR 0001,
   # ADR 0007). Don't hardcode the hashes here: the importmap one moves with the
   # hashed rows.js/_helpers.js URLs and they are recomputed each build.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'inline-speculation-rules'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
+  # frame-src admits the two players /digs/ embeds (Apple Music, Bandcamp).
+  # Both are lazy iframes — no third-party script or connect. Add a host here
+  # only when lib/digs.js embedUrl() allows it too. See docs/recommendations.md.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'inline-speculation-rules'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; frame-src https://embed.music.apple.com https://bandcamp.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
   # Report-only twin of the enforced CSP — collects browser violations at the
   # same-origin /api/csp-report Worker before tightening style-src.
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'inline-speculation-rules'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests; report-uri https://mattdoes.online/api/csp-report
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'inline-speculation-rules'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; frame-src https://embed.music.apple.com https://bandcamp.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests; report-uri https://mattdoes.online/api/csp-report
 
 # ── Immutable, content-hashed assets ────────────────────────────────────
 # Browser AND edge cache for a year. `immutable` tells browsers not to

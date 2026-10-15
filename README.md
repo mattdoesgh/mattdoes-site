@@ -11,6 +11,8 @@ source for [mattdoes.online](https://mattdoes.online) — my personal site. i wr
   - *thoughts* — short notes grouped with the daily context they came from
 - **topic paths** (`/topics/<topic>/`) — durable cross-kind routes connecting journal, making, and notebook entries by idea.
 - **listening** — recent plays pulled from Last.fm at build time and refreshed live between deploys.
+- **digs** (`/digs/`) — weekly music picks, authored in the repo. favorite digs also show up on **grok says…** (`/grok/`).
+- **movies** (`/movies/`) — the last 25 Letterboxd watches, fetched from the diary RSS at build time.
 - **search** — client-side filter over a static index of every journal, making, and thoughts post.
 - **about** — who I am, what I work on.
 - **colophon** — how the whole thing fits together.
@@ -18,6 +20,8 @@ source for [mattdoes.online](https://mattdoes.online) — my personal site. i wr
 ## how it's built
 
 static HTML generated from an Obsidian vault (`mattdoes-vault`, private repo). a pre-build script (`scripts/pages-prebuild.sh`) clones the vault into `./vault/` with a fine-grained PAT. every page is a React component rendered to static HTML at build time — no CMS, and no client-side framework beyond a small React island for the timeline controls. hosted on Cloudflare Pages.
+
+how to add a digs week, or anything else on grok says…, is in [`docs/recommendations.md`](docs/recommendations.md).
 
 the generator, in three parts:
 

@@ -46,7 +46,7 @@ export function PageShell({
     <StatusPill text={nowPlaying} dot live />
   );
   return (
-    <Layout topbar={{ siteTitle, active, status }} footer={{ footerText, nav: footerNav }}>
+    <Layout topbar={{ siteTitle, active, status }} footer={{ footerText, nav: footerNav, active }}>
       {children}
     </Layout>
   );

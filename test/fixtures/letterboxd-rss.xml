@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:letterboxd="https://letterboxd.com">
+  <channel>
+    <item>
+      <title>Real Review, 1974 - ★★★★★</title>
+      <link>https://letterboxd.com/mattdoes/film/real-review/</link>
+      <pubDate>Wed, 14 Oct 2026 18:41:02 +1300</pubDate>
+      <letterboxd:watchedDate>2026-10-13</letterboxd:watchedDate>
+      <letterboxd:rewatch>No</letterboxd:rewatch>
+      <letterboxd:filmTitle>Real &amp; Review</letterboxd:filmTitle>
+      <letterboxd:filmYear>1974</letterboxd:filmYear>
+      <letterboxd:memberRating>5.0</letterboxd:memberRating>
+      <description><![CDATA[ <p><img src="https://a.ltrbxd.com/x.jpg"/></p> <p>the third act holds.</p> ]]></description>
+    </item>
+    <item>
+      <title>Boilerplate, 2026</title>
+      <link>https://letterboxd.com/mattdoes/film/boilerplate/</link>
+      <letterboxd:watchedDate>2026-10-12</letterboxd:watchedDate>
+      <letterboxd:rewatch>Yes</letterboxd:rewatch>
+      <letterboxd:filmTitle>Boilerplate</letterboxd:filmTitle>
+      <letterboxd:filmYear>2026</letterboxd:filmYear>
+      <letterboxd:memberRating>3.5</letterboxd:memberRating>
+      <description><![CDATA[ <p><img src="https://a.ltrbxd.com/y.jpg"/></p> <p>Watched on Monday October 12, 2026.</p> ]]></description>
+    </item>
+    <item>
+      <title>A list</title>
+      <link>https://letterboxd.com/mattdoes/list/nope/</link>
+      <description>not a film</description>
+    </item>
+    <item>
+      <link>javascript:alert(1)</link>
+      <letterboxd:filmTitle>Bad Link</letterboxd:filmTitle>
+      <letterboxd:filmYear>1999</letterboxd:filmYear>
+      <letterboxd:watchedDate>2026-01-01</letterboxd:watchedDate>
+    </item>
+  </channel>
+</rss>

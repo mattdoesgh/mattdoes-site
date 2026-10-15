@@ -27,8 +27,12 @@ for the live bits.
   sitemap). Imports the `render*` functions from the built design-system bundle
   (`design-system/dist-ssg/ssg.js`) for pages.
 - `lib/notebook.js`, `lib/topic-index.js`, `lib/editorial-home.js` — pure
-  reader-facing projections (Notebook days, Topic paths, editorial home) between
-  the content model and page rendering. See `CONTEXT.md`.
+ reader-facing projections (Notebook days, Topic paths, editorial home) between
+ the content model and page rendering. See `CONTEXT.md`.
+- `content/digs/`, `content/recommendations.json`, `lib/digs.js`,
+ `lib/recommendations.js`, `lib/letterboxd.js`, `lib/watches.js` — weekly digs,
+ the grok hub's other picks, and the build-time Letterboxd snapshot for
+ `/movies/`. See `docs/recommendations.md`.
 - `design-system/` — `@mattdoes/ds`, the React + TS component library. One source,
   three roles: it renders every page (`ssg/pages/`, `renderToStaticMarkup`), is the
   component set synced to Claude Design (`.design-sync/`) so they don't drift, and

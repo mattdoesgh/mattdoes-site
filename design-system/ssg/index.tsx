@@ -34,6 +34,9 @@ import { ColophonPage, type ColophonPageProps } from './pages/ColophonPage';
 import { SearchPage, type SearchPageProps } from './pages/SearchPage';
 import { ThoughtsPage, type ThoughtsPageProps } from './pages/ThoughtsPage';
 import { TopicPage, type TopicPageProps } from './pages/TopicPage';
+import { DigsPage, type DigWeek } from './pages/DigsPage';
+import { MoviesPage, type Watch } from './pages/MoviesPage';
+import { GrokPage, type GrokFavorite, type GrokPick } from './pages/GrokPage';
 
 export type Assets = Record<string, string>;
 
@@ -220,6 +223,68 @@ export function renderColophon(
         'How mattdoes.online is put together — Obsidian vault, Node build, static HTML, and two thin Cloudflare Workers.',
     },
     <ColophonPage siteConfig={siteConfig} stats={stats} updated={updated} nowPlaying={nowPlaying} />,
+    siteConfig,
+    assets,
+  );
+}
+
+// ── digs (weekly music; content/digs) ────────────────────────────────────────
+export function renderDigs(args: {
+  siteConfig: FullSiteConfig;
+  weeks: DigWeek[];
+  nowPlaying?: string;
+  assets: Assets;
+}): string {
+  const { siteConfig, weeks, nowPlaying = '', assets } = args;
+  return doc(
+    {
+      title: 'digs',
+      url: '/digs/',
+      description: 'Weekly music digs — a starter album or track, with a player when there is one.',
+    },
+    <DigsPage siteConfig={siteConfig} weeks={weeks} nowPlaying={nowPlaying} />,
+    siteConfig,
+    assets,
+  );
+}
+
+// ── movies (recent Letterboxd watches) ───────────────────────────────────────
+export function renderMovies(args: {
+  siteConfig: FullSiteConfig;
+  watches: Watch[];
+  profileHref?: string;
+  nowPlaying?: string;
+  assets: Assets;
+}): string {
+  const { siteConfig, watches, profileHref, nowPlaying = '', assets } = args;
+  return doc(
+    {
+      title: 'movies',
+      url: '/movies/',
+      description: 'Recent watches from Letterboxd.',
+    },
+    <MoviesPage siteConfig={siteConfig} watches={watches} profileHref={profileHref} nowPlaying={nowPlaying} />,
+    siteConfig,
+    assets,
+  );
+}
+
+// ── grok says… (recommendations hub; digs stay on /digs/) ────────────────────
+export function renderGrok(args: {
+  siteConfig: FullSiteConfig;
+  favorites: GrokFavorite[];
+  picks: GrokPick[];
+  nowPlaying?: string;
+  assets: Assets;
+}): string {
+  const { siteConfig, favorites, picks, nowPlaying = '', assets } = args;
+  return doc(
+    {
+      title: 'grok says…',
+      url: '/grok/',
+      description: 'Recommendations — favorite digs, and anything else worth passing on.',
+    },
+    <GrokPage siteConfig={siteConfig} favorites={favorites} picks={picks} nowPlaying={nowPlaying} />,
     siteConfig,
     assets,
   );

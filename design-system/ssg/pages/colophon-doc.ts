@@ -22,7 +22,8 @@ export const COLOPHON_DOC_HTML = `<h2 id="folder" class="section-label"><span>fo
 <span class="b">├──</span> <span class="f">build.js</span>             <span class="note"># the generator entrypoint</span>
 <span class="b">├──</span> <span class="d">lib</span>                  <span class="note"># intake (vault → model) · emit (model → dist) · listening · lastfm codec</span>
 <span class="b">├──</span> <span class="d">design-system</span>        <span class="note"># @mattdoes/ds — React page components · renders every page · syncs to Claude Design · ships the timeline island</span>
-<span class="b">├──</span> <span class="f">site.config.js</span>       <span class="note"># identity + last.fm</span>
+<span class="b">├──</span> <span class="f">site.config.js</span>       <span class="note"># identity + last.fm + letterboxd</span>
+<span class="b">├──</span> <span class="d">content</span>             <span class="note"># digs weeks · other recommendations (in-repo, not the vault)</span>
 <span class="b">├──</span> <span class="d">templates</span>            <span class="note"># shared row renderers · helpers · asset registry</span>
 <span class="b">├──</span> <span class="d">static</span>               <span class="note"># css, js (tweaks · geo-bg · live), fonts, baked geojson, _headers</span>
 <span class="b">├──</span> <span class="d">scripts</span>              <span class="note"># prebuild, optimize-media, sync-media, bake-geo</span>
@@ -60,6 +61,9 @@ export const COLOPHON_DOC_HTML = `<h2 id="folder" class="section-label"><span>fo
       <span class="from">publish: about</span><span class="arr">→</span><span class="to">/about/</span>
       <span class="from">attachments/&lt;file&gt;</span><span class="arr">→</span><span class="to">/img/<span class="dim">&lt;file&gt;</span> <span class="dim">(R2 in prod via media.mattdoes.online)</span></span>
       <span class="from">last.fm recent tracks</span><span class="arr">→</span><span class="to">/listening/ <span class="dim">(static at build · refreshed live)</span></span>
+      <span class="from">content/digs/*.json</span><span class="arr">→</span><span class="to">/digs/ <span class="dim">(weekly · favorites flow to /grok/)</span></span>
+      <span class="from">letterboxd rss</span><span class="arr">→</span><span class="to">/movies/ <span class="dim">(25 most recent · build time)</span></span>
+      <span class="from">grok says</span><span class="arr">→</span><span class="to">/grok/ <span class="dim">(favorite digs · other picks)</span></span>
       <span class="from">search index</span><span class="arr">→</span><span class="to">/search/ <span class="dim">· /search-index.json (client-filtered)</span></span>
       <span class="from">og card per post</span><span class="arr">→</span><span class="to">/og/<span class="dim">&lt;kind&gt;/&lt;slug&gt;</span>.png <span class="dim">(1200×630 · sharp)</span></span>
       <span class="from">listening worker</span><span class="arr">→</span><span class="to">/api/listening/{now,recent}</span>
