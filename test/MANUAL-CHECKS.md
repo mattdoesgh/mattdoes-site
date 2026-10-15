@@ -24,7 +24,7 @@ narrow-viewport row.
 - **Accent fieldset** — Tab onto the accent radios; arrow keys move between
   the four swatches; the selected swatch shows the colour-independent ink
   ring; the focused swatch shows the `--focus` ring.
-- **Filter chips** — on `/journal/`, `/making/`, `/thoughts/`, Tab through the
+- **Filter chips** — on `/journal/` and `/making/`, Tab through the
   filter strip; activating a chip updates `aria-current` and the live region.
 - **Permalink actions** — Tab through homepage and blog rows *without a
   pointer*: each row's permalink must become visible on `:focus-within` (no

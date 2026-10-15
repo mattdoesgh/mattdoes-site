@@ -39,7 +39,6 @@ export interface DesignPageProps {
 
 const SHELVES = [
   { href: '/blog/', label: 'writing', note: 'essays and notes' },
-  { href: '/posts/', label: 'posts', note: 'on x' },
   { href: '/listening/', label: 'listening', note: 'recent plays' },
   { href: '/digs/', label: 'digs', note: 'weekly music' },
   { href: '/movies/', label: 'movies', note: 'recent watches' },

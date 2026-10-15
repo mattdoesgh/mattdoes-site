@@ -1,5 +1,8 @@
 # Posts replace the thoughts section
 
+Superseded by ADR 0015. `/posts/` and the `/thoughts/` redirect are gone.
+X is a topbar link only.
+
 The notebook at `/thoughts/` is no longer a public section. That nav slot and
 the homepage “around here” tile are the original-posts feed from @mattdoes
 on X. This overrides the earlier choice that X stay a profile link only

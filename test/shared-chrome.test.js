@@ -21,11 +21,18 @@ test('shared chrome keeps reading navigation compact and moves secondary links t
     [...primary.querySelectorAll('a')].map(link => [link.textContent.trim(), link.getAttribute('href')]),
     [
       ['writing', '/blog/'],
-      ['posts', '/posts/'],
       ['listening', '/listening/'],
       ['about', '/about/'],
     ],
   );
+  assert.equal(primary.querySelector('a[href="/posts/"], a[href="/thoughts/"]'), null);
+
+  const social = d.querySelector('nav[aria-label="social"] a.x-link.gb');
+  assert.ok(social, 'X must be a glass chip in its own topbar landmark');
+  assert.equal(social.getAttribute('href'), 'https://x.com/mattdoes');
+  assert.equal(social.getAttribute('rel'), 'noopener noreferrer');
+  assert.equal(social.querySelector('.x-link__full')?.textContent, '@mattdoes');
+  assert.equal(social.querySelector('.x-link__short')?.textContent.replace(/\s+/g, ' ').trim(), 'X, @mattdoes');
 
   const search = d.querySelector('.topbar a.search-control[href="/search/"]');
   assert.ok(search, 'search must remain available as a compact topbar control');
@@ -35,6 +42,9 @@ test('shared chrome keeps reading navigation compact and moves secondary links t
   assert.ok(menu, 'narrow screens must have a compact disclosure menu');
   assert.ok(menu.querySelector('summary'), 'the compact menu must use a keyboard-operable summary');
   assert.ok(menu.querySelector('nav[aria-label="site menu"] a[href="/about/"]'));
+  const menuX = menu.querySelector('nav[aria-label="site menu"] a[href="https://x.com/mattdoes"]');
+  assert.equal(menuX?.textContent.trim(), '@mattdoes');
+  assert.equal(menuX?.getAttribute('rel'), 'noopener noreferrer');
 
   assert.equal(d.querySelector('.topbar a[href="/feed.xml"]'), null,
     'RSS belongs in the footer, not the persistent topbar');

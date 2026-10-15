@@ -9,9 +9,8 @@ https://www.mattdoes.online/*  https://mattdoes.online/:splat  301
 
 # Blog consolidation — /blog/ is the unified journal + making view with
 # client-side kind chips. /journal/ and /making/ are real archive pages.
-# /thoughts/ was the notebook; that section is gone (ADR 0014).
-/thoughts                      /posts/                          301
-/thoughts/                     /posts/                          301
+# /thoughts/ and /posts/ are not sections (ADR 0015). No redirect keeps
+# either path looking like a content page.
 
 # RSS alias
 /rss.xml                       /feed.xml                        301

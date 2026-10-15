@@ -9,10 +9,15 @@ export interface NavItem {
 
 export const DEFAULT_NAV: NavItem[] = [
   { id: 'blog', href: '/blog/', label: 'writing' },
-  { id: 'posts', href: '/posts/', label: 'posts' },
   { id: 'listening', href: '/listening/', label: 'listening' },
   { id: 'about', href: '/about/', label: 'about' },
 ];
+
+/** Primary social link. External only — no on-site feed and no X API. */
+export const X_PROFILE = {
+  href: 'https://x.com/mattdoes',
+  label: '@mattdoes',
+} as const;
 
 /**
  * Kept as an empty export for package compatibility. Secondary destinations
@@ -23,7 +28,7 @@ export const DEFAULT_META: NavItem[] = [];
 export interface TopbarProps {
   /** Site title; the part after the first dot is dimmed in the brand mark. */
   siteTitle?: string;
-  /** Primary nav links. Defaults to writing / posts / listening / about. */
+  /** Primary nav links. Defaults to writing / listening / about. */
   nav?: NavItem[];
   /** Active nav/meta id — marks the matching link current. */
   active?: string;
@@ -56,6 +61,23 @@ function NavLinks({ nav, active, glass = false }: { nav: NavItem[]; active: stri
   });
 }
 
+function XLink({ compact = false }: { compact?: boolean }) {
+  return (
+    <a className={compact ? undefined : 'x-link gb'} href={X_PROFILE.href} rel="noopener noreferrer">
+      {compact ? (
+        X_PROFILE.label
+      ) : (
+        <>
+          <span className="x-link__full">{X_PROFILE.label}</span>
+          <span className="x-link__short">
+            X<span className="visually-hidden">, {X_PROFILE.label}</span>
+          </span>
+        </>
+      )}
+    </a>
+  );
+}
+
 function PauseMotion() {
   return (
     <label className="motion-toggle gb">
@@ -66,7 +88,7 @@ function PauseMotion() {
   );
 }
 
-/** The fixed top bar: brand, reading navigation, search, and a quiet status slot. */
+/** The fixed top bar: brand, reading navigation, the X link, search, and a quiet status slot. */
 export function Topbar({
   siteTitle = 'mattdoes.online',
   nav = DEFAULT_NAV,
@@ -84,6 +106,9 @@ export function Topbar({
         <nav className="primary-nav" aria-label="primary">
           <NavLinks nav={nav} active={active} glass />
         </nav>
+        <nav className="social-nav" aria-label="social">
+          <XLink />
+        </nav>
         <details className="mobile-menu">
           <summary>
             <span aria-hidden="true">menu</span>
@@ -91,6 +116,7 @@ export function Topbar({
           </summary>
           <nav aria-label="site menu">
             <NavLinks nav={nav} active={active} />
+            <XLink compact />
           </nav>
         </details>
         <a
