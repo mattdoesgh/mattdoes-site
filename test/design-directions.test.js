@@ -83,9 +83,15 @@ test('the index and three directions are labelled, linked, and isolated', () => 
     const pause = page.querySelector('label.motion-toggle input#pause-motion');
     assert.equal(pause?.getAttribute('type'), 'checkbox', `${rel} has a pause control`);
     assert.match(page.querySelector('label.motion-toggle')?.textContent || '', /Pause motion/);
-    const ticker = page.querySelector('.ticker');
-    assert.equal(ticker?.getAttribute('aria-hidden'), 'true', `${rel} ticker is decorative`);
-    assert.equal(ticker?.querySelector('a'), null, `${rel} ticker has no links`);
+    if (id === 'b') {
+      assert.equal(page.querySelector('.ticker'), null, `${rel} has no marquee`);
+      assert.match(page.querySelector('.tagline')?.textContent || '', /somewhere quiet on the wired/);
+      assert.ok(page.querySelector('dl.lately'), `${rel} lately is label and value rows`);
+    } else {
+      const ticker = page.querySelector('.ticker');
+      assert.equal(ticker?.getAttribute('aria-hidden'), 'true', `${rel} ticker is decorative`);
+      assert.equal(ticker?.querySelector('a'), null, `${rel} ticker has no links`);
+    }
   }
 
   const lain = doc('design/b/index.html');
@@ -103,7 +109,14 @@ test('direction colors clear WCAG AA for text and the focus ring', () => {
   assert.match(css, /prefers-reduced-motion:\s*no-preference/);
   assert.match(css, /#pause-motion:checked/);
   assert.match(css, /animation-timeline:\s*view\(\)/);
-  assert.match(css, /\.design-dir--b \.ticker--b \{[^}]*backdrop-filter:\s*blur\(24px\)/);
+  assert.match(css, /\.db :is\(\.design-compare, \.rooms a\) \{[^}]*backdrop-filter:\s*blur\(24px\) saturate\(180%\)/);
+  assert.match(css, /-webkit-backdrop-filter:\s*blur\(24px\) saturate\(180%\)/);
+  assert.match(css, /prefers-reduced-transparency:\s*reduce/);
+  assert.match(css, /prefers-contrast:\s*more/);
+  assert.match(css, /@supports not \(backdrop-filter:\s*blur\(1px\)\)/);
+  const bRoot = css.match(/\.db \{\s*([^}]*)\}/);
+  assert.ok(bRoot, 'direction B root rule exists');
+  assert.doesNotMatch(bRoot[1], /repeating-linear-gradient|text-shadow/);
   assert.match(css, /\.design-dir--c \.top \{ grid-template-columns: minmax\(0, 1fr\)/);
   assert.doesNotMatch(css, /<marquee|animation:[^;]*steps\(/);
 

@@ -60,8 +60,8 @@ const DIRECTIONS = [
     href: '/design/b/',
     nav: 'B · lain',
     title: 'B · Lain / soft cyberpunk',
-    vibe: 'Dark weather under iOS-like glass. Frosted cards and a capsule ribbon, with a thin silver rim. Scanlines and mist stay behind the panels.',
-    a11y: 'Glass is a dark translucent surface with a bright rim, not a strobe. Text stays light on that dark fill. Pause motion and reduced motion stop the drift. The mist and the ribbon are decorative.',
+    vibe: 'Glass only where it floats: the nav and the shelf tiles. The writing sits on the weather, with a thin light along the glass edge.',
+    a11y: 'One glass recipe. Reduced transparency drops the blur, and higher contrast goes solid. Pause and reduced motion stop the drift and the tile lift. The mist and rain are decorative.',
   },
   {
     id: 'c' as const,
@@ -243,6 +243,27 @@ function CurrentNotes({ site, shelf }: { site: DesignSite; shelf: DesignShelf })
   );
 }
 
+function Lately({ site, shelf }: { site: DesignSite; shelf: DesignShelf }) {
+  const dig = shelf.dig;
+  const watch = shelf.watch;
+  const rows = [
+    { href: '/listening/', label: 'listening', value: site.nowPlaying || '' },
+    { href: '/digs/', label: 'digs', value: dig ? `${dig.artist}, ${dig.starter}` : '' },
+    { href: '/movies/', label: 'movies', value: watch ? `${watch.title}${watch.year ? ` (${watch.year})` : ''}` : '' },
+    { href: '/grok/', label: 'grok says', value: dig?.favorite ? dig.artist : '' },
+  ];
+  return (
+    <dl className="lately">
+      {rows.map((row) => (
+        <div key={row.href}>
+          <dt><a href={row.href}>{row.label}</a></dt>
+          <dd>{row.value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 function ShelfList({ className, numbered = true }: { className: string; numbered?: boolean }) {
   return (
     <ul className={className}>
@@ -345,7 +366,7 @@ export function DesignA({ site, featured, recent, shelf }: DesignPageProps) {
 
 export function DesignB({ site, featured, recent, shelf }: DesignPageProps) {
   return (
-    <Stage current="b" className="design-stage design-dir design-dir--b" site={site}>
+    <Stage current="b" className="design-stage design-dir design-dir--b db" site={site}>
       <div className="mist" aria-hidden="true">
         <span className="mist-a"></span>
         <span className="mist-b"></span>
@@ -358,8 +379,8 @@ export function DesignB({ site, featured, recent, shelf }: DesignPageProps) {
           <h1 id="page-title" className="wordmark">matt does</h1>
           <p className="bio">{bioOf(site)}</p>
           <p className="where">{placeOf(site)}</p>
+          <p className="tagline">somewhere quiet on the wired</p>
         </header>
-        <Ticker pace="b" text="somewhere quiet on the wired · a personal site · still drifting" />
 
         <Lead piece={featured} />
 
@@ -372,7 +393,7 @@ export function DesignB({ site, featured, recent, shelf }: DesignPageProps) {
 
         <section className="wire flow flow-5" aria-labelledby="wire-heading">
           <h2 id="wire-heading">lately</h2>
-          <CurrentNotes site={site} shelf={shelf} />
+          <Lately site={site} shelf={shelf} />
         </section>
       </main>
     </Stage>
