@@ -81,6 +81,10 @@ jobs:
           # listening snapshot is empty here — the deployed site builds with a
           # real SITE_URL and reaches the Worker.
           LISTENING_OFFLINE: '1'
+          # Same posture for the Letterboxd diary RSS (lib/watches.js). The
+          # production Pages build does not set this, so /movies/ is baked
+          # from the live feed there.
+          LETTERBOXD_OFFLINE: '1'
         run: npm run build
 
       - name: Lint (html-validate)

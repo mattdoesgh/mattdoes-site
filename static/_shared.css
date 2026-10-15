@@ -840,9 +840,17 @@ footer.site {
   flex-wrap: wrap;
 }
 footer.site .footer-copy { margin: 0; }
+footer.site .footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem 1.75rem;
+  margin-left: auto;
+}
 footer.site nav { display: flex; gap: .9rem 1.25rem; flex-wrap: wrap; }
 footer.site a { color: var(--mute); border-bottom: none; }
-footer.site a:hover { color: var(--ink); }
+footer.site a:hover,
+footer.site a[aria-current="page"] { color: var(--ink); }
+footer.site a[aria-current="page"] { text-decoration: underline; text-underline-offset: 3px; }
 footer.site .footer-link {
   background: none; border: none; padding: 0;
   font: inherit; color: var(--mute);
@@ -1724,6 +1732,38 @@ fieldset.tk-swatches legend.row-t-label {
 .colophon-build-stats dl div { display: flex; justify-content: space-between; gap: 1rem; }
 .colophon-build-stats dt { color: var(--mute); }
 .colophon-build-stats dd { margin: 0; color: var(--ink); }
+
+.log-nav, .dig-links { display: flex; flex-wrap: wrap; gap: .35rem 1rem; font: 12px/1.5 var(--font-mono); }
+.log-nav { margin: 0 0 1.5rem; }
+.log-nav a, .log-source a { color: var(--mute); border-bottom: none; }
+.log-nav a:hover, .log-nav a[aria-current="page"], .log-source a:hover { color: var(--ink); }
+.log-nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 3px; }
+.sample-flag, .dig-favorite {
+  margin-left: .7rem; color: var(--mute);
+  font: 500 10.5px/1.4 var(--font-mono); letter-spacing: .08em; text-transform: lowercase;
+}
+.dig-week h2, .dig-archive summary { margin: 0; font: 500 13px/1.4 var(--font-mono); }
+.dig-pick { padding: 1.15rem 0; border-bottom: 1px solid var(--rule); }
+.dig-pick h3 { margin: 0; font-size: 1.15rem; font-weight: 500; }
+.dig-starter { margin: .2rem 0 0; color: var(--mute); font: 12px/1.5 var(--font-mono); }
+.dig-pick p, .grok-detail { max-width: 62ch; }
+.dig-links { margin-top: .65rem; }
+.dig-links a, .grok-list a { color: var(--ink); border-bottom: none; }
+.dig-links a:hover, .grok-list a:hover { color: var(--accent-fg); }
+.dig-embed { margin-top: .85rem; max-width: 660px; }
+.dig-embed iframe { display: block; width: 100%; border: 0; }
+.dig-archive { margin-top: 1.5rem; }
+.dig-archive summary { padding: .85rem 0; cursor: pointer; }
+.dig-archive summary h2 { display: inline; }
+.grok-section { margin-top: 1.75rem; padding-top: 1rem; border-top: 1px solid var(--rule); }
+.grok-section h2 {
+  margin: 0 0 .65rem; color: var(--mute);
+  font: 500 10.5px/1.4 var(--font-mono); letter-spacing: .08em; text-transform: lowercase;
+}
+.grok-list { margin: 0; padding: 0; list-style: none; }
+.grok-list li + li { margin-top: .55rem; }
+.grok-detail { display: block; margin-top: .2rem; color: var(--mute); }
+.log-source { margin: 1.5rem 0 0; font: 12px/1.5 var(--font-mono); }
 
 @media (max-width: 560px) {
   .article-page .post-body { font-size: 17px; line-height: 1.78; }

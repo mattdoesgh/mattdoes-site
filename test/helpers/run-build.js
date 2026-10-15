@@ -73,6 +73,7 @@ export function runBuild({
       // reach out to the Worker/Last.fm. Tests that want listening data seed a
       // fresh cache (seedLastfmCache), which short-circuits the network anyway.
       LISTENING_OFFLINE: '1',
+      LETTERBOXD_OFFLINE: '1',
       ...env,
     },
     encoding: 'utf8',

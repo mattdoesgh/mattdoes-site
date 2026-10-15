@@ -46,12 +46,27 @@ test('shared chrome keeps reading navigation compact and moves secondary links t
   assert.deepEqual(
     [...footer.querySelectorAll('a')].map(link => [link.textContent.trim(), link.getAttribute('href')]),
     [
+      ['digs', '/digs/'],
+      ['movies', '/movies/'],
+      ['grok says', '/grok/'],
       ['rss', '/feed.xml'],
       ['colophon', '/colophon/'],
       ['say hi', 'mailto:matt@mattdoes.online'],
     ],
   );
   assert.ok(footer.querySelector('button[data-tweaks-toggle]'), 'footer keeps the tweaks control');
+
+  const profiles = d.querySelector('footer.site nav[aria-label="profiles"]');
+  assert.ok(profiles, 'footer must expose profile links');
+  assert.deepEqual(
+    [...profiles.querySelectorAll('a')].map(link => [link.textContent.trim(), link.getAttribute('href')]),
+    [
+      ['letterboxd', 'https://letterboxd.com/mattdoes'],
+      ['x', 'https://x.com/mattdoes'],
+      ['instagram', 'https://www.instagram.com/mattdoes.ig'],
+      ['last.fm', 'https://www.last.fm/user/djverism'],
+    ],
+  );
 });
 
 test('the shared frame has a quiet one-column layout and mobile menu breakpoint', () => {

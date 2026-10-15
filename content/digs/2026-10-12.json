@@ -1,0 +1,22 @@
+{
+  "weekOf": "2026-10-12",
+  "sample": true,
+  "picks": [
+    {
+      "artist": "Hiroshi Yoshimura",
+      "blurb": "Sample pick. Quiet environmental piano — a stand-in so this page isn't empty. Replace this week when a real one is ready.",
+      "starter": "Music for Nine Post Cards",
+      "favorite": true,
+      "appleMusic": "https://music.apple.com/us/album/music-for-nine-post-cards/1773946851",
+      "appleMusicEmbed": "https://embed.music.apple.com/us/album/music-for-nine-post-cards/1773946851"
+    },
+    {
+      "artist": "loscil",
+      "blurb": "Sample pick. Low-level listening; the player is here so the Bandcamp embed path is real. Not a published dig.",
+      "starter": "Plume",
+      "favorite": false,
+      "bandcamp": "https://loscil.bandcamp.com/album/plume",
+      "bandcampEmbed": "https://bandcamp.com/EmbeddedPlayer/album=1989181575/size=large/bgcol=333333/linkcol=ffffff/tracklist=false/artwork=small/transparent=true/"
+    }
+  ]
+}

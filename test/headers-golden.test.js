@@ -26,7 +26,7 @@ test('global security headers include CSP, HSTS, and framing controls', () => {
     "default-src 'self'",
     "script-src 'self' 'inline-speculation-rules'",
     "connect-src 'self'",
-    "frame-src 'none'",
+    "frame-src https://embed.music.apple.com https://bandcamp.com",
     "object-src 'none'",
     'upgrade-insecure-requests',
   ]) {
@@ -51,6 +51,8 @@ test('report-only CSP points at the same-origin report collector', () => {
   assert.ok(reportOnly, '/* must set Content-Security-Policy-Report-Only');
   assert.match(reportOnly, /report-uri https:\/\/mattdoes\.online\/api\/csp-report/,
     'report-only CSP must target the csp-report Worker');
+  assert.match(reportOnly, /frame-src https:\/\/embed\.music\.apple\.com https:\/\/bandcamp\.com/,
+    'report-only frame-src must match the enforced player allowlist');
 });
 
 test('hashed JS and CSS assets are immutable for one year', () => {

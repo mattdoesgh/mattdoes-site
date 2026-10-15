@@ -35,6 +35,12 @@
  *   cacheTtl: number,    // seconds — build-time cache only
  *   showUser: boolean,
  * }} lastfm
+ * @property {{
+ *   profile: string,     // public profile; also a footer/about link
+ *   feed: string,        // diary RSS, fetched at build time
+ *   limit: number,       // recent watches to render (not a full diary)
+ *   cacheTtl: number,    // seconds — build-time cache only
+ * }} letterboxd
  */
 
 /** @type {SiteConfig} */
@@ -50,9 +56,15 @@ export const siteConfig = {
   },
 
   // External presence. Empty href = omitted from the rail.
+  // External presence. Empty href = omitted from the about page.
+  // Letterboxd, X, Instagram, and Last.fm are also the footer profile nav
+  // (design-system Footer DEFAULT_PROFILES). Keep those four hrefs in sync.
   links: [
     { label: 'github',      href: 'https://github.com/mattdoesgh',                              meta: '/mattdoesgh' },
+    { label: 'letterboxd',  href: 'https://letterboxd.com/mattdoes',                            meta: '/mattdoes'   },
     { label: '𝕏',          href: 'https://x.com/mattdoes',                                     meta: '/mattdoes'   },
+    { label: 'instagram',   href: 'https://www.instagram.com/mattdoes.ig',                      meta: '/mattdoes.ig' },
+    { label: 'last.fm',     href: 'https://www.last.fm/user/djverism',                          meta: '/djverism'   },
     { label: 'Spotify',     href: 'https://open.spotify.com/artist/617fKVTXkDafXJshlNUzF3',     meta: '↗'           },
     { label: 'Apple Music', href: 'https://music.apple.com/us/artist/verism-rip/1676956374',    meta: '↗'           },
     { label: 'say hi',      href: 'mailto:matt@mattdoes.online',                                meta: '↗'           },
@@ -122,5 +134,15 @@ export const siteConfig = {
     limit:    25,       // how many recent tracks to render on /listening/
     cacheTtl: 15 * 60,  // seconds — build-time on-disk cache TTL only
     showUser: false,    // do not render 'last.fm/<user>' link on /listening/
+  },
+
+  // Letterboxd diary RSS for /movies/. The page is a recent window (limit),
+  // baked at build time — not a live feed and not a full diary export.
+  // LETTERBOXD_OFFLINE=1 skips the network (CI and tests). See lib/watches.js.
+  letterboxd: {
+    profile:  'https://letterboxd.com/mattdoes',
+    feed:     'https://letterboxd.com/mattdoes/rss/',
+    limit:    25,
+    cacheTtl: 6 * 60 * 60,
   },
 };
