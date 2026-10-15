@@ -442,6 +442,12 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
   font-size: 13.5px;
 }
 .row--making .gutter .kind { letter-spacing: .11em; }
+/* The making card already is the highlight. The generic row wash is a
+   second box, inset wider than this card, so hover stacked two borders. */
+.row.row--making::before { content: none; }
+.row--making:hover {
+  border-color: color-mix(in oklch, var(--accent), var(--rule) 35%);
+}
 
 /* Thoughts: quieter notebook fragments. A fine inner rule binds the prose to
    its timestamp, while subdued metadata and a plain-language link avoid the
@@ -1929,8 +1935,10 @@ html[data-theme="light"] { --geo-point-fill: var(--rule); }
   ::view-transition-new(root) { animation-duration: .001s; }
 }
 /* Topbar + footer don't need to crossfade — pinning them with stable
-   names keeps them visually still while the timeline content fades. */
-.topbar { view-transition-name: topbar; }
+   names keeps them visually still while the timeline content fades.
+   The name sits on .inner, not the sticky bar: a view-transition-name
+   on position:sticky paints a second copy of the chips in Chrome. */
+.topbar .inner { view-transition-name: topbar; }
 footer.site { view-transition-name: site-footer; }
 
 /* ── Hero band (homepage) ─────────────────────────
@@ -2109,7 +2117,7 @@ footer.site { view-transition-name: site-footer; }
   backdrop-filter: none;
   font-family: var(--font-ui);
 }
-.topbar .primary-nav { gap: 4px; }
+.topbar .primary-nav { gap: 4px; flex-wrap: nowrap; }
 .topbar .gb {
   min-height: 32px;
   padding: 0 10px;
@@ -2120,6 +2128,8 @@ footer.site { view-transition-name: site-footer; }
   letter-spacing: 0;
   text-transform: none;
   text-decoration: none;
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 .topbar .search-control.gb { width: 32px; height: 32px; padding: 0; }
 .topbar .motion-toggle {
@@ -2146,25 +2156,40 @@ body:has(#pause-motion:checked) .motion-toggle__off { display: inline; }
   text-decoration: none;
   font-weight: 600;
 }
-.topbar .gb { backdrop-filter: blur(12px); }
-.home-shelves a { backdrop-filter: blur(12px); }
-:where(.topbar) .gb { -webkit-backdrop-filter: blur(12px); }
-:where(.home-shelves) a { -webkit-backdrop-filter: blur(12px); }
+/* Blur lives on the pseudo behind the label. Filtering the chip itself
+   samples the text back into the glass and ghosts a second copy of the word. */
+.topbar .gb,
+.home-shelves a { background: transparent; backdrop-filter: none; }
+:where(.topbar) .gb,
+:where(.home-shelves) a { -webkit-backdrop-filter: none; }
 .topbar .gb::before,
 .home-shelves a::before {
   content: "";
   position: absolute;
+  z-index: -1;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(var(--angle-2), transparent 0%, rgba(255, 255, 255, 0.07) 48% 52%, transparent 64%);
-  background-size: 220% 220%;
-  background-position: 0% 50%;
+  background:
+    linear-gradient(var(--angle-2), transparent 0%, rgba(255, 255, 255, 0.07) 48% 52%, transparent 64%),
+    rgba(255, 255, 255, 0.04);
+  background-size: 220% 220%, auto;
+  background-position: 0% 50%, 0 0;
+  backdrop-filter: blur(12px);
   pointer-events: none;
+}
+:where(.topbar) .gb::before,
+:where(.home-shelves) a::before { -webkit-backdrop-filter: blur(12px); }
+.topbar a.gb[aria-current="page"]::before,
+.topbar a.gb.on::before {
+  background:
+    linear-gradient(var(--angle-2), transparent 0%, rgba(255, 255, 255, 0.07) 48% 52%, transparent 64%),
+    rgba(186, 214, 232, 0.08);
 }
 .topbar .gb::after,
 .home-shelves a::after {
   content: "";
   position: absolute;
+  z-index: -1;
   inset: 0;
   border-radius: inherit;
   padding: 1px;
@@ -2197,7 +2222,7 @@ body:has(#pause-motion:checked) .motion-toggle__off { display: inline; }
   margin: 0;
   padding: 0;
 }
-.home-shelves li { position: relative; }
+.home-shelves li { position: relative; display: flex; }
 .home-shelves li::after {
   content: "";
   position: absolute;
@@ -2214,16 +2239,19 @@ body:has(#pause-motion:checked) .motion-toggle__off { display: inline; }
 .home-shelves a {
   z-index: 1;
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
+  justify-content: center;
   gap: 4px;
+  min-height: 6.75rem;
   padding: 16px 18px;
   border: 0;
   border-radius: 26px;
   corner-shape: squircle;
   text-decoration: none;
 }
-.home-shelves .label { font-size: 15px; font-weight: 600; color: #fff; }
-.home-shelves .note { font-size: 13px; color: rgba(255, 255, 255, 0.86); }
+.home-shelves .label { font-size: 15px; font-weight: 600; line-height: 1.25; color: #fff; }
+.home-shelves .note { font-size: 13px; line-height: 1.25; color: rgba(255, 255, 255, 0.86); }
 .home-wire { margin-top: 40px; }
 .home-lately { margin: 0; }
 .home-lately div {
@@ -2272,6 +2300,10 @@ body:has(#pause-motion:checked) :is(.topbar .gb, .home-shelves a):is(:hover, :ac
   .home-shelves a { background: rgba(22, 24, 30, 0.92); backdrop-filter: none; }
   :where(.topbar) .gb,
   :where(.home-shelves) a { -webkit-backdrop-filter: none; }
+  .topbar .gb::before,
+  .home-shelves a::before { background: none; backdrop-filter: none; }
+  :where(.topbar) .gb::before,
+  :where(.home-shelves) a::before { -webkit-backdrop-filter: none; }
 }
 @media (prefers-contrast: more) {
   .topbar .gb,
