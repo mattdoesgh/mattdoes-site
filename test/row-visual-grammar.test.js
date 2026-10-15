@@ -30,6 +30,11 @@ test('each writing kind has a distinct stylesheet treatment', () => {
   assert.match(css, /\.row--thought \.body\s*\{/);
 });
 
+test('making rows keep a single card instead of stacking the generic hover box', () => {
+  const css = read('static/_shared.css');
+  assert.match(css, /\.row\.row--making::before\s*\{\s*content:\s*none;\s*\}/);
+});
+
 test('thought rows disable the generic hover layer so only the notebook rule remains', () => {
   const css = read('static/_shared.css');
 
