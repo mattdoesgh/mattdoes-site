@@ -565,27 +565,19 @@ html:has(.design-dir--c) {
     backdrop-filter: none;
   }
   .db :where(.design-compare, .rooms a) { -webkit-backdrop-filter: none; }
+  .db .field { display: none; }
 }
 @supports not (backdrop-filter: blur(1px)) {
   .db :is(.design-compare, .rooms a) { background-color: rgba(22, 24, 30, 0.85); }
 }
-.db .mist {
+.db .field {
   position: absolute;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
 }
-.db .mist span {
-  position: absolute;
-  width: 36rem;
-  height: 36rem;
-  border-radius: 50%;
-  filter: blur(52px);
-  opacity: 0.78;
-}
-.db .mist span.mist-a { left: -12%; top: -16rem; width: 124%; height: 30rem; background: #49b0e2; }
-.db .mist span.mist-b { left: -10%; top: 14rem; right: auto; bottom: auto; width: 120%; height: 40rem; background: #c25ec4; }
-.db .rain { display: none; }
+.db .field-track { height: 200%; }
+.db .field-sheet { display: block; width: 100%; height: 50%; }
 
 /* ── C: quieter hybrid ───────────────────────────── */
 .design-dir--c { font-family: Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif; }
@@ -643,8 +635,6 @@ html:has(.design-dir--c) {
 .design-dir--c .quiet-nav .note { color: var(--dir-mute); text-decoration: none; }
 @media (max-width: 760px) {
   .design-dir--c .top { grid-template-columns: minmax(0, 1fr); }
-  .db .mist span.mist-a,
-  .db .mist span.mist-b { height: 24rem; opacity: 0.62; filter: blur(40px); }
 }
 
 /* ── motion ──────────────────────────────────────── */
@@ -714,9 +704,8 @@ html:has(.design-dir--c) {
   from { transform: translateY(28px); }
   to { transform: translateY(-36px); }
 }
-@keyframes dir-mist {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(22px, -28px, 0); }
+@keyframes dir-field {
+  to { transform: translateY(-50%); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -749,8 +738,7 @@ html:has(.design-dir--c) {
   .design-dir--a .webring a { transition: transform 180ms ease; }
   .design-dir--a .webring a:hover { transform: translate(-3px, -3px); }
 
-  .db .mist span { animation: dir-mist 18s ease-in-out infinite; }
-  .db .mist-b { animation: dir-mist 24s ease-in-out -7s infinite; }
+  .db .field-track { animation: dir-field 46s linear infinite; }
   .db :is(.rooms a, .design-compare a) { transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease; }
   .db .rooms a:hover { --b-hi: rgba(255, 255, 255, 0.78); transform: translateY(-1px) scale(1.015); }
   .db .rooms a:active { --b-hi: rgba(255, 255, 255, 0.92); transform: scale(0.98); }
@@ -800,7 +788,7 @@ html:has(.design-dir--c) {
   .db .rooms a:active,
   .db .design-compare a:active,
   .db .wordmark,
-  .db .mist span,
+  .db .field-track,
   .design-dir--a .float,
   .design-dir--c .margin-mark {
     transform: none;

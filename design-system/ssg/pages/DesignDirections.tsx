@@ -364,15 +364,35 @@ export function DesignA({ site, featured, recent, shelf }: DesignPageProps) {
   );
 }
 
+function CodeSheet({ id }: { id: string }) {
+  return (
+    <svg className="field-sheet">
+      <defs>
+        <pattern id={id} width="16" height="48" patternUnits="userSpaceOnUse">
+          <rect x="2" y="1" width="1" height="9" fill="#d7e2e4" opacity="0.42" />
+          <rect x="2" y="14" width="1" height="3" fill="#d7e2e4" opacity="0.18" />
+          <rect x="2" y="34" width="1.4" height="1.4" fill="#d7e2e4" opacity="0.55" />
+          <rect x="7" y="8" width="1" height="14" fill="#d7e2e4" opacity="0.28" />
+          <rect x="7" y="28" width="1" height="4" fill="#d7e2e4" opacity="0.14" />
+          <rect x="12" y="4" width="1" height="6" fill="#d7e2e4" opacity="0.22" />
+          <rect x="12" y="18" width="1" height="11" fill="#d7e2e4" opacity="0.34" />
+          <rect x="12" y="40" width="1.4" height="1.4" fill="#d7e2e4" opacity="0.4" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill={`url(#${id})`} />
+    </svg>
+  );
+}
+
 export function DesignB({ site, featured, recent, shelf }: DesignPageProps) {
   return (
     <Stage current="b" className="design-stage design-dir design-dir--b db" site={site}>
-      <div className="mist" aria-hidden="true">
-        <span className="mist-a"></span>
-        <span className="mist-b"></span>
+      <div className="field" aria-hidden="true">
+        <div className="field-track">
+          <CodeSheet id="b-code-a" />
+          <CodeSheet id="b-code-b" />
+        </div>
       </div>
-      <div className="rain rain-left" aria-hidden="true"></div>
-      <div className="rain rain-right" aria-hidden="true"></div>
       <main className="design-wrap" id="main" aria-labelledby="page-title">
         <header className="mast flow">
           <p className="kicker">mattdoes.online</p>

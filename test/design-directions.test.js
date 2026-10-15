@@ -97,8 +97,11 @@ test('the index and three directions are labelled, linked, and isolated', () => 
   const lain = doc('design/b/index.html');
   assert.equal(lain.querySelector('.prompt, .protocol, .signals'), null, 'B is not a terminal');
   assert.equal(lain.querySelector('.rooms .idx'), null, 'B rooms are not a numbered shell index');
-  assert.ok(lain.querySelector('.mist[aria-hidden="true"]'));
-  assert.ok(lain.querySelector('.rain[aria-hidden="true"]'));
+  const field = lain.querySelector('.field');
+  assert.equal(field?.getAttribute('aria-hidden'), 'true', 'B pattern is decorative');
+  assert.equal(field?.querySelector('a'), null, 'B pattern has no links');
+  assert.ok(field?.querySelector('svg'), 'B pattern is a drawn field');
+  assert.equal(lain.querySelector('.mist, .rain'), null, 'B has no color-mist weather');
   assert.doesNotMatch(lain.querySelector('h1')?.textContent || '', />/);
 });
 
