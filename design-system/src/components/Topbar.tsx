@@ -44,15 +44,26 @@ function Brand({ siteTitle }: { siteTitle: string }) {
   );
 }
 
-function NavLinks({ nav, active }: { nav: NavItem[]; active: string }) {
+function NavLinks({ nav, active, glass = false }: { nav: NavItem[]; active: string; glass?: boolean }) {
   return nav.map((n) => {
     const on = active === n.id;
+    const className = [on ? 'on' : '', glass ? 'gb' : ''].filter(Boolean).join(' ');
     return (
-      <a key={n.href} href={n.href} className={on ? 'on' : undefined} aria-current={on ? 'page' : undefined}>
+      <a key={n.href} href={n.href} className={className || undefined} aria-current={on ? 'page' : undefined}>
         {n.label}
       </a>
     );
   });
+}
+
+function PauseMotion() {
+  return (
+    <label className="motion-toggle gb">
+      <input id="pause-motion" type="checkbox" />
+      <span className="motion-toggle__on">Pause</span>
+      <span className="motion-toggle__off">Play</span>
+    </label>
+  );
 }
 
 /** The fixed top bar: brand, reading navigation, search, and a quiet status slot. */
@@ -71,7 +82,7 @@ export function Topbar({
           <Brand siteTitle={siteTitle} />
         </a>
         <nav className="primary-nav" aria-label="primary">
-          <NavLinks nav={nav} active={active} />
+          <NavLinks nav={nav} active={active} glass />
         </nav>
         <details className="mobile-menu">
           <summary>
@@ -84,7 +95,7 @@ export function Topbar({
         </details>
         <a
           href={searchHref}
-          className={searchIsCurrent ? 'search-control on' : 'search-control'}
+          className={searchIsCurrent ? 'search-control gb on' : 'search-control gb'}
           aria-label="search"
           aria-current={searchIsCurrent ? 'page' : undefined}
         >
@@ -93,6 +104,7 @@ export function Topbar({
             <path d="m10.25 10.25 3.25 3.25" />
           </svg>
         </a>
+        <PauseMotion />
         <span className="spacer" aria-hidden="true"></span>
         {status}
       </div>

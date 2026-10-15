@@ -10,7 +10,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildSearchIndex } from '../lib/emit/search.js';
 import { toListeningEntries } from '../lib/emit/listening-entries.js';
-import { atomFeed, sitemapXml, robotsTxt, cdataSafe } from '../lib/emit/feeds.js';
+import { atomFeed, sitemapXml, robotsTxt, cdataSafe, DESIGN_BAKEOFF_ROUTES } from '../lib/emit/feeds.js';
 import { configureRender, resolveWikilinks, cleanMediaTarget } from '../lib/emit/render.js';
 
 // ── buildSearchIndex ─────────────────────────────────────────────────────
@@ -91,7 +91,7 @@ test('sitemapXml covers the static routes and dated article URLs', () => {
     articles: [{ url: '/journal/a/', date: '2026-01-02T00:00:00Z' }],
     aboutWritten: false,
   });
-  for (const r of ['/', '/blog/', '/search/', '/listening/', '/colophon/', '/journal/', '/making/', '/thoughts/', '/digs/', '/movies/', '/grok/']) {
+  for (const r of ['/', '/blog/', '/search/', '/listening/', '/colophon/', '/journal/', '/making/', '/thoughts/', '/digs/', '/movies/', '/grok/', ...DESIGN_BAKEOFF_ROUTES]) {
     assert.ok(xml.includes(`<loc>https://mattdoes.online${r}</loc>`), `sitemap must list ${r}`);
   }
   assert.ok(!xml.includes('/about/'), 'no /about/ entry when the note is absent');

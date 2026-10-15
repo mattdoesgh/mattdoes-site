@@ -79,3 +79,22 @@ test('the shared frame has a quiet one-column layout and mobile menu breakpoint'
     'the desktop link row must not turn into a horizontally scrolling mobile nav');
   assert.match(css, /--geo-bg-opacity:\s*0\.14/, 'geo treatment must stay visually quiet by default');
 });
+
+test('the locked clear-glass system is on the homepage and the shared pages', () => {
+  const home = doc('index.html');
+  const field = home.querySelector('.site-field');
+  assert.equal(field?.getAttribute('aria-hidden'), 'true');
+  assert.equal(field?.querySelector('a'), null);
+  assert.ok(field?.querySelector('svg'));
+  assert.ok(home.querySelector('#pause-motion'));
+  assert.ok(home.querySelector('.home-shelves a[href="/digs/"]'));
+  assert.ok(home.querySelector('.home-shelves a[href="/movies/"]'));
+  assert.ok(home.querySelector('.home-shelves a[href="/grok/"]'));
+  assert.ok(home.querySelector('.topbar .primary-nav a.gb[href="/blog/"]'));
+
+  assert.equal(doc('digs/index.html').querySelector('h1')?.textContent.trim(), 'digs');
+  assert.equal(doc('movies/index.html').querySelector('h1')?.textContent.trim(), 'movies');
+  assert.equal(doc('grok/index.html').querySelector('h1')?.textContent.trim(), 'grok says…');
+  assert.ok(doc('blog/index.html').querySelector('.site-field'));
+  assert.equal(doc('blog/index.html').querySelector('.design-dir'), null);
+});
