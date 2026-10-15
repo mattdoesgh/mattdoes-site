@@ -31,7 +31,7 @@ export type { HeroProps, HeroStat } from './components/Hero';
 export { ElsewhereLinks } from './components/ElsewhereLinks';
 export type { ElsewhereLinksProps, ExternalLink } from './components/ElsewhereLinks';
 
-export { Topbar, DEFAULT_NAV, DEFAULT_META } from './components/Topbar';
+export { Topbar, DEFAULT_NAV, DEFAULT_META, X_PROFILE } from './components/Topbar';
 export type { TopbarProps, NavItem } from './components/Topbar';
 
 export { Footer, DEFAULT_FOOTER_NAV } from './components/Footer';

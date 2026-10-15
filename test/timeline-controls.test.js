@@ -43,7 +43,6 @@ test('timeline controls are emitted as hashed feed-only assets', () => {
   for (const rel of [
     'about/index.html',
     'index.html',
-    'posts/index.html',
     'search/index.html',
     'colophon/index.html',
     'journal/hello-fixture-world/index.html',

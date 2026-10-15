@@ -1,5 +1,4 @@
 // Listing — reverse-chrono index for article kinds and /listening/.
-// Thoughts use the dedicated reader-shaped ThoughtsPage.
 //
 // LISTENING IS SPECIAL (ADR 0001 + test/row-parity.test.js): the /listening/
 // rows must byte-equal templates/rows.js `listeningRow()` output because

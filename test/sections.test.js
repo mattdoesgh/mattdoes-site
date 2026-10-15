@@ -39,7 +39,7 @@ test('design-system SECTION_PATH maps match the Section descriptor', () => {
     assert.ok(listing.includes(`${kind}: '${section.route}'`),
       `${path.relative(REPO_ROOT, listingFile)} must map ${kind} → ${section.route}`);
   }
-  assert.ok(ssg.includes("url: '/posts/'"), 'the posts page must own /posts/');
+  assert.equal(ssg.includes("url: '/posts/'"), false, 'posts is not a generated page');
   assert.equal(ssg.includes("url: '/thoughts/'"), false, 'thoughts is not a generated page');
 });
 

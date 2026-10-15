@@ -32,7 +32,6 @@ import { ListingPage, type ListingPageProps } from './pages/ListingPage';
 import { AboutPage, type AboutPageProps } from './pages/AboutPage';
 import { ColophonPage, type ColophonPageProps } from './pages/ColophonPage';
 import { SearchPage, type SearchPageProps } from './pages/SearchPage';
-import { PostsPage, type XPost } from './pages/PostsPage';
 import { TopicPage, type TopicPageProps } from './pages/TopicPage';
 import { DigsPage, type DigWeek } from './pages/DigsPage';
 import { MoviesPage, type Watch } from './pages/MoviesPage';
@@ -228,34 +227,6 @@ export function renderDigs(args: {
       description: 'Weekly music digs — a starter album or track, with a player when there is one.',
     },
     <DigsPage siteConfig={siteConfig} weeks={weeks} nowPlaying={nowPlaying} />,
-    siteConfig,
-    assets,
-  );
-}
-
-// ── posts (original X posts) ─────────────────────────────────────────────────
-export function renderPosts(args: {
-  siteConfig: FullSiteConfig;
-  posts: XPost[];
-  profileHref?: string;
-  handle?: string;
-  nowPlaying?: string;
-  assets: Assets;
-}): string {
-  const { siteConfig, posts, profileHref, handle, nowPlaying = '', assets } = args;
-  return doc(
-    {
-      title: 'posts',
-      url: '/posts/',
-      description: 'Original posts from @mattdoes. Reposts are not included.',
-    },
-    <PostsPage
-      siteConfig={siteConfig}
-      posts={posts}
-      profileHref={profileHref}
-      handle={handle}
-      nowPlaying={nowPlaying}
-    />,
     siteConfig,
     assets,
   );

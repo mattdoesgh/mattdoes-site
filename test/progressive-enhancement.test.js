@@ -3,8 +3,8 @@
 //
 // With JavaScript disabled, /journal/ and /making/ must be REAL generated
 // pages whose content is the section's entries — not redirects into
-// /blog/?kind=… (which only filters client-side). /thoughts/ is no longer
-// a section; it redirects to /posts/.
+// /blog/?kind=… (which only filters client-side). /thoughts/ and /posts/
+// are not sections and are not redirected.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -49,18 +49,20 @@ test('the journal archive lists journal entries without JavaScript', () => {
     'journal archive must contain the second journal post');
 });
 
-test('/posts/ is a real page and /thoughts/ redirects there', () => {
-  const html = readDist(distDir, 'posts/index.html');
-  const doc = new JSDOM(html).window.document;
-  assert.equal(doc.querySelector('h1')?.textContent.trim(), 'posts');
-  assert.equal(doc.querySelector('.notebook'), null);
-  assert.equal(fs.existsSync(path.join(distDir, 'thoughts', 'index.html')), false,
-    '/thoughts/ must not be a generated page, or the Pages redirect will not run');
+test('/posts/ and /thoughts/ are not pages and are not redirected', () => {
+  assert.equal(fs.existsSync(path.join(distDir, 'posts', 'index.html')), false);
+  assert.equal(fs.existsSync(path.join(distDir, 'thoughts', 'index.html')), false);
 
   const redirects = fs.readFileSync(path.join(REPO_ROOT, 'static', '_redirects'), 'utf8');
   const rules = redirects.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
-  assert.ok(rules.some(rule => rule.startsWith('/thoughts/') && rule.includes('/posts/') && rule.includes('301')));
-  assert.ok(rules.some(rule => rule.startsWith('/thoughts ') && rule.includes('/posts/') && rule.includes('301')));
+  for (const rule of rules) {
+    const from = rule.split(/\s+/)[0];
+    assert.ok(from !== '/posts' && from !== '/posts/' && from !== '/thoughts' && from !== '/thoughts/',
+      `static/_redirects must not keep a posts or thoughts section (found "${rule}")`);
+  }
+  const sitemap = readDist(distDir, 'sitemap.xml');
+  assert.equal(sitemap.includes('/posts/'), false);
+  assert.equal(sitemap.includes('/thoughts/'), false);
 });
 
 test('the making archive is a real page even when empty', () => {

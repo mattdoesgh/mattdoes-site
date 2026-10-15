@@ -21,13 +21,12 @@ test('homepage is an editorial projection rather than the exhaustive timeline', 
     'the primary reading path should be the first thing in the main landmark');
 });
 
-test('the homepage shelf points at posts, not the notebook', () => {
+test('the homepage shelf does not promote posts or thoughts', () => {
   const d = doc('index.html');
-  const tile = d.querySelector('.home-shelves a[href="/posts/"]');
-  assert.ok(tile);
-  assert.match(tile.textContent, /posts/);
-  assert.match(tile.textContent, /on x/);
+  assert.equal(d.querySelector('.home-shelves a[href="/posts/"]'), null);
   assert.equal(d.querySelector('.home-shelves a[href="/thoughts/"]'), null);
+  assert.ok(d.querySelector('.home-shelves a[href="/blog/"]'));
+  assert.ok(d.querySelector('.home-shelves a[href="/listening/"]'));
 });
 
 test('Topic paths connect journal and making, not the retired notebook', () => {

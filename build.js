@@ -18,8 +18,7 @@
 //          (Worker + Last.fm), using only the disk cache — set by the test
 //          fixture builds and CI so they never reach out (see lib/listening.js).
 //          LETTERBOXD_OFFLINE=1 skips the Letterboxd RSS fetch the same way
-//          (see lib/watches.js). X_OFFLINE=1 skips the X post fetch; a
-//          production bake needs X_BEARER_TOKEN (see lib/posts.js).
+//          (see lib/watches.js).
 //          Digs and other recommendations are read from
 //          content/ in the repo — they are not vault notes.
 //          MEDIA_BASE env var overrides where ![[image.jpg]] URLs point
@@ -33,7 +32,6 @@ import { readVault, intake } from './lib/intake.js';
 import { emit } from './lib/emit/index.js';
 import { fetchListeningSnapshot } from './lib/listening.js';
 import { fetchWatches } from './lib/watches.js';
-import { fetchPosts } from './lib/posts.js';
 import { loadDigs, favoritePicks } from './lib/digs.js';
 import { loadRecommendations } from './lib/recommendations.js';
 import { siteConfig } from './site.config.js';
@@ -56,7 +54,6 @@ const { tracks: lastfmTracks, playcount: scrobbleTotal } =
   await fetchListeningSnapshot({ siteUrl: SITE_URL, cacheDir: CACHE_DIR });
 
 const watches = await fetchWatches({ cacheDir: CACHE_DIR });
-const posts = await fetchPosts({ cacheDir: CACHE_DIR });
 const digs = loadDigs(path.join(__dirname, 'content', 'digs'));
 const recommendations = loadRecommendations(path.join(__dirname, 'content', 'recommendations.json'));
 
@@ -72,10 +69,9 @@ const { distSize } = await emit(model, {
   digs,
   recommendations,
   watches,
-  posts,
 });
 
 console.log(`✓ built in ${((Date.now() - t0) / 1000).toFixed(2)}s`);
 console.log(`  ${model.notes.length} notes read → ${model.articles.length} articles`);
-console.log(`  ${digs.length} dig weeks (${favoritePicks(digs).length} favorites) · ${watches.length} recent watches · ${posts.length} posts · ${recommendations.length} other picks`);
+console.log(`  ${digs.length} dig weeks (${favoritePicks(digs).length} favorites) · ${watches.length} recent watches · ${recommendations.length} other picks`);
 console.log(`  dist: ${distSize}  ·  ${DIST_DIR}`);

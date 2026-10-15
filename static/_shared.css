@@ -241,6 +241,7 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
   fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round;
 }
 .topbar .mobile-menu { display: none; }
+.x-link__short { display: none; }
 .topbar .status {
   color: var(--mute);
   font-size: 11px;
@@ -284,8 +285,10 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
 }
 @media (max-width: 640px) {
   .topbar { padding-inline: 12px; }
-  .topbar .inner { gap: 10px; }
+  .topbar .inner { gap: 6px; }
   .topbar .primary-nav { display: none; }
+  .x-link__full { display: none; }
+  .x-link__short { display: inline; }
   .topbar .mobile-menu { display: block; position: relative; }
   .topbar .mobile-menu summary {
     color: var(--mute);
@@ -702,34 +705,6 @@ a.tg:hover { color: var(--accent-fg); }
   background: transparent;
 }
 .page--listening #scrobble-count { display: none; }
-.page--thoughts .notebook-day__head > span { display: none; }
-.page--thoughts .notebook-day { margin-top: 1.7rem; }
-
-/* /posts/ — original X posts as bare feed rows, not glass and not an embed. */
-.posts-page .archive-lede {
-  max-width: 58ch;
-  margin: .35rem 0 1.4rem;
-  color: var(--mute);
-  font-size: 14px;
-  line-height: 1.5;
-}
-.posts-page .post-card .body {
-  max-width: 62ch;
-}
-.posts-page .post-card .body p {
-  margin: 0;
-  font-size: 15.5px;
-  line-height: 1.55;
-}
-.posts-page .post-card .on-x {
-  display: inline-block;
-  margin-top: .45rem;
-  color: var(--mute);
-  font: 12px/1.4 var(--font-mono);
-  letter-spacing: .04em;
-  text-decoration: none;
-}
-.posts-page .post-card .on-x:hover { color: var(--ink); }
 
 /* ── Notebook ────────────────────────────────────── */
 .notebook-head { margin-bottom: 2rem; }

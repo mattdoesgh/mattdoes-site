@@ -40,12 +40,6 @@
  *   limit: number,       // recent watches to render (not a full diary)
  *   cacheTtl: number,    // seconds — build-time cache only
  * }} letterboxd
- * @property {{
- *   handle: string,
- *   profile: string,
- *   limit: number,      // original posts to render
- *   cacheTtl: number,   // seconds — build-time cache only
- * }} x
  */
 
 /** @type {SiteConfig} */
@@ -63,7 +57,8 @@ export const siteConfig = {
   // External presence. Empty href = omitted from the rail.
   // External presence. Empty href = omitted from the about page.
   // Letterboxd, X, Instagram, and Last.fm are also the footer profile nav
-  // (design-system Footer DEFAULT_PROFILES). Keep those four hrefs in sync.
+  // (design-system Footer DEFAULT_PROFILES). X is the topbar social link
+  // too (design-system Topbar X_PROFILE). Keep those hrefs in sync.
   links: [
     { label: 'github',      href: 'https://github.com/mattdoesgh',                              meta: '/mattdoesgh' },
     { label: 'letterboxd',  href: 'https://letterboxd.com/mattdoes',                            meta: '/mattdoes'   },
@@ -144,16 +139,5 @@ export const siteConfig = {
     feed:     'https://letterboxd.com/mattdoes/rss/',
     limit:    25,
     cacheTtl: 6 * 60 * 60,
-  },
-
-  // Original posts from @mattdoes for /posts/. Baked at build time from the
-  // X API. Set X_BEARER_TOKEN on the production Pages build. X_OFFLINE=1
-  // skips the network (CI and tests). There is no public RSS, and no Worker:
-  // the page refreshes on the next deploy. See lib/posts.js and ADR 0014.
-  x: {
-    handle:   'mattdoes',
-    profile:  'https://x.com/mattdoes',
-    limit:    20,
-    cacheTtl: 60 * 60,
   },
 };
