@@ -32,7 +32,7 @@ import { ListingPage, type ListingPageProps } from './pages/ListingPage';
 import { AboutPage, type AboutPageProps } from './pages/AboutPage';
 import { ColophonPage, type ColophonPageProps } from './pages/ColophonPage';
 import { SearchPage, type SearchPageProps } from './pages/SearchPage';
-import { ThoughtsPage, type ThoughtsPageProps } from './pages/ThoughtsPage';
+import { PostsPage, type XPost } from './pages/PostsPage';
 import { TopicPage, type TopicPageProps } from './pages/TopicPage';
 import { DigsPage, type DigWeek } from './pages/DigsPage';
 import { MoviesPage, type Watch } from './pages/MoviesPage';
@@ -59,14 +59,12 @@ const SECTION_PATH: Record<string, string> = {
   journal: '/journal/',
   making: '/making/',
   listening: '/listening/',
-  thoughts: '/thoughts/',
 };
 
 const SECTION_DESCRIPTION: Record<string, string> = {
   journal: 'Journal entries — longer-form notes, reverse-chronological.',
   making: 'Building-in-public posts — projects, experiments, and dev notes.',
   listening: 'A live-updating log of recent listens, pulled from Last.fm.',
-  thoughts: 'Short notes kept with the daily context they came from.',
 };
 
 function scriptTag(src: string, opts: { module?: boolean } = {}): string {
@@ -91,23 +89,6 @@ export function renderIndex(
   return doc(
     { title: '', url: '/', description },
     <IndexPage site={site} editorial={editorial} shelf={shelf} />,
-    siteConfig,
-    assets,
-  );
-}
-
-// ── notebook ────────────────────────────────────────────────────────────────
-export function renderThoughts(
-  args: ThoughtsPageProps & { siteConfig: FullSiteConfig; assets: Assets },
-): string {
-  const { siteConfig, days, topics = [], nowPlaying = '', assets } = args;
-  return doc(
-    {
-      title: 'thoughts',
-      url: '/thoughts/',
-      description: 'Short notes kept with the day and context they came from.',
-    },
-    <ThoughtsPage siteConfig={siteConfig} days={days} topics={topics} nowPlaying={nowPlaying} />,
     siteConfig,
     assets,
   );
@@ -162,7 +143,7 @@ export function renderBlog(args: {
     {
       title: 'writing',
       url: '/blog/',
-      description: 'Essays, project notes, and short thoughts on one reverse-chronological timeline.',
+      description: 'Essays and project notes on one reverse-chronological timeline.',
       bodyScripts: timelineControlsScript(assets),
     },
     <BlogPage siteConfig={siteConfig} entries={entries} nowPlaying={nowPlaying} />,
@@ -171,7 +152,7 @@ export function renderBlog(args: {
   );
 }
 
-// ── section listing (journal / making / thoughts / listening) ────────────────
+// ── section listing (journal / making / listening) ────────────────────────────
 export function renderListing(
   args: ListingPageProps & { siteConfig: FullSiteConfig; assets: Assets },
 ): string {
@@ -247,6 +228,34 @@ export function renderDigs(args: {
       description: 'Weekly music digs — a starter album or track, with a player when there is one.',
     },
     <DigsPage siteConfig={siteConfig} weeks={weeks} nowPlaying={nowPlaying} />,
+    siteConfig,
+    assets,
+  );
+}
+
+// ── posts (original X posts) ─────────────────────────────────────────────────
+export function renderPosts(args: {
+  siteConfig: FullSiteConfig;
+  posts: XPost[];
+  profileHref?: string;
+  handle?: string;
+  nowPlaying?: string;
+  assets: Assets;
+}): string {
+  const { siteConfig, posts, profileHref, handle, nowPlaying = '', assets } = args;
+  return doc(
+    {
+      title: 'posts',
+      url: '/posts/',
+      description: 'Original posts from @mattdoes. Reposts are not included.',
+    },
+    <PostsPage
+      siteConfig={siteConfig}
+      posts={posts}
+      profileHref={profileHref}
+      handle={handle}
+      nowPlaying={nowPlaying}
+    />,
     siteConfig,
     assets,
   );
@@ -365,7 +374,7 @@ export function renderSearch(
     {
       title: 'search',
       url: '/search/',
-      description: 'Search journal, making, and thoughts across mattdoes.online.',
+      description: 'Search journal and making across mattdoes.online.',
       bodyScripts,
     },
     <SearchPage siteConfig={siteConfig} />,

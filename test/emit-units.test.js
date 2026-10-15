@@ -14,16 +14,13 @@ import { atomFeed, sitemapXml, robotsTxt, cdataSafe, DESIGN_BAKEOFF_ROUTES } fro
 import { configureRender, resolveWikilinks, cleanMediaTarget } from '../lib/emit/render.js';
 
 // ── buildSearchIndex ─────────────────────────────────────────────────────
-test('buildSearchIndex indexes articles and thoughts with searchable text', () => {
+test('buildSearchIndex indexes articles and not the retired notebook', () => {
   const articles = [
     { title: 'Hello', url: '/journal/hello/', summary: 'a greeting', kind: 'journal', tags: ['intro'] },
     { title: 'Bare', url: '/making/bare/', kind: 'making' }, // no summary/tags
   ];
-  const thoughts = [
-    { id: 't1', body: 'x'.repeat(200), date: new Date('2026-01-02T00:00:00Z'), tags: ['misc'] },
-  ];
-  const idx = buildSearchIndex(articles, thoughts);
-  assert.equal(idx.length, 3);
+  const idx = buildSearchIndex(articles);
+  assert.equal(idx.length, 2);
   assert.deepEqual(idx[0], {
     title: 'Hello', url: '/journal/hello/', summary: 'a greeting',
     kind: 'journal', tags: ['intro'], text: 'Hello a greeting intro',
@@ -32,10 +29,7 @@ test('buildSearchIndex indexes articles and thoughts with searchable text', () =
   assert.equal(idx[1].summary, '');
   assert.deepEqual(idx[1].tags, []);
   assert.equal(idx[1].text, 'Bare');
-  // Thoughts: anchored notebook URL, body truncated to 160 chars for the summary.
-  assert.equal(idx[2].url, '/thoughts/#t1');
-  assert.equal(idx[2].kind, 'thought');
-  assert.equal(idx[2].summary.length, 160);
+  assert.ok(!idx.some(row => row.kind === 'thought' || String(row.url).includes('/thoughts/')));
 });
 
 // ── toListeningEntries ───────────────────────────────────────────────────
@@ -91,7 +85,7 @@ test('sitemapXml covers the static routes and dated article URLs', () => {
     articles: [{ url: '/journal/a/', date: '2026-01-02T00:00:00Z' }],
     aboutWritten: false,
   });
-  for (const r of ['/', '/blog/', '/search/', '/listening/', '/colophon/', '/journal/', '/making/', '/thoughts/', '/digs/', '/movies/', '/grok/', ...DESIGN_BAKEOFF_ROUTES]) {
+  for (const r of ['/', '/blog/', '/search/', '/listening/', '/colophon/', '/journal/', '/making/', '/posts/', '/digs/', '/movies/', '/grok/', ...DESIGN_BAKEOFF_ROUTES]) {
     assert.ok(xml.includes(`<loc>https://mattdoes.online${r}</loc>`), `sitemap must list ${r}`);
   }
   assert.ok(!xml.includes('/about/'), 'no /about/ entry when the note is absent');

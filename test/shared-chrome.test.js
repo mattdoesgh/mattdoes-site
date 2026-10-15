@@ -21,7 +21,7 @@ test('shared chrome keeps reading navigation compact and moves secondary links t
     [...primary.querySelectorAll('a')].map(link => [link.textContent.trim(), link.getAttribute('href')]),
     [
       ['writing', '/blog/'],
-      ['thoughts', '/thoughts/'],
+      ['posts', '/posts/'],
       ['listening', '/listening/'],
       ['about', '/about/'],
     ],

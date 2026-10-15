@@ -12,7 +12,7 @@ import { wcagContrast, parse } from 'culori';
 import { buildFixtureVault, readDist, REPO_ROOT } from './helpers/run-build.js';
 
 const CSS_PATH = path.join(REPO_ROOT, 'static', 'design-directions.css');
-const SHELVES = ['/blog/', '/thoughts/', '/listening/', '/digs/', '/movies/', '/grok/'];
+const SHELVES = ['/blog/', '/posts/', '/listening/', '/digs/', '/movies/', '/grok/'];
 const SELECTORS = [
   'html:has(.design-index)',
   'html:has(.design-dir--a)',

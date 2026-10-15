@@ -1,11 +1,10 @@
 // Audit backlog: "Progressive enhancement — Script-disabled blog/archive
 // navigation checks". Covers audit finding #12.
 //
-// With JavaScript disabled, /journal/, /making/, and /thoughts/ must be REAL
-// generated pages whose content is the section's entries — not redirects
-// into /blog/?kind=… (which only filters client-side). This test asserts the
-// files exist in dist/, carry the section's entries server-rendered, and
-// that static/_redirects no longer 301s those three routes.
+// With JavaScript disabled, /journal/ and /making/ must be REAL generated
+// pages whose content is the section's entries — not redirects into
+// /blog/?kind=… (which only filters client-side). /thoughts/ is no longer
+// a section; it redirects to /posts/.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -17,7 +16,7 @@ import { buildFixtureVault, readDist, REPO_ROOT } from './helpers/run-build.js';
 let distDir;
 test.before(() => { ({ distDir } = buildFixtureVault()); });
 
-const ARCHIVE_ROUTES = ['journal', 'making', 'thoughts'];
+const ARCHIVE_ROUTES = ['journal', 'making'];
 
 test('each archive route is a real generated index.html, not a redirect', () => {
   for (const route of ARCHIVE_ROUTES) {
@@ -50,16 +49,18 @@ test('the journal archive lists journal entries without JavaScript', () => {
     'journal archive must contain the second journal post');
 });
 
-test('the thoughts archive lists thought entries without JavaScript', () => {
-  // The fixture daily note splits into two thoughts.
-  const html = readDist(distDir, 'thoughts/index.html');
+test('/posts/ is a real page and /thoughts/ redirects there', () => {
+  const html = readDist(distDir, 'posts/index.html');
   const doc = new JSDOM(html).window.document;
-  const rows = doc.querySelectorAll('.timeline .row[data-kind="thought"]');
-  assert.ok(rows.length >= 2,
-    `thoughts archive should server-render its entries (found ${rows.length} rows)`);
-  // Stable thought IDs are server-rendered as fragment anchors.
-  assert.ok(/id="t-\d{8}-\d{4}"/.test(html),
-    'thoughts archive must server-render stable thought-id anchors');
+  assert.equal(doc.querySelector('h1')?.textContent.trim(), 'posts');
+  assert.equal(doc.querySelector('.notebook'), null);
+  assert.equal(fs.existsSync(path.join(distDir, 'thoughts', 'index.html')), false,
+    '/thoughts/ must not be a generated page, or the Pages redirect will not run');
+
+  const redirects = fs.readFileSync(path.join(REPO_ROOT, 'static', '_redirects'), 'utf8');
+  const rules = redirects.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+  assert.ok(rules.some(rule => rule.startsWith('/thoughts/') && rule.includes('/posts/') && rule.includes('301')));
+  assert.ok(rules.some(rule => rule.startsWith('/thoughts ') && rule.includes('/posts/') && rule.includes('301')));
 });
 
 test('the making archive is a real page even when empty', () => {

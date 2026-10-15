@@ -74,6 +74,7 @@ export function runBuild({
       // fresh cache (seedLastfmCache), which short-circuits the network anyway.
       LISTENING_OFFLINE: '1',
       LETTERBOXD_OFFLINE: '1',
+      X_OFFLINE: '1',
       ...env,
     },
     encoding: 'utf8',

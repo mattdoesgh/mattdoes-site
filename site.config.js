@@ -21,7 +21,6 @@
  *   journal:   SiteSection,
  *   making:    SiteSection,
  *   listening: SiteSection,
- *   thoughts:  SiteSection,
  * }} sections
  * @property {string} footerText
  * @property {{
@@ -41,6 +40,12 @@
  *   limit: number,       // recent watches to render (not a full diary)
  *   cacheTtl: number,    // seconds — build-time cache only
  * }} letterboxd
+ * @property {{
+ *   handle: string,
+ *   profile: string,
+ *   limit: number,      // original posts to render
+ *   cacheTtl: number,   // seconds — build-time cache only
+ * }} x
  */
 
 /** @type {SiteConfig} */
@@ -85,11 +90,6 @@ export const siteConfig = {
     },
     listening: {
       who:   'listening',
-      bio:   '',
-      intro: '',
-    },
-    thoughts: {
-      who:   'thoughts',
       bio:   '',
       intro: '',
     },
@@ -144,5 +144,16 @@ export const siteConfig = {
     feed:     'https://letterboxd.com/mattdoes/rss/',
     limit:    25,
     cacheTtl: 6 * 60 * 60,
+  },
+
+  // Original posts from @mattdoes for /posts/. Baked at build time from the
+  // X API. Set X_BEARER_TOKEN on the production Pages build. X_OFFLINE=1
+  // skips the network (CI and tests). There is no public RSS, and no Worker:
+  // the page refreshes on the next deploy. See lib/posts.js and ADR 0014.
+  x: {
+    handle:   'mattdoes',
+    profile:  'https://x.com/mattdoes',
+    limit:    20,
+    cacheTtl: 60 * 60,
   },
 };

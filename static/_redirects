@@ -7,11 +7,11 @@ https://www.mattdoes.online/*  https://mattdoes.online/:splat  301
 # Legacy paths from the pre-rebuild site (fill in as needed)
 # /old-path                    /new-path                        301
 
-# Blog consolidation — /blog/ is the unified journal + making + thoughts
-# view with client-side kind chips. /journal/, /making/, and /thoughts/ are
-# now REAL server-generated archive index pages (see build.js), so they no
-# longer redirect — a scripts-disabled visitor gets the actual section
-# content. Individual post URLs (e.g. /journal/<slug>/) are unchanged.
+# Blog consolidation — /blog/ is the unified journal + making view with
+# client-side kind chips. /journal/ and /making/ are real archive pages.
+# /thoughts/ was the notebook; that section is gone (ADR 0014).
+/thoughts                      /posts/                          301
+/thoughts/                     /posts/                          301
 
 # RSS alias
 /rss.xml                       /feed.xml                        301

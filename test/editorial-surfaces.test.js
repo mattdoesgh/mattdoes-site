@@ -21,25 +21,21 @@ test('homepage is an editorial projection rather than the exhaustive timeline', 
     'the primary reading path should be the first thing in the main landmark');
 });
 
-test('/thoughts/ groups fragments by source day and keeps stable anchors', () => {
-  const d = doc('thoughts/index.html');
-  const days = d.querySelectorAll('.notebook-day');
-  assert.equal(days.length, 1);
-  assert.equal(days[0].querySelectorAll('.row--thought').length, 2);
-  assert.ok(days[0].querySelector('#t-20260102-0915'));
-  assert.ok(days[0].querySelector('#t-20260102-1402'));
-  assert.doesNotMatch(d.body.textContent, /daily\/2026-01-02\.md/,
-    'vault provenance must remain implementation data');
-  assert.equal(d.querySelector('main')?.firstElementChild?.classList.contains('notebook'), true,
-    'notebook content should be the complete primary content path');
+test('the homepage shelf points at posts, not the notebook', () => {
+  const d = doc('index.html');
+  const tile = d.querySelector('.home-shelves a[href="/posts/"]');
+  assert.ok(tile);
+  assert.match(tile.textContent, /posts/);
+  assert.match(tile.textContent, /on x/);
+  assert.equal(d.querySelector('.home-shelves a[href="/thoughts/"]'), null);
 });
 
-test('Topic paths connect articles and Thoughts across writing kinds', () => {
+test('Topic paths connect journal and making, not the retired notebook', () => {
   const topic = doc('topics/meta/index.html');
   const kinds = [...topic.querySelectorAll('.topic-entry .kind')].map(node => node.textContent.trim());
   assert.ok(kinds.includes('journal'));
-  assert.ok(kinds.includes('thought'));
-  assert.ok(topic.querySelector('a[href="/thoughts/#t-20260102-1402"]'));
+  assert.equal(kinds.includes('thought'), false);
+  assert.equal(topic.querySelector('a[href^="/thoughts/"]'), null);
 
   const article = doc('journal/hello-fixture-world/index.html');
   assert.ok(article.querySelector('.post-tags a[href="/topics/meta/"]'));

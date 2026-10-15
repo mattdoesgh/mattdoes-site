@@ -24,17 +24,19 @@
 //      generated fixture output still passes html-validate with the three
 //      re-enabled rules ON.
 //   2. Thought fragment-id stability (finding #13): adding an older daily
-//      note must not shift the ids of pre-existing thoughts.
+//      note must not shift the ids of pre-existing thoughts. The public
+//      notebook page is gone; the check reads Intake, which still splits
+//      publish: thoughts so an older vault keeps stable ids.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { JSDOM } from 'jsdom';
 import {
-  runBuild, buildFixtureVault, readDist, REPO_ROOT,
+  buildFixtureVault, readDist, REPO_ROOT,
 } from './helpers/run-build.js';
+import { intake, readVault } from '../lib/intake.js';
 
 // One fixture-vault build shared by the html-validate and sitemap tests.
 let fixtureDist;
@@ -78,28 +80,16 @@ test('the fixture build still passes html-validate with the tightened rules', ()
 });
 
 // ── 2. thought fragment-id stability (finding #13) ──────────────────────
-function thoughtIds(distHtml) {
-  const doc = new JSDOM(distHtml).window.document;
-  return [...doc.querySelectorAll('.row[data-kind="thought"] a.permalink')]
-    .map(a => a.id)
-    .filter(Boolean);
+function thoughtIds(vaultDir) {
+  return intake(readVault(vaultDir)).thoughts.map(t => t.id);
 }
 
 test('adding an older thought does not shift pre-existing thought ids', () => {
-  // Build the "before" vault: two thoughts on 2026-03-10.
-  const before = runBuild({
-    vaultDir: path.join(REPO_ROOT, 'test', 'fixtures', 'thoughts-before'),
-  });
-  assert.equal(before.status, 0, `thoughts-before build failed:\n${before.stderr}`);
-  const idsBefore = thoughtIds(readDist(before.distDir, 'thoughts/index.html'));
+  const beforeDir = path.join(REPO_ROOT, 'test', 'fixtures', 'thoughts-before');
+  const afterDir = path.join(REPO_ROOT, 'test', 'fixtures', 'thoughts-after');
+  const idsBefore = thoughtIds(beforeDir);
   assert.ok(idsBefore.length >= 2, 'before-vault should yield >=2 thought ids');
-
-  // Build the "after" vault: same March note + an OLDER (January) thought.
-  const after = runBuild({
-    vaultDir: path.join(REPO_ROOT, 'test', 'fixtures', 'thoughts-after'),
-  });
-  assert.equal(after.status, 0, `thoughts-after build failed:\n${after.stderr}`);
-  const idsAfter = thoughtIds(readDist(after.distDir, 'thoughts/index.html'));
+  const idsAfter = thoughtIds(afterDir);
 
   // Every id that existed before must still exist — the older insertion must
   // not renumber later thoughts (the regression fixed in finding #13).

@@ -43,7 +43,7 @@ test('timeline controls are emitted as hashed feed-only assets', () => {
   for (const rel of [
     'about/index.html',
     'index.html',
-    'thoughts/index.html',
+    'posts/index.html',
     'search/index.html',
     'colophon/index.html',
     'journal/hello-fixture-world/index.html',
@@ -140,8 +140,8 @@ test('timeline controls update count and active filter on click', async () => {
 
     assert.equal(meta.getAttribute('aria-current'), 'true',
       'clicked filter should become active');
-    assert.equal(dom.window.document.querySelector('.filter .cnt')?.textContent.trim(), '3 entries',
-      'visible count should update after filtering');
+    assert.equal(dom.window.document.querySelector('.filter .cnt')?.textContent.trim(), '2 entries',
+      'visible count should update after filtering to the two journal notes tagged meta');
   } finally {
     for (const [key, descriptor] of previous) {
       if (descriptor) Object.defineProperty(globalThis, key, descriptor);

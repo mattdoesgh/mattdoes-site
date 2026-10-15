@@ -1,5 +1,5 @@
 // Cross-links for the three public log pages. They live in the footer (the
-// reading nav stays writing / thoughts / listening / about); once you're on
+// reading nav stays writing / posts / listening / about); once you're on
 // one of them, this row is the short way to the other two.
 
 const LINKS = [

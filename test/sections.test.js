@@ -39,7 +39,8 @@ test('design-system SECTION_PATH maps match the Section descriptor', () => {
     assert.ok(listing.includes(`${kind}: '${section.route}'`),
       `${path.relative(REPO_ROOT, listingFile)} must map ${kind} → ${section.route}`);
   }
-  assert.ok(ssg.includes("url: '/thoughts/'"), 'dedicated ThoughtsPage must own /thoughts/');
+  assert.ok(ssg.includes("url: '/posts/'"), 'the posts page must own /posts/');
+  assert.equal(ssg.includes("url: '/thoughts/'"), false, 'thoughts is not a generated page');
 });
 
 test('sitemap <loc> set equals the index.html pages actually written', () => {
