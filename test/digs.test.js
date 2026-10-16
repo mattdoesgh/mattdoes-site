@@ -12,18 +12,31 @@ function tempDir() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'digs-'));
 }
 
-test('the committed sample week loads, newest first, with one favorite', () => {
+test('the committed week of 2026-10-12 loads, newest first, with one favorite', () => {
   const weeks = loadDigs(path.join(CONTENT, 'digs'));
   assert.ok(weeks.length >= 1);
-  assert.equal(weeks[0].sample, true);
+  assert.equal(weeks[0].sample, false);
   assert.equal(weeks[0].weekOf, '2026-10-12');
+  assert.deepEqual(weeks[0].picks.map((pick) => pick.artist), [
+    'Lauren Bousfield',
+    'Youth Code',
+    'Black Dresses',
+    'Caterina Barbieri',
+    'Fabio Frizzi',
+    'Aïsha Devi',
+  ]);
   const favs = favoritePicks(weeks);
   assert.equal(favs.length, 1);
-  assert.equal(favs[0].artist, 'Hiroshi Yoshimura');
+  assert.equal(favs[0].artist, 'Lauren Bousfield');
+  assert.equal(favs[0].starter, 'Salesforce');
   assert.equal(favs[0].weekOf, '2026-10-12');
+  assert.equal(favs[0].sample, false);
   assert.ok(favs[0].appleMusicEmbed.startsWith('https://embed.music.apple.com/'));
-  const bandcamp = weeks[0].picks.find((pick) => pick.bandcampEmbed);
-  assert.ok(bandcamp.bandcampEmbed.startsWith('https://bandcamp.com/EmbeddedPlayer/'));
+  assert.ok(favs[0].bandcampEmbed.startsWith('https://bandcamp.com/EmbeddedPlayer/'));
+  const appleOnly = weeks[0].picks.find((pick) => pick.artist === 'Fabio Frizzi');
+  assert.equal(appleOnly.bandcamp, '');
+  assert.equal(appleOnly.bandcampEmbed, '');
+  assert.ok(appleOnly.appleMusic.startsWith('https://music.apple.com/'));
 });
 
 test('weeks sort newest first', () => {
