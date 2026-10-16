@@ -17,9 +17,9 @@ routes = [
 # command, so the binding block has to be commented out until the namespace
 # exists. Steps:
 #   1. Leave the block below commented on first deploy.
-#   2. Run:  npx wrangler kv namespace create LASTFM_CACHE
+#   2. Run, from this directory: node ../node_modules/wrangler/bin/wrangler.js kv namespace create LASTFM_CACHE
 #   3. Uncomment the block and paste the returned id into `id = "..."`.
-#   4. npx wrangler deploy
+#   4. From the repo root: npm run deploy:workers
 #
 # Add `preview_id = "..."` alongside `id` if you want a separate namespace
 # for `wrangler dev`.

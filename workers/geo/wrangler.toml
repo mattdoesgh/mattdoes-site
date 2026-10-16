@@ -17,9 +17,9 @@ routes = [
 #
 # One-time setup (mirrors workers/listening):
 #   1. Leave the [[kv_namespaces]] block commented on first deploy.
-#   2. Run:  npx wrangler kv namespace create GEO_CACHE
+#   2. Run, from this directory: node ../node_modules/wrangler/bin/wrangler.js kv namespace create GEO_CACHE
 #   3. Uncomment, paste the returned id into `id = "..."`.
-#   4. npx wrangler deploy
+#   4. From the repo root: npm run deploy:workers
 #
 [[kv_namespaces]]
 binding = "GEO_CACHE"
