@@ -48,12 +48,22 @@ function Brand({ siteTitle }: { siteTitle: string }) {
   );
 }
 
-function NavLinks({ nav, active, glass = false }: { nav: NavItem[]; active: string; glass?: boolean }) {
+function ChipLinks({ nav, active }: { nav: NavItem[]; active: string }) {
   return nav.map((n) => {
     const on = active === n.id;
-    const className = [on ? 'on' : '', glass ? 'gb' : ''].filter(Boolean).join(' ');
     return (
-      <a key={n.href} href={n.href} className={className || undefined} aria-current={on ? 'page' : undefined}>
+      <a key={n.href} href={n.href} className={on ? 'on gb' : 'gb'} aria-current={on ? 'page' : undefined}>
+        {n.label}
+      </a>
+    );
+  });
+}
+
+function MenuLinks({ nav, active }: { nav: NavItem[]; active: string }) {
+  return nav.map((n) => {
+    const on = active === n.id;
+    return (
+      <a key={n.href} href={n.href} className={on ? 'on' : undefined} aria-current={on ? 'page' : undefined}>
         {n.label}
       </a>
     );
@@ -93,7 +103,7 @@ export function Topbar({
           <Brand siteTitle={siteTitle} />
         </a>
         <nav className="primary-nav" aria-label="primary">
-          <NavLinks nav={nav} active={active} glass />
+          <ChipLinks nav={nav} active={active} />
         </nav>
         <nav className="social-nav" aria-label="social">
           <XLink />
@@ -106,7 +116,7 @@ export function Topbar({
             </span>
           </summary>
           <nav aria-label="site menu">
-            <NavLinks nav={nav} active={active} />
+            <MenuLinks nav={nav} active={active} />
             <XLink compact />
           </nav>
         </details>
