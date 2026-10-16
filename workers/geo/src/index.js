@@ -18,8 +18,8 @@
 // precision is never persisted anywhere.
 //
 // Env / bindings:
-//   GEO_CACHE — Workers KV for response cache, locks, and secondary budget
-//   GEO_RL    — native Workers rate-limit gate for cache-miss abuse
+//   GEO_CACHE — Workers KV for response cache, locks, and a best-effort budget
+//   GEO_RL    — enforced native rate-limit gate for cache-miss abuse
 
 import {
   json, errorJson, withCache, corsPreflight, kvPut, getClientIp,
@@ -35,20 +35,25 @@ const NOMINATIM_DELAY  = 1100;                       // ms; OSM 1 req/sec policy
 // ── Upstream abuse budget (F4) ─────────────────────────────────────────
 // The 60s lock above only dedupes the *same* rounded key. A caller that
 // varies coordinates produces a stream of distinct cache-miss keys and can
-// fan that out to Nominatim without bound. To cap that, we keep a per-IP
-// counter of how many *distinct upstream lookups* a single caller has
-// triggered inside a rolling window, independent of the location key. The
-// raw IP is hashed before it is written to KV, so the secondary budget key is
-// useful for abuse control without storing the caller address verbatim.
+// fan that out to Nominatim without bound.
+//
+// The enforced control is the native GEO_RL binding (workers/geo/wrangler.toml):
+// it is race-free, and a missing or throwing binding fails closed. Its simple
+// period only supports 10s or 60s, so it bounds bursts, not a 10-minute window.
+//
+// The KV counter below is a best-effort extra for that wider window. It is a
+// read followed by a write, so concurrent requests can race past the count.
+// A KV error on that path must not reject a request GEO_RL already allowed,
+// and must not be treated as the control that stops a burst. The raw IP is
+// hashed before it is written so the key does not store the caller address.
 //
 // Cap rationale: a legitimate visitor opts in once via the tweaks panel and
 // (after rounding to an ~11 km grid) needs exactly one upstream lookup per
 // metro they're in. Even a traveller crossing several grid cells, plus the
 // occasional cache-cold retry, stays well under ~15 distinct lookups in a
-// 10-minute window. Anything above that is a coordinate-fuzzing abuser, so
-// 15 / 10 min is generous for humans yet hard-bounds Nominatim traffic.
+// 10-minute window.
 const RL_WINDOW_S      = 10 * 60;                    // 10 min rolling window
-const RL_MAX_LOOKUPS   = 15;                         // distinct upstream lookups / window / IP
+const RL_MAX_LOOKUPS   = 15;                         // best-effort lookups / window / IP
 
 // Short TTLs so a repeated bad/empty coordinate doesn't re-hit Nominatim on
 // every request. Negative ("no polygon here") results and transient upstream
@@ -180,9 +185,11 @@ export default {
  *
  * The 60s lock only collapses concurrent misses for the *same* key, so a
  * caller that varies coordinates produces unbounded distinct misses and
- * Nominatim traffic. This counts how many cache-miss requests a single IP
- * has driven inside a rolling {@link RL_WINDOW_S} window and rejects further
- * lookups once over {@link RL_MAX_LOOKUPS}.
+ * Nominatim traffic. {@link env.GEO_RL} is the enforced gate for that. The
+ * KV counter is a best-effort wider window: when the read succeeds and the
+ * count is already at {@link RL_MAX_LOOKUPS} the request is rejected, but
+ * a KV failure is ignored because concurrent read/write races already make
+ * that counter an unreliable control.
  *
  * Only called on the cache-*miss* path, so edge/KV hits never consume budget.
  *
@@ -198,20 +205,19 @@ async function checkUpstreamBudget(request, env) {
   if (!env.GEO_RL || typeof env.GEO_RL.limit !== 'function') {
     return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
   }
-  // Two limiters by design, not redundancy: the native Rate Limiting binding
-  // only supports 10s/60s windows (see the listening Worker's checkRateLimit),
-  // so it can gate short bursts but cannot express the 15-lookups-per-10-min
-  // upstream budget. The binding handles bursts; the KV bucket below holds
-  // the wide window. Both fail closed — abuse control must not be bypassable
-  // by breaking a binding.
+  // Native binding is the enforced control. It only supports 10s/60s windows
+  // (see the listening Worker's checkRateLimit), so the configured limit is
+  // per minute. Missing or throwing fails closed: a partially deployed Worker
+  // must not reach Nominatim.
   try {
     const { success } = await env.GEO_RL.limit({ key: `${ip}:lookup` });
     if (!success) return errorJson({ error: 'rate_limited' }, 429, { retryAfterS: 60 });
   } catch {
     return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
   }
-  // Bucket the window so the counter key naturally expires and resets:
-  // every request inside the same RL_WINDOW_S slice shares one key.
+  // Best-effort wider window. Read-then-write can race under concurrency, so
+  // this is not the burst control. Errors are ignored after GEO_RL allowed
+  // the request.
   const bucket = Math.floor(Date.now() / 1000 / RL_WINDOW_S);
   const ipHash = await sha256Hex(ip);
   const rlKey  = `rl:${ipHash}:${bucket}`;
@@ -225,10 +231,10 @@ async function checkUpstreamBudget(request, env) {
     // Count this upcoming upstream lookup. expirationTtl gives the slot a
     // hard lifetime even if the bucket math and TTL drift slightly.
     await env.GEO_CACHE.put(rlKey, String(count + 1), { expirationTtl: RL_WINDOW_S });
-    return null;
   } catch {
-    return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
+    // GEO_RL already admitted this request.
   }
+  return null;
 }
 
 // ── Nominatim lookup ───────────────────────────────────────────────────

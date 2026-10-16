@@ -200,7 +200,7 @@ export function renderSearch(
   args: SearchPageProps & { siteConfig: FullSiteConfig; assets: Assets },
 ): string {
   const { siteConfig, assets } = args;
-  const bodyScripts = scriptTag(assetUrl(assets, 'search.js'));
+  const bodyScripts = scriptTag(assetUrl(assets, 'search.js'), { module: true });
   return doc(
     {
       title: 'search',

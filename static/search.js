@@ -1,5 +1,8 @@
 // search.js — client-side filter over the build-time search-index.json.
 // Progressive enhancement: the /search/ page ships a no-JS form fallback.
+// Loaded as type="module" so the importmap can resolve _helpers.js.
+
+import { safeUrl } from './_helpers.js';
 
 (() => {
   const INDEX_URL = '/search-index.json';
@@ -56,12 +59,18 @@
       row.dataset.kind = e.kind || '';
       const gutter = document.createElement('div');
       gutter.className = 'gutter';
-      gutter.innerHTML = `<span class="kind">${e.kind || 'post'}</span>`;
+      const kind = document.createElement('span');
+      kind.className = 'kind';
+      kind.textContent = e.kind || 'post';
+      gutter.appendChild(kind);
       const body = document.createElement('div');
       body.className = 'body';
       const a = document.createElement('a');
-      a.href = e.url;
-      a.innerHTML = `<strong>${e.title}</strong>`;
+      const href = safeUrl(e.url);
+      if (href) a.setAttribute('href', href);
+      const title = document.createElement('strong');
+      title.textContent = e.title ?? '';
+      a.appendChild(title);
       body.appendChild(a);
       if (e.summary) {
         const meta = document.createElement('span');

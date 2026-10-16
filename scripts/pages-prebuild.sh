@@ -21,7 +21,33 @@ set -euo pipefail
 # overridable for legitimate dev use, with validation before they reach git.
 VAULT_REPO="github.com/mattdoesgh/mattdoes-vault.git"
 VAULT_BRANCH="${VAULT_BRANCH:-main}"
-VAULT_DIR="${VAULT_DIR:-vault}"
+# Unset defaults to ./vault. An explicit empty value stays empty so it can
+# be rejected below instead of silently falling back.
+VAULT_DIR="${VAULT_DIR-vault}"
+
+# VAULT_DIR is passed to `ls`, `git -C`, and `git clone`. Reject path tricks
+# before any of those see it: an empty string, an absolute path, a `..`
+# segment, or a leading dash (which git would treat as a flag).
+if [[ -z "$VAULT_DIR" ]]; then
+  echo "✗ VAULT_DIR is empty."
+  exit 1
+fi
+if [[ "$VAULT_DIR" == /* ]]; then
+  echo "✗ VAULT_DIR must be a relative path."
+  exit 1
+fi
+if [[ "$VAULT_DIR" == -* ]]; then
+  echo "✗ VAULT_DIR must not start with '-'."
+  exit 1
+fi
+IFS='/' read -r -a _vault_parts <<< "$VAULT_DIR"
+for _part in "${_vault_parts[@]}"; do
+  if [[ "$_part" == ".." ]]; then
+    echo "✗ VAULT_DIR must not contain a '..' segment."
+    exit 1
+  fi
+done
+unset _vault_parts _part
 
 # If vault/ is already populated (local dev, or a previous prebuild on a
 # warm Pages cache), skip the clone.
@@ -65,6 +91,7 @@ GIT_TERMINAL_PROMPT=0 GIT_ASKPASS="$ASKPASS" git clone \
   --depth 1 \
   --branch "$VAULT_BRANCH" \
   "https://${VAULT_REPO}" \
+  -- \
   "$VAULT_DIR"
 
 # Sanity check: vault should now exist and be non-empty.
@@ -89,8 +116,16 @@ if [[ -f package.json ]]; then
   npm run --silent optimize-media || echo "  (optimize-media reported an error — continuing)"
 
   if [[ -n "${CLOUDFLARE_API_TOKEN:-}" ]] && [[ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]]; then
-    echo "→ Syncing media to R2…"
-    npm run --silent sync-media || echo "  (sync-media reported an error — continuing; originals may be stale on R2)"
+    # sync-media runs the wrangler binary locked in workers/package-lock.json.
+    # Install that tree first. `if` keeps a registry failure from aborting
+    # the Pages build; the upload is skipped and the site build continues.
+    echo "→ Installing locked wrangler from workers/…"
+    if npm --prefix workers ci; then
+      echo "→ Syncing media to R2…"
+      npm run --silent sync-media || echo "  (sync-media reported an error — continuing; originals may be stale on R2)"
+    else
+      echo "  (workers npm ci failed — skipping sync-media; originals may be stale on R2)"
+    fi
   else
     echo "  (skip sync-media: CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID not set)"
   fi

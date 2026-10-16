@@ -46,6 +46,13 @@ test('global security headers include CSP, HSTS, and framing controls', () => {
   );
 });
 
+test('same-origin SVGs under /img are served as attachments', () => {
+  assert.equal(headerValues(routes, '/img/*.svg', 'content-disposition')[0], 'attachment');
+  assert.equal(headerValues(routes, '/img/*.svg', 'x-content-type-options')[0], 'nosniff');
+  const source = fs.readFileSync(path.join(process.cwd(), 'static', '_headers'), 'utf8');
+  assert.match(source, /^\/img\/\*\.svg$/m);
+});
+
 test('report-only CSP points at the same-origin report collector', () => {
   const reportOnly = headerValues(routes, '/*', 'content-security-policy-report-only')[0];
   assert.ok(reportOnly, '/* must set Content-Security-Policy-Report-Only');

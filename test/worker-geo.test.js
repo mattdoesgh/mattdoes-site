@@ -119,6 +119,69 @@ test('geo: a burst of distinct coordinates from one IP is rate-limited', async (
   } finally { c.restore(); f.restore(); }
 });
 
+test('geo: the native rate limiter rejects a burst before Nominatim or the KV counter', async () => {
+  const c = installCaches();
+  const f = installFetch(nominatimOk);
+  try {
+    const env = {
+      GEO_CACHE: new KVStub(),
+      GEO_RL: { limit: async () => ({ success: false }) },
+    };
+    const ctx = makeCtx();
+    const res = await geoWorker.fetch(
+      workerRequest(`${LOOKUP}?lat=29.76&lng=-95.37`,
+        { headers: { 'cf-connecting-ip': '203.0.113.8' } }),
+      env, ctx);
+    await ctx.settle();
+    assert.equal(res.status, 429);
+    assert.deepEqual(await res.json(), { error: 'rate_limited' });
+    assert.equal(f.calls.length, 0);
+    assert.equal([...env.GEO_CACHE.store.keys()].some(k => k.startsWith('rl:')), false);
+  } finally { c.restore(); f.restore(); }
+});
+
+test('geo: a KV error on the best-effort counter still allows a request the native limiter accepted', async () => {
+  const c = installCaches();
+  const f = installFetch(nominatimOk);
+  try {
+    const kv = new KVStub();
+    const get = kv.get.bind(kv);
+    kv.get = async (key, opts) => {
+      if (String(key).startsWith('rl:')) throw new Error('rl read failed');
+      return get(key, opts);
+    };
+    const env = { GEO_CACHE: kv, GEO_RL: allowRl() };
+    const ctx = makeCtx();
+    const res = await geoWorker.fetch(
+      workerRequest(`${LOOKUP}?lat=29.76&lng=-95.37`,
+        { headers: { 'cf-connecting-ip': '203.0.113.9' } }),
+      env, ctx);
+    await ctx.settle();
+    assert.equal(res.status, 200, 'GEO_RL already allowed this request');
+    assert.ok(f.calls.length > 0, 'the lookup should reach Nominatim');
+  } finally { c.restore(); f.restore(); }
+});
+
+test('geo: fails closed when the native rate limiter throws', async () => {
+  const c = installCaches();
+  const f = installFetch(nominatimOk);
+  try {
+    const ctx = makeCtx();
+    const res = await geoWorker.fetch(
+      workerRequest(`${LOOKUP}?lat=29.76&lng=-95.37`,
+        { headers: { 'cf-connecting-ip': '203.0.113.10' } }),
+      {
+        GEO_CACHE: new KVStub(),
+        GEO_RL: { limit: async () => { throw new Error('rl down'); } },
+      },
+      ctx);
+    await ctx.settle();
+    assert.equal(res.status, 503);
+    assert.deepEqual(await res.json(), { error: 'service_unavailable' });
+    assert.equal(f.calls.length, 0);
+  } finally { c.restore(); f.restore(); }
+});
+
 // ── required bindings fail closed ───────────────────────────────────────
 test('geo: fails closed without the GEO_CACHE binding', async () => {
   const c = installCaches();

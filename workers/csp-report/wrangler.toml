@@ -17,7 +17,8 @@ routes = [
 # binding = "CSP_REPORTS"
 # id      = "..."
 
-# Light per-IP gate — CSP reports are cheap but shouldn't be a log sink.
+# Per-IP gate enforced in src/index.js before the report body is read.
+# A missing binding fails the Worker closed.
 [[ratelimits]]
 name         = "CSP_RL"
 namespace_id = "2003"

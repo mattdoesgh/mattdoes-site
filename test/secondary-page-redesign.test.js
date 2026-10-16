@@ -59,6 +59,11 @@ test('search and topics show their content without explanatory rails', () => {
   assert.throws(() => doc('topics/meta/index.html'));
 });
 
+test('search loads its filter as a module', () => {
+  const html = readDist(distDir, 'search/index.html');
+  assert.match(html, /<script src="\/search\.[0-9a-f]{8}\.js" type="module"><\/script>/);
+});
+
 test('search only gives usage guidance after a query outcome', () => {
   const script = fs.readFileSync(new URL('../static/search.js', import.meta.url), 'utf8');
   assert.doesNotMatch(script, /Type to search the archive\./);
