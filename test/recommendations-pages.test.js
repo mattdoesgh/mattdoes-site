@@ -35,15 +35,26 @@ test('profile hrefs in the about page match site config and the footer', () => {
   }
 });
 
-test('/digs/ renders the sample week with lazy, allowlisted players', () => {
+test('/digs/ renders the week of 2026-10-12 with lazy, allowlisted players', () => {
   const d = doc('digs/index.html');
   assert.equal(d.querySelector('h1').textContent.trim(), 'digs');
-  assert.ok(d.querySelector('.sample-flag'), 'the placeholder week must be labeled sample');
-  assert.match(d.body.textContent, /Hiroshi Yoshimura/);
+  assert.equal(d.querySelector('.sample-flag'), null, 'a published week is not labeled sample');
+  for (const artist of [
+    'Lauren Bousfield',
+    'Youth Code',
+    'Black Dresses',
+    'Caterina Barbieri',
+    'Fabio Frizzi',
+    'Aïsha Devi',
+  ]) {
+    assert.match(d.body.textContent, new RegExp(artist));
+  }
   assert.match(d.body.textContent, /favorite/);
+  assert.doesNotMatch(d.body.textContent, /Hiroshi Yoshimura|loscil/);
 
   const frames = [...d.querySelectorAll('iframe')];
-  assert.equal(frames.length, 2);
+  // Five picks embed Apple and Bandcamp; Fabio Frizzi is Apple only.
+  assert.equal(frames.length, 11);
   for (const frame of frames) {
     assert.equal(frame.getAttribute('loading'), 'lazy');
     assert.ok(frame.getAttribute('title'), 'players need an accessible name');
@@ -53,6 +64,9 @@ test('/digs/ renders the sample week with lazy, allowlisted players', () => {
       src,
     );
   }
+  const frizzi = d.getElementById('pick-2026-10-12-4');
+  assert.equal(frizzi?.querySelector('a[href*="bandcamp.com"]'), null);
+  assert.ok(frizzi?.querySelector('iframe[src*="embed.music.apple.com"]'));
   assert.equal(d.querySelector('iframe[src*="letterboxd"]'), null);
 });
 
@@ -71,8 +85,9 @@ test('/grok/ points at digs favorites and does not repeat the players', () => {
   assert.equal(d.querySelector('h1').textContent.trim(), 'grok says…');
   const fav = d.querySelector('a[href="/digs/#pick-2026-10-12-0"]');
   assert.ok(fav, 'the hub must link at the favorite pick on /digs/');
-  assert.equal(fav.textContent.trim(), 'Hiroshi Yoshimura');
-  assert.ok(d.querySelector('.sample-flag'), 'a sample favorite stays labeled sample');
+  assert.equal(fav.textContent.trim(), 'Lauren Bousfield');
+  assert.match(fav.parentElement?.textContent || '', /Salesforce/);
+  assert.equal(d.querySelector('.sample-flag'), null, 'a published favorite is not labeled sample');
   assert.equal(d.querySelector('iframe'), null, 'players live on /digs/, not a second copy here');
   assert.ok(d.querySelector('a[href="/digs/"]'));
   assert.ok(d.querySelector('nav[aria-label="sections"] a[href="/movies/"]'));

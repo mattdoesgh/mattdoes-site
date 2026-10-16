@@ -45,8 +45,8 @@ match `weekOf`. Weeks render newest first. Older weeks sit in the archive
 - At least one of `appleMusic` or `bandcamp`. The embed fields are optional.
   Embeds have to be `https://embed.music.apple.com/…` or
   `https://bandcamp.com/EmbeddedPlayer/…`. Any other host fails the build.
-- Leave `sample: true` only on placeholder weeks. Delete
-  `content/digs/2026-10-12.json` when the first real week replaces it.
+- Leave `sample: true` only on placeholder weeks. The week of 2026-10-12
+  is a published week (`sample: false`).
 - Players are lazy iframes. CSP `frame-src` allows those two hosts and nothing
   else (`static/_headers`). No new script, no third-party `connect-src`.
 

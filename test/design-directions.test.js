@@ -76,7 +76,7 @@ test('the index and three directions are labelled, linked, and isolated', () => 
     for (const href of SHELVES) {
       assert.ok(page.querySelector(`a[href="${href}"]`), `${rel} links to ${href}`);
     }
-    assert.match(page.body.textContent, /Hiroshi Yoshimura/, `${rel} shows the current dig`);
+    assert.match(page.body.textContent, /Lauren Bousfield/, `${rel} shows the current dig`);
     assert.match(page.body.textContent, /Reader features fixture/, `${rel} shows the editorial lead`);
     assert.equal(page.querySelectorAll('[id="now-playing"], [id="scrobble-count"]').length, 0,
       'sketches do not take over the live listening targets');
