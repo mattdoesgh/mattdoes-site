@@ -1,12 +1,7 @@
-// Homepage — a quiet editorial front door. Selection belongs to
-// lib/editorial-home.js; this page only presents one lead and a short list.
-import {
-  PageShell,
-  ArticleRow,
-  Time,
-  safeUrl,
-  type ArticleRowProps,
-} from '../../src/index';
+// Homepage — a quiet front door. Long-form posts are not published
+// (ADR 0016), so this page is the name, a short identity, and the
+// shelves that are still here.
+import { PageShell } from '../../src/index';
 
 export interface IndexSite {
   config?: { title?: string; footerText?: string; status?: string };
@@ -21,23 +16,12 @@ export interface HomeShelf {
   watch?: { title?: string; year?: string } | null;
 }
 
-export interface HomeArticle extends ArticleRowProps {
-  kind: string;
-}
-
-export interface EditorialHome {
-  featured: HomeArticle | null;
-  recentWriting: HomeArticle[];
-}
-
 export interface IndexPageProps {
   site: IndexSite;
-  editorial: EditorialHome;
   shelf?: HomeShelf;
 }
 
 const SHELVES = [
-  { href: '/blog/', label: 'writing', note: 'essays and notes' },
   { href: '/listening/', label: 'listening', note: 'recent plays' },
   { href: '/digs/', label: 'digs', note: 'weekly music' },
   { href: '/movies/', label: 'movies', note: 'recent watches' },
@@ -74,9 +58,8 @@ function Lately({ site, shelf }: { site: IndexSite; shelf: HomeShelf }) {
   );
 }
 
-export function IndexPage({ site, editorial, shelf = {} }: IndexPageProps) {
+export function IndexPage({ site, shelf = {} }: IndexPageProps) {
   const { name, dim } = wordmark(site);
-  const featured = editorial.featured;
 
   return (
     <PageShell
@@ -89,28 +72,18 @@ export function IndexPage({ site, editorial, shelf = {} }: IndexPageProps) {
       <main className="page page--home" id="main">
         <section className="home-content" aria-labelledby="home-title">
           <header className="home-intro">
-            <p className="kicker">{site.config?.title || 'mattdoes.online'}</p>
             <h1 id="home-title">
               {name}
               {dim ? <span className="dim">{dim}</span> : null}
             </h1>
-            {site.bio ? <p className="bio">{site.bio}</p> : null}
-            {site.place ? <p className="where">{site.place}</p> : null}
+            {(site.bio || site.place) ? (
+              <div className="home-intro__meta">
+                {site.bio ? <p className="bio">{site.bio}</p> : null}
+                {site.place ? <p className="where">{site.place}</p> : null}
+              </div>
+            ) : null}
             <p className="tagline">somewhere quiet on the wired</p>
           </header>
-
-          {featured ? (
-            <article className={`home-lead home-lead--${featured.kind}`}>
-              <div className="home-lead__meta">
-                <span className="kind">{featured.kind}</span>
-                <Time date={featured.date} format="day" />
-              </div>
-              <h2><a href={safeUrl(featured.url)}>{featured.title}</a></h2>
-              {featured.summary ? <p>{featured.summary}</p> : null}
-            </article>
-          ) : (
-            <p className="muted">Nothing published yet.</p>
-          )}
 
           <section className="home-shelves" aria-labelledby="shelves-heading">
             <h2 id="shelves-heading">around here</h2>
@@ -126,20 +99,10 @@ export function IndexPage({ site, editorial, shelf = {} }: IndexPageProps) {
             </ul>
           </section>
 
-          {editorial.recentWriting.length ? (
-            <section className="home-recent" aria-label="recent writing">
-              {editorial.recentWriting.map(entry => (
-                <ArticleRow key={entry.url} {...entry} showKind />
-              ))}
-            </section>
-          ) : null}
-
           <section className="home-wire" aria-labelledby="lately-heading">
             <h2 id="lately-heading">lately</h2>
             <Lately site={site} shelf={shelf} />
           </section>
-
-          <a className="home-archive-link" href="/blog/">all writing →</a>
         </section>
       </main>
     </PageShell>

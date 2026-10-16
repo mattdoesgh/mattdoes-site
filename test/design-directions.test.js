@@ -12,7 +12,7 @@ import { wcagContrast, parse } from 'culori';
 import { buildFixtureVault, readDist, REPO_ROOT } from './helpers/run-build.js';
 
 const CSS_PATH = path.join(REPO_ROOT, 'static', 'design-directions.css');
-const SHELVES = ['/blog/', '/listening/', '/digs/', '/movies/', '/grok/'];
+const SHELVES = ['/listening/', '/digs/', '/movies/', '/grok/'];
 const SELECTORS = [
   'html:has(.design-index)',
   'html:has(.design-dir--a)',
@@ -77,7 +77,9 @@ test('the index and three directions are labelled, linked, and isolated', () => 
       assert.ok(page.querySelector(`a[href="${href}"]`), `${rel} links to ${href}`);
     }
     assert.match(page.body.textContent, /Lauren Bousfield/, `${rel} shows the current dig`);
-    assert.match(page.body.textContent, /Reader features fixture/, `${rel} shows the editorial lead`);
+    assert.equal(page.querySelector('a[href="/blog/"], a[href^="/journal/"], a[href^="/making/"]'), null,
+      `${rel} must not link to retired writing`);
+    assert.doesNotMatch(page.body.textContent, /Reader features fixture/);
     assert.equal(page.querySelectorAll('[id="now-playing"], [id="scrobble-count"]').length, 0,
       'sketches do not take over the live listening targets');
     const pause = page.querySelector('label.motion-toggle input#pause-motion');

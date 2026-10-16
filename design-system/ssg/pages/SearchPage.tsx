@@ -26,7 +26,7 @@ export function SearchPage({ siteConfig }: SearchPageProps) {
             <label htmlFor="search-q" className="visually-hidden">
               Search
             </label>
-            <input id="search-q" name="q" type="search" placeholder="Search writing" />
+            <input id="search-q" name="q" type="search" placeholder="Search the site" />
             <button type="submit">search</button>
           </form>
           <p id="search-status" className="muted search-status" aria-live="polite"></p>

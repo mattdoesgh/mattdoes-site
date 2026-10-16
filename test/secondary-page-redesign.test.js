@@ -15,18 +15,9 @@ function hasRail(document) {
   return document.querySelector('.side-left, .side-right, .ident') !== null;
 }
 
-test('article is an uninterrupted reading column with restrained end matter', () => {
-  const article = doc('journal/hello-fixture-world/index.html');
-  const main = article.querySelector('main.article-page');
-
-  assert.ok(main?.classList.contains('page--single-column'));
-  assert.equal(hasRail(article), false, 'article pages must not recreate a reading rail');
-  assert.equal(article.querySelectorAll('h1').length, 1);
-  assert.equal(article.querySelector('.pager'), null, 'the older/newer split pager is retired');
-  assert.ok(article.querySelector('.article-endmatter .post-tags, .article-endmatter__tags'));
-  assert.ok(article.querySelector('.article-continuation a[href="/journal/"]'));
-  assert.doesNotMatch(main?.textContent || '', /notes\/hello-fixture-world\.md/,
-    'internal vault paths are not public article metadata');
+test('long-form article routes are not part of the public site', () => {
+  assert.equal(doc('about/index.html').querySelector('a[href^="/journal/"]'), null);
+  assert.throws(() => doc('journal/hello-fixture-world/index.html'));
 });
 
 test('about keeps the authored page first and moves profiles after it', () => {
@@ -62,15 +53,10 @@ test('search and topics show their content without explanatory rails', () => {
   assert.ok(search.querySelector('main.search-page.page--single-column'));
   assert.equal(hasRail(search), false);
   assert.equal(search.querySelector('h1')?.textContent.trim(), 'search');
-  assert.ok(search.querySelector('input[type="search"][placeholder="Search writing"]'));
+  assert.ok(search.querySelector('input[type="search"][placeholder="Search the site"]'));
   assert.equal(search.querySelector('.post-head'), null);
 
-  const topic = doc('topics/meta/index.html');
-  assert.ok(topic.querySelector('main.topic-page.page--single-column'));
-  assert.equal(hasRail(topic), false);
-  assert.equal(topic.querySelector('.topic-path .post-head .kicker'), null);
-  assert.doesNotMatch(topic.querySelector('main')?.textContent || '', /idea path|other paths|meaning rather than publish date/i);
-  assert.ok(topic.querySelector('.topic-path__entries .topic-entry'));
+  assert.throws(() => doc('topics/meta/index.html'));
 });
 
 test('search only gives usage guidance after a query outcome', () => {

@@ -1,6 +1,6 @@
 // Cross-links for the three public log pages. They live in the footer (the
-// reading nav stays writing / listening / about); once you're on
-// one of them, this row is the short way to the other two.
+// reading nav is listening / about); once you're on one of them, this row
+// is the short way to the other two.
 
 const LINKS = [
   { id: 'digs', href: '/digs/', label: 'digs' },

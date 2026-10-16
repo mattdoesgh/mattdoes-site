@@ -20,7 +20,7 @@ function writeVault(files) {
 test('authored raw HTML is sanitized before it reaches pages or feeds', () => {
   const vault = writeVault({
     'notes/raw-html.md': `---
-publish: journal
+publish: about
 title: Raw HTML
 slug: raw-html
 date: 2026-01-01
@@ -38,9 +38,10 @@ date: 2026-01-01
   const res = runBuild({ vaultDir: vault });
   assert.equal(res.status, 0, `build failed:\n${res.stderr}`);
 
-  const html = readDist(res.distDir, 'journal/raw-html/index.html');
-  const feed = readDist(res.distDir, 'feed.xml');
-  for (const output of [html, feed]) {
+  const html = readDist(res.distDir, 'about/index.html');
+  assert.equal(fs.existsSync(path.join(res.distDir, 'feed.xml')), false,
+    'retired posts must not publish an Atom feed');
+  for (const output of [html]) {
     assert.ok(!/<script\b[^>]*>\s*(?:alert|x)/i.test(output),
       'authored script tags must be stripped');
     assert.ok(!/<style\b/i.test(output), 'style tags must be stripped');

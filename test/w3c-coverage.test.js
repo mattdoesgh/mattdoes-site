@@ -109,7 +109,8 @@ test('adding an older thought does not shift pre-existing thought ids', () => {
 test('sitemap.xml and robots.txt are emitted', () => {
   const sitemap = readDist(fixtureDist, 'sitemap.xml');
   assert.match(sitemap, /<urlset/, 'sitemap.xml must be a urlset');
-  assert.ok(sitemap.includes('/blog/</loc>'), 'sitemap must list /blog/');
+  assert.equal(sitemap.includes('/blog/</loc>'), false, 'sitemap must not list the retired writing archive');
+  assert.ok(sitemap.includes('/listening/</loc>'), 'sitemap must list /listening/');
 
   const robots = readDist(fixtureDist, 'robots.txt');
   assert.match(robots, /Sitemap:/, 'robots.txt must advertise the sitemap');

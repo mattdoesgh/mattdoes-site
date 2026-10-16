@@ -1,5 +1,5 @@
 ---
-publish: journal
+publish: about
 title: Media fixture
 slug: media-post
 date: 2026-04-01

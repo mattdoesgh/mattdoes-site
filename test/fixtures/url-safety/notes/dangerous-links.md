@@ -1,5 +1,5 @@
 ---
-publish: journal
+publish: about
 title: Dangerous links fixture
 slug: dangerous-links
 date: 2026-02-01

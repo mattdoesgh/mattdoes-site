@@ -38,7 +38,6 @@ export interface DesignPageProps {
 }
 
 const SHELVES = [
-  { href: '/blog/', label: 'writing', note: 'essays and notes' },
   { href: '/listening/', label: 'listening', note: 'recent plays' },
   { href: '/digs/', label: 'digs', note: 'weekly music' },
   { href: '/movies/', label: 'movies', note: 'recent watches' },
@@ -182,13 +181,7 @@ function Stage({
 }
 
 function Lead({ piece }: { piece: DesignPiece | null }) {
-  if (!piece) {
-    return (
-      <p className="dir-empty">
-        Nothing published yet. <a href="/blog/">Writing</a> will show up here.
-      </p>
-    );
-  }
+  if (!piece) return null;
   return (
     <article className="lead flow flow-3">
       <p className="kicker">

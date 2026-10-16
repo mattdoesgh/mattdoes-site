@@ -191,8 +191,6 @@ export function renderDocument({ page, children, siteConfig, assets = {} }: Rend
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}" />
 <link rel="canonical" href="${esc(canonicalUrl)}" />
-<!-- Atom feed autodiscovery. -->
-<link rel="alternate" type="application/atom+xml" title="mattdoes.online" href="/feed.xml" />
 <!-- Social sharing metadata (Open Graph + Twitter). -->
 <meta property="og:title" content="${esc(title)}" />
 <meta property="og:description" content="${esc(description)}" />

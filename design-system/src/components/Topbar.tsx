@@ -8,7 +8,6 @@ export interface NavItem {
 }
 
 export const DEFAULT_NAV: NavItem[] = [
-  { id: 'blog', href: '/blog/', label: 'writing' },
   { id: 'listening', href: '/listening/', label: 'listening' },
   { id: 'about', href: '/about/', label: 'about' },
 ];
@@ -28,7 +27,7 @@ export const DEFAULT_META: NavItem[] = [];
 export interface TopbarProps {
   /** Site title; the part after the first dot is dimmed in the brand mark. */
   siteTitle?: string;
-  /** Primary nav links. Defaults to writing / listening / about. */
+  /** Primary nav links. Defaults to listening / about. */
   nav?: NavItem[];
   /** Active nav/meta id — marks the matching link current. */
   active?: string;

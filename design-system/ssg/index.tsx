@@ -82,12 +82,12 @@ function doc(page: DocPage, children: ReactNode, siteConfig: DocSiteConfig, asse
 export function renderIndex(
   args: IndexPageProps & { siteConfig: FullSiteConfig; assets: Assets },
 ): string {
-  const { site, editorial, shelf, siteConfig, assets } = args;
+  const { site, shelf, siteConfig, assets } = args;
   const identity = siteConfig.identity || {};
   const description = site.bio || (identity.name ? `${identity.name} — developer, musician, tinkerer.` : '');
   return doc(
     { title: '', url: '/', description },
-    <IndexPage site={site} editorial={editorial} shelf={shelf} />,
+    <IndexPage site={site} shelf={shelf} />,
     siteConfig,
     assets,
   );

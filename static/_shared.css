@@ -655,21 +655,31 @@ a.tg:hover { color: var(--accent-fg); }
 /* These pages deliberately keep their own composition light; the shared page
    frame supplies the reading width while the surfaces only establish rhythm. */
 .home-content { min-width: 0; }
-.home-intro { padding: .25rem 0 2.5rem; }
+.page--home { padding-top: clamp(2.75rem, 6vw, 4.25rem); }
+.home-intro { padding: 0.5rem 0 3.25rem; }
 .home-intro h1 {
   margin: 0;
-  font: 700 clamp(2.85rem, 6.4vw, 4.5rem)/1.02 var(--font-ui);
+  font: 700 clamp(2.85rem, 6.4vw, 4.5rem)/0.96 var(--font-ui);
   letter-spacing: -.035em;
 }
-.home-intro h1 .dim,
-.home-intro p { color: var(--mute); font-weight: 400; }
-.home-intro__dot { color: var(--accent); }
-.home-intro p {
-  max-width: 52ch;
-  margin: .7rem 0 0;
-  font-size: 15px;
-  line-height: 1.6;
+.home-intro h1 .dim { color: var(--mute); font-weight: 400; }
+.home-intro__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 1.7rem;
 }
+.home-intro .bio,
+.home-intro .where,
+.home-intro .tagline {
+  max-width: 36rem;
+  margin: 0;
+  color: var(--mute);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.home-intro .tagline { margin-top: 1.9rem; }
 .home-lead { padding-bottom: 2.25rem; }
 .home-lead__meta {
   display: flex;
@@ -2222,16 +2232,13 @@ footer.site { view-transition-name: site-footer; }
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
 }
-.home-intro .kicker,
 .home-shelves h2,
 .home-wire h2 {
-  margin: 0 0 8px;
+  margin: 0 0 14px;
   color: rgba(235, 240, 245, 0.55);
   font: 600 13px/1.4 var(--font-ui);
 }
-.home-intro .tagline,
-.home-intro .where { color: var(--mute); margin: 8px 0 0; }
-.home-shelves { margin-top: 40px; }
+.home-shelves { margin-top: 0; }
 .home-shelves .rooms {
   list-style: none;
   display: grid;

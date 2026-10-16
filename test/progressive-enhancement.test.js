@@ -1,10 +1,6 @@
-// Audit backlog: "Progressive enhancement — Script-disabled blog/archive
-// navigation checks". Covers audit finding #12.
-//
-// With JavaScript disabled, /journal/ and /making/ must be REAL generated
-// pages whose content is the section's entries — not redirects into
-// /blog/?kind=… (which only filters client-side). /thoughts/ and /posts/
-// are not sections and are not redirected.
+// /journal/, /making/, and /blog/ are not public pages (ADR 0016).
+// /thoughts/ and /posts/ are not sections and are not redirected.
+// /listening/ remains a real page without JavaScript.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -16,37 +12,23 @@ import { buildFixtureVault, readDist, REPO_ROOT } from './helpers/run-build.js';
 let distDir;
 test.before(() => { ({ distDir } = buildFixtureVault()); });
 
-const ARCHIVE_ROUTES = ['journal', 'making'];
+const RETIRED_ROUTES = ['journal', 'making', 'blog'];
 
-test('each archive route is a real generated index.html, not a redirect', () => {
-  for (const route of ARCHIVE_ROUTES) {
-    const file = path.join(distDir, route, 'index.html');
-    assert.ok(fs.existsSync(file),
-      `/${route}/ must be a real generated page (dist/${route}/index.html)`);
-
-    const html = fs.readFileSync(file, 'utf8');
-    // A redirect stub would be tiny / contain a meta-refresh. Assert this is
-    // a full document with a real <main>.
-    assert.ok(!/http-equiv=["']?refresh/i.test(html),
-      `/${route}/ must not be a meta-refresh redirect`);
-    const doc = new JSDOM(html).window.document;
-    assert.ok(doc.querySelector('main#main'),
-      `/${route}/ must render a real <main id="main">`);
-  }
+test('listening is a real page without JavaScript', () => {
+  const html = readDist(distDir, 'listening/index.html');
+  assert.ok(!/http-equiv=["']?refresh/i.test(html));
+  const doc = new JSDOM(html).window.document;
+  assert.ok(doc.querySelector('main#main'));
 });
 
-test('the journal archive lists journal entries without JavaScript', () => {
-  // The fixture vault has two journal posts: "Hello, fixture world" and
-  // "Reader features fixture".
-  const html = readDist(distDir, 'journal/index.html');
-  const doc = new JSDOM(html).window.document;
-  const rows = doc.querySelectorAll('.timeline .row');
-  assert.ok(rows.length >= 2,
-    `journal archive should server-render its entries (found ${rows.length} rows)`);
-  assert.ok(html.includes('Hello, fixture world'),
-    'journal archive must contain the journal post title');
-  assert.ok(html.includes('Reader features fixture'),
-    'journal archive must contain the second journal post');
+test('journal, making, and blog are not generated', () => {
+  for (const route of RETIRED_ROUTES) {
+    assert.equal(fs.existsSync(path.join(distDir, route, 'index.html')), false,
+      `/${route}/ must not be written`);
+  }
+  const home = readDist(distDir, 'index.html');
+  assert.equal(home.includes('Hello, fixture world'), false);
+  assert.equal(home.includes('Reader features fixture'), false);
 });
 
 test('/posts/ and /thoughts/ are not pages and are not redirected', () => {
@@ -65,25 +47,16 @@ test('/posts/ and /thoughts/ are not pages and are not redirected', () => {
   assert.equal(sitemap.includes('/thoughts/'), false);
 });
 
-test('the making archive is a real page even when empty', () => {
-  // The fixture vault has no `making` posts — the page must still render an
-  // empty-state, not 404 or redirect.
-  const html = readDist(distDir, 'making/index.html');
-  const doc = new JSDOM(html).window.document;
-  assert.ok(doc.querySelector('main#main'),
-    'an empty making archive must still be a real page');
-});
-
-test('the archive routes are NOT in the per-page sitemap as anything else', () => {
-  // sitemap.xml should list the three archive routes (they are real pages).
+test('retired writing routes are absent from the sitemap', () => {
   const sitemap = readDist(distDir, 'sitemap.xml');
-  for (const route of ARCHIVE_ROUTES) {
-    assert.ok(sitemap.includes(`/${route}/</loc>`),
-      `/${route}/ should appear in sitemap.xml as a real route`);
+  for (const route of RETIRED_ROUTES) {
+    assert.equal(sitemap.includes(`/${route}/</loc>`), false,
+      `/${route}/ must not appear in sitemap.xml`);
   }
+  assert.ok(sitemap.includes('/listening/</loc>'));
 });
 
-test('static/_redirects no longer 301s the archive routes', () => {
+test('static/_redirects does not revive retired writing routes', () => {
   const redirects = fs.readFileSync(
     path.join(REPO_ROOT, 'static', '_redirects'), 'utf8');
 
@@ -92,7 +65,7 @@ test('static/_redirects no longer 301s the archive routes', () => {
     .map(l => l.trim())
     .filter(l => l && !l.startsWith('#'));
 
-  for (const route of ARCHIVE_ROUTES) {
+  for (const route of [...RETIRED_ROUTES, 'posts', 'thoughts']) {
     for (const rule of rules) {
       // A rule whose FROM path is exactly /journal (etc.) would be a regression.
       const from = rule.split(/\s+/)[0];
@@ -100,13 +73,6 @@ test('static/_redirects no longer 301s the archive routes', () => {
         `static/_redirects must not redirect /${route}/ (found rule: "${rule}")`);
     }
   }
-});
-
-test('the unified /blog/ view still exists alongside the archives', () => {
-  // /blog/ remains the chip-filterable combined timeline.
-  const html = readDist(distDir, 'blog/index.html');
-  const doc = new JSDOM(html).window.document;
-  assert.ok(doc.querySelector('main#main'), '/blog/ must still be a real page');
 });
 
 // ── shared poller lifecycle (static/poller.js) ─────────────────────────────
