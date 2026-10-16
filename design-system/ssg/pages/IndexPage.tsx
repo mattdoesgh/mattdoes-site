@@ -90,7 +90,7 @@ export function IndexPage({ site, shelf = {} }: IndexPageProps) {
             <ul className="rooms">
               {SHELVES.map((item) => (
                 <li key={item.href}>
-                  <a href={item.href}>
+                  <a className="shelf-tile" href={item.href}>
                     <span className="label">{item.label}</span>
                     <span className="note">{item.note}</span>
                   </a>
