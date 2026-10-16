@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
 import { JSDOM } from 'jsdom';
 import { buildFixtureVault, readDist } from './helpers/run-build.js';
 
@@ -30,122 +29,28 @@ test('timeline controls are emitted as hashed feed-only assets', () => {
   assert.equal(scripts.some((name) => name.startsWith('tag-filter')), false,
     'the old tag-filter asset should not ship');
 
-  for (const rel of [
-    'blog/index.html',
-    'journal/index.html',
-    'making/index.html',
-    'listening/index.html',
-  ]) {
-    assert.match(readDist(distDir, rel), /timeline-controls\.[\w-]+\.js/,
-      `${rel} should load the timeline controls island`);
-  }
+  assert.match(readDist(distDir, 'listening/index.html'), /timeline-controls\.[\w-]+\.js/,
+    'listening should keep the timeline controls boot shim');
 
   for (const rel of [
     'about/index.html',
     'index.html',
     'search/index.html',
     'colophon/index.html',
-    'journal/hello-fixture-world/index.html',
+    'digs/index.html',
   ]) {
     assert.doesNotMatch(readDist(distDir, rel), /timeline-controls\.[\w-]+\.js/,
       `${rel} should not load feed-only controls`);
   }
+  assert.equal(fs.existsSync(path.join(distDir, 'blog', 'index.html')), false);
+  assert.equal(fs.existsSync(path.join(distDir, 'journal', 'index.html')), false);
 });
 
-test('timeline filter markup keeps accessible active and density controls', () => {
-  const d = doc('blog/index.html');
-  const filter = d.querySelector('.filter[data-timeline-controls]');
-  assert.ok(filter, 'blog should render a timeline controls mount');
-
-  const active = filter.querySelector('a.all[aria-current="true"]');
-  assert.ok(active, 'the all filter should be active server-side');
-
-  assert.ok(filter.querySelector('button[aria-label="comfortable density"][aria-pressed="true"]'),
-    'comfortable density control should be labelled and active');
-  assert.ok(filter.querySelector('button[aria-label="compact density"][aria-pressed="false"]'),
-    'compact density control should be labelled and inactive');
-});
-
-test('timeline rows preserve kind classes, data filters, and a single home lead', () => {
+test('the homepage does not mount a post highlight or archive filter', () => {
   const home = doc('index.html');
-  assert.equal(home.querySelectorAll('.home-lead').length, 1,
-    'homepage should feature exactly one long-form entry');
-  assert.equal(home.querySelectorAll('[data-timeline-controls]').length, 0,
-    'editorial homepage should not expose archive controls');
-
-  const blog = doc('blog/index.html');
-  const rows = [...blog.querySelectorAll('.timeline .row[data-kind]')];
-  assert.ok(rows.length > 0, 'blog should render filterable rows');
-  for (const row of rows) {
-    const kind = row.getAttribute('data-kind');
-    assert.ok(row.classList.contains(`row--${kind}`),
-      `row for ${kind} should carry row--${kind}`);
-    assert.ok(row.hasAttribute('data-tags'),
-      'filterable rows must keep data-tags');
-  }
-});
-
-test('timeline controls update count and active filter on click', async () => {
-  const html = readDist(distDir, 'blog/index.html');
-  const dom = new JSDOM(html, {
-    url: 'https://mattdoes.online/blog/',
-    runScripts: 'outside-only',
-    pretendToBeVisual: true,
-  });
-  const keys = ['window', 'document', 'localStorage', 'Element', 'HTMLElement', 'navigator'];
-  const previous = new Map(keys.map((key) => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
-
-  Object.defineProperties(globalThis, {
-    window: { value: dom.window, configurable: true },
-    document: { value: dom.window.document, configurable: true },
-    localStorage: { value: dom.window.localStorage, configurable: true },
-    Element: { value: dom.window.Element, configurable: true },
-    HTMLElement: { value: dom.window.HTMLElement, configurable: true },
-    navigator: { value: dom.window.navigator, configurable: true },
-  });
-
-  // The entry is a boot shim that dynamic-imports the React island, so the
-  // mount lands asynchronously — poll instead of racing it with fixed sleeps.
-  async function waitFor(check, label, timeoutMs = 5000) {
-    const deadline = Date.now() + timeoutMs;
-    while (Date.now() < deadline) {
-      if (check()) return;
-      await new Promise((resolve) => setTimeout(resolve, 20));
-    }
-    assert.fail(`timed out waiting for ${label}`);
-  }
-
-  try {
-    // The SSR markup already contains the filter anchors; React replaces them
-    // on mount. The mount signal is the SSR node being detached.
-    const ssrMeta = dom.window.document.querySelector('.filter a[data-filter="meta"]');
-    assert.ok(ssrMeta, 'fixture should render a server-side meta filter');
-
-    const [asset] = topLevelJs().filter((name) => /^timeline-controls\.[\w-]+\.js$/.test(name));
-    await import(`${pathToFileURL(path.join(distDir, asset)).href}?test=${Date.now()}`);
-    dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded', { bubbles: true }));
-    await waitFor(
-      () => !ssrMeta.isConnected,
-      'the timeline controls island to replace the SSR filter',
-    );
-
-    const meta = dom.window.document.querySelector('.filter a[data-filter="meta"]');
-    assert.ok(meta, 'fixture should expose a meta filter');
-    meta.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }));
-    await waitFor(
-      () => meta.getAttribute('aria-current') === 'true',
-      'the clicked filter to become active',
-    );
-
-    assert.equal(meta.getAttribute('aria-current'), 'true',
-      'clicked filter should become active');
-    assert.equal(dom.window.document.querySelector('.filter .cnt')?.textContent.trim(), '2 entries',
-      'visible count should update after filtering to the two journal notes tagged meta');
-  } finally {
-    for (const [key, descriptor] of previous) {
-      if (descriptor) Object.defineProperty(globalThis, key, descriptor);
-      else delete globalThis[key];
-    }
-    dom.window.close();
-  }
+  assert.equal(home.querySelectorAll('.home-lead').length, 0);
+  assert.equal(home.querySelectorAll('[data-timeline-controls]').length, 0);
+  const listening = doc('listening/index.html');
+  assert.equal(listening.querySelector('[data-timeline-controls]'), null,
+    'listening has no writing filter for the island to mount');
 });

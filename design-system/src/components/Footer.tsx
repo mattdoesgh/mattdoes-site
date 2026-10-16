@@ -5,7 +5,6 @@ export const DEFAULT_FOOTER_NAV: NavItem[] = [
   { id: 'digs', href: '/digs/', label: 'digs' },
   { id: 'movies', href: '/movies/', label: 'movies' },
   { id: 'grok', href: '/grok/', label: 'grok says' },
-  { href: '/feed.xml', label: 'rss' },
   { href: '/colophon/', label: 'colophon' },
   { href: 'mailto:matt@mattdoes.online', label: 'say hi' },
 ];
@@ -24,7 +23,7 @@ export const DEFAULT_PROFILES: NavItem[] = [
 export interface FooterProps {
   /** Free-text line shown at the start of the footer (e.g. a copyright). */
   footerText?: string;
-  /** Footer links. Defaults to the log pages, rss, colophon, and say hi. */
+  /** Footer links. Defaults to the log pages, colophon, and say hi. */
   nav?: NavItem[];
   /** Off-site profile links. Defaults to Letterboxd, X, Instagram, Last.fm. */
   profiles?: NavItem[];

@@ -20,7 +20,6 @@ test('shared chrome keeps reading navigation compact and moves secondary links t
   assert.deepEqual(
     [...primary.querySelectorAll('a')].map(link => [link.textContent.trim(), link.getAttribute('href')]),
     [
-      ['writing', '/blog/'],
       ['listening', '/listening/'],
       ['about', '/about/'],
     ],
@@ -62,7 +61,6 @@ test('shared chrome keeps reading navigation compact and moves secondary links t
       ['digs', '/digs/'],
       ['movies', '/movies/'],
       ['grok says', '/grok/'],
-      ['rss', '/feed.xml'],
       ['colophon', '/colophon/'],
       ['say hi', 'mailto:matt@mattdoes.online'],
     ],
@@ -105,15 +103,16 @@ test('the locked clear-glass system is on the homepage and the shared pages', ()
   assert.ok(field?.querySelector('svg'));
   assert.equal(home.querySelector('#pause-motion, .motion-toggle'), null,
     'the homepage chrome does not offer a motion toggle');
-  assert.equal(doc('blog/index.html').querySelector('#pause-motion, .motion-toggle'), null);
+  assert.equal(doc('listening/index.html').querySelector('#pause-motion, .motion-toggle'), null);
   assert.ok(home.querySelector('.home-shelves a[href="/digs/"]'));
   assert.ok(home.querySelector('.home-shelves a[href="/movies/"]'));
   assert.ok(home.querySelector('.home-shelves a[href="/grok/"]'));
-  assert.ok(home.querySelector('.topbar .primary-nav a.gb[href="/blog/"]'));
+  assert.equal(home.querySelector('.home-shelves a[href="/blog/"]'), null);
+  assert.ok(home.querySelector('.topbar .primary-nav a.gb[href="/listening/"]'));
 
   assert.equal(doc('digs/index.html').querySelector('h1')?.textContent.trim(), 'digs');
   assert.equal(doc('movies/index.html').querySelector('h1')?.textContent.trim(), 'movies');
   assert.equal(doc('grok/index.html').querySelector('h1')?.textContent.trim(), 'grok says…');
-  assert.ok(doc('blog/index.html').querySelector('.site-field'));
-  assert.equal(doc('blog/index.html').querySelector('.design-dir'), null);
+  assert.ok(doc('listening/index.html').querySelector('.site-field'));
+  assert.equal(doc('listening/index.html').querySelector('.design-dir'), null);
 });

@@ -69,7 +69,7 @@ test('authored Markdown links with unsafe schemes are neutralized', () => {
   });
   assert.equal(res.status, 0, `url-safety fixture build failed:\n${res.stderr}`);
 
-  const html = readDist(res.distDir, 'journal/dangerous-links/index.html');
+  const html = readDist(res.distDir, 'about/index.html');
 
   // No unsafe scheme reaches an href or src.
   assert.ok(!/href="javascript:/i.test(html), 'no javascript: href');
@@ -95,13 +95,12 @@ test('authored Markdown links with unsafe schemes are neutralized', () => {
 // The build reads <CACHE_DIR>/lastfm.json (mtime-fresh within cacheTtl). We
 // seed a temp cache dir with a poisoned payload and build against it — the
 // repo .cache is never touched, so this is safe under parallel test files.
-test('Last.fm cache values are sanitized on the homepage and in the feed', () => {
+test('Last.fm cache values are sanitized on the homepage', () => {
   const fixtureCache = path.join(REPO_ROOT, 'test', 'fixtures', 'lastfm-cache', 'lastfm.json');
   const res = buildFixtureVault({ cacheDir: seedLastfmCache(fixtureCache) });
   assert.equal(res.status, 0);
 
   const home = readDist(res.distDir, 'index.html');
-  const feed = readDist(res.distDir, 'feed.xml');
 
   // The javascript: track URL must never reach an href on the homepage.
   assert.ok(!/href="javascript:/i.test(home),
@@ -110,8 +109,4 @@ test('Last.fm cache values are sanitized on the homepage and in the feed', () =>
   // The quote-breaking Last.fm URL is HTML-escaped where it is emitted.
   assert.ok(!/onmouseover="alert/i.test(home),
     'homepage must not emit a live onmouseover from a poisoned Last.fm URL');
-
-  // The feed never double-prefixes SITE_URL onto an absolute URL.
-  assert.ok(!/https?:\/\/[^\s"]*https?:\/\//.test(feed),
-    'feed must not contain a double-prefixed https://...https:// link');
 });

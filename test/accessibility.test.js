@@ -123,45 +123,31 @@ test('homepage keeps one quiet reading path and moves RSS to the footer', () => 
   assert.ok(h1, 'homepage must render a visible site heading');
   assert.ok(!h1.classList.contains('visually-hidden'),
     'homepage heading must not be visually hidden');
+  assert.equal(h1.getAttribute('id'), 'home-title');
+  assert.equal(main.querySelector('.home-intro .kicker'), null,
+    'the topbar brand must not be repeated as an eyebrow');
 
   assert.equal(main.querySelector('.side-left, .side-right'), null,
     'homepage must not add competing rail navigation');
+  assert.equal(main.querySelector('.home-lead, .home-recent, .home-archive-link'), null,
+    'homepage must not highlight retired posts');
+  assert.equal(main.querySelector('a[href="/blog/"], a[href^="/journal/"], a[href^="/making/"]'), null);
 
-  const lead = main.querySelector('.home-lead h2 a');
-  assert.ok(lead, 'homepage must start with one clear lead story');
-
-  const archiveLink = main.querySelector('.home-archive-link[href="/blog/"]');
-  assert.ok(archiveLink, 'homepage must link to the full writing archive after its content');
-
-  assert.equal(d.querySelector('.topbar a[href="/feed.xml"]'), null,
-    'RSS must not compete with primary reading navigation');
-  assert.ok(d.querySelector('footer.site a[href="/feed.xml"]'),
-    'footer must retain RSS subscription');
+  assert.equal(d.querySelector('a[href="/feed.xml"]'), null,
+    'the retired post feed must not be linked');
 });
 
 test('the active nav link carries aria-current="page"', () => {
-  // /blog/ — the nav highlights the visible "writing" link.
-  const d = doc('blog/index.html');
+  const d = doc('listening/index.html');
   const current = d.querySelectorAll('nav[aria-label="primary"] a[aria-current="page"]');
   assert.equal(current.length, 1,
     'exactly one primary-nav link should carry aria-current="page"');
-  assert.match(current[0].getAttribute('href'), /\/blog\/?$/);
-  assert.equal(current[0].textContent.trim(), 'writing');
+  assert.match(current[0].getAttribute('href'), /\/listening\/?$/);
+  assert.equal(current[0].textContent.trim(), 'listening');
 });
 
-test('active filter chip carries aria-current="true"', () => {
-  // Article-kind listings render a filter strip whose "all" chip is active.
-  const d = doc('journal/index.html');
-  const activeChip = d.querySelector('.filter a[aria-current="true"]');
-  if (d.querySelector('.filter')) {
-    assert.ok(activeChip,
-      'the active filter chip must carry aria-current="true"');
-  }
-});
-
-test('<head> has description, canonical, and atom autodiscovery', () => {
-  for (const rel of ['index.html', 'blog/index.html', 'about/index.html',
-                      'journal/hello-fixture-world/index.html']) {
+test('<head> has description and canonical, and no post feed', () => {
+  for (const rel of ['index.html', 'about/index.html', 'listening/index.html', 'digs/index.html']) {
     const d = doc(rel);
     const desc = d.querySelector('meta[name="description"]');
     assert.ok(desc && desc.getAttribute('content') != null,
@@ -171,9 +157,8 @@ test('<head> has description, canonical, and atom autodiscovery', () => {
     assert.ok(canonical && canonical.getAttribute('href'),
       `${rel} must have a <link rel="canonical">`);
 
-    const atom = d.querySelector('link[rel="alternate"][type="application/atom+xml"]');
-    assert.ok(atom && atom.getAttribute('href'),
-      `${rel} must have atom feed autodiscovery`);
+    assert.equal(d.querySelector('link[rel="alternate"][type="application/atom+xml"]'), null,
+      `${rel} must not advertise the retired post feed`);
   }
 });
 
