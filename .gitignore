@@ -1,8 +1,6 @@
 node_modules/
 dist/
-# design-system build outputs (Claude Design bundle, the SSG bundle Emit
-# imports, and the browser timeline-controls island bundle). All rebuilt by the
-# prebuild step / CI / Pages, never committed.
+# SSG bundle Emit imports. Rebuilt by the prebuild step / CI / Pages.
 dist-ssg/
 dist-client/
 design-system/.preview/

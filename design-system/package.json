@@ -2,28 +2,10 @@
   "name": "@mattdoes/ds",
   "version": "0.1.0",
   "private": true,
-  "description": "React component library for mattdoes.online — the design system, the site's build-time renderer, and the Claude Design source.",
+  "description": "React components that render mattdoes.online to static HTML at build time.",
   "type": "module",
-  "module": "./dist/index.es.js",
-  "main": "./dist/index.es.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.es.js"
-    },
-    "./styles.css": "./dist/style.css"
-  },
-  "sideEffects": [
-    "**/*.css"
-  ],
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "build": "vite build",
-    "build:client": "vite build --config vite.client.config.ts",
-    "build:ssg": "vite build --config vite.ssg.config.ts && npm run build:client",
+    "build:ssg": "vite build --config vite.ssg.config.ts",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
@@ -37,9 +19,7 @@
     "@vitejs/plugin-react": "^6.0.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tsx": "^4.23.0",
     "typescript": "^6.0.3",
-    "vite": "^8.1.3",
-    "vite-plugin-dts": "^5.0.3"
+    "vite": "^8.1.3"
   }
 }

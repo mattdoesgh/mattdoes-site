@@ -1,4 +1,4 @@
-// Row module parity (see CONTEXT.md: Row, docs/adr/0001).
+// Row module parity.
 //
 // listening-live.js swaps #listening-rows innerHTML with rows it renders
 // from the shared Row module, deduping against what the server rendered —
@@ -99,7 +99,7 @@ test('the strict CSP admits EVERY inline script by hash (the prod regression)', 
   // Miss one and the browser silently drops it: an unhashed importmap kills
   // listening-live.js and now-playing.js (their `./rows.js`/`./poller.js`
   // imports 404 as text/html → MIME failure → no live updates at all);
-  // unhashed speculation rules kill prerender/prefetch (ADR 0007). Extracting
+  // unhashed speculation rules kill prerender/prefetch. Extracting
   // ALL inline scripts (not a hardcoded list) means a future inline <script>
   // added without a matching hash fails this test instead of shipping broken.
   const html = readDist(distDir, 'listening/index.html');

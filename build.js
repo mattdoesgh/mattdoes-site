@@ -6,7 +6,7 @@
 //     (lib/intake.js — Vault → Content model)     (lib/emit/ — model → dist/)
 //
 // plus the Listening snapshot (lib/listening.js), fetched here and passed
-// into Emit as data. See CONTEXT.md for the vocabulary.
+// into Emit as data.
 //
 // Usage:   npm run build
 // Config:  VAULT_DIR env var overrides the default vault path.

@@ -65,7 +65,7 @@ test('duplicate-about names BOTH offending notes', () => {
     `duplicate-about error must name both notes.\nGot: ${msg}`);
 });
 
-// Intake's stated invariant (CONTEXT.md): same records in, same model out —
+// Intake's stated invariant: same records in, same model out —
 // no clock, no fs, no env. Two runs over identical records must produce a
 // deeply-equal Content model; a diff here means something non-deterministic
 // (a Date.now(), an fs read, iteration-order dependence) leaked in.

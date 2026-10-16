@@ -1,4 +1,4 @@
-// Listening Worker — producer/reader split (ADR 0008).
+// Listening Worker — producer/reader split.
 //
 // Two surfaces are exercised here:
 //   • PRODUCER — the ListeningPoller DO alarm: the ONLY Last.fm caller. One

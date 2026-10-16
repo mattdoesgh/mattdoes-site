@@ -1,5 +1,4 @@
-// The post Atom feed is retired with journal and making (ADR 0016).
-// atomFeed() itself stays covered in test/emit-units.test.js.
+// The post Atom feed is retired with journal and making.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';

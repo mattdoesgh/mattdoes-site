@@ -1,5 +1,4 @@
-// workers/lib/transport.js — shared edge-transport helpers (see CONTEXT.md:
-// Edge transport, and docs/adr/0002-shared-worker-code-via-relative-imports.md).
+// workers/lib/transport.js — shared edge-transport helpers.
 //
 // Response envelopes (JSON + CORS), CORS preflight, error responses with
 // edge-TTL / retry-after policy, fail-open KV access, and small request

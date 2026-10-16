@@ -1,7 +1,7 @@
 // In-process unit tests for Emit's pure helpers (lib/emit/), exercised at
 // their interface instead of through the full subprocess build:
 // buildSearchIndex, toListeningEntries, the feeds emitters
-// (cdataSafe's ']]>' escape included), and the wikilink/media-target string
+// and the wikilink/media-target string
 // helpers in render.js (safe to import — Shiki only initializes lazily via
 // initHighlighter(), which these tests never call; renderBody-free bodies
 // never touch the highlighter).
@@ -10,7 +10,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildSearchIndex } from '../lib/emit/search.js';
 import { toListeningEntries } from '../lib/emit/listening-entries.js';
-import { atomFeed, sitemapXml, robotsTxt, cdataSafe, DESIGN_BAKEOFF_ROUTES } from '../lib/emit/feeds.js';
+import { sitemapXml, robotsTxt } from '../lib/emit/feeds.js';
 import { configureRender, resolveWikilinks, cleanMediaTarget } from '../lib/emit/render.js';
 
 // ── buildSearchIndex ─────────────────────────────────────────────────────
@@ -50,47 +50,19 @@ test('toListeningEntries keeps dated tracks, sanitizes links, sorts newest-first
   assert.deepEqual(toListeningEntries(tracks, 1).map(e => e.track), ['New']);
 });
 
-// ── feeds: cdataSafe / atomFeed / sitemapXml / robotsTxt ────────────────
-test('cdataSafe splits a literal "]]>" so it cannot terminate the CDATA section', () => {
-  assert.equal(cdataSafe('safe body'), 'safe body');
-  assert.equal(cdataSafe('a ]]> b'), 'a ]]]]><![CDATA[> b');
-  assert.equal(cdataSafe(null), '');
-  // The payload must survive round-tripping through an <content> CDATA wrapper
-  // without closing it early: the raw sequence never appears un-split.
-  const wrapped = `<![CDATA[${cdataSafe('x]]>y')}]]>`;
-  assert.ok(!wrapped.includes('x]]>y'));
-});
-
-test('atomFeed emits escaped links, authors, and CDATA-safe content', () => {
-  const entries = [
-    { kind: 'journal', title: 'A & B', date: '2026-01-02T00:00:00Z',
-      url: '/journal/a/', html: '<p>body with ]]> inside</p>' },
-    { kind: 'thought', id: 't1', body: 'plain', date: '2026-01-01T00:00:00Z',
-      url: 'https://elsewhere.example/t1' }, // absolute URL — not re-prefixed
-  ];
-  const xml = atomFeed(entries, 'https://mattdoes.online');
-  assert.ok(xml.startsWith('<?xml version="1.0" encoding="utf-8"?>'));
-  assert.ok(xml.includes('<title>A &amp; B</title>'));
-  assert.ok(xml.includes('<link href="https://mattdoes.online/journal/a/"/>'));
-  assert.ok(xml.includes('<link href="https://elsewhere.example/t1"/>'));
-  assert.ok(!xml.includes('https://mattdoes.onlinehttps://'));
-  assert.ok(xml.includes(']]]]><![CDATA[>'), 'entry content must be CDATA-safe');
-  assert.ok(xml.includes('<author><name>'));
-  assert.equal(xml.match(/<updated>/g).length, 3); // feed-level + 2 entries
-});
-
-test('sitemapXml covers the static routes and dated article URLs', () => {
+// ── feeds: sitemapXml / robotsTxt ────────────────────────────────────────
+test('sitemapXml covers the static routes and omits unpublished writing', () => {
   const xml = sitemapXml({
     siteUrl: 'https://mattdoes.online',
-    articles: [{ url: '/journal/a/', date: '2026-01-02T00:00:00Z' }],
     aboutWritten: false,
   });
-  for (const r of ['/', '/search/', '/listening/', '/colophon/', '/digs/', '/movies/', '/grok/', ...DESIGN_BAKEOFF_ROUTES]) {
+  for (const r of ['/', '/search/', '/listening/', '/colophon/', '/digs/', '/movies/', '/grok/']) {
     assert.ok(xml.includes(`<loc>https://mattdoes.online${r}</loc>`), `sitemap must list ${r}`);
   }
   assert.ok(!xml.includes('/about/'), 'no /about/ entry when the note is absent');
-  assert.ok(xml.includes('<loc>https://mattdoes.online/journal/a/</loc><lastmod>2026-01-02T00:00:00.000Z</lastmod>'));
-  assert.ok(sitemapXml({ siteUrl: 's', articles: [], aboutWritten: true }).includes('<loc>s/about/</loc>'));
+  assert.ok(!xml.includes('/journal/'));
+  assert.ok(!xml.includes('/design/'));
+  assert.ok(sitemapXml({ siteUrl: 's', aboutWritten: true }).includes('<loc>s/about/</loc>'));
 });
 
 test('robotsTxt allows crawling, blocks /api/, advertises the sitemap', () => {

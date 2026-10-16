@@ -1,16 +1,13 @@
 {
   "perFileMaxKb": {
-    "_shared": 46,
-    "geo-background": 12,
-    "timeline-controls": 8,
-    "timeline-vendor": 200,
-    "theme-boot": 2,
-    "tweaks": 5,
-    "nav-prefetch": 3,
-    "design-directions": 20
+    "_shared": 40,
+    "geo-background": 9,
+    "theme-boot": 1,
+    "tweaks": 4,
+    "nav-prefetch": 2
   },
   "totals": {
-    "totalJsKb": 225,
-    "totalCssKb": 66
+    "totalJsKb": 30,
+    "totalCssKb": 42
   }
 }

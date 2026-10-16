@@ -26,7 +26,7 @@
 // minute via scheduled() → it makes NO Last.fm call; it only arms the alarm
 // if none is pending. That is the active form of the "pure reader +
 // monitoring" resilience posture: detect-and-re-arm a dropped poller without
-// ever touching the read path (ADR 0008).
+// ever touching the read path.
 //
 // On top of the reader, responses are stored in the Cloudflare edge cache for
 // EDGE_TTL_S (s-maxage). Concurrent visitors polling within the same window

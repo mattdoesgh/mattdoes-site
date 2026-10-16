@@ -12,7 +12,7 @@ const MAX_LEN   = 60;          // truncate very long "artist — track" strings
 const el = document.getElementById(EL_ID);
 
 // createPoller owns the whole lifecycle: visibility, bfcache restore,
-// and prerender deferral (ADR 0007).
+// and prerender deferral.
 if (el) createPoller({ tick, intervalMs: POLL_MS });
 
 async function tick() {
@@ -20,7 +20,7 @@ async function tick() {
     // no-store: the Worker sends max-age=0, but Cloudflare's Browser Cache
     // TTL can rewrite that to a long max-age on edge HITs, which would
     // freeze the pill behind a stale browser cache. Force a fresh poll each
-    // time; the request path is a cheap KV read (ADR 0008).
+    // time; the request path is a cheap KV read.
     const res = await fetch(ENDPOINT, { headers: { accept: 'application/json' }, cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();

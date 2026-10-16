@@ -197,39 +197,3 @@ export function timeTag(d, fmt = 'day', extra = '') {
   const text = fmt === 'time' ? fmtTime(date) : fmtDate(date, fmt);
   return `<time class="ts" datetime="${iso}"${extra ? ' ' + extra : ''}>${esc(text)}</time>`;
 }
-
-/**
- * Compact "time ago" label for the home feed. Falls back to `'mon dd'`
- * once the event is over a week old.
- *
- * @param {Date|string|number|null|undefined} iso
- * @returns {string} e.g. `'2m'`, `'3h'`, `'4d'`, or `'apr 17'`
- */
-export function relTime(iso) {
-  if (!iso) return '';
-  const d = iso instanceof Date ? iso : new Date(iso);
-  const diff = (Date.now() - d.getTime()) / 1000;
-  if (diff < 3600)  return `${Math.max(1, Math.round(diff/60))}m`;
-  if (diff < 86400) return `${Math.round(diff/3600)}h`;
-  if (diff < 86400 * 7) return `${Math.round(diff/86400)}d`;
-  return fmtDate(d, 'day');
-}
-
-/**
- * Render a list of inline tag chips. `baseHref` is the page the tag should
- * scope to — `''` (default) means current page, so the link is just
- * `?tag=foo` and tag-filter.js can apply it in place. Article pages pass
- * e.g. `'/journal/'` so a click jumps to the journal index already
- * filtered.
- *
- * @param {string[]|undefined|null} tags
- * @param {string} [baseHref=''] e.g. `'/journal/'`
- * @returns {string} space-joined `<a class="tg">` chips, or `''` if no tags
- */
-export function tagList(tags, baseHref = '') {
-  if (!tags || !tags.length) return '';
-  return tags.map(t => {
-    const href = `${baseHref}?tag=${encodeURIComponent(t)}`;
-    return `<a class="tg" href="${href}" data-tag="${esc(t)}">${esc(t)}</a>`;
-  }).join(' ');
-}

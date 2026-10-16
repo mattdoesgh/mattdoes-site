@@ -9,7 +9,7 @@ export const COLOPHON_DOC_HTML = `<h2 id="folder" class="section-label"><span>fo
     <div class="blurb">Two repos. Vault stays private; site repo is thin and public. A pre-build script clones the vault into <code>./vault/</code> using a fine-grained PAT.</div>
 <pre class="tree"><span class="b">┌</span> <span class="d">vault</span> <span class="note">(private · obsidian)</span>
 <span class="b">├──</span> <span class="d">daily</span>
-<span class="b">│   └──</span> <span class="f">YYYY-MM-DD.md</span>   <span class="note"># notebook · one ##HH:MM = one short note</span>
+<span class="b">│   └──</span> <span class="f">YYYY-MM-DD.md</span>   <span class="note"># not published</span>
 <span class="b">├──</span> <span class="d">notes</span>             <span class="note"># publish: about is the public note; journal and making are not routed</span>
 <span class="b">│   ├──</span> <span class="f">*.md</span>             <span class="note"># loose notes</span>
 <span class="b">│   ├──</span> <span class="d">making</span>           <span class="note"># convention bucket</span>
@@ -21,10 +21,10 @@ export const COLOPHON_DOC_HTML = `<h2 id="folder" class="section-label"><span>fo
 <span class="b">┌</span> <span class="d">mattdoes-site</span> <span class="note">(public)</span>
 <span class="b">├──</span> <span class="f">build.js</span>             <span class="note"># the generator entrypoint</span>
 <span class="b">├──</span> <span class="d">lib</span>                  <span class="note"># intake (vault → model) · emit (model → dist) · listening · lastfm codec</span>
-<span class="b">├──</span> <span class="d">design-system</span>        <span class="note"># @mattdoes/ds — React page components · renders every page · syncs to Claude Design · ships the timeline island</span>
+<span class="b">├──</span> <span class="d">design-system</span>        <span class="note"># React page components · renders every page to static HTML</span>
 <span class="b">├──</span> <span class="f">site.config.js</span>       <span class="note"># identity + last.fm + letterboxd</span>
 <span class="b">├──</span> <span class="d">content</span>             <span class="note"># digs weeks · other recommendations (in-repo, not the vault)</span>
-<span class="b">├──</span> <span class="d">templates</span>            <span class="note"># shared row renderers · helpers · asset registry</span>
+<span class="b">├──</span> <span class="d">templates</span>            <span class="note"># listening row module · helpers</span>
 <span class="b">├──</span> <span class="d">static</span>               <span class="note"># css, js (tweaks · geo-bg · live), fonts, baked geojson, _headers</span>
 <span class="b">├──</span> <span class="d">scripts</span>              <span class="note"># prebuild, optimize-media, sync-media, bake-geo</span>
 <span class="b">├──</span> <span class="d">workers</span>              <span class="note"># listening · geo · csp-report · lib (shared edge transport)</span>

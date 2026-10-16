@@ -2,8 +2,7 @@
 //
 // Pure geometry, no bindings. Shared by the geo Worker (live Nominatim
 // polygons) and scripts/bake-home-geojson.js (the baked home polygon) so
-// both surfaces simplify with the same shapes (see CONTEXT.md: Edge
-// transport, and docs/adr/0002-shared-worker-code-via-relative-imports.md).
+// both surfaces simplify with the same shapes.
 //
 // Operates on lon/lat pairs. Tolerance is in degrees; treating ε uniformly
 // for lat and lon is fine at city scale.
