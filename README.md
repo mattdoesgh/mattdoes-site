@@ -54,4 +54,4 @@ KV bindings, routes, and secret names live in each `wrangler.toml`. From the rep
 npm run deploy:workers
 ```
 
-Listening secrets are `LASTFM_USERNAME` and `LASTFM_API_KEY` (`npx wrangler secret put`, run from `workers/listening`).
+Listening secrets are `LASTFM_USERNAME` and `LASTFM_API_KEY`. From `workers/listening`, after `npm ci --prefix workers`: `node ../node_modules/wrangler/bin/wrangler.js secret put LASTFM_API_KEY`.

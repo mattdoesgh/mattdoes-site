@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { lockedWranglerVersion, resolveWranglerBin } from '../scripts/sync-media.js';
+import { lockedWranglerVersion, resolveWranglerBin } from '../scripts/wrangler-bin.js';
 
 const REPO_ROOT = process.cwd();
 
@@ -53,4 +53,22 @@ test('sync-media does not spawn an unpinned package runner', () => {
   assert.doesNotMatch(src, /spawnSync\(\s*['"]npx['"]/);
   assert.doesNotMatch(src, /--yes/);
   assert.match(src, /resolveWranglerBin\(/);
+});
+
+test('deploy:workers runs the lockfile binary', () => {
+  const src = fs.readFileSync(new URL('../scripts/deploy-workers.js', import.meta.url), 'utf8');
+  const rootPkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+  const workersPkg = fs.readFileSync(new URL('../workers/package.json', import.meta.url), 'utf8');
+  assert.equal(rootPkg.scripts['deploy:workers'], 'node scripts/deploy-workers.js');
+  assert.match(src, /resolveWranglerBin\(/);
+  assert.match(src, /listening/);
+  assert.match(src, /geo/);
+  assert.match(src, /csp-report/);
+  assert.doesNotMatch(src, /npx/);
+  assert.doesNotMatch(rootPkg.scripts['deploy:workers'], /npx/);
+  assert.doesNotMatch(workersPkg, /npx/);
+  for (const name of ['listening', 'geo', 'csp-report']) {
+    const toml = fs.readFileSync(new URL(`../workers/${name}/wrangler.toml`, import.meta.url), 'utf8');
+    assert.doesNotMatch(toml, /npx wrangler/);
+  }
 });

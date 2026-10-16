@@ -21,6 +21,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { resolveWranglerBin } from './wrangler-bin.js';
 
 const __dirname  = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT  = path.resolve(__dirname, '..');
@@ -71,64 +72,6 @@ function walk(dir, out = []) {
     else out.push(full);
   }
   return out;
-}
-
-const WRANGLER_LOCK_KEY = 'node_modules/wrangler';
-
-/**
- * Exact wrangler version pinned in workers/package-lock.json.
- * The package.json range is not enough: a runtime install of the range
- * could resolve to a different build than the lockfile.
- *
- * @param {string} repoRoot
- * @returns {string} semver, e.g. `4.151.0`
- */
-export function lockedWranglerVersion(repoRoot) {
-  const lockPath = path.join(repoRoot, 'workers', 'package-lock.json');
-  let lock;
-  try {
-    lock = JSON.parse(fs.readFileSync(lockPath, 'utf8'));
-  } catch (err) {
-    throw new Error(`Cannot read workers/package-lock.json (${err.message}).`);
-  }
-  const version = lock.packages?.[WRANGLER_LOCK_KEY]?.version;
-  if (typeof version !== 'string' || !/^\d+\.\d+\.\d+$/.test(version)) {
-    throw new Error('workers/package-lock.json does not pin an exact wrangler version.');
-  }
-  return version;
-}
-
-/**
- * Path to the lockfile's wrangler program. Refuses a missing or
- * version-mismatched install so the upload cannot fetch a different
- * package while Cloudflare credentials are in the environment.
- *
- * @param {string} [repoRoot]
- * @returns {string} absolute path to bin/wrangler.js
- */
-export function resolveWranglerBin(repoRoot = REPO_ROOT) {
-  const version = lockedWranglerVersion(repoRoot);
-  const pkgPath = path.join(repoRoot, 'workers', 'node_modules', 'wrangler', 'package.json');
-  const binPath = path.join(repoRoot, 'workers', 'node_modules', 'wrangler', 'bin', 'wrangler.js');
-  if (!fs.existsSync(pkgPath) || !fs.existsSync(binPath)) {
-    throw new Error(
-      `Locked wrangler@${version} is not installed at workers/node_modules. `
-      + 'Run `npm ci --prefix workers` first.',
-    );
-  }
-  let installed;
-  try {
-    installed = JSON.parse(fs.readFileSync(pkgPath, 'utf8')).version;
-  } catch (err) {
-    throw new Error(`Cannot read the installed wrangler package (${err.message}).`);
-  }
-  if (installed !== version) {
-    throw new Error(
-      `Installed wrangler@${installed} does not match workers/package-lock.json wrangler@${version}. `
-      + 'Run `npm ci --prefix workers` and retry.',
-    );
-  }
-  return binPath;
 }
 
 function wrangler(args) {

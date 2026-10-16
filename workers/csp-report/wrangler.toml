@@ -10,7 +10,7 @@ routes = [
 ]
 
 # Optional KV for short-lived violation payloads. One-time setup:
-#   npx wrangler kv namespace create CSP_REPORTS
+#   node ../node_modules/wrangler/bin/wrangler.js kv namespace create CSP_REPORTS
 # then paste the id below.
 #
 # [[kv_namespaces]]

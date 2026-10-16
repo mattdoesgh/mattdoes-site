@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Shared tooling for the three Cloudflare Workers (listening, geo, csp-report). One wrangler install serves all of them — run wrangler from each Worker's directory (npx resolves it from here), or use `npm run deploy:workers` at the repo root.",
+  "description": "Shared tooling for the three Cloudflare Workers (listening, geo, csp-report). One wrangler install serves all of them. Deploy from the repo root with npm run deploy:workers, which runs the lockfile binary.",
   "devDependencies": {
     "wrangler": "^4.107.0"
   },
