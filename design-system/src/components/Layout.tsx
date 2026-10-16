@@ -26,7 +26,7 @@ function CodeSheet({ id }: { id: string }) {
   );
 }
 
-/** Faint code-pattern field. Decorative; Pause and reduced motion stop the drift. */
+/** Faint code-pattern field. Decorative; reduced motion stops the drift. */
 function SiteField() {
   return (
     <div className="site-field" aria-hidden="true">

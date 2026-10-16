@@ -284,25 +284,42 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
   .topbar .status { display: none; }
 }
 @media (max-width: 640px) {
-  .topbar { padding-inline: 12px; }
-  .topbar .inner { gap: 6px; }
+  .topbar { padding-inline: 16px; }
+  .topbar .inner { gap: 8px; }
   .topbar .primary-nav { display: none; }
+  .topbar .spacer { display: none; }
+  .topbar .home {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .topbar .social-nav { margin-left: auto; flex: 0 0 auto; }
   .x-link__full { display: none; }
   .x-link__short { display: inline; }
-  .topbar .mobile-menu { display: block; position: relative; }
+  .topbar .mobile-menu {
+    display: flex;
+    align-items: center;
+    position: relative;
+    flex: 0 0 auto;
+  }
   .topbar .mobile-menu summary {
-    color: var(--mute);
+    display: inline-block;
+    padding: 0;
+    line-height: 0;
+    color: inherit;
     cursor: pointer;
     list-style: none;
-    padding: .3rem .15rem;
   }
   .topbar .mobile-menu summary::-webkit-details-marker { display: none; }
-  .topbar .mobile-menu[open] summary { color: var(--ink); }
+  .topbar .mobile-menu summary::marker { content: ""; }
   .topbar .mobile-menu nav {
     position: absolute;
     z-index: 1;
-    top: calc(100% + .55rem);
-    left: -.5rem;
+    top: calc(100% + 8px);
+    right: 0;
+    left: auto;
     min-width: 10rem;
     display: grid;
     gap: 0;
@@ -312,7 +329,7 @@ a.accent:hover { border-bottom-color: var(--accent-fg); }
     border-radius: var(--radius-sm);
     box-shadow: 0 10px 24px color-mix(in oklch, var(--bg), transparent 30%);
   }
-  .topbar .mobile-menu nav a { padding: .45rem .55rem; }
+  .topbar .mobile-menu nav a { padding: .45rem .7rem; }
 }
 
 /* ── Timeline (no card; just the page) ───────────── */
@@ -2101,7 +2118,8 @@ footer.site { view-transition-name: site-footer; }
 
 /* ── Clear glass (Direction B, locked) ─────────────
    Faint field behind every page. Glass only on floating controls:
-   topbar chips, search, Pause, and the homepage shelf tiles. */
+   topbar chips, search, the compact menu, and the homepage shelf tiles.
+   Motion follows prefers-reduced-motion; the chrome has no pause control. */
 @property --angle-1 { syntax: "<angle>"; inherits: false; initial-value: -75deg; }
 @property --angle-2 { syntax: "<angle>"; inherits: false; initial-value: -45deg; }
 .site-field {
@@ -2133,16 +2151,15 @@ footer.site { view-transition-name: site-footer; }
   flex: 0 0 auto;
 }
 .topbar .search-control.gb { width: 32px; height: 32px; padding: 0; }
-.topbar .motion-toggle {
-  flex: 0 0 auto;
-  gap: .35rem;
+.topbar .menu-chip.gb {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 12px;
+  line-height: 1;
   color: var(--ink);
-  cursor: pointer;
 }
-.topbar .motion-toggle input { width: .9rem; height: .9rem; accent-color: var(--ink); }
-.motion-toggle__off { display: none; }
-body:has(#pause-motion:checked) .motion-toggle__on { display: none; }
-body:has(#pause-motion:checked) .motion-toggle__off { display: inline; }
 .topbar .gb,
 .home-shelves a {
   position: relative;
@@ -2287,15 +2304,22 @@ body:has(#pause-motion:checked) .motion-toggle__off { display: inline; }
 @media (prefers-reduced-motion: no-preference) and (min-width: 601px) {
   .home-shelves a:active { transform: perspective(480px) rotateX(7deg) scale(0.97); }
 }
-body:has(#pause-motion:checked) .site-field__track,
-body:has(#pause-motion:checked) #geo-bg .geo-drift,
-body:has(#pause-motion:checked) #geo-bg .geo-path { animation: none !important; }
-body:has(#pause-motion:checked) :is(.topbar .gb, .home-shelves a):is(:hover, :active) { transform: none; }
-body:has(#pause-motion:checked) :is(.topbar .gb, .home-shelves a):is(:hover, :active)::before {
-  background-position: 0% 50%;
-  --angle-2: -45deg;
+@media (max-width: 640px) {
+  /* The short X mark shares the search circle so the narrow cluster is one
+     height. The menu chip stays a capsule of that same height. */
+  .topbar .x-link.gb {
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+  }
+  .topbar .mobile-menu[open] .menu-chip.gb::before {
+    background:
+      linear-gradient(var(--angle-2), transparent 0%, rgba(255, 255, 255, 0.07) 48% 52%, transparent 64%),
+      rgba(186, 214, 232, 0.08);
+  }
 }
-body:has(#pause-motion:checked) :is(.topbar .gb, .home-shelves a):is(:hover, :active)::after { --angle-1: -75deg; }
 @media (prefers-reduced-transparency: reduce) {
   .topbar .gb,
   .home-shelves a { background: rgba(22, 24, 30, 0.92); backdrop-filter: none; }
