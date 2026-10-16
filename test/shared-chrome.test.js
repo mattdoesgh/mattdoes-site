@@ -40,7 +40,10 @@ test('shared chrome keeps reading navigation compact and moves secondary links t
 
   const menu = d.querySelector('.topbar details.mobile-menu');
   assert.ok(menu, 'narrow screens must have a compact disclosure menu');
-  assert.ok(menu.querySelector('summary'), 'the compact menu must use a keyboard-operable summary');
+  const summary = menu.querySelector('summary');
+  assert.ok(summary, 'the compact menu must use a keyboard-operable summary');
+  assert.ok(summary.querySelector('.menu-chip.gb'), 'the compact menu control is a glass chip');
+  assert.equal(summary.querySelector('.visually-hidden')?.textContent.trim(), 'Site menu');
   assert.ok(menu.querySelector('nav[aria-label="site menu"] a[href="/about/"]'));
   const menuX = menu.querySelector('nav[aria-label="site menu"] a[href="https://x.com/mattdoes"]');
   assert.equal(menuX?.textContent.trim(), '@mattdoes');
@@ -87,6 +90,10 @@ test('the shared frame has a quiet one-column layout and mobile menu breakpoint'
     'legacy rails must not reserve a default layout column');
   assert.match(css, /@media \(max-width: 640px\)[\s\S]*?\.topbar \.primary-nav\s*\{\s*display:\s*none/s,
     'the desktop link row must not turn into a horizontally scrolling mobile nav');
+  assert.doesNotMatch(css, /#pause-motion|\.motion-toggle/,
+    'production chrome has no pause control; motion follows prefers-reduced-motion');
+  assert.match(css, /@media \(prefers-reduced-motion:\s*no-preference\)[\s\S]*?\.site-field__track\s*\{[^}]*animation:/s,
+    'field drift stays gated on the system motion preference');
   assert.match(css, /--geo-bg-opacity:\s*0\.14/, 'geo treatment must stay visually quiet by default');
 });
 
@@ -96,7 +103,9 @@ test('the locked clear-glass system is on the homepage and the shared pages', ()
   assert.equal(field?.getAttribute('aria-hidden'), 'true');
   assert.equal(field?.querySelector('a'), null);
   assert.ok(field?.querySelector('svg'));
-  assert.ok(home.querySelector('#pause-motion'));
+  assert.equal(home.querySelector('#pause-motion, .motion-toggle'), null,
+    'the homepage chrome does not offer a motion toggle');
+  assert.equal(doc('blog/index.html').querySelector('#pause-motion, .motion-toggle'), null);
   assert.ok(home.querySelector('.home-shelves a[href="/digs/"]'));
   assert.ok(home.querySelector('.home-shelves a[href="/movies/"]'));
   assert.ok(home.querySelector('.home-shelves a[href="/grok/"]'));

@@ -78,16 +78,6 @@ function XLink({ compact = false }: { compact?: boolean }) {
   );
 }
 
-function PauseMotion() {
-  return (
-    <label className="motion-toggle gb">
-      <input id="pause-motion" type="checkbox" />
-      <span className="motion-toggle__on">Pause</span>
-      <span className="motion-toggle__off">Play</span>
-    </label>
-  );
-}
-
 /** The fixed top bar: brand, reading navigation, the X link, search, and a quiet status slot. */
 export function Topbar({
   siteTitle = 'mattdoes.online',
@@ -111,8 +101,10 @@ export function Topbar({
         </nav>
         <details className="mobile-menu">
           <summary>
-            <span aria-hidden="true">menu</span>
-            <span className="visually-hidden">Open site menu</span>
+            <span className="gb menu-chip">
+              <span aria-hidden="true">menu</span>
+              <span className="visually-hidden">Site menu</span>
+            </span>
           </summary>
           <nav aria-label="site menu">
             <NavLinks nav={nav} active={active} />
@@ -130,7 +122,6 @@ export function Topbar({
             <path d="m10.25 10.25 3.25 3.25" />
           </svg>
         </a>
-        <PauseMotion />
         <span className="spacer" aria-hidden="true"></span>
         {status}
       </div>
