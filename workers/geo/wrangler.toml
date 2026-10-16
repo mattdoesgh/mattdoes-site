@@ -6,8 +6,10 @@ workers_dev = false
 # Same-origin route on mattdoes.online so the static client can call it
 # without loosening the site's `connect-src 'self'` CSP. Workers-on-Routes
 # take precedence over Pages, so /api/geo/* is handled here.
+# The trailing * is required. Route matching includes the query string, and
+# a pattern without a wildcard never matches /lookup?lat=&lng= requests.
 routes = [
-  { pattern = "mattdoes.online/api/geo/lookup", zone_name = "mattdoes.online" }
+  { pattern = "mattdoes.online/api/geo/lookup*", zone_name = "mattdoes.online" }
 ]
 
 # KV cache for reverse-geocoded city polygons. Keyed by rounded
