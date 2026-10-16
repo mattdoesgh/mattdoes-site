@@ -134,21 +134,6 @@ export function fmtIsoDay(iso: string | null | undefined): string {
 }
 
 /**
- * Compact "time ago" label for the home feed — `'2m'`, `'3h'`, `'4d'`, falling
- * back to `'mon dd'` once the event is over a week old. Ported in behaviour
- * from `relTime()` in templates/_helpers.js; relative to the build instant.
- */
-export function relTime(iso: DateInput): string {
-  const d = toDate(iso);
-  if (!d) return '';
-  const diff = (Date.now() - d.getTime()) / 1000;
-  if (diff < 3600) return `${Math.max(1, Math.round(diff / 60))}m`;
-  if (diff < 86400) return `${Math.round(diff / 3600)}h`;
-  if (diff < 86400 * 7) return `${Math.round(diff / 86400)}d`;
-  return fmtDate(d, 'day');
-}
-
-/**
  * HTML-escape a value for interpolation into element content or a
  * double-quoted attribute. Coerces non-string input via `String()` (so
  * `null`/`undefined` → `''`). The single escaper for every raw-HTML-string sink
@@ -163,21 +148,4 @@ export function escHtml(s: unknown): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
-}
-
-/**
- * Tag chips as an HTML string — the bridge for the `ThoughtRow` `html` path,
- * where pre-rendered markdown and its trailing tags share one block via
- * `dangerouslySetInnerHTML`. Must stay byte-identical to the `<Tag>` markup.
- * Not needed when composing with `children` — use `<TagList>` there.
- */
-export function tagsHtml(tags: string[], baseHref = '', tagPaths?: Record<string, string>): string {
-  return tags
-    .map(
-      (t) => {
-        const href = tagPaths?.[t.trim().toLowerCase()] || `${baseHref}?tag=${encodeURIComponent(t)}`;
-        return `<a class="tg" href="${escHtml(href)}" data-tag="${escHtml(t)}">${escHtml(t)}</a>`;
-      },
-    )
-    .join(' ');
 }

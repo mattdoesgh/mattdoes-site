@@ -1,8 +1,7 @@
 // Audit backlog: "W3C coverage — Revisit disabled html-validate WCAG rules".
 // Covers audit findings #9, #13, #15 (W3C / standards side).
 //
-// Two concerns:
-//   1. html-validate config — the audit asked to revisit the four disabled
+// html-validate config — the audit asked to revisit the four disabled
 //      rules now that the accent control is a real <fieldset> with a
 //      <legend> and authored inline styles were migrated to classes:
 //        - wcag/h71  RE-ENABLED  (the <fieldset> now has a <legend>)
@@ -15,7 +14,7 @@
 //          the rule is left off deliberately so a future Shiki upgrade that
 //          emits literal declarations does not break the build.)
 //        - attribute-empty-style  KEPT OFF  — pages are rendered by React
-//          (ADR 0003), and renderToStaticMarkup serializes boolean attributes
+//         , and renderToStaticMarkup serializes boolean attributes
 //          as `hidden=""` (e.g. the idle now-playing pill) with no bare-form
 //          option. `hidden=""` and `hidden` are semantically identical valid
 //          HTML5; this joins the sibling serialization-style rules already off
@@ -23,10 +22,6 @@
 //      This test asserts the config matches that decision, and that the
 //      generated fixture output still passes html-validate with the three
 //      re-enabled rules ON.
-//   2. Thought fragment-id stability (finding #13): adding an older daily
-//      note must not shift the ids of pre-existing thoughts. The public
-//      notebook page is gone; the check reads Intake, which still splits
-//      publish: thoughts so an older vault keeps stable ids.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -36,8 +31,6 @@ import { spawnSync } from 'node:child_process';
 import {
   buildFixtureVault, readDist, REPO_ROOT,
 } from './helpers/run-build.js';
-import { intake, readVault } from '../lib/intake.js';
-
 // One fixture-vault build shared by the html-validate and sitemap tests.
 let fixtureDist;
 test.before(() => { ({ distDir: fixtureDist } = buildFixtureVault()); });
@@ -59,7 +52,7 @@ test('.htmlvalidate.json keeps the intended rule decisions', () => {
     'no-inline-style should be re-enabled (Shiki uses CSS classes)');
 
   // attribute-empty-style stays off — React serializes boolean attributes as
-  // `hidden=""` (renderToStaticMarkup has no bare-form option); ADR 0003.
+  // `hidden=""` (renderToStaticMarkup has no bare-form option).
   assert.equal(rules['attribute-empty-style'], 'off',
     'attribute-empty-style must stay disabled (React boolean-attr serialization)');
 });
@@ -77,33 +70,6 @@ test('the fixture build still passes html-validate with the tightened rules', ()
   assert.equal(res.status, 0,
     `html-validate must pass with wcag/h71 + wcag/h32 + no-raw-characters ` +
     `enabled.\n${res.stdout}\n${res.stderr}`);
-});
-
-// ── 2. thought fragment-id stability (finding #13) ──────────────────────
-function thoughtIds(vaultDir) {
-  return intake(readVault(vaultDir)).thoughts.map(t => t.id);
-}
-
-test('adding an older thought does not shift pre-existing thought ids', () => {
-  const beforeDir = path.join(REPO_ROOT, 'test', 'fixtures', 'thoughts-before');
-  const afterDir = path.join(REPO_ROOT, 'test', 'fixtures', 'thoughts-after');
-  const idsBefore = thoughtIds(beforeDir);
-  assert.ok(idsBefore.length >= 2, 'before-vault should yield >=2 thought ids');
-  const idsAfter = thoughtIds(afterDir);
-
-  // Every id that existed before must still exist — the older insertion must
-  // not renumber later thoughts (the regression fixed in finding #13).
-  for (const id of idsBefore) {
-    assert.ok(idsAfter.includes(id),
-      `pre-existing thought id "${id}" disappeared after adding an older note ` +
-      `— ids must be stable. after=${JSON.stringify(idsAfter)}`);
-  }
-
-  // The ids are timestamp-derived (t-YYYYMMDD-HHMM), not sequential ordinals.
-  for (const id of idsAfter) {
-    assert.match(id, /^t-\d{8}-\d{4}(-\d+)?$/,
-      `thought id "${id}" must be a stable timestamp id, not an ordinal`);
-  }
 });
 
 test('sitemap.xml and robots.txt are emitted', () => {

@@ -3,8 +3,7 @@ import react from '@vitejs/plugin-react';
 
 // SSG build — the bundle Emit (lib/emit/) imports to render the real site pages.
 //
-// Separate from vite.config.ts (the design-sync / Claude Design bundle) so that
-// output stays untouched. Produces dist-ssg/ssg.js: the render* functions plus
+// Produces dist-ssg/ssg.js: the render* functions plus
 // every DS component + page they pull in, bundled into one ESM file.
 //
 // react / react-dom / react-dom/server stay EXTERNAL — they're resolved at

@@ -1,9 +1,9 @@
 // poller.js — the shared polling lifecycle for live-update enhancement
 // scripts (now-playing.js, listening-live.js). Owns the whole machine:
 // idempotent start/stop interval, visibility handling, bfcache restore, and
-// prerender deferral (ADR 0007). Consumers supply only their tick + interval;
+// prerender deferral. Consumers supply only their tick + interval;
 // imported through the importmap like rows.js/_helpers.js so the hashed copy
-// is fetched while the clean URL stays stable (see CONTEXT.md: Edge transport).
+// is fetched while the clean URL stays stable.
 
 /**
  * Wire the full polling lifecycle around `tick`. Ticks once immediately,
@@ -54,7 +54,7 @@ export function createPoller({ tick, intervalMs }) {
     });
   }
 
-  // Defer network work until a prerendered page is activated (ADR 0007).
+  // Defer network work until a prerendered page is activated.
   if (document.prerendering) {
     document.addEventListener('prerenderingchange', () => { if (!document.prerendering) start(); }, { once: true });
   } else {

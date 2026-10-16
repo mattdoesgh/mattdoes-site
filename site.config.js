@@ -18,8 +18,6 @@
  * @property {{ name: string, handle?: string, bio?: string }} identity
  * @property {SiteLink[]} links
  * @property {{
- *   journal:   SiteSection,
- *   making:    SiteSection,
  *   listening: SiteSection,
  * }} sections
  * @property {string} footerText
@@ -73,16 +71,6 @@ export const siteConfig = {
   // Per-section labels. Page components may use `who` as a concise title;
   // descriptions stay empty because the writing itself explains each section.
   sections: {
-    journal: {
-      who:   'journal',
-      bio:   '',
-      intro: '',
-    },
-    making: {
-      who:   'making',
-      bio:   '',
-      intro: '',
-    },
     listening: {
       who:   'listening',
       bio:   '',

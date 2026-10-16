@@ -1,41 +1,12 @@
-// Listing — reverse-chrono index for article kinds and /listening/.
+// /listening/ — live track list.
 //
-// LISTENING IS SPECIAL (ADR 0001 + test/row-parity.test.js): the /listening/
-// rows must byte-equal templates/rows.js `listeningRow()` output because
+// The rows must byte-equal templates/rows.js `listeningRow()` output because
 // static/listening-live.js re-renders them in the browser from that same
 // module and dedupes by an innerHTML swap. React serialization would not
-// byte-match, so the build pre-renders the listening rows with rows.js and
-// passes them here as `rowsHtml`, injected verbatim into `#listening-rows`.
-// React owns the page frame; rows.js owns the listening row bytes.
-import {
-  PageShell,
-  ArticleRow,
-  EmptyState,
-  TimelineFilter,
-  TimelineHeader,
-  type DateInput,
-  type EmptyKind,
-} from '../../src/index';
-// The one owner of the #scrobble-count format string, shared with
-// static/listening-live.js so the live update can't drift.
+// byte-match, so the build pre-renders the rows with rows.js and passes
+// them here as `rowsHtml`, injected verbatim into `#listening-rows`.
+import { PageShell, TimelineHeader } from '../../src/index';
 import { formatScrobbleCount } from '../../../templates/_helpers.js';
-
-const SECTION_PATH: Record<string, string> = {
-  journal: '/journal/',
-  making: '/making/',
-  listening: '/listening/',
-};
-
-export interface ListingEntry {
-  kind?: string;
-  url?: string;
-  title?: string;
-  date: DateInput;
-  summary?: string;
-  readTime?: string;
-  tags?: string[];
-  tagPaths?: Record<string, string>;
-}
 
 export interface ListingSiteConfig {
   title?: string;
@@ -47,81 +18,33 @@ export interface ListingSiteConfig {
 
 export interface ListingPageProps {
   siteConfig: ListingSiteConfig;
-  kind: 'journal' | 'making' | 'listening';
-  entries: ListingEntry[];
   nowPlaying?: string;
   totalScrobbles?: number;
-  /** Pre-rendered listening rows (rows.js output). Required for kind==='listening'. */
+  /** Pre-rendered listening rows (rows.js output). */
   rowsHtml?: string;
 }
 
 export function ListingPage({
   siteConfig,
-  kind,
-  entries,
   nowPlaying = '',
   totalScrobbles = 0,
   rowsHtml = '',
 }: ListingPageProps) {
-  const section = siteConfig.sections?.[kind] || {};
-  const isListening = kind === 'listening';
-
-  // Tag index (only meaningful for article kinds).
-  const tagCounts = new Map<string, number>();
-  if (!isListening) for (const e of entries) for (const t of e.tags || []) tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
-  const topTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
-  const sectionPath = SECTION_PATH[kind] || '/';
-  const filterLinks = topTags.length
-    ? [
-        { label: 'all', href: sectionPath, filter: '', all: true, current: true },
-        ...topTags.slice(0, 8).map(([tag]) => ({
-          label: tag,
-          href: `${sectionPath}?tag=${encodeURIComponent(tag)}`,
-          filter: tag,
-        })),
-      ]
-    : [];
+  const section = siteConfig.sections?.listening || {};
 
   return (
     <PageShell
-      active={kind}
+      active="listening"
       siteTitle={siteConfig.title}
       manualStatus={siteConfig.status}
       nowPlaying={nowPlaying}
       footerText={siteConfig.footerText ?? ''}
     >
-      <main className={`page page--archive${isListening ? ' page--listening' : ''}`} id="main">
+      <main className="page page--archive page--listening" id="main">
         <section className="timeline archive-listing">
-          <TimelineHeader title={section.who || kind} />
-
-          {!isListening && filterLinks.length ? (
-            <details className="archive-filters">
-              <summary>filter</summary>
-              <TimelineFilter links={filterLinks} count={entries.length} countLabel="posts" label="browse" />
-            </details>
-          ) : null}
-
-          {isListening ? <span id="scrobble-count">{formatScrobbleCount(totalScrobbles)}</span> : null}
-
-          {isListening ? (
-            <div id="listening-rows" dangerouslySetInnerHTML={{ __html: rowsHtml }} />
-          ) : entries.length ? (
-            entries.map((e, i) => (
-              <ArticleRow
-                key={e.url || i}
-                url={e.url || ''}
-                title={e.title || ''}
-                date={e.date}
-                summary={e.summary}
-                readTime={e.readTime}
-                tags={e.tags}
-                tagPaths={e.tagPaths}
-                kind={kind}
-              />
-            ))
-          ) : (
-            <EmptyState kind={kind as EmptyKind} />
-          )}
+          <TimelineHeader title={section.who || 'listening'} />
+          <span id="scrobble-count">{formatScrobbleCount(totalScrobbles)}</span>
+          <div id="listening-rows" dangerouslySetInnerHTML={{ __html: rowsHtml }} />
         </section>
       </main>
     </PageShell>

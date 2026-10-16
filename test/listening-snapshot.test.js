@@ -1,5 +1,5 @@
-// fetchListeningSnapshot — the build-time source resolution (lib/listening.js,
-// ADR 0006). These run in-process with a stubbed global fetch so they can
+// fetchListeningSnapshot — the build-time source resolution (lib/listening.js).
+// These run in-process with a stubbed global fetch so they can
 // exercise the Worker / Last.fm / cache fall-through without real network.
 //
 // Source order under test:

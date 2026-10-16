@@ -108,8 +108,8 @@ test('the four selectable accents were parsed from tweaks.js', () => {
   assert.deepEqual(Object.keys(ACCENTS).sort(), ['blue', 'green', 'pink', 'warm']);
 });
 
-// static/theme-boot.js hand-duplicates the ACCENTS map (no shared module — the
-// site has no bundler, see ADR 0001) so it can apply the saved accent before
+// static/theme-boot.js hand-duplicates the ACCENTS map (no shared module) so
+// it can apply the saved accent before
 // the stylesheet paints. Guard the "keep in sync" contract: a drift would make
 // the pre-paint accent differ from the hydrated one and flash on first paint —
 // the exact thing theme-boot exists to prevent.

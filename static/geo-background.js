@@ -550,7 +550,7 @@
   }
   }
 
-  // Defer fetches until a prerendered page is activated (ADR 0007).
+  // Defer fetches until a prerendered page is activated.
   if (document.prerendering) {
     document.addEventListener('prerenderingchange', () => { if (!document.prerendering) boot(); }, { once: true });
   } else {

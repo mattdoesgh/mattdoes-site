@@ -1,11 +1,10 @@
 // listening-live.js — keeps /listening/ fresh between deploys by polling
 // /api/listening/recent and re-rendering the scrobble counter + the 25-row
 // track list in place. Loaded as type="module" only where wired in
-// (the ListingPage / IndexPage in the design system); the Row module import
-// below resolves through the importmap emitted by renderDocument
-// (design-system/ssg/document.tsx), so the
-// markup we swap in comes from the exact same code that rendered the page
-// (see CONTEXT.md: Row, docs/adr/0001). Fails silent on network hiccups.
+// (the listening page). The Row module import below resolves through the
+// importmap emitted by renderDocument (design-system/ssg/document.tsx), so
+// the markup we swap in comes from the exact same code that rendered the
+// page. Fails silent on network hiccups.
 
 import { listeningRow, emptyState } from './rows.js';
 import { formatScrobbleCount } from './_helpers.js';
@@ -26,7 +25,7 @@ const listEl  = document.getElementById(LIST_ID);
 // Only wire up polling when there's something to update — if neither
 // element exists the page shape changed and this script should no-op.
 // createPoller owns the whole lifecycle: visibility, bfcache restore,
-// and prerender deferral (ADR 0007).
+// and prerender deferral.
 if (countEl || listEl) createPoller({ tick, intervalMs: POLL_MS });
 
 async function tick() {
@@ -34,7 +33,7 @@ async function tick() {
     // no-store: the Worker sends max-age=0, but Cloudflare's Browser Cache
     // TTL can rewrite that to a long max-age on edge HITs, which would freeze
     // live updates behind a stale browser cache. Force a fresh poll each time;
-    // the request path is a cheap KV read (ADR 0008).
+    // the request path is a cheap KV read.
     const res = await fetch(ENDPOINT, { headers: { accept: 'application/json' }, cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();

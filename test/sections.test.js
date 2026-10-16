@@ -23,24 +23,16 @@ test('rows.js empty-state copy matches the Section descriptor', () => {
   }
 });
 
-test('design-system SECTION_PATH maps match the Section descriptor', () => {
-  // The SSG builds under its own tsconfig rootDir, so it keeps inline
-  // SECTION_PATH maps instead of importing lib/sections.js — pin them.
+test('design-system listening route matches the Section descriptor', () => {
   const ssgFile = path.join(REPO_ROOT, 'design-system', 'ssg', 'index.tsx');
   const ssg = fs.readFileSync(ssgFile, 'utf8');
   for (const [kind, section] of Object.entries(SECTIONS)) {
     assert.ok(ssg.includes(`${kind}: '${section.route}'`),
       `${path.relative(REPO_ROOT, ssgFile)} must map ${kind} → ${section.route}`);
   }
-
-  const listingFile = path.join(REPO_ROOT, 'design-system', 'ssg', 'pages', 'ListingPage.tsx');
-  const listing = fs.readFileSync(listingFile, 'utf8');
-  for (const [kind, section] of Object.entries(SECTIONS).filter(([name]) => name !== 'thoughts')) {
-    assert.ok(listing.includes(`${kind}: '${section.route}'`),
-      `${path.relative(REPO_ROOT, listingFile)} must map ${kind} → ${section.route}`);
-  }
   assert.equal(ssg.includes("url: '/posts/'"), false, 'posts is not a generated page');
   assert.equal(ssg.includes("url: '/thoughts/'"), false, 'thoughts is not a generated page');
+  assert.equal(ssg.includes("url: '/design/'"), false, 'design sketches are not generated pages');
 });
 
 test('sitemap <loc> set equals the index.html pages actually written', () => {

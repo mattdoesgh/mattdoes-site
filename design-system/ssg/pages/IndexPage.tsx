@@ -1,5 +1,5 @@
 // Homepage — a quiet front door. Long-form posts are not published
-// (ADR 0016), so this page is the name, a short identity, and the
+//, so this page is the name, a short identity, and the
 // shelves that are still here.
 import { PageShell } from '../../src/index';
 

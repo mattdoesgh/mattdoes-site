@@ -1,6 +1,6 @@
-// #scrobble-count parity (see CONTEXT.md: Design system).
+// #scrobble-count parity.
 //
-// The stat is emitted by IdentityRail on /listening/ and re-stamped in the
+// The stat is emitted on /listening/ and re-stamped in the
 // browser by static/listening-live.js, which dedupes by text equality. Both render
 // through the ONE shared formatter, formatScrobbleCount
 // (templates/_helpers.js); this test pins both server-rendered stats to that

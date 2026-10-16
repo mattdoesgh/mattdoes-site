@@ -26,20 +26,13 @@ export { buildImportmap, buildSpeculationRules } from './document';
 // build time instead of shipping a clean URL that 404s).
 export { DOCUMENT_ASSET_NAMES } from './document';
 import { IndexPage, type IndexPageProps } from './pages/IndexPage';
-import { ArticlePage, type ArticlePageProps } from './pages/ArticlePage';
-import { BlogPage, type BlogEntry } from './pages/BlogPage';
 import { ListingPage, type ListingPageProps } from './pages/ListingPage';
 import { AboutPage, type AboutPageProps } from './pages/AboutPage';
 import { ColophonPage, type ColophonPageProps } from './pages/ColophonPage';
 import { SearchPage, type SearchPageProps } from './pages/SearchPage';
-import { TopicPage, type TopicPageProps } from './pages/TopicPage';
 import { DigsPage, type DigWeek } from './pages/DigsPage';
 import { MoviesPage, type Watch } from './pages/MoviesPage';
 import { GrokPage, type GrokFavorite, type GrokPick } from './pages/GrokPage';
-import {
-  DesignIndex, DesignA, DesignB, DesignC,
-  type DesignPageProps, type DirectionId,
-} from './pages/DesignDirections';
 
 export type Assets = Record<string, string>;
 
@@ -55,23 +48,15 @@ export interface FullSiteConfig extends DocSiteConfig {
 }
 
 const SECTION_PATH: Record<string, string> = {
-  journal: '/journal/',
-  making: '/making/',
   listening: '/listening/',
 };
 
 const SECTION_DESCRIPTION: Record<string, string> = {
-  journal: 'Journal entries — longer-form notes, reverse-chronological.',
-  making: 'Building-in-public posts — projects, experiments, and dev notes.',
   listening: 'A live-updating log of recent listens, pulled from Last.fm.',
 };
 
 function scriptTag(src: string, opts: { module?: boolean } = {}): string {
   return opts.module ? `<script src="${src}" type="module"></script>` : `<script src="${src}" defer></script>`;
-}
-
-function timelineControlsScript(assets: Assets): string {
-  return scriptTag(assetUrl(assets, 'timeline-controls.js'), { module: true });
 }
 
 function doc(page: DocPage, children: ReactNode, siteConfig: DocSiteConfig, assets: Assets): string {
@@ -93,84 +78,20 @@ export function renderIndex(
   );
 }
 
-// ── Topic paths ─────────────────────────────────────────────────────────────
-export function renderTopic(
-  args: TopicPageProps & { siteConfig: FullSiteConfig; assets: Assets },
-): string {
-  const { siteConfig, topic, allTopics, nowPlaying = '', assets } = args;
-  return doc(
-    {
-      title: topic.name,
-      url: topic.path,
-      description: `Writing and notebook fragments connected by ${topic.name}.`,
-    },
-    <TopicPage siteConfig={siteConfig} topic={topic} allTopics={allTopics} nowPlaying={nowPlaying} />,
-    siteConfig,
-    assets,
-  );
-}
-
-// ── single article ───────────────────────────────────────────────────────────
-export function renderArticle(
-  args: ArticlePageProps & { siteConfig: FullSiteConfig; assets: Assets; ogImage?: string },
-): string {
-  const { site, note, recent, related, prev, next, siteConfig, assets, ogImage } = args;
-  const kind = note.kind || 'journal';
-  const section = siteConfig.sections?.[kind] || {};
-  const who = section.who || kind;
-  const bio = section.bio || '';
-  const url = note.url || `${SECTION_PATH[kind] || '/'}`;
-  const description = note.summary || bio || `${who} — ${note.title}`;
-  const image = ogImage || `/og/${kind}/${note.slug || 'post'}.png`;
-  return doc(
-    { title: note.title, url, description, ogType: 'article', ogImage: image },
-    <ArticlePage site={site} note={note} recent={recent} related={related} prev={prev} next={next} />,
-    siteConfig,
-    assets,
-  );
-}
-
-// ── writing (unified /blog/ timeline) ────────────────────────────────────────
-export function renderBlog(args: {
-  siteConfig: FullSiteConfig;
-  entries: BlogEntry[];
-  nowPlaying?: string;
-  assets: Assets;
-}): string {
-  const { siteConfig, entries, nowPlaying = '', assets } = args;
-  return doc(
-    {
-      title: 'writing',
-      url: '/blog/',
-      description: 'Essays and project notes on one reverse-chronological timeline.',
-      bodyScripts: timelineControlsScript(assets),
-    },
-    <BlogPage siteConfig={siteConfig} entries={entries} nowPlaying={nowPlaying} />,
-    siteConfig,
-    assets,
-  );
-}
-
-// ── section listing (journal / making / listening) ────────────────────────────
+// ── listening ────────────────────────────────────────────────────────────────
 export function renderListing(
   args: ListingPageProps & { siteConfig: FullSiteConfig; assets: Assets },
 ): string {
-  const { siteConfig, kind, entries, nowPlaying = '', totalScrobbles = 0, rowsHtml = '', assets } = args;
-  const isListening = kind === 'listening';
-  const bodyScripts = isListening
-    ? `${scriptTag(assetUrl(assets, 'listening-live.js'), { module: true })}\n${timelineControlsScript(assets)}`
-    : timelineControlsScript(assets);
+  const { siteConfig, nowPlaying = '', totalScrobbles = 0, rowsHtml = '', assets } = args;
   return doc(
     {
-      title: kind,
-      url: SECTION_PATH[kind] || '/',
-      description: SECTION_DESCRIPTION[kind] || '',
-      bodyScripts,
+      title: 'listening',
+      url: SECTION_PATH.listening,
+      description: SECTION_DESCRIPTION.listening,
+      bodyScripts: scriptTag(assetUrl(assets, 'listening-live.js'), { module: true }),
     },
     <ListingPage
       siteConfig={siteConfig}
-      kind={kind}
-      entries={entries}
       nowPlaying={nowPlaying}
       totalScrobbles={totalScrobbles}
       rowsHtml={rowsHtml}
@@ -274,67 +195,6 @@ export function renderGrok(args: {
   );
 }
 
-// ── homepage design bake-off (/design/, /design/a|b|c/) ─────────────────────
-// Isolated sketches. They share the document shell (skip link lives in the
-// page, not PageShell) and load design-directions.css only on these routes.
-function designHead(assets: Assets): string {
-  return `<meta name="robots" content="noindex" />\n<link rel="stylesheet" href="${assetUrl(assets, 'design-directions.css')}" />`;
-}
-
-const DESIGN_META: Record<DirectionId | 'index', { title: string; url: string; description: string }> = {
-  index: {
-    title: 'homepage directions',
-    url: '/design/',
-    description: 'Three homepage sketches for mattdoes.online. The live homepage is unchanged.',
-  },
-  a: {
-    title: 'direction A · neo-GeoCities',
-    url: '/design/a/',
-    description: 'Playful personal-web sketch of the mattdoes.online homepage.',
-  },
-  b: {
-    title: 'direction B · Lain',
-    url: '/design/b/',
-    description: 'Soft-cyberpunk sketch of the mattdoes.online homepage.',
-  },
-  c: {
-    title: 'direction C · hybrid',
-    url: '/design/c/',
-    description: 'Quieter editorial sketch of the mattdoes.online homepage.',
-  },
-};
-
-export function renderDesignIndex(
-  args: DesignPageProps & { siteConfig: FullSiteConfig; assets: Assets },
-): string {
-  const { site, featured, recent, shelf, siteConfig, assets } = args;
-  const meta = DESIGN_META.index;
-  return doc(
-    { title: meta.title, url: meta.url, description: meta.description, headExtra: designHead(assets) },
-    <DesignIndex site={site} featured={featured} recent={recent} shelf={shelf} />,
-    siteConfig,
-    assets,
-  );
-}
-
-export function renderDesignDirection(
-  args: DesignPageProps & { id: DirectionId; siteConfig: FullSiteConfig; assets: Assets },
-): string {
-  const { id, site, featured, recent, shelf, siteConfig, assets } = args;
-  const meta = DESIGN_META[id];
-  const page = id === 'a'
-    ? <DesignA site={site} featured={featured} recent={recent} shelf={shelf} />
-    : id === 'b'
-      ? <DesignB site={site} featured={featured} recent={recent} shelf={shelf} />
-      : <DesignC site={site} featured={featured} recent={recent} shelf={shelf} />;
-  return doc(
-    { title: meta.title, url: meta.url, description: meta.description, headExtra: designHead(assets) },
-    page,
-    siteConfig,
-    assets,
-  );
-}
-
 // ── search ───────────────────────────────────────────────────────────────────
 export function renderSearch(
   args: SearchPageProps & { siteConfig: FullSiteConfig; assets: Assets },
@@ -345,7 +205,7 @@ export function renderSearch(
     {
       title: 'search',
       url: '/search/',
-      description: 'Search journal and making across mattdoes.online.',
+      description: 'Search mattdoes.online.',
       bodyScripts,
     },
     <SearchPage siteConfig={siteConfig} />,

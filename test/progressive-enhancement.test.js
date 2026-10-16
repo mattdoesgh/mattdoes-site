@@ -1,4 +1,4 @@
-// /journal/, /making/, and /blog/ are not public pages (ADR 0016).
+// /journal/, /making/, and /blog/ are not public pages.
 // /thoughts/ and /posts/ are not sections and are not redirected.
 // /listening/ remains a real page without JavaScript.
 
@@ -77,7 +77,7 @@ test('static/_redirects does not revive retired writing routes', () => {
 
 // ── shared poller lifecycle (static/poller.js) ─────────────────────────────
 // The polling machine now-playing.js and listening-live.js share: visible-tab
-// interval, bfcache resume, prerender deferral (ADR 0007). Tested once here
+// interval, bfcache resume, prerender deferral. Tested once here
 // against a JSDOM window with mocked timers instead of implicitly twice.
 
 import { createPoller } from '../static/poller.js';

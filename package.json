@@ -13,7 +13,6 @@
     "lint": "html-validate \"dist/**/*.html\"",
     "audit": "npm audit --audit-level=moderate",
     "check:assets": "node scripts/check-asset-budget.js",
-    "perf:lighthouse": "npx --yes @lhci/cli autorun --config=testing-suites/lighthouse/lighthouserc.cjs",
     "scan:secrets": "npx --yes gitleaks detect --source . --verbose",
     "pretest": "npm run build:ssg && NODE_ENV=production LISTENING_OFFLINE=1 LETTERBOXD_OFFLINE=1 VAULT_DIR=test/fixture-vault SITE_URL=https://mattdoes.online node build.js",
     "test": "node --test \"test/**/*.test.js\"",

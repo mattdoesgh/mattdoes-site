@@ -3,7 +3,7 @@
 // The DS `Layout` renders only the in-body shell (skip link, geo-bg mount,
 // topbar, content, footer, tweaks dialog). The document `<head>` and the
 // trailing enhancement `<script>`s are emitted here, around the rendered body,
-// exactly as templates/base.js did — same metadata, same importmap (ADR 0001),
+// exactly as templates/base.js did — same metadata, same importmap,
 // same preloads, same deferred scripts — so the cutover is semantic-equivalent
 // at the document level and the client contracts (importmap, enhancement
 // scripts) are preserved verbatim.
@@ -51,7 +51,7 @@ export function assetUrl(assets: Record<string, string>, name: string): string {
 
 /**
  * The page importmap as the exact JSON string emitted inline in <head>
- * (ADR 0001). Shared with the build so lib/emit/csp.js can hash these same bytes
+ *. Shared with the build so lib/emit/csp.js can hash these same bytes
  * into the CSP `script-src`: the strict CSP has no `'unsafe-inline'` and no
  * importmap analogue of `'inline-speculation-rules'`, so an unhashed inline
  * importmap is dropped — and every module that imports through it then resolves
@@ -69,7 +69,7 @@ export function buildImportmap(assets: Record<string, string>): string {
 }
 
 /**
- * The speculation rules JSON emitted inline in <head> (ADR 0007): Chromium
+ * The speculation rules JSON emitted inline in <head>: Chromium
  * prerenders/prefetches same-origin links on intent. Exported as the exact
  * inline-script string so the build can hash it into the CSP alongside the
  * importmap. A hash source in `script-src` disables keyword inline allowances —
@@ -148,7 +148,7 @@ export function renderDocument({ page, children, siteConfig, assets = {} }: Rend
 
   // Speculation Rules: Chromium prerenders/prefetches same-origin links on
   // intent. `moderate` (hover / short viewport dwell) widens coverage once
-  // enhancement scripts defer work until prerender activation (ADR 0007).
+  // enhancement scripts defer work until prerender activation.
   // Emitted as static head markup. The CSP nominally allows it via the
   // `'inline-speculation-rules'` source, but that keyword is disabled once the
   // importmap hash lands in script-src, so the build hashes this string too

@@ -1,48 +1,30 @@
 # mattdoes.online
 
-source for [mattdoes.online](https://mattdoes.online) — my personal site. i write here, think out loud here, and log what i'm listening to here.
+Source for [mattdoes.online](https://mattdoes.online). Static HTML from a private Obsidian vault, plus in-repo digs and a build-time Letterboxd snapshot. Hosted on Cloudflare Pages. Live listening and geo sit on same-origin Workers.
 
 ## what's on it
 
-- **home** — a quiet front door: one featured piece of writing and a short list of recent work.
-- **writing** (`/blog/`) — journal and making on one reverse-chronological timeline. each kind also has its own section page (`/journal/`, `/making/`):
-  - *journal* — reflective posts, usually weighing a tradeoff
-  - *making* — building-in-public notes on projects, tools, and stack choices
-- **topic paths** (`/topics/<topic>/`) — durable routes connecting journal and making by idea.
-- **listening** — recent plays pulled from Last.fm at build time and refreshed live between deploys.
-- **digs** (`/digs/`) — weekly music picks, authored in the repo. favorite digs also show up on **grok says…** (`/grok/`).
-- **movies** (`/movies/`) — the last 25 Letterboxd watches, fetched from the diary RSS at build time.
-- **search** — client-side filter over a static index of journal and making.
-- **X** — `@mattdoes` in the topbar links to [x.com/mattdoes](https://x.com/mattdoes). Instagram and the other profiles stay in the footer. There is no posts page and no thoughts page.
-- **about** — who I am, what I work on.
-- **colophon** — how the whole thing fits together.
+- **home** — name, a short bio, and shelves for listening, digs, movies, and grok says.
+- **listening** (`/listening/`) — recent plays from Last.fm, baked at build time and refreshed live.
+- **digs** (`/digs/`) — weekly music picks in `content/digs/`. Favorites also show on **grok says…** (`/grok/`), with anything else in `content/recommendations.json`.
+- **movies** (`/movies/`) — the last 25 Letterboxd watches, from the diary RSS at build time.
+- **search** — client-side filter over a static index.
+- **about** and **colophon** — from the vault note with `publish: about`, and a generated colophon.
+- **X** — `@mattdoes` in the topbar links to [x.com/mattdoes](https://x.com/mattdoes).
+
+Journal, making, and thoughts notes are still accepted so an older vault builds. They are not published.
 
 ## how it's built
 
-static HTML generated from an Obsidian vault (`mattdoes-vault`, private repo). a pre-build script (`scripts/pages-prebuild.sh`) clones the vault into `./vault/` with a fine-grained PAT. every page is a React component rendered to static HTML at build time — no CMS, and no client-side framework beyond a small React island for the timeline controls. hosted on Cloudflare Pages.
+`scripts/pages-prebuild.sh` clones the vault into `./vault/` on Cloudflare Pages. `build.js` reads that vault, fetches listening data (disk-cached under `.cache/`), and writes `dist/`. Pages are React components rendered to static HTML (`design-system/`). The browser gets plain HTML plus small scripts. `/listening/` rows are rendered by `templates/rows.js` so live updates can swap the same markup.
 
-how to add a digs week, or anything else on grok says…, is in [`docs/recommendations.md`](docs/recommendations.md).
+Three Cloudflare Workers, same-origin under `/api/`:
 
-the generator, in three parts:
+- **`mattdoes-listening`** — `/api/listening/now` and `/api/listening/recent`. A Durable Object polls Last.fm and writes KV. The request path only reads KV.
+- **`mattdoes-geo`** — reverse-geocodes a visitor's city only if they opt in. The default map is `static/home.geojson`.
+- **`mattdoes-csp-report`** — collects CSP reports.
 
-- **`build.js`** — the entrypoint. reads the vault, fetches Last.fm listening data (disk-cached under `.cache/`), and hands both to the modules below.
-- **`lib/intake.js`** — vault notes → content model. frontmatter parsing (`yaml`) and validation, sorting, the slug index. pure: same notes in, same model out. `publish: thoughts` is still accepted so an older vault builds; those notes are not a public section.
-- **`lib/emit/`** — content model → `dist/`. markdown via `marked` (shiki for code highlighting, emitted as build-time CSS classes via `lib/shiki-csp.js` so `style-src` stays strict), the inline `<head>` scripts (importmap + speculation rules) admitted under the strict CSP by a per-build `sha256` (`injectInlineScriptCsp`) so `script-src` needs no `'unsafe-inline'`, wikilink + embed resolution, pages rendered by the React design system (`design-system/`), editorial-home/notebook/topic projections, a static search index (`search-index.json`, queried by `static/search.js`), build-time Open Graph card PNGs (`lib/og-image.js`, rasterized with `sharp`, under `/og/`), CSS through `lightningcss`, JS through `terser`, content-hashed assets, RSS + sitemap.
-
-the presentation layer is a React + TypeScript module library in `design-system/` (`@mattdoes/ds`). every public page (home, writing archive, Topic paths, listings, article, about, colophon) renders there to a static HTML string via `renderToStaticMarkup` — the shipped pages are plain static HTML. the one runtime-React exception is the filter/density island on exhaustive archive timelines; the editorial homepage, Notebook, and Topic paths need no client rendering. the same library is the design source synced to Claude Design (claude.ai/design) for visual editing. `design-system/` builds first (`npm run build:ssg`, which emits both the render bundle and client island, wired in as the `prebuild` step), and its deps install via `postinstall`.
-
-three thin Cloudflare Workers, all same-origin under `/api/`; the site's CSP stays at `connect-src 'self'`. two serve the live bits:
-
-- **`mattdoes-listening`** — powers the topbar's now-playing pill and the live track list on `/listening/`. a single-writer Durable Object (`ListeningPoller`) is the only thing that calls Last.fm: a self-rescheduling ~25s alarm derives both payloads from one `user.getrecenttracks` call and writes them to KV, and a cron watchdog re-arms it if it stalls. the request path is a pure KV reader — it never calls Last.fm and never blocks, so upstream volume stays constant whatever the traffic. both the Worker and the build decode through `lib/lastfm.js`, the same pure codec.
-- **`mattdoes-geo`** — reverse-geocodes a visitor's city against Nominatim *only if* they opt in via the tweaks panel. Default page render uses `static/home.geojson` (Houston), baked once with `npm run bake-geo`. KV-cached for 7 days per metro.
-
-and one is a passive sink:
-
-- **`mattdoes-csp-report`** — collects the `report-uri` POSTs from the Report-Only CSP in `static/_headers`, so a tightened directive (most recently `style-src 'self'`) can be validated against real traffic before it's enforced.
-
-all three Workers share their response machinery — JSON + CORS envelope, preflight, error responses with edge-TTL policy, fail-open KV reads — from `workers/lib/transport.js`. caching policy (TTLs, cache-control strings) stays in each Worker.
-
-media flows through R2: `scripts/optimize-media.js` produces `.webp` variants from `vault/attachments/`, `scripts/sync-media.js` PUTs originals + variants to the `mattdoes-media` bucket, and the build emits `<picture>` tags pointed at `media.mattdoes.online`. fonts are self-hosted (JetBrains Mono). contact is a plain `mailto:` to a Fastmail address. no tracker, no analytics, no third-party connect.
+They share `workers/lib/transport.js`. Editing that file means redeploying all three.
 
 ## running it
 
@@ -51,26 +33,25 @@ npm install
 npm run build
 ```
 
-output lands in `dist/`. serve it however. without `vault/` populated the build is empty but doesn't error.
-
-other useful scripts:
+Output lands in `dist/`. Without `vault/` the build is empty and does not error.
 
 ```
+npm test
 npm run lint             # html-validate against dist/**/*.html
 npm run audit            # npm audit --audit-level=moderate
-npm run bake-geo         # re-bake static/home.geojson from siteConfig.geo.home
-npm run optimize-media   # generate .webp variants under .cache/media-build/
-npm run sync-media       # push originals + variants to R2 (needs CF token)
+npm run bake-geo         # re-bake static/home.geojson
+npm run optimize-media   # .webp variants under .cache/media-build/
+npm run sync-media       # push originals + variants to R2 (needs a CF token)
 ```
 
-CI (`.github/workflows/build.yml`) runs the audit job before the build job on every push and PR. Cloudflare Pages deploys independently from a successful GitHub push, so a red CI blocks PR merge but never blocks production. Dependency PRs come in weekly via Dependabot (`.github/dependabot.yml`), grouped minor + patch per ecosystem so most weeks are one PR per package root.
+CI (`.github/workflows/build.yml`) audits, builds the fixture vault, lints HTML, and runs tests. Cloudflare Pages deploys from a successful GitHub push on its own.
 
-workers live under `workers/` and deploy on their own schedule:
+## workers
+
+KV bindings, routes, and secret names live in each `wrangler.toml`. From the repo root:
 
 ```
-cd workers/listening  && npx wrangler deploy
-cd workers/geo        && npx wrangler deploy
-cd workers/csp-report && npx wrangler deploy
+npm run deploy:workers
 ```
 
-shared code under `workers/lib/` is bundled into every Worker that imports it — editing it means redeploying all three. `npm run deploy:workers` from the repo root does that in one go. tooling is shared too: one `workers/package.json` holds the `wrangler` devDep for all three (`npm --prefix workers install` once; `npx` resolves it from any Worker directory). each Worker has its own README covering KV setup, secrets, and refresh policy.
+Listening secrets are `LASTFM_USERNAME` and `LASTFM_API_KEY` (`npx wrangler secret put`, run from `workers/listening`).

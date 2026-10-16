@@ -62,13 +62,13 @@ jobs:
 
       # `npm ci` triggers the root `postinstall`, which installs the
       # design-system deps (react/react-dom + build toolchain) so the `prebuild`
-      # hook can build the SSG bundle that lib/emit/ imports (ADR 0003/0005).
+      # hook can build the SSG bundle that lib/emit/ imports.
       - name: Install
         run: npm ci
 
       # The site build transpiles the SSG bundle with esbuild (no type check),
       # so type-check the design system explicitly to enforce the render*/page
-      # prop contracts (ADR 0005).
+      # prop contracts.
       - name: Typecheck (design-system)
         run: npm --prefix design-system run typecheck
 

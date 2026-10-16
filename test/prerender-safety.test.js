@@ -1,5 +1,5 @@
-// Prerender safety — enhancement scripts defer network work until activation
-// (ADR 0007). Covers the moderate speculation-rules rollout.
+// Prerender safety — enhancement scripts defer network work until activation.
+// Covers the moderate speculation-rules rollout.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
