@@ -23,9 +23,9 @@ routes = [
 binding = "GEO_CACHE"
 id      = "4368817cf07143268bdd3bb62874562c"
 
-# Native per-IP gate for cache-miss abuse. The Worker still keeps a secondary
-# KV-backed 10-minute counter for distinct upstream lookups, but this binding
-# is the race-free first line of defense before Nominatim can be reached.
+# Enforced per-IP gate for cache-miss abuse. The Worker fails closed when
+# this binding is missing. A KV counter in the Worker is only a best-effort
+# wider window: its read-then-write can race, so it is not the burst control.
 [[ratelimits]]
 name         = "GEO_RL"
 namespace_id = "2002"

@@ -40,6 +40,15 @@
   CDN-Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
 
+# ── Same-origin SVG fallback ────────────────────────────────────────────
+# dist/img still ships (local /img when the media CDN is not in use).
+# An SVG navigated to as a document can run script. Serve these as
+# downloads so that navigation does not render them. <img> embeds are
+# a different context and keep working.
+/img/*.svg
+  Content-Disposition: attachment
+  X-Content-Type-Options: nosniff
+
 # ── Build-baked data ────────────────────────────────────────────────────
 # Day-long edge cache, 1h browser cache. Re-baked GeoJSON propagates with
 # the next deploy (Pages purges the edge); browsers revalidate hourly so
