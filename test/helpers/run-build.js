@@ -1,4 +1,4 @@
-// Test helper — runs build.js as a child process against a chosen vault.
+// Test helper — runs build.js as a child process against a chosen content dir.
 //
 // Every build targets its own temp dist/cache dir (DIST_DIR / CACHE_DIR env
 // overrides in build.js), so test files are hermetic and can run in parallel:
@@ -6,6 +6,8 @@
 // output call buildFixtureVault()/runBuild() and read via the returned
 // distDir. Negative-fixture tests use runBuild() directly and only inspect
 // the exit code + stderr.
+//
+// The canonical fixture is the in-repo content/ directory (content/about.md).
 //
 // Temp dirs are left behind for post-mortem debugging; the OS cleans tmpdir.
 
@@ -17,7 +19,7 @@ import fs from 'node:fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = path.resolve(__dirname, '..', '..');
-export const FIXTURE_VAULT = path.join(REPO_ROOT, 'test', 'fixture-vault');
+export const FIXTURE_CONTENT = path.join(REPO_ROOT, 'content');
 
 /** Create a fresh temp directory. @param {string} [prefix] @returns {string} */
 export function makeTempDir(prefix = 'mattdoes-test-') {
@@ -42,7 +44,7 @@ export function seedLastfmCache(fixtureJson) {
  * Run `node build.js` as a subprocess.
  *
  * @param {object}  opts
- * @param {string}  opts.vaultDir   absolute path passed as VAULT_DIR
+ * @param {string}  opts.contentDir absolute path passed as CONTENT_DIR
  * @param {string} [opts.distDir]   output dir (default: fresh temp dir)
  * @param {string} [opts.cacheDir]  Last.fm cache dir (default: fresh temp
  *                                  dir, so builds never see the repo .cache)
@@ -53,7 +55,7 @@ export function seedLastfmCache(fixtureJson) {
  *             distDir: string, cacheDir: string }}
  */
 export function runBuild({
-  vaultDir,
+  contentDir = FIXTURE_CONTENT,
   distDir = makeTempDir('mattdoes-dist-'),
   cacheDir = makeTempDir('mattdoes-cache-'),
   siteUrl = 'https://mattdoes.online',
@@ -64,7 +66,7 @@ export function runBuild({
     cwd: REPO_ROOT,
     env: {
       ...process.env,
-      VAULT_DIR: vaultDir,
+      CONTENT_DIR: contentDir,
       DIST_DIR: distDir,
       CACHE_DIR: cacheDir,
       SITE_URL: siteUrl,
@@ -89,17 +91,18 @@ export function runBuild({
 }
 
 /**
- * Build the canonical happy-path fixture vault. Throws if the build fails so
- * a broken build surfaces as a test error rather than silently empty output.
+ * Build the in-repo content fixture (content/about.md and the rest of
+ * content/). Throws if the build fails so a broken build surfaces as a
+ * test error rather than silently empty output.
  *
- * @param {Omit<Parameters<typeof runBuild>[0], 'vaultDir'>} [opts]
+ * @param {Omit<Parameters<typeof runBuild>[0], 'contentDir'>} [opts]
  * @returns {ReturnType<typeof runBuild>}
  */
 export function buildFixtureVault(opts = {}) {
-  const res = runBuild({ vaultDir: FIXTURE_VAULT, ...opts });
+  const res = runBuild({ contentDir: FIXTURE_CONTENT, ...opts });
   if (res.status !== 0) {
     throw new Error(
-      `fixture-vault build failed (exit ${res.status}):\n${res.stderr || res.stdout}`,
+      `content build failed (exit ${res.status}):\n${res.stderr || res.stdout}`,
     );
   }
   return res;

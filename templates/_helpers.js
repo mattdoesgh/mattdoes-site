@@ -45,7 +45,7 @@ export function formatScrobbleCount(n) {
 /**
  * Allowlist URL schemes for href attributes. Returns `'#'` for anything that
  * isn't http(s), mailto, tel, an anchor, or a same-origin path — so a
- * `javascript:`/`data:`/`vbscript:` URL slipping into vault content (or
+ * `javascript:`/`data:`/`vbscript:` URL slipping into a note (or
  * returned by an upstream API like Last.fm) can't become a click-to-XSS.
  * Use this to wrap any URL that originates outside the build pipeline
  * before interpolating it into an `href` attribute.

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // scripts/sync-media.js
 //
-// Pushes vault/attachments/ (originals) and .cache/media-build/ (optimized
+// Pushes content/attachments/ (originals) and .cache/media-build/ (optimized
 // variants) into the R2 bucket `mattdoes-media`, which is served at
 // https://media.mattdoes.online.
 //
@@ -25,8 +25,8 @@ import { resolveWranglerBin } from './wrangler-bin.js';
 
 const __dirname  = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT  = path.resolve(__dirname, '..');
-const VAULT_DIR  = process.env.VAULT_DIR || path.resolve(REPO_ROOT, 'vault');
-const ATTACH_DIR = path.join(VAULT_DIR, 'attachments');
+const CONTENT_DIR = process.env.CONTENT_DIR || path.resolve(REPO_ROOT, 'content');
+const ATTACH_DIR  = path.join(CONTENT_DIR, 'attachments');
 const BUILD_DIR  = path.resolve(REPO_ROOT, '.cache', 'media-build');
 const MANIFEST   = path.resolve(REPO_ROOT, '.cache', 'media-manifest.json');
 const BUCKET     = process.env.MEDIA_BUCKET || 'mattdoes-media';

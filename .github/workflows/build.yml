@@ -54,8 +54,7 @@ jobs:
     steps:
       - name: Checkout site
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        # Vault is private and cloned at deploy time on Cloudflare Pages.
-        # CI builds against test/fixture-vault instead — no VAULT_TOKEN needed here.
+        # Notes live in content/. The build does not clone a vault.
 
       - name: Set up Node
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -75,9 +74,8 @@ jobs:
       - name: Typecheck (design-system)
         run: npm --prefix design-system run typecheck
 
-      - name: Build against fixture vault
+      - name: Build
         env:
-          VAULT_DIR: ${{ github.workspace }}/test/fixture-vault
           SITE_URL: https://mattdoes.online
           # CI has no Last.fm creds and no cache; stay offline so the build
           # never depends on the live Worker (lib/listening.js). The static
@@ -107,8 +105,8 @@ jobs:
   # validation, URL output safety, Atom feed standards, structural
   # accessibility via axe/jsdom, token-level contrast, Worker robustness,
   # privacy storage, progressive enhancement, and W3C/lint coverage).
-  # `npm test` is self-contained — its `pretest` step builds the fixture
-  # vault, and build-dependent tests rebuild in their own before() hooks.
+  # `npm test` is self-contained — its `pretest` step builds the in-repo
+  # content, and build-dependent tests rebuild in their own before() hooks.
   test:
     name: regression tests
     runs-on: ubuntu-latest

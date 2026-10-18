@@ -1,29 +1,29 @@
 // Audit backlog: "Build input validation — Invalid and duplicate
 // slug/frontmatter negative fixtures". Covers audit finding #2.
 //
-// Each NEGATIVE fixture under test/fixtures/ is a tiny standalone vault that
-// trips exactly one Intake guard. Validation now lives behind the Intake
-// interface (lib/intake.js), so these tests call readVault + intake directly
-// — no subprocess, no Shiki startup — and assert the thrown message names
-// the offending note (so an author can find it).
+// Each NEGATIVE fixture under test/fixtures/ is a tiny standalone content
+// directory that trips exactly one Intake guard. Validation now lives behind
+// the Intake interface (lib/intake.js), so these tests call readNotes +
+// intake directly — no subprocess, no Shiki startup — and assert the thrown
+// message names the offending note (so an author can find it).
 //
 // The CLI contract (non-zero exit + the error on stderr) is still the
 // author-facing surface of `npm run build`, so ONE subprocess smoke test per
-// outcome survives: a failing vault exits non-zero, and the canonical
-// fixture-vault builds clean.
+// outcome survives: a failing content dir exits non-zero, and the in-repo
+// content/ directory builds clean.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
-import { readVault, intake } from '../lib/intake.js';
+import { readNotes, intake } from '../lib/intake.js';
 import { runBuild, buildFixtureVault, REPO_ROOT } from './helpers/run-build.js';
 
 const fixturePath = (name) => path.join(REPO_ROOT, 'test', 'fixtures', name);
 
-/** Run intake over a fixture vault and return the thrown message. */
+/** Run intake over a fixture directory and return the thrown message. */
 function intakeError(dir) {
   try {
-    intake(readVault(fixturePath(dir)));
+    intake(readNotes(fixturePath(dir)));
   } catch (err) {
     return String(err.message);
   }
@@ -70,14 +70,14 @@ test('duplicate-about names BOTH offending notes', () => {
 // deeply-equal Content model; a diff here means something non-deterministic
 // (a Date.now(), an fs read, iteration-order dependence) leaked in.
 test('intake is deterministic: same records in, same model out', () => {
-  const records = readVault(path.join(REPO_ROOT, 'test', 'fixture-vault'));
+  const records = readNotes(path.join(REPO_ROOT, 'content'));
   assert.deepStrictEqual(intake(records), intake(records));
 });
 
 // ── CLI smoke tests (the subprocess surface authors actually see) ────────
 
-test('a failing vault makes the CLI exit non-zero and print the error', () => {
-  const res = runBuild({ vaultDir: fixturePath('slug-traversal') });
+test('a failing content directory makes the CLI exit non-zero and print the error', () => {
+  const res = runBuild({ contentDir: fixturePath('slug-traversal') });
   assert.notEqual(res.status, 0,
     `expected a non-zero exit, got ${res.status}`);
   const combined = `${res.stdout}\n${res.stderr}`;
@@ -86,7 +86,7 @@ test('a failing vault makes the CLI exit non-zero and print the error', () => {
     `CLI error must name the offending note.\nGot:\n${combined}`);
 });
 
-test('the canonical fixture-vault still builds cleanly (exit 0)', () => {
+test('the in-repo content directory still builds cleanly (exit 0)', () => {
   // buildFixtureVault throws on any non-zero exit.
   const res = buildFixtureVault();
   assert.equal(res.status, 0);

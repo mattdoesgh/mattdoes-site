@@ -29,7 +29,7 @@ test('about keeps the authored page first and moves profiles after it', () => {
   assert.equal(hasRail(about), false);
   assert.equal(about.querySelector('h1')?.textContent.trim(), 'about');
   assert.equal(about.querySelector('.post-head .lede'), null,
-    'the vault summary must not duplicate the authored opening');
+    'the summary must not duplicate the authored opening');
   assert.ok(article?.querySelector(':scope > .post-body + .about-links'),
     'contact and profile links follow the authored About content');
 });

@@ -18,7 +18,7 @@ export type DateFormat = 'iso' | 'long' | 'month' | 'day' | 'time';
 /**
  * Allowlist URL schemes for href attributes. Returns `'#'` for anything that
  * isn't http(s), mailto, tel, an anchor, or a same-origin path — so a
- * `javascript:`/`data:`/`vbscript:` URL slipping in from vault content (or an
+ * `javascript:`/`data:`/`vbscript:` URL slipping in from a note (or an
  * upstream API like Last.fm) can't become a click-to-XSS.
  */
 export function safeUrl(url: unknown): string {

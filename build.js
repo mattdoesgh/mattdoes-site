@@ -2,14 +2,15 @@
 //
 // Wires the pipeline to the real filesystem and environment:
 //
-//   readVault(VAULT_DIR)  →  intake(records)  →  emit(model, opts)
-//     (lib/intake.js — Vault → Content model)     (lib/emit/ — model → dist/)
+//   readNotes(CONTENT_DIR)  →  intake(records)  →  emit(model, opts)
+//     (lib/intake.js — notes → Content model)      (lib/emit/ — model → dist/)
 //
 // plus the Listening snapshot (lib/listening.js), fetched here and passed
 // into Emit as data.
 //
 // Usage:   npm run build
-// Config:  VAULT_DIR env var overrides the default vault path.
+// Config:  CONTENT_DIR env var overrides the default notes directory
+//          (content/, which holds content/about.md).
 //          DIST_DIR env var overrides the output directory (default <repo>/dist;
 //          tests build into per-test temp dirs).
 //          CACHE_DIR env var overrides the Last.fm cache directory
@@ -19,8 +20,8 @@
 //          fixture builds and CI so they never reach out (see lib/listening.js).
 //          LETTERBOXD_OFFLINE=1 skips the Letterboxd RSS fetch the same way
 //          (see lib/watches.js).
-//          Digs and other recommendations are read from
-//          content/ in the repo — they are not vault notes.
+//          Digs and other recommendations are JSON in the same content
+//          directory. The note walk reads markdown only.
 //          MEDIA_BASE env var overrides where ![[image.jpg]] URLs point
 //          (defaults to '/img'; set to 'https://media.mattdoes.online' for the R2 bucket).
 //          SITE_URL env var overrides the canonical origin.
@@ -28,7 +29,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { readVault, intake } from './lib/intake.js';
+import { readNotes, intake } from './lib/intake.js';
 import { emit } from './lib/emit/index.js';
 import { fetchListeningSnapshot } from './lib/listening.js';
 import { fetchWatches } from './lib/watches.js';
@@ -37,7 +38,7 @@ import { loadRecommendations } from './lib/recommendations.js';
 import { siteConfig } from './site.config.js';
 
 const __dirname  = path.dirname(fileURLToPath(import.meta.url));
-const VAULT_DIR  = process.env.VAULT_DIR || path.resolve(__dirname, 'vault');
+const CONTENT_DIR = process.env.CONTENT_DIR || path.resolve(__dirname, 'content');
 const DIST_DIR   = path.resolve(process.env.DIST_DIR || path.join(__dirname, 'dist'));
 const CACHE_DIR  = path.resolve(process.env.CACHE_DIR || path.join(__dirname, '.cache'));
 const MEDIA_BASE = process.env.MEDIA_BASE || '/img';
@@ -48,7 +49,7 @@ const SITE_URL   = process.env.SITE_URL || siteConfig.url || 'https://mattdoes.o
 
 const t0 = Date.now();
 
-const model = intake(readVault(VAULT_DIR));
+const model = intake(readNotes(CONTENT_DIR));
 
 const { tracks: lastfmTracks, playcount: scrobbleTotal } =
   await fetchListeningSnapshot({ siteUrl: SITE_URL, cacheDir: CACHE_DIR });
@@ -59,7 +60,7 @@ const recommendations = loadRecommendations(path.join(__dirname, 'content', 'rec
 
 const { distSize } = await emit(model, {
   distDir: DIST_DIR,
-  vaultDir: VAULT_DIR,
+  contentDir: CONTENT_DIR,
   mediaBase: MEDIA_BASE,
   siteUrl: SITE_URL,
   lastfmTracks,
@@ -72,6 +73,6 @@ const { distSize } = await emit(model, {
 });
 
 console.log(`✓ built in ${((Date.now() - t0) / 1000).toFixed(2)}s`);
-console.log(`  ${model.notes.length} notes read → ${model.articles.length} articles`);
+console.log(`  ${model.notes.length} notes read → ${model.about.length} about`);
 console.log(`  ${digs.length} dig weeks (${favoritePicks(digs).length} favorites) · ${watches.length} recent watches · ${recommendations.length} other picks`);
 console.log(`  dist: ${distSize}  ·  ${DIST_DIR}`);

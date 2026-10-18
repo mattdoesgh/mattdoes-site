@@ -2,7 +2,7 @@
 // image/media rendering: alt-text handling, decorative embeds, eager-loading
 // the first (likely-LCP) image, and the missing-alt build warning.
 //
-// Builds a media fixture vault and asserts on the generated markup.
+// Builds a media fixture directory and asserts on the generated markup.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -10,7 +10,7 @@ import path from 'node:path';
 import { JSDOM } from 'jsdom';
 import { runBuild, readDist, REPO_ROOT } from './helpers/run-build.js';
 
-const MEDIA_VAULT = path.join(REPO_ROOT, 'test', 'fixtures', 'media');
+const MEDIA_DIR = path.join(REPO_ROOT, 'test', 'fixtures', 'media');
 const MEDIA_MANIFEST = path.join(REPO_ROOT, 'test', 'fixtures', 'media', 'media-manifest.json');
 
 let buildResult;
@@ -18,7 +18,7 @@ let mediaDoc;
 let mediaHtml;
 
 test.before(() => {
-  buildResult = runBuild({ vaultDir: MEDIA_VAULT, mediaManifest: MEDIA_MANIFEST });
+  buildResult = runBuild({ contentDir: MEDIA_DIR, mediaManifest: MEDIA_MANIFEST });
   if (buildResult.status !== 0) {
     throw new Error(`media fixture build failed:\n${buildResult.stderr}`);
   }

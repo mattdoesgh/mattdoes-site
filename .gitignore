@@ -4,9 +4,6 @@ dist/
 dist-ssg/
 dist-client/
 design-system/.preview/
-# Private vault content — cloned at build time by scripts/pages-prebuild.sh,
-# or cloned manually for local dev. Never committed to this repo.
-vault/
 .DS_Store
 .env
 .env.local

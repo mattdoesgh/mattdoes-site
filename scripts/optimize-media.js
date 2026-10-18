@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 // scripts/optimize-media.js
 //
-// Walks vault/attachments/ and produces derived assets (currently: .webp
+// Walks content/attachments/ and produces derived assets (currently: .webp
 // siblings for raster images) under .cache/media-build/. Idempotent:
 // re-running only regenerates variants whose source has changed, keyed by
 // sha256 in .cache/media-manifest.json.
 //
 // Designed to be safe to run with or without sharp installed and with or
-// without vault/attachments/ present. Missing either → no-op with a note.
+// without content/attachments/ present. Missing either → no-op with a note.
 //
-// Used by scripts/pages-prebuild.sh in Pages builds, and invokable locally
-// via `npm run optimize-media`.
+// Invokable locally via `npm run optimize-media`. The Pages prebuild does
+// not run this: the published notes do not embed attachments.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,8 +19,8 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
-const VAULT_DIR = process.env.VAULT_DIR || path.resolve(REPO_ROOT, 'vault');
-const ATTACH_DIR = path.join(VAULT_DIR, 'attachments');
+const CONTENT_DIR = process.env.CONTENT_DIR || path.resolve(REPO_ROOT, 'content');
+const ATTACH_DIR = path.join(CONTENT_DIR, 'attachments');
 const BUILD_DIR = path.resolve(REPO_ROOT, '.cache', 'media-build');
 const MANIFEST  = path.resolve(REPO_ROOT, '.cache', 'media-manifest.json');
 
