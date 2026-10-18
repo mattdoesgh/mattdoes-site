@@ -64,10 +64,11 @@ test('deploy:workers runs the lockfile binary', () => {
   assert.match(src, /listening/);
   assert.match(src, /geo/);
   assert.match(src, /csp-report/);
+  assert.match(src, /rebuild/);
   assert.doesNotMatch(src, /npx/);
   assert.doesNotMatch(rootPkg.scripts['deploy:workers'], /npx/);
   assert.doesNotMatch(workersPkg, /npx/);
-  for (const name of ['listening', 'geo', 'csp-report']) {
+  for (const name of ['listening', 'geo', 'csp-report', 'rebuild']) {
     const toml = fs.readFileSync(new URL(`../workers/${name}/wrangler.toml`, import.meta.url), 'utf8');
     assert.doesNotMatch(toml, /npx wrangler/);
   }

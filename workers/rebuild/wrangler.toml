@@ -1,0 +1,34 @@
+name = "mattdoes-rebuild"
+main = "src/index.js"
+compatibility_date = "2026-10-18"
+workers_dev = false
+
+# Cron only — no routes. Workers-on-Routes would steal a path from Pages,
+# and this Worker has nothing to serve. fetch() returns 404 if it is ever
+# reached. Every six hours the scheduled handler POSTs the Pages deploy
+# hook so the static build refetches Letterboxd (lib/watches.js).
+[triggers]
+crons = ["0 */6 * * *"]
+
+# DEPLOY_HOOK is the Pages deploy hook URL. Set it outside this repo.
+# The value is a secret and must never be committed — do not put it in
+# [vars], .dev.vars, or a comment.
+#
+# From this directory, after `npm ci --prefix workers`, using the wrangler
+# pinned in workers/package-lock.json:
+#   node ../node_modules/wrangler/bin/wrangler.js secret put DEPLOY_HOOK
+# Paste the hook URL when prompted. Then, from the repo root:
+#   npm run deploy:workers
+[secrets]
+required = ["DEPLOY_HOOK"]
+
+[observability]
+enabled = true
+
+  [observability.logs]
+  enabled = true
+  head_sampling_rate = 1
+
+  [observability.traces]
+  enabled = true
+  head_sampling_rate = 1

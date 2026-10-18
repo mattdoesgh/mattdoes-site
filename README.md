@@ -10,7 +10,7 @@ Source for [mattdoes.online](https://mattdoes.online). Static HTML from a privat
 - **movies** (`/movies/`) — the last 25 Letterboxd watches, from the diary RSS at build time.
 - **search** — client-side filter over a static index.
 - **about** and **colophon** — from the vault note with `publish: about`, and a generated colophon.
-- **X** — `@mattdoes` in the topbar links to [x.com/mattdoes](https://x.com/mattdoes).
+- **X** — `@mattdoes` in the topbar links to [x.com/mattdoes](https://x.com/mattdoes). Letterboxd sits beside it, the same chip, to [letterboxd.com/mattdoes](https://letterboxd.com/mattdoes).
 
 Journal, making, and thoughts notes are still accepted so an older vault builds. They are not published.
 
@@ -25,6 +25,8 @@ Three Cloudflare Workers, same-origin under `/api/`:
 - **`mattdoes-csp-report`** — collects CSP reports.
 
 They share `workers/lib/transport.js`. Editing that file means redeploying all three.
+
+`mattdoes-rebuild` has no route. Every six hours it POSTs the Pages deploy hook so the Letterboxd snapshot baked by `lib/watches.js` stays current. The hook URL is the `DEPLOY_HOOK` secret, set outside the repo.
 
 ## running it
 

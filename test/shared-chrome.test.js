@@ -26,12 +26,19 @@ test('shared chrome keeps reading navigation compact and moves secondary links t
   );
   assert.equal(primary.querySelector('a[href="/posts/"], a[href="/thoughts/"]'), null);
 
-  const social = d.querySelector('nav[aria-label="social"] a.x-link.gb');
-  assert.ok(social, 'X must be a glass chip in its own topbar landmark');
-  assert.equal(social.getAttribute('href'), 'https://x.com/mattdoes');
-  assert.equal(social.getAttribute('rel'), 'noopener noreferrer');
-  assert.equal(social.querySelector('.x-link__full')?.textContent, '@mattdoes');
-  assert.equal(social.querySelector('.x-link__short')?.textContent.replace(/\s+/g, ' ').trim(), 'X, @mattdoes');
+  const social = [...d.querySelectorAll('nav[aria-label="social"] a.x-link.gb')];
+  assert.deepEqual(
+    social.map(link => [link.getAttribute('href'), link.getAttribute('rel')]),
+    [
+      ['https://letterboxd.com/mattdoes', 'me noopener'],
+      ['https://x.com/mattdoes', 'noopener noreferrer'],
+    ],
+    'Letterboxd and X must be glass chips in the social landmark',
+  );
+  assert.equal(social[0].querySelector('.x-link__full')?.textContent, 'letterboxd');
+  assert.equal(social[0].querySelector('.x-link__short')?.textContent.replace(/\s+/g, ' ').trim(), 'lb, letterboxd');
+  assert.equal(social[1].querySelector('.x-link__full')?.textContent, '@mattdoes');
+  assert.equal(social[1].querySelector('.x-link__short')?.textContent.replace(/\s+/g, ' ').trim(), 'X, @mattdoes');
 
   const search = d.querySelector('.topbar a.search-control[href="/search/"]');
   assert.ok(search, 'search must remain available as a compact topbar control');
@@ -44,6 +51,10 @@ test('shared chrome keeps reading navigation compact and moves secondary links t
   assert.ok(summary.querySelector('.menu-chip.gb'), 'the compact menu control is a glass chip');
   assert.equal(summary.querySelector('.visually-hidden')?.textContent.trim(), 'Site menu');
   assert.ok(menu.querySelector('nav[aria-label="site menu"] a[href="/about/"]'));
+  const menuLb = menu.querySelector('nav[aria-label="site menu"] a[href="https://letterboxd.com/mattdoes"]');
+  assert.equal(menuLb?.textContent.trim(), 'letterboxd');
+  assert.equal(menuLb?.getAttribute('rel'), 'me noopener');
+  assert.equal(menuLb?.classList.contains('gb'), false);
   const menuX = menu.querySelector('nav[aria-label="site menu"] a[href="https://x.com/mattdoes"]');
   assert.equal(menuX?.textContent.trim(), '@mattdoes');
   assert.equal(menuX?.getAttribute('rel'), 'noopener noreferrer');
