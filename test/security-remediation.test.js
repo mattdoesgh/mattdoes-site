@@ -35,7 +35,7 @@ date: 2026-01-01
 `,
   });
 
-  const res = runBuild({ vaultDir: vault });
+  const res = runBuild({ contentDir: vault });
   assert.equal(res.status, 0, `build failed:\n${res.stderr}`);
 
   const html = readDist(res.distDir, 'about/index.html');
@@ -70,19 +70,19 @@ hello
   fs.mkdirSync(attachDir, { recursive: true });
   fs.symlinkSync('/etc/passwd', path.join(attachDir, 'leak.txt'));
 
-  const res = runBuild({ vaultDir: vault });
+  const res = runBuild({ contentDir: vault });
   assert.notEqual(res.status, 0, 'build must fail when an attachment is a symlink');
   assert.match(`${res.stdout}\n${res.stderr}`,
-    /Refusing to (?:copy symlinked asset|read symlinked vault entry)/);
+    /Refusing to (?:copy symlinked asset|read symlinked note)/);
 });
 
-test('symlinked vault notes are rejected instead of read as content', () => {
+test('symlinked notes are rejected instead of read as content', () => {
   const vault = makeTempDir('mattdoes-sec-vault-');
   const notesDir = path.join(vault, 'notes');
   fs.mkdirSync(notesDir, { recursive: true });
   fs.symlinkSync('/etc/passwd', path.join(notesDir, 'external.md'));
 
-  const res = runBuild({ vaultDir: vault });
+  const res = runBuild({ contentDir: vault });
   assert.notEqual(res.status, 0, 'build must fail when a note is a symlink');
-  assert.match(`${res.stdout}\n${res.stderr}`, /Refusing to read symlinked vault entry/);
+  assert.match(`${res.stdout}\n${res.stderr}`, /Refusing to read symlinked note/);
 });

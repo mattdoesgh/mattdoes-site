@@ -2,7 +2,7 @@
   "name": "mattdoes-site",
   "version": "0.1.0",
   "private": true,
-  "description": "mattdoes.online — Obsidian vault → static HTML",
+  "description": "mattdoes.online — in-repo notes → static HTML",
   "type": "module",
   "scripts": {
     "postinstall": "npm --prefix design-system ci --include=dev",
@@ -14,7 +14,7 @@
     "audit": "npm audit --audit-level=moderate",
     "check:assets": "node scripts/check-asset-budget.js",
     "scan:secrets": "npx --yes gitleaks detect --source . --verbose",
-    "pretest": "npm run build:ssg && NODE_ENV=production LISTENING_OFFLINE=1 LETTERBOXD_OFFLINE=1 VAULT_DIR=test/fixture-vault SITE_URL=https://mattdoes.online node build.js",
+    "pretest": "npm run build:ssg && NODE_ENV=production LISTENING_OFFLINE=1 LETTERBOXD_OFFLINE=1 SITE_URL=https://mattdoes.online node build.js",
     "test": "node --test \"test/**/*.test.js\"",
     "deploy:workers": "node scripts/deploy-workers.js",
     "bake-geo": "node scripts/bake-home-geojson.js",

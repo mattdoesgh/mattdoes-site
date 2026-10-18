@@ -31,7 +31,7 @@ import { spawnSync } from 'node:child_process';
 import {
   buildFixtureVault, readDist, REPO_ROOT,
 } from './helpers/run-build.js';
-// One fixture-vault build shared by the html-validate and sitemap tests.
+// One in-repo content build shared by the html-validate and sitemap tests.
 let fixtureDist;
 test.before(() => { ({ distDir: fixtureDist } = buildFixtureVault()); });
 

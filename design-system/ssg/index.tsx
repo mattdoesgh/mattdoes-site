@@ -125,7 +125,7 @@ export function renderColophon(
       title: 'colophon',
       url: '/colophon/',
       description:
-        'How mattdoes.online is put together — Obsidian vault, Node build, static HTML, and two thin Cloudflare Workers.',
+        'How mattdoes.online is put together — in-repo notes, Node build, static HTML, and Cloudflare Workers.',
     },
     <ColophonPage siteConfig={siteConfig} stats={stats} updated={updated} nowPlaying={nowPlaying} />,
     siteConfig,

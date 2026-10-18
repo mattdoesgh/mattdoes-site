@@ -4,11 +4,11 @@
 // Three layers:
 //   1. Unit tests of safeUrl()/esc() from templates/_helpers.js — the
 //      primitives every other layer relies on.
-//   2. A negative vault fixture with authored Markdown links carrying unsafe
+//   2. A negative content fixture with authored Markdown links carrying unsafe
 //      schemes / attribute-breaking text — built and asserted.
 //   3. A seeded Last.fm cache (own temp CACHE_DIR) carrying a javascript:
 //      URL, a quote-breaking URL, and a normal URL — built into the real
-//      fixture vault and asserted on the homepage + feed.
+//      content directory and asserted on the homepage.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -65,7 +65,7 @@ test('esc escapes every attribute-breaking character', () => {
 // ── 2. authored Markdown link fixture ───────────────────────────────────
 test('authored Markdown links with unsafe schemes are neutralized', () => {
   const res = runBuild({
-    vaultDir: path.join(REPO_ROOT, 'test', 'fixtures', 'url-safety'),
+    contentDir: path.join(REPO_ROOT, 'test', 'fixtures', 'url-safety'),
   });
   assert.equal(res.status, 0, `url-safety fixture build failed:\n${res.stderr}`);
 
