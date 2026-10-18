@@ -24,10 +24,22 @@
   # frame-src admits the two players /digs/ embeds (Apple Music, Bandcamp).
   # Both are lazy iframes — no third-party script or connect. Add a host here
   # only when lib/digs.js embedUrl() allows it too. See docs/recommendations.md.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'inline-speculation-rules'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; frame-src https://embed.music.apple.com https://bandcamp.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
+  #
+  # Declare each CSP header on this one rule only. Pages joins a header that
+  # appears on two matching rules with a comma, and browsers then enforce both
+  # policies. A path-specific rule (/, /*/, /*.html) must not repeat it.
+  #
+  # script-src 'self' admits the same-origin Email Obfuscation decoder
+  # (/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js). That
+  # path is Cloudflare's, not a Pages function or a Worker route.
+  # https://static.cloudflareinsights.com is the Pages Web Analytics beacon.
+  # connect-src allows that beacon to report to https://cloudflareinsights.com.
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com 'inline-speculation-rules'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self'; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; frame-ancestors 'self'; frame-src https://embed.music.apple.com https://bandcamp.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
   # Report-only twin of the enforced CSP — collects browser violations at the
   # same-origin /api/csp-report Worker before tightening style-src.
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'inline-speculation-rules'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; frame-src https://embed.music.apple.com https://bandcamp.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests; report-uri https://mattdoes.online/api/csp-report
+  # Keep its sources identical to the enforced policy (plus report-uri) so the
+  # beacon is not reported as a violation after it is allowed.
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com 'inline-speculation-rules'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self'; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; frame-ancestors 'self'; frame-src https://embed.music.apple.com https://bandcamp.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests; report-uri https://mattdoes.online/api/csp-report
 
 # ── Fonts ───────────────────────────────────────────────────────────────
 # Stable filenames, cached for a year. Hashed CSS and JS are not listed

@@ -24,8 +24,8 @@ test('global security headers include CSP, HSTS, and framing controls', () => {
   assert.ok(csp, '/* must set Content-Security-Policy');
   for (const token of [
     "default-src 'self'",
-    "script-src 'self' 'inline-speculation-rules'",
-    "connect-src 'self'",
+    "script-src 'self' https://static.cloudflareinsights.com 'inline-speculation-rules'",
+    "connect-src 'self' https://cloudflareinsights.com",
     "frame-src https://embed.music.apple.com https://bandcamp.com",
     "object-src 'none'",
     'upgrade-insecure-requests',
