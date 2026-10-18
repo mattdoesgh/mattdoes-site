@@ -55,8 +55,9 @@ export const siteConfig = {
   // External presence. Empty href = omitted from the rail.
   // External presence. Empty href = omitted from the about page.
   // Letterboxd, X, Instagram, and Last.fm are also the footer profile nav
-  // (design-system Footer DEFAULT_PROFILES). X is the topbar social link
-  // too (design-system Topbar X_PROFILE). Keep those hrefs in sync.
+  // (design-system Footer DEFAULT_PROFILES). Letterboxd and X are the
+  // topbar social chips too (Topbar LETTERBOXD_PROFILE and X_PROFILE).
+  // Keep those hrefs in sync.
   links: [
     { label: 'github',      href: 'https://github.com/mattdoesgh',                              meta: '/mattdoesgh' },
     { label: 'letterboxd',  href: 'https://letterboxd.com/mattdoes',                            meta: '/mattdoes'   },

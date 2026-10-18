@@ -12,11 +12,23 @@ export const DEFAULT_NAV: NavItem[] = [
   { id: 'about', href: '/about/', label: 'about' },
 ];
 
+/** Letterboxd profile. Same chip as X; the short mark keeps an accessible name. */
+export const LETTERBOXD_PROFILE = {
+  href: 'https://letterboxd.com/mattdoes',
+  label: 'letterboxd',
+  mark: 'lb',
+  rel: 'me noopener',
+} as const;
+
 /** Primary social link. External only — no on-site feed and no X API. */
 export const X_PROFILE = {
   href: 'https://x.com/mattdoes',
   label: '@mattdoes',
+  mark: 'X',
+  rel: 'noopener noreferrer',
 } as const;
+
+const SOCIAL = [LETTERBOXD_PROFILE, X_PROFILE] as const;
 
 /**
  * Kept as an empty export for package compatibility. Secondary destinations
@@ -70,16 +82,23 @@ function MenuLinks({ nav, active }: { nav: NavItem[]; active: string }) {
   });
 }
 
-function XLink({ compact = false }: { compact?: boolean }) {
+function SocialChip({
+  profile,
+  compact = false,
+}: {
+  profile: (typeof SOCIAL)[number];
+  compact?: boolean;
+}) {
   return (
-    <a className={compact ? undefined : 'x-link gb'} href={X_PROFILE.href} rel="noopener noreferrer">
+    <a className={compact ? undefined : 'x-link gb'} href={profile.href} rel={profile.rel}>
       {compact ? (
-        X_PROFILE.label
+        profile.label
       ) : (
         <>
-          <span className="x-link__full">{X_PROFILE.label}</span>
+          <span className="x-link__full">{profile.label}</span>
           <span className="x-link__short">
-            X<span className="visually-hidden">, {X_PROFILE.label}</span>
+            {profile.mark}
+            <span className="visually-hidden">, {profile.label}</span>
           </span>
         </>
       )}
@@ -87,7 +106,7 @@ function XLink({ compact = false }: { compact?: boolean }) {
   );
 }
 
-/** The fixed top bar: brand, reading navigation, the X link, search, and a quiet status slot. */
+/** The fixed top bar: brand, reading navigation, social chips, search, and a quiet status slot. */
 export function Topbar({
   siteTitle = 'mattdoes.online',
   nav = DEFAULT_NAV,
@@ -106,7 +125,7 @@ export function Topbar({
           <ChipLinks nav={nav} active={active} />
         </nav>
         <nav className="social-nav" aria-label="social">
-          <XLink />
+          {SOCIAL.map((profile) => <SocialChip key={profile.href} profile={profile} />)}
         </nav>
         <details className="mobile-menu">
           <summary>
@@ -117,7 +136,7 @@ export function Topbar({
           </summary>
           <nav aria-label="site menu">
             <MenuLinks nav={nav} active={active} />
-            <XLink compact />
+            {SOCIAL.map((profile) => <SocialChip key={profile.href} profile={profile} compact />)}
           </nav>
         </details>
         <a

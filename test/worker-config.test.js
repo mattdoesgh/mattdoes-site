@@ -53,3 +53,18 @@ test('a worker that reads the query string uses a wildcard route', () => {
 test('geo lookup keeps the wildcard on the real pattern', () => {
   assert.deepEqual(patterns(toml('geo')), ['mattdoes.online/api/geo/lookup*']);
 });
+
+test('rebuild is a six-hour cron that expects the DEPLOY_HOOK secret', () => {
+  const cfg = toml('rebuild');
+  assert.match(cfg, /crons\s*=\s*\[\s*"0 \*\/6 \* \* \*"\s*\]/);
+  assert.match(cfg, /required\s*=\s*\[\s*"DEPLOY_HOOK"\s*\]/);
+  assert.match(cfg, /workers_dev\s*=\s*false/);
+  assert.equal(patterns(cfg).length, 0, 'rebuild publishes no route');
+  assert.doesNotMatch(cfg, /https?:\/\//, 'the deploy hook URL must not be committed');
+
+  const src = source('rebuild');
+  assert.match(src, /env\.DEPLOY_HOOK/);
+  assert.match(src, /method:\s*'POST'/);
+  assert.match(src, /status:\s*404/);
+  assert.doesNotMatch(src, /https?:\/\/[a-z0-9.-]+\./i, 'the deploy hook URL must not be committed');
+});
