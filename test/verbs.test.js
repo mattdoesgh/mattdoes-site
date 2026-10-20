@@ -87,6 +87,15 @@ test('home links keep matt does in a separate prefix', () => {
   }
 });
 
+test('the home prefix is clipped shut until hover', () => {
+  const css = fs.readFileSync(path.join(REPO_ROOT, 'static', 'station.css'), 'utf8');
+  const rule = css.slice(css.indexOf('.verb-prefix {'), css.indexOf('.verb-prefix > span'));
+  assert.match(rule, /width:\s*0/);
+  assert.match(rule, /overflow:\s*clip/);
+  assert.match(rule, /white-space:\s*nowrap/);
+  assert.match(css, /\.verb:hover \.verb-prefix,\s*\.verb:focus-visible \.verb-prefix \{\s*width:\s*4\.08em;\s*margin-right:\s*0\.24em;/);
+});
+
 test('the home kicker says matt does once and stays out of the accessible name', () => {
   const home = new JSDOM(readDist(distDir, 'index.html')).window.document;
   const kickers = [...home.querySelectorAll('.verb-kicker')];

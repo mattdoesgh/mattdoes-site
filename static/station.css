@@ -267,34 +267,40 @@ body[data-polarity="flip"] .verb-name {
 }
 
 .verb-prefix {
-  display: inline-block;
-  max-width: 0;
+  display: block;
+  flex: 0 0 auto;
+  width: 0;
+  margin-right: 0;
   min-width: 0;
-  overflow: hidden;
+  overflow: clip;
   white-space: nowrap;
-  vertical-align: baseline;
 }
 
-/* Anton's trailing space is trimmed, so the gap lives in padding.
-   The text node still ends with a normal space for the accessible name. */
+/* The inner span stays max-content so the clip hides it, instead of
+   squeezing the letters. The word space is margin on the prefix, so a
+   half-open clip never sits flush against the verb. The text node still
+   ends with a normal space for the accessible name. */
 .verb-prefix > span {
-  display: inline-block;
-  padding-right: 0.24em;
+  display: block;
+  width: max-content;
+  white-space: nowrap;
 }
 
 .verb-label {
+  flex: 0 0 auto;
   white-space: nowrap;
 }
 
-/* "matt does" is 4.04em in Anton, plus the 0.24em gap. */
+/* "matt does" is 4.04em in Anton. The margin is the word space. */
 @media (hover: hover) {
   .verb-prefix {
-    transition: max-width 180ms ease;
+    transition: width 180ms ease, margin-right 180ms ease;
   }
 
   .verb:hover .verb-prefix,
   .verb:focus-visible .verb-prefix {
-    max-width: 4.4em;
+    width: 4.08em;
+    margin-right: 0.24em;
   }
 }
 
