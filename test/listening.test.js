@@ -11,16 +11,16 @@ import {
 
 const fixtureCache = path.join(REPO_ROOT, 'test', 'fixtures', 'lastfm-cache', 'lastfm.json');
 
-test('a tracks-only cache still bakes the playcount into /listen/', () => {
+test('a tracks cache bakes names into /listening/', () => {
   const { distDir } = buildFixtureVault({ cacheDir: seedLastfmCache(fixtureCache) });
-  const html = readDist(distDir, 'listen/index.html');
-  assert.match(html, /id="scrobble-count">12,345<\/span>/,
-    'playcount from lastfm.json must appear in the listening stat');
+  const html = readDist(distDir, 'listening/index.html');
+  assert.match(html, /Poisoned Track/);
+  assert.match(html, /Last\.fm/);
+  assert.doesNotMatch(html, /scrobble-count/);
 });
 
-test('the editorial homepage does not present listening as an activity counter', () => {
+test('the homepage does not present a scrobble counter', () => {
   const { distDir } = buildFixtureVault({ cacheDir: seedLastfmCache(fixtureCache) });
   const html = readDist(distDir, 'index.html');
-  assert.doesNotMatch(html, /id="scrobble-count"/,
-    'scrobble counts belong to /listen/, not the front page');
+  assert.doesNotMatch(html, /scrobble-count/);
 });

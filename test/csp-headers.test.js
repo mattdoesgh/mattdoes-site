@@ -23,8 +23,8 @@ const EMAIL_DECODE = '/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.m
 
 const SAMPLE_PATHS = [
   '/',
-  '/watch/',
-  '/listen/',
+  '/watching/',
+  '/listening/',
   '/unshared/',
   '/frequency/',
   '/404.html',

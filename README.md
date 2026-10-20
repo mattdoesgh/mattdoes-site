@@ -4,17 +4,17 @@ Source for [mattdoes.online](https://mattdoes.online). Static HTML from a small 
 
 ## what's on it
 
-- **home** (`/`) — "matt does …", with watch, listen, and unshared as the menu.
-- **watch** (`/watch/`) — recent Letterboxd watches. Reviews are the witness statements. Posters are mirrored to `media.mattdoes.online` at build time.
-- **listen** (`/listen/`) — recent plays from the listening worker, baked at build time and refreshed live.
-- **unshared** (`/unshared/`) — the music project. A public mailbox is rendered only when `unsharedContact.email` is set.
-- **404** — in character, and it links the index of anomalies.
+- **home** (`/`) — the verb list. The letterboxd row also shows the newest film and its stars.
+- **watching** (`/watching/`) — recent Letterboxd watches. The page links Letterboxd. Posters are mirrored to `media.mattdoes.online` at build time.
+- **listening** (`/listening/`) — recent plays from the listening worker, baked at build time and refreshed live. The page links Last.fm.
+- **unshared** (`/unshared/`) — "Fun is unshared", plus its links. A public mailbox is rendered only when `unsharedContact.email` is set.
+- **404** — not found.
 
-`/frequency/` is a noindex page and is not in the menu or the sitemap. `/movies` redirects to `/watch`, `/listening` to `/listen`, and the retired sections redirect home.
+`/frequency/` is a noindex page and is not in the menu or the sitemap. This site does not keep legacy redirects.
 
 ## how it's built
 
-`site/verbs.ts` lists the verbs. `build.js` fetches listening data and the Letterboxd RSS, mirrors posters when `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are set, and writes `dist/`. A failed poster fetch or upload leaves the Evidence placeholder and does not fail the build.
+`site/verbs.ts` lists the verbs. The slug is the URL and the label is separate. `build.js` fetches listening data and the Letterboxd RSS, mirrors posters when `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are set, and writes `dist/`. A failed poster fetch or upload omits that poster and does not fail the build.
 
 `scripts/pages-prebuild.sh` does not clone anything. The Cloudflare Pages build command stays `bash scripts/pages-prebuild.sh && npm run build`.
 

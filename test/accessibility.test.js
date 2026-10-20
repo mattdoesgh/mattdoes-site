@@ -15,8 +15,8 @@ const AXE_SRC = fs.readFileSync(
 
 const SMOKE = [
   'index.html',
-  'watch/index.html',
-  'listen/index.html',
+  'watching/index.html',
+  'listening/index.html',
   'unshared/index.html',
   'frequency/index.html',
 ];
@@ -74,11 +74,12 @@ test('every page has a skip link, one main, and a description', () => {
   }
 });
 
-test('the active verb is marked and the secret is not in the anomaly index', () => {
-  const watch = doc('watch/index.html');
-  assert.equal(watch.querySelector('nav.verb-nav a[aria-current="page"]')?.getAttribute('href'), '/watch/');
-  for (const rel of ['index.html', 'watch/index.html', 'listen/index.html', 'unshared/index.html', '404.html']) {
-    const text = doc(rel).querySelector('#anomalies')?.textContent || '';
+test('the active verb is marked and the secret stays off the public pages', () => {
+  const watch = doc('watching/index.html');
+  assert.equal(watch.querySelector('nav.verb-nav a[aria-current="page"]')?.getAttribute('href'), '/watching/');
+  assert.equal(watch.querySelector('h1')?.textContent, 'matt does letterboxd');
+  for (const rel of ['index.html', 'watching/index.html', 'listening/index.html', '404.html']) {
+    const text = fs.readFileSync(path.join(distDir, rel), 'utf8');
     assert.doesNotMatch(text, /lucia|frequency|transmission|luciadoes/i, rel);
   }
   const frequency = doc('frequency/index.html');
