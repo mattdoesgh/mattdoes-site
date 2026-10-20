@@ -163,7 +163,7 @@ const home = shell({
               <span class="verb-no">03</span>
               <span>
                 <span class="verb-name">Unshared</span>
-                <span class="verb-teaser">verism RIP · restricted door</span>
+                <span class="verb-teaser">music project · restricted door</span>
               </span>
             </a>
           </li>
@@ -231,7 +231,7 @@ const playcount = Number(listening.playcount).toLocaleString('en-US');
 
 const listen = shell({
   depth: 1,
-  polarity: 'field',
+  polarity: 'flip',
   current: 'listen',
   title: 'matt does listen · signal / station',
   description: 'Recent listening intercepts and an idle signal meter.',

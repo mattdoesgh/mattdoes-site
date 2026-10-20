@@ -16,8 +16,7 @@
   --ink: #ffffff;
   --signal: #f7c8d8;
   --focus: #f7c8d8;
-  --rule: rgba(247, 200, 216, 0.55);
-  --grid: rgba(247, 200, 216, 0.32);
+  --rule: rgba(247, 200, 216, 0.28);
   --display: "Anton", "Arial Narrow", "Helvetica Condensed", Impact, sans-serif;
   --body: system-ui, sans-serif;
   --mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
@@ -28,8 +27,7 @@ body[data-polarity="flip"] {
   --field: #f7c8d8;
   --ink: #000000;
   --focus: #000000;
-  --rule: rgba(0, 0, 0, 0.45);
-  --grid: rgba(0, 0, 0, 0.22);
+  --rule: rgba(0, 0, 0, 0.18);
   color-scheme: light;
 }
 
@@ -52,16 +50,6 @@ body {
   font-family: var(--body);
   font-size: 1.125rem;
   line-height: 1.5;
-  background-image:
-    linear-gradient(to right, var(--grid) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
-  background-size: 4.5rem 4.5rem;
-  animation: station-drift 90s linear infinite;
-}
-
-@keyframes station-drift {
-  from { background-position: 0 0, 0 0; }
-  to { background-position: 4.5rem 9rem, 4.5rem 9rem; }
 }
 
 :focus {
@@ -141,9 +129,6 @@ body {
   margin: 0 0 0.4rem;
   font-size: clamp(4.25rem, 18vw, 7.5rem);
   max-width: 16ch;
-}
-
-.ident .mark {
   color: #f7c8d8;
 }
 
@@ -152,6 +137,12 @@ body {
   font-size: clamp(4rem, 16vw, 8.5rem);
   max-width: 100%;
   overflow-wrap: break-word;
+  color: #f7c8d8;
+}
+
+body[data-polarity="flip"] .ident,
+body[data-polarity="flip"] .sign {
+  color: #000000;
 }
 
 .sign-small {
@@ -195,7 +186,7 @@ body {
   gap: 0.35rem 1rem;
   align-items: baseline;
   padding: 0.85rem 0.35rem 1rem;
-  border-top: 2px solid var(--rule);
+  border-top: 1px solid var(--rule);
   color: inherit;
   text-decoration: none;
   min-height: 44px;
@@ -216,6 +207,11 @@ body[data-polarity="flip"] .verb-no {
 .verb-name {
   display: block;
   font-size: clamp(2.6rem, 8vw, 4.6rem);
+  color: #f7c8d8;
+}
+
+body[data-polarity="flip"] .verb-name {
+  color: #000000;
 }
 
 .verb-teaser {
@@ -236,7 +232,9 @@ body[data-polarity="flip"] .verb-no {
 }
 
 .verb:hover .verb-no,
-.verb:focus-visible .verb-no {
+.verb:focus-visible .verb-no,
+.verb:hover .verb-name,
+.verb:focus-visible .verb-name {
   color: #000000;
 }
 
@@ -248,7 +246,9 @@ body[data-polarity="flip"] .verb:focus-visible {
 }
 
 body[data-polarity="flip"] .verb:hover .verb-no,
-body[data-polarity="flip"] .verb:focus-visible .verb-no {
+body[data-polarity="flip"] .verb:focus-visible .verb-no,
+body[data-polarity="flip"] .verb:hover .verb-name,
+body[data-polarity="flip"] .verb:focus-visible .verb-name {
   color: #f7c8d8;
 }
 
@@ -258,11 +258,11 @@ body[data-polarity="flip"] .verb:focus-visible .verb-no {
   gap: 0.75rem 2rem;
   margin-top: 1.75rem;
   padding-top: 0.9rem;
-  border-top: 2px solid var(--rule);
+  border-top: 1px solid var(--rule);
 }
 
 .broadcast a {
-  color: inherit;
+  color: #f7c8d8;
   text-decoration: none;
   font-size: clamp(1.7rem, 4vw, 2.5rem);
   min-height: 44px;
@@ -272,14 +272,14 @@ body[data-polarity="flip"] .verb:focus-visible .verb-no {
 
 .broadcast a:hover,
 .broadcast a:focus-visible {
-  color: #f7c8d8;
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
 }
 
+body[data-polarity="flip"] .broadcast a,
 body[data-polarity="flip"] .broadcast a:hover,
 body[data-polarity="flip"] .broadcast a:focus-visible {
   color: #000000;
-  text-decoration: underline;
-  text-underline-offset: 0.12em;
 }
 
 .stamp {
@@ -369,8 +369,8 @@ body[data-polarity="flip"] .broadcast a:focus-visible {
 .carrier {
   margin-top: 1.25rem;
   padding: clamp(1rem, 3vw, 1.6rem);
-  background: #f7c8d8;
-  color: #000000;
+  background: #000000;
+  color: #ffffff;
 }
 
 .carrier .kicker,
@@ -398,8 +398,13 @@ body[data-polarity="flip"] .broadcast a:focus-visible {
   max-width: 40rem;
 }
 
+.carrier .kicker,
+.carrier h2 {
+  color: #f7c8d8;
+}
+
 .carrier a {
-  color: #000000;
+  color: #ffffff;
 }
 
 .bars {
@@ -412,12 +417,12 @@ body[data-polarity="flip"] .broadcast a:focus-visible {
 
 .bars span {
   flex: 1;
-  border: 2px solid #000000;
+  border: 2px solid #f7c8d8;
   background: transparent;
 }
 
 .bars span.on {
-  background: #000000;
+  background: #f7c8d8;
 }
 
 .total {
@@ -428,6 +433,10 @@ body[data-polarity="flip"] .broadcast a:focus-visible {
   display: block;
   color: #f7c8d8;
   font-size: clamp(3.5rem, 12vw, 6.5rem);
+}
+
+body[data-polarity="flip"] .total-num {
+  color: #000000;
 }
 
 .total-label {
@@ -445,7 +454,7 @@ body[data-polarity="flip"] .broadcast a:focus-visible {
   display: grid;
   gap: 0.15rem 1rem;
   padding: 0.85rem 0;
-  border-top: 2px solid var(--rule);
+  border-top: 1px solid var(--rule);
 }
 
 .log a {
@@ -479,7 +488,7 @@ body[data-polarity="flip"] .broadcast a:focus-visible {
   display: grid;
   gap: 0.75rem;
   padding: 1.2rem 0 1.35rem;
-  border-top: 2px solid var(--rule);
+  border-top: 1px solid var(--rule);
 }
 
 .incident h2 {
@@ -642,15 +651,18 @@ body[data-polarity="flip"] .broadcast a:focus-visible {
 }
 
 .prize a:focus-visible,
-.carrier a:focus-visible,
 .contact a:focus-visible {
   outline-color: #000000;
+}
+
+.carrier a:focus-visible {
+  outline-color: #f7c8d8;
 }
 
 .site-footer {
   margin-top: 2.5rem;
   padding-top: 1rem;
-  border-top: 2px solid var(--rule);
+  border-top: 1px solid var(--rule);
 }
 
 .verb-nav {
@@ -661,12 +673,16 @@ body[data-polarity="flip"] .broadcast a:focus-visible {
 }
 
 .verb-nav a {
-  color: inherit;
+  color: #f7c8d8;
   text-decoration: none;
   font-size: clamp(1.5rem, 4vw, 2.2rem);
   min-height: 44px;
   display: inline-flex;
   align-items: center;
+}
+
+body[data-polarity="flip"] .verb-nav a {
+  color: #000000;
 }
 
 .verb-nav a[aria-current="page"] {
@@ -683,6 +699,11 @@ body[data-polarity="flip"] .broadcast a:focus-visible {
   font-size: 1.45rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  color: #f7c8d8;
+}
+
+body[data-polarity="flip"] .anomalies summary {
+  color: #000000;
 }
 
 .anomalies ol {
@@ -730,11 +751,6 @@ body[data-polarity="flip"] .broadcast a:focus-visible {
 }
 
 @media (prefers-contrast: more) {
-  body {
-    background-image: none;
-    animation: none;
-  }
-
   .verb,
   .incident,
   .log li,
