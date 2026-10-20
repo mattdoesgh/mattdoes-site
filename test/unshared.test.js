@@ -9,7 +9,7 @@ import { parseHeadersFile, headerValues } from './helpers/parse-headers.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { unsharedPlayer, unsharedContact } from '../site/verbs.ts';
-import { bandcampSlot, contactBlock } from '../site/render.js';
+import { bandcampSlot, contactBlock, renderFrequency } from '../site/render.js';
 
 let distDir;
 test.before(() => { ({ distDir } = buildFixtureVault()); });
@@ -65,8 +65,16 @@ test('unshared@mattdoes.online is not emitted while the contact is unset', () =>
   assert.equal(doc.querySelector('.contact'), null);
   assert.equal(doc.querySelector('a[href^="mailto:unshared@"]'), null);
 
-  const frequency = readDist(distDir, 'frequency/index.html');
-  assert.match(frequency, /href="mailto:luciadoes@mail\.grokbot\.com"/);
+  assert.equal(fs.existsSync(path.join(distDir, 'frequency', 'index.html')), false);
+});
+
+test('the frequency page source still renders the prize mailto', () => {
+  const html = renderFrequency({
+    siteUrl: 'https://mattdoes.online',
+    assets: { 'station.css': 'station.css', 'station.js': 'station.js' },
+  });
+  assert.match(html, /href="mailto:luciadoes@mail\.grokbot\.com"/);
+  assert.match(html, /name="robots" content="noindex"/);
 });
 
 test('a configured email renders the contact mailto', () => {

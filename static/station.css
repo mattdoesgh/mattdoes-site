@@ -261,6 +261,132 @@ body[data-polarity="flip"] .verb-name {
   text-transform: none;
 }
 
+.verb-kicker {
+  display: none;
+  margin: 0;
+}
+
+.verb-prefix {
+  display: block;
+  flex: 0 0 auto;
+  align-self: center;
+  width: 0;
+  height: 0.9em;
+  margin-right: 0;
+  min-width: 0;
+  min-height: 0;
+  overflow: clip;
+  white-space: nowrap;
+}
+
+/* The inner span stays max-content so the clip hides it. The word space
+   is margin on the prefix. The text node still ends with a normal space
+   for the accessible name. */
+.verb-prefix > span {
+  display: block;
+  width: max-content;
+  white-space: nowrap;
+}
+
+.verb-label {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* The link box is the full row and does not change when the prefix appears.
+   "matt does" is 4.04em in Anton. The margin is the word space. */
+@media (hover: hover) {
+  .verb {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 1.15em;
+    min-height: 44px;
+    padding: 0 0.02em;
+    overflow: hidden;
+    line-height: 0.9;
+  }
+
+  .verb:hover .verb-prefix,
+  .verb:focus-visible .verb-prefix {
+    width: 4.08em;
+    margin-right: 0.24em;
+  }
+}
+
+/* Narrow screens without hover. One small kicker, then the verbs.
+   "letterboxd" is 4.14em in Anton, so the size stays inside 360 and 390. */
+@media (hover: none) and (max-width: 1023px) {
+  body:has(.verbs) {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body:has(.verbs) main {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(2rem, 5vh, 3rem);
+  }
+
+  .verb-kicker {
+    display: block;
+    margin: 0 0 clamp(1.35rem, 3vh, 2rem);
+    color: #f7c8d8;
+    font-family: var(--display);
+    font-size: 1.15rem;
+    line-height: 1.2;
+  }
+
+  .verbs {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 4.8vh, 3.15rem);
+  }
+
+  .verb-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.12rem;
+    padding: 0;
+    border-top: 0;
+  }
+
+  .verb {
+    display: flex;
+    width: 100%;
+    min-height: 48px;
+    align-items: center;
+    font-size: clamp(3.25rem, calc((100vw - 3rem) / 4.5), 14rem);
+    line-height: 0.9;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .verb:active {
+    background: #f7c8d8;
+    color: #000000;
+  }
+
+  .preview,
+  .preview a,
+  .preview .stars {
+    color: #f7c8d8;
+  }
+
+  body:has(.verbs) .site-footer {
+    border-top: 0;
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  body:has(.verbs) .redaction {
+    margin-top: 0;
+  }
+}
+
 .verb:hover,
 .verb:focus-visible {
   background: #f7c8d8;
@@ -627,7 +753,11 @@ body[data-polarity="flip"] .total-num {
   display: block;
   width: min(100%, 28rem);
   height: 1.55rem;
-  background: currentColor;
+  background: #f7c8d8;
+}
+
+body[data-polarity="flip"] .redaction-bar {
+  background: #000000;
 }
 
 .redaction-hint {
@@ -832,10 +962,13 @@ body[data-polarity="flip"] .anomalies summary {
 
   .verb {
     display: flex;
+    flex: 0 0 auto;
     align-items: center;
     width: 100%;
+    height: 1em;
     min-height: 1em;
     padding: 0.03em 0.02em 0.05em;
+    overflow: hidden;
   }
 
   .verb:hover,

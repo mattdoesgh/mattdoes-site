@@ -1,6 +1,6 @@
 // Pages from site/verbs.ts. String HTML, no React.
 
-import { verbs, verbPath, verbHeading, unsharedPlayer, unsharedContact } from './verbs.ts';
+import { verbs, verbPath, verbHeading, unsharedPlayer, unsharedContact, SECRET_PATHS } from './verbs.ts';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 
 const SPOTIFY = 'https://open.spotify.com/artist/617fKVTXkDafXJshlNUzF3';
@@ -243,11 +243,13 @@ function watchPreview(watch) {
  */
 export function renderHome(ctx) {
   const recent = latestWatch(ctx.watches);
+  const kicker = verbHeading(verbs[0].label).slice(0, -verbs[0].label.length).trim();
   const items = verbs.map((verb) => {
     const heading = verbHeading(verb.label);
+    const prefix = heading.slice(0, heading.length - verb.label.length);
     const preview = verb.slug === 'watching' ? watchPreview(recent) : '';
     return `<li class="verb-row">
-          <a class="verb" href="${verbPath(verb.slug)}">${esc(heading)}</a>
+          <a class="verb" href="${verbPath(verb.slug)}"><span class="verb-prefix"><span>${esc(prefix)}</span></span><span class="verb-label">${esc(verb.label)}</span></a>
           ${preview}
         </li>`;
   }).join('\n        ');
@@ -261,6 +263,7 @@ export function renderHome(ctx) {
     showVerbNav: false,
     robots: '',
     main: `<nav aria-label="verbs">
+        <p class="verb-kicker" aria-hidden="true">${esc(kicker)}</p>
         <ol class="verbs">
         ${items}
         </ol>
@@ -412,7 +415,7 @@ export function renderUnshared(ctx) {
         <li>${link(APPLE, 'Apple Music')}</li>
         <li>${link(SPOTIFY, 'Spotify')}</li>
       </ul>
-      ${bar('/frequency/', 'frequency')}`,
+      ${SECRET_PATHS.includes('/frequency/') ? bar('/frequency/', 'frequency') : ''}`,
   });
 }
 

@@ -1,6 +1,6 @@
 // axe-core on the generated pages, WCAG A/AA. color-contrast is disabled
 // here because jsdom does not lay out; test/contrast.test.js covers the tokens.
-// Smoke targets: home, watch, listen, unshared, frequency.
+// Smoke targets: home, watch, listen, unshared.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -18,7 +18,6 @@ const SMOKE = [
   'watching/index.html',
   'listening/index.html',
   'unshared/index.html',
-  'frequency/index.html',
 ];
 
 let distDir;
@@ -37,7 +36,7 @@ function doc(rel) {
   return new JSDOM(fs.readFileSync(path.join(distDir, rel), 'utf8')).window.document;
 }
 
-test('home, watch, listen, unshared, and frequency have zero WCAG A/AA axe violations', async (t) => {
+test('home, watch, listen, and unshared have zero WCAG A/AA axe violations', async (t) => {
   for (const rel of SMOKE) {
     await t.test(rel, async () => {
       const results = await axeScan(fs.readFileSync(path.join(distDir, rel), 'utf8'));
@@ -78,11 +77,9 @@ test('the active verb is marked and the secret stays off the public pages', () =
   const watch = doc('watching/index.html');
   assert.equal(watch.querySelector('nav.verb-nav a[aria-current="page"]')?.getAttribute('href'), '/watching/');
   assert.equal(watch.querySelector('h1')?.textContent, 'matt does letterboxd');
-  for (const rel of ['index.html', 'watching/index.html', 'listening/index.html', '404.html']) {
+  for (const rel of ['index.html', 'watching/index.html', 'listening/index.html', 'unshared/index.html', '404.html']) {
     const text = fs.readFileSync(path.join(distDir, rel), 'utf8');
     assert.doesNotMatch(text, /lucia|frequency|transmission|luciadoes/i, rel);
   }
-  const frequency = doc('frequency/index.html');
-  assert.equal(frequency.querySelector('meta[name="robots"]')?.getAttribute('content'), 'noindex');
-  assert.ok(frequency.querySelector('a[href="mailto:luciadoes@mail.grokbot.com"]'));
+  assert.equal(fs.existsSync(path.join(distDir, 'frequency', 'index.html')), false);
 });

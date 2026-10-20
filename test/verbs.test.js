@@ -1,6 +1,6 @@
 // The verb registry is the source of truth for nav, routes, and the sitemap.
-// An unknown source or a missing renderer fails the build. /frequency/ is
-// the only page outside the registry, and it stays out of the menu and sitemap.
+// An unknown source or a missing renderer fails the build. /frequency/ stays
+// offline while SECRET_PATHS is empty, and out of the menu and sitemap.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -70,6 +70,46 @@ test('every nav label and page h1 is matt does plus the label', () => {
   assert.doesNotMatch(listening.body.textContent, /Last\.fm/);
 });
 
+test('home links keep matt does in a separate prefix', () => {
+  const home = new JSDOM(readDist(distDir, 'index.html')).window.document;
+  for (const verb of verbs) {
+    const link = [...home.querySelectorAll('a.verb')].find((anchor) => anchor.getAttribute('href') === `/${verb.slug}/`);
+    const prefix = link?.querySelector('.verb-prefix');
+    const label = link?.querySelector('.verb-label');
+    assert.ok(prefix, verb.slug);
+    assert.equal(prefix.textContent, 'matt does ');
+    assert.equal(label?.textContent, verb.label);
+    assert.equal(prefix.getAttribute('aria-hidden'), null);
+    assert.equal(link.textContent, verbHeading(verb.label));
+    assert.equal(link.textContent, `matt does ${verb.label}`);
+    assert.equal(link.textContent.includes('\u00a0'), false);
+    assert.equal(link.textContent.split(' ').length, 3);
+  }
+});
+
+test('the home prefix is clipped shut until hover', () => {
+  const css = fs.readFileSync(path.join(REPO_ROOT, 'static', 'station.css'), 'utf8');
+  const rule = css.slice(css.indexOf('.verb-prefix {'), css.indexOf('.verb-prefix > span'));
+  assert.match(rule, /width:\s*0/);
+  assert.match(rule, /overflow:\s*clip/);
+  assert.match(rule, /white-space:\s*nowrap/);
+  assert.match(css, /\.verb:hover \.verb-prefix,\s*\.verb:focus-visible \.verb-prefix \{\s*width:\s*4\.08em;\s*margin-right:\s*0\.24em;/);
+  assert.doesNotMatch(css, /\.verb-prefix[^{]*\{[^}]*transition/);
+  assert.doesNotMatch(css, /@keyframes[\s\S]*verb-prefix|verb-prefix[\s\S]*@keyframes/);
+});
+
+test('the home kicker says matt does once and stays out of the accessible name', () => {
+  const home = new JSDOM(readDist(distDir, 'index.html')).window.document;
+  const kickers = [...home.querySelectorAll('.verb-kicker')];
+  assert.equal(kickers.length, 1);
+  assert.equal(kickers[0].textContent, 'matt does');
+  assert.equal(kickers[0].getAttribute('aria-hidden'), 'true');
+  const nav = home.querySelector('nav[aria-label="verbs"]');
+  const list = nav?.querySelector('ol.verbs');
+  assert.ok(nav?.contains(kickers[0]));
+  assert.equal(kickers[0].compareDocumentPosition(list) & 4, 4);
+});
+
 test('emit fails the build through assertRegistry', () => {
   const src = fs.readFileSync(path.join(REPO_ROOT, 'lib', 'emit', 'index.js'), 'utf8');
   assert.match(src, /assertRegistry\(/);
@@ -104,8 +144,27 @@ test('nothing public is built outside the registry except / and /404', () => {
   assert.equal(sitemap.includes('<loc>https://mattdoes.online/watch/</loc>'), false);
   assert.equal(sitemap.includes('<loc>https://mattdoes.online/listen/</loc>'), false);
   assert.equal(sitemap.includes('/digs/'), false);
-  const frequency = readDist(distDir, 'frequency/index.html');
-  assert.match(frequency, /name="robots" content="noindex"/);
+  assert.equal(fs.existsSync(path.join(distDir, 'frequency', 'index.html')), false);
   const home = readDist(distDir, 'index.html');
   assert.doesNotMatch(home, /frequency|lucia|luciadoes/i);
+});
+
+test('/frequency/ is not built and no built HTML or JS names it', () => {
+  assert.deepEqual([...SECRET_PATHS], []);
+  assert.equal(fs.existsSync(path.join(distDir, 'frequency', 'index.html')), false);
+  const files = [];
+  const walk = (dir) => {
+    for (const name of fs.readdirSync(dir)) {
+      const file = path.join(dir, name);
+      if (fs.statSync(file).isDirectory()) walk(file);
+      else files.push(file);
+    }
+  };
+  walk(distDir);
+  const built = files.filter((file) => file.endsWith('.html') || file.endsWith('.js'));
+  assert.ok(built.length > 0);
+  for (const file of built) {
+    const text = fs.readFileSync(file, 'utf8');
+    assert.equal(text.includes('frequency'), false, path.relative(distDir, file));
+  }
 });
