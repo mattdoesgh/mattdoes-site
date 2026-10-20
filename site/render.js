@@ -3,8 +3,6 @@
 import { verbs, verbPath, verbHeading, unsharedPlayer, unsharedContact } from './verbs.ts';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 
-const LETTERBOXD = 'https://letterboxd.com/mattdoes/';
-const LASTFM = 'https://www.last.fm/user/djverism';
 const SPOTIFY = 'https://open.spotify.com/artist/617fKVTXkDafXJshlNUzF3';
 // Catalog id only. The platform slug is omitted until the project name is settled.
 const APPLE = 'https://music.apple.com/us/artist/1676956374';
@@ -345,7 +343,6 @@ export function renderWatch(ctx) {
     showVerbNav: true,
     robots: '',
     main: `<h1 class="sign">${esc(heading)}</h1>
-      <p class="credit">${link(LETTERBOXD, 'Letterboxd')}</p>
       ${feed}`,
   });
 }
@@ -387,7 +384,6 @@ export function renderListen(ctx) {
     showVerbNav: true,
     robots: '',
     main: `<h1 class="sign">${esc(heading)}</h1>
-      <p class="credit">${link(LASTFM, 'Last.fm')}</p>
       ${list}`,
   });
 }

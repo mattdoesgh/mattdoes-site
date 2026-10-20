@@ -15,7 +15,8 @@ test('a tracks cache bakes names into /listening/', () => {
   const { distDir } = buildFixtureVault({ cacheDir: seedLastfmCache(fixtureCache) });
   const html = readDist(distDir, 'listening/index.html');
   assert.match(html, /Poisoned Track/);
-  assert.match(html, /Last\.fm/);
+  assert.doesNotMatch(html, /Last\.fm/);
+  assert.doesNotMatch(html, /https:\/\/www\.last\.fm\/user\/djverism/);
   assert.doesNotMatch(html, /scrobble-count/);
 });
 

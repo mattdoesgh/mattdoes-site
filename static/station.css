@@ -213,12 +213,6 @@ body[data-polarity="flip"] .sign {
   letter-spacing: 0.06em;
 }
 
-.credit {
-  margin: 0.8rem 0 0;
-  font-size: 1.15rem;
-}
-
-.credit a,
 .home-link a {
   color: inherit;
 }
@@ -814,5 +808,274 @@ body[data-polarity="flip"] .anomalies summary {
   a {
     text-decoration: underline;
     text-underline-offset: 0.15em;
+  }
+}
+
+/* Desktop. The three home lines fill the width and the stack fills the
+   height. "matt does letterboxd" is 8.42em in Anton, so the fluid size is
+   the content width divided by that measure. Phone styles stay below 1024. */
+@media (min-width: 1024px) {
+  body {
+    --row-size: clamp(4.5rem, calc((100vw - 5.6rem) / 8.55), 14rem);
+    padding: clamp(1rem, 2.4vh, 2rem) clamp(1.25rem, 2vw, 2.4rem);
+  }
+
+  .sign,
+  .verb {
+    font-size: var(--row-size);
+    line-height: 0.86;
+    letter-spacing: 0;
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  .verb {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 1em;
+    padding: 0.03em 0.02em 0.05em;
+  }
+
+  .verb:hover,
+  .verb:focus-visible {
+    background: #f7c8d8;
+    color: #000000;
+    outline-color: #000000;
+  }
+
+  body:has(.verbs),
+  body:has(.lede) {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body:has(.verbs) main,
+  body:has(.lede) main {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: clamp(0.8rem, 2vh, 1.6rem);
+    min-height: 0;
+  }
+
+  body:has(.verbs) main > nav {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .verbs {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: clamp(0.6rem, 1.6vh, 1.4rem);
+  }
+
+  .verb-row {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    gap: 0.35rem;
+    padding: 0;
+    border-top: 0;
+  }
+
+  .preview {
+    align-self: flex-end;
+    max-width: min(100%, 28ch);
+    color: #f7c8d8;
+    font-family: var(--display);
+    font-size: clamp(2.35rem, calc(var(--row-size) * 0.46), 5.6rem);
+    line-height: 0.95;
+    text-align: right;
+  }
+
+  .preview a {
+    color: #f7c8d8;
+    text-decoration-thickness: 0.06em;
+    text-underline-offset: 0.12em;
+  }
+
+  .preview .stars {
+    color: #f7c8d8;
+    font-size: 0.82em;
+    white-space: nowrap;
+  }
+
+  .redaction {
+    max-width: none;
+    margin-top: 0;
+  }
+
+  .redaction summary {
+    min-height: 0;
+    justify-content: flex-start;
+  }
+
+  .redaction-bar {
+    width: calc(var(--row-size) * 3.8);
+    height: calc(var(--row-size) * 0.7);
+    max-width: 100%;
+    background: #f7c8d8;
+  }
+
+  body[data-polarity="flip"] .redaction-bar {
+    background: #000000;
+  }
+
+  .redaction-body a {
+    font-family: var(--display);
+    font-size: clamp(2rem, 3vw, 3.5rem);
+    line-height: 0.9;
+    text-decoration: none;
+  }
+
+  body:not([data-polarity="flip"]) .redaction-body a {
+    color: #f7c8d8;
+  }
+
+  .redaction-body a:hover,
+  .redaction-body a:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 0.1em;
+  }
+
+  .lede {
+    max-width: none;
+    margin: 0;
+    font-family: var(--display);
+    font-size: clamp(2.6rem, calc(var(--row-size) * 0.62), 7rem);
+    line-height: 0.9;
+    white-space: nowrap;
+  }
+
+  .outlinks {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.15rem;
+    margin: 0;
+  }
+
+  .outlinks a {
+    font-family: var(--display);
+    font-size: clamp(2.4rem, calc(var(--row-size) * 0.5), 6rem);
+    line-height: 0.9;
+    text-decoration: none;
+    width: 100%;
+    white-space: nowrap;
+  }
+
+  body[data-polarity="flip"] .outlinks a:hover,
+  body[data-polarity="flip"] .outlinks a:focus-visible {
+    background: #000000;
+    color: #f7c8d8;
+    outline-color: #f7c8d8;
+  }
+
+  .feed {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16.5rem, 1fr));
+    gap: clamp(1.4rem, 2vw, 2.4rem);
+    margin-top: clamp(1.6rem, 3vh, 2.6rem);
+    width: 100%;
+  }
+
+  .incident {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+    min-width: 0;
+    padding: 0;
+    border-top: 0;
+  }
+
+  .incident h2 {
+    font-size: clamp(1.65rem, 1.7vw, 2.45rem);
+    overflow-wrap: break-word;
+  }
+
+  .incident p,
+  .statement {
+    max-width: 36ch;
+  }
+
+  .evidence {
+    order: -1;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .evidence img {
+    width: 100%;
+    height: auto;
+    max-height: none;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    background: #000000;
+  }
+
+  .tracks {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+    gap: clamp(1.2rem, 2vw, 2rem) clamp(1.4rem, 2.4vw, 2.6rem);
+    width: 100%;
+    margin-top: clamp(1.6rem, 3vh, 2.6rem);
+  }
+
+  .tracks li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    padding: 0;
+    border-top: 0;
+  }
+
+  .tracks a {
+    font-family: var(--display);
+    font-size: clamp(1.7rem, 2vw, 2.6rem);
+    line-height: 0.95;
+    text-decoration: none;
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  .tracks a:hover,
+  .tracks a:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 0.08em;
+  }
+
+  .tracks .by,
+  .tracks .album {
+    max-width: 32ch;
+  }
+
+  .tracks .album::before {
+    content: none;
+  }
+
+  .site-footer {
+    border-top: 0;
+    margin-top: clamp(2rem, 5vh, 4rem);
+    padding-top: 0;
+  }
+
+  .site-footer:empty {
+    display: none;
+  }
+
+  .verb-nav {
+    gap: 0.5rem 1.8rem;
   }
 }
