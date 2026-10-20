@@ -261,6 +261,78 @@ body[data-polarity="flip"] .verb-name {
   text-transform: none;
 }
 
+.verb-kicker {
+  display: none;
+  margin: 0;
+}
+
+.verb-prefix {
+  display: inline-block;
+  max-width: 0;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+.verb-label {
+  white-space: nowrap;
+}
+
+/* "matt does " is 4.28em in Anton. The cap leaves room for the glyph edges. */
+@media (hover: hover) {
+  .verb-prefix {
+    transition: max-width 180ms ease;
+  }
+
+  .verb:hover .verb-prefix,
+  .verb:focus-visible .verb-prefix {
+    max-width: 4.32em;
+  }
+}
+
+/* Narrow screens without hover. One small kicker, then the verbs.
+   "letterboxd" is 4.14em in Anton, so the size stays inside 360 and 390. */
+@media (hover: none) and (max-width: 1023px) {
+  .verb-kicker {
+    display: block;
+    margin: 0 0 0.85rem;
+    color: #f7c8d8;
+    font-family: var(--display);
+    font-size: 1.15rem;
+    line-height: 1.2;
+  }
+
+  .verbs {
+    display: flex;
+    flex-direction: column;
+    gap: 1.35rem;
+  }
+
+  .verb-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+    padding: 0;
+    border-top: 0;
+  }
+
+  .verb {
+    display: flex;
+    width: 100%;
+    min-height: 48px;
+    align-items: center;
+    font-size: clamp(3.25rem, calc((100vw - 3rem) / 4.5), 14rem);
+    line-height: 0.9;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .verb:active {
+    background: #f7c8d8;
+    color: #000000;
+  }
+}
+
 .verb:hover,
 .verb:focus-visible {
   background: #f7c8d8;

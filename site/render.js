@@ -243,11 +243,13 @@ function watchPreview(watch) {
  */
 export function renderHome(ctx) {
   const recent = latestWatch(ctx.watches);
+  const kicker = verbHeading(verbs[0].label).slice(0, -verbs[0].label.length).trim();
   const items = verbs.map((verb) => {
     const heading = verbHeading(verb.label);
+    const prefix = heading.slice(0, heading.length - verb.label.length);
     const preview = verb.slug === 'watching' ? watchPreview(recent) : '';
     return `<li class="verb-row">
-          <a class="verb" href="${verbPath(verb.slug)}">${esc(heading)}</a>
+          <a class="verb" href="${verbPath(verb.slug)}"><span class="verb-prefix"><span>${esc(prefix)}</span></span><span class="verb-label">${esc(verb.label)}</span></a>
           ${preview}
         </li>`;
   }).join('\n        ');
@@ -261,6 +263,7 @@ export function renderHome(ctx) {
     showVerbNav: false,
     robots: '',
     main: `<nav aria-label="verbs">
+        <p class="verb-kicker" aria-hidden="true">${esc(kicker)}</p>
         <ol class="verbs">
         ${items}
         </ol>

@@ -70,6 +70,32 @@ test('every nav label and page h1 is matt does plus the label', () => {
   assert.doesNotMatch(listening.body.textContent, /Last\.fm/);
 });
 
+test('home links keep matt does in a separate prefix', () => {
+  const home = new JSDOM(readDist(distDir, 'index.html')).window.document;
+  for (const verb of verbs) {
+    const link = [...home.querySelectorAll('a.verb')].find((anchor) => anchor.getAttribute('href') === `/${verb.slug}/`);
+    const prefix = link?.querySelector('.verb-prefix');
+    const label = link?.querySelector('.verb-label');
+    assert.ok(prefix, verb.slug);
+    assert.equal(prefix.textContent, 'matt does ');
+    assert.equal(label?.textContent, verb.label);
+    assert.equal(prefix.getAttribute('aria-hidden'), null);
+    assert.equal(link.textContent, verbHeading(verb.label));
+  }
+});
+
+test('the home kicker says matt does once and stays out of the accessible name', () => {
+  const home = new JSDOM(readDist(distDir, 'index.html')).window.document;
+  const kickers = [...home.querySelectorAll('.verb-kicker')];
+  assert.equal(kickers.length, 1);
+  assert.equal(kickers[0].textContent, 'matt does');
+  assert.equal(kickers[0].getAttribute('aria-hidden'), 'true');
+  const nav = home.querySelector('nav[aria-label="verbs"]');
+  const list = nav?.querySelector('ol.verbs');
+  assert.ok(nav?.contains(kickers[0]));
+  assert.equal(kickers[0].compareDocumentPosition(list) & 4, 4);
+});
+
 test('emit fails the build through assertRegistry', () => {
   const src = fs.readFileSync(path.join(REPO_ROOT, 'lib', 'emit', 'index.js'), 'utf8');
   assert.match(src, /assertRegistry\(/);
