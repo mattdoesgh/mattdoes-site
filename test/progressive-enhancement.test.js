@@ -1,5 +1,6 @@
 // Retired writing routes stay unpublished and unredirected.
-// /listen/ is a real page without JavaScript. Old paths 301 to the verbs.
+// /listening/ is a real page without JavaScript.
+// A redirect source must not be a real page. An empty or missing _redirects file passes.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
