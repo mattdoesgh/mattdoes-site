@@ -1,6 +1,6 @@
 // Pages from site/verbs.ts. String HTML, no React.
 
-import { verbs, verbPath, verbHeading, unsharedPlayer, unsharedContact } from './verbs.ts';
+import { verbs, verbPath, verbHeading, unsharedPlayer, unsharedContact, SECRET_PATHS } from './verbs.ts';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 
 const SPOTIFY = 'https://open.spotify.com/artist/617fKVTXkDafXJshlNUzF3';
@@ -415,7 +415,7 @@ export function renderUnshared(ctx) {
         <li>${link(APPLE, 'Apple Music')}</li>
         <li>${link(SPOTIFY, 'Spotify')}</li>
       </ul>
-      ${bar('/frequency/', 'frequency')}`,
+      ${SECRET_PATHS.includes('/frequency/') ? bar('/frequency/', 'frequency') : ''}`,
   });
 }
 

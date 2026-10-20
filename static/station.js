@@ -2,8 +2,10 @@
    The trail does not need this file: the bars are native details.
    The mailto addresses are not in this file. */
 (function () {
+  /* frequency-key */
   var phrase = 'lucia';
   var buffer = '';
+  /* frequency-key */
 
   function httpsHref(link) {
     if (typeof link !== 'string') return '';
@@ -12,6 +14,7 @@
     return value;
   }
 
+  /* frequency-key */
   function onKey(event) {
     if (event.metaKey || event.ctrlKey || event.altKey) return;
     if (typeof event.key !== 'string' || event.key.length !== 1) return;
@@ -24,6 +27,7 @@
     var root = document.body.getAttribute('data-root') || '/';
     window.location.assign(root + 'frequency/');
   }
+  /* frequency-key */
 
   function trackItem(row) {
     var li = document.createElement('li');
@@ -86,7 +90,9 @@
   }
 
   function start() {
+    /* frequency-key */
     document.addEventListener('keydown', onKey);
+    /* frequency-key */
     refresh();
   }
 

@@ -14,7 +14,7 @@ test.before(() => { ({ distDir } = buildFixtureVault()); });
 
 const RETIRED_ROUTES = ['journal', 'making', 'blog'];
 
-const REAL_PAGES = ['/', '/watching/', '/listening/', '/unshared/', '/frequency/'];
+const REAL_PAGES = ['/', '/watching/', '/listening/', '/unshared/'];
 
 function rules() {
   const file = path.join(REPO_ROOT, 'static', '_redirects');
@@ -45,8 +45,8 @@ test('the redaction trail is a native details element', () => {
   assert.ok(bar?.querySelector('summary'));
   assert.equal(bar.querySelector('a')?.getAttribute('href'), '/unshared/');
   const unshared = new JSDOM(readDist(distDir, 'unshared/index.html')).window.document;
-  const second = unshared.querySelector('details.redaction a');
-  assert.equal(second?.getAttribute('href'), '/frequency/');
+  assert.equal(unshared.querySelector('details.redaction'), null);
+  assert.equal(unshared.querySelector('a[href="/frequency/"]'), null);
   assert.equal(unshared.querySelector('a[href="mailto:unshared@mattdoes.online"]'), null);
   assert.equal(unshared.querySelector('details.redaction a[href^="mailto:"]'), null);
 });

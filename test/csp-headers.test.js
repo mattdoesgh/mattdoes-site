@@ -26,7 +26,6 @@ const SAMPLE_PATHS = [
   '/watching/',
   '/listening/',
   '/unshared/',
-  '/frequency/',
   '/404.html',
   '/fonts/Anton-latin.woff2',
   '/station.00000000.css',

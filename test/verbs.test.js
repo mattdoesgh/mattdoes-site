@@ -1,6 +1,6 @@
 // The verb registry is the source of truth for nav, routes, and the sitemap.
-// An unknown source or a missing renderer fails the build. /frequency/ is
-// the only page outside the registry, and it stays out of the menu and sitemap.
+// An unknown source or a missing renderer fails the build. /frequency/ stays
+// offline while SECRET_PATHS is empty, and out of the menu and sitemap.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -144,8 +144,27 @@ test('nothing public is built outside the registry except / and /404', () => {
   assert.equal(sitemap.includes('<loc>https://mattdoes.online/watch/</loc>'), false);
   assert.equal(sitemap.includes('<loc>https://mattdoes.online/listen/</loc>'), false);
   assert.equal(sitemap.includes('/digs/'), false);
-  const frequency = readDist(distDir, 'frequency/index.html');
-  assert.match(frequency, /name="robots" content="noindex"/);
+  assert.equal(fs.existsSync(path.join(distDir, 'frequency', 'index.html')), false);
   const home = readDist(distDir, 'index.html');
   assert.doesNotMatch(home, /frequency|lucia|luciadoes/i);
+});
+
+test('/frequency/ is not built and no built HTML or JS names it', () => {
+  assert.deepEqual([...SECRET_PATHS], []);
+  assert.equal(fs.existsSync(path.join(distDir, 'frequency', 'index.html')), false);
+  const files = [];
+  const walk = (dir) => {
+    for (const name of fs.readdirSync(dir)) {
+      const file = path.join(dir, name);
+      if (fs.statSync(file).isDirectory()) walk(file);
+      else files.push(file);
+    }
+  };
+  walk(distDir);
+  const built = files.filter((file) => file.endsWith('.html') || file.endsWith('.js'));
+  assert.ok(built.length > 0);
+  for (const file of built) {
+    const text = fs.readFileSync(file, 'utf8');
+    assert.equal(text.includes('frequency'), false, path.relative(distDir, file));
+  }
 });

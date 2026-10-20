@@ -1,7 +1,6 @@
 // Verb registry. Nav, routes, and the sitemap are generated from `verbs`.
 // The slug is the URL. The label is the visible words after "matt does".
-// `/` and `/404` are the shell. `/frequency/` is the only secret page:
-// built, noindex, and absent from this list.
+// `/` and `/404` are the shell. `/frequency/` stays out of this list.
 
 export const DATA_SOURCES = ['letterboxd', 'listening', 'static'] as const;
 export type DataSource = (typeof DATA_SOURCES)[number];
@@ -22,8 +21,8 @@ export const verbs = [
   { slug: 'unshared', label: 'unshared', source: 'static', renderer: 'unshared' },
 ] as const satisfies readonly Verb[];
 
-/** Built, but not a verb: noindex, not in the menu or the sitemap. */
-export const SECRET_PATHS = ['/frequency/'] as const;
+/** Add '/frequency/' to bring that page back. Empty keeps it offline. */
+export const SECRET_PATHS: readonly string[] = [];
 
 /**
  * Unshared player. `bandcamp` is optional. Leave it unset until there is a URL.
