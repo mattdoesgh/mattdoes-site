@@ -23,16 +23,13 @@ const EMAIL_DECODE = '/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.m
 
 const SAMPLE_PATHS = [
   '/',
-  '/about/',
-  '/listening/',
-  '/digs/',
-  '/movies/',
-  '/grok/',
-  '/search/',
-  '/colophon/',
-  '/about/index.html',
-  '/fonts/JetBrainsMono-Regular.woff2',
-  '/_shared.00000000.css',
+  '/watch/',
+  '/listen/',
+  '/unshared/',
+  '/frequency/',
+  '/404.html',
+  '/fonts/Anton-latin.woff2',
+  '/station.00000000.css',
   EMAIL_DECODE,
   '/cdn-cgi/l/email-protection',
 ];
@@ -112,7 +109,7 @@ test('beacon hosts are allowed and the rest of the policy stays strict', () => {
     const plain = scriptSrc.filter((token) => !token.startsWith("'sha256-"));
     assert.deepEqual(plain, ["'self'", BEACON_SCRIPT, "'inline-speculation-rules'"],
       `${header} script-src hosts drifted`);
-    assert.ok(hashes.length >= 2, `${header} must still carry the inline-script hashes`);
+    assert.equal(hashes.length, 0, `${header} has no inline scripts, so script-src carries no hashes`);
     assert.deepEqual(sources(csp, 'connect-src'), ["'self'", BEACON_CONNECT]);
     assert.match(sources(csp, 'default-src').join(' '), /^'self'$/);
     assert.equal(sources(csp, 'style-src').join(' '), "'self'");

@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  parseLetterboxdRss, selectRecentWatches, ratingStars, letterboxdUrl,
+  parseLetterboxdRss, selectRecentWatches, ratingStars, letterboxdUrl, posterSource,
 } from '../lib/letterboxd.js';
 import { fetchWatches } from '../lib/watches.js';
 
@@ -23,6 +23,7 @@ test('parseLetterboxdRss keeps films, drops lists, and strips watch stubs', () =
   assert.equal(items[0].rewatch, false);
   assert.equal(items[0].review, 'the third act holds.');
   assert.equal(items[0].link, 'https://letterboxd.com/mattdoes/film/real-review/');
+  assert.equal(items[0].posterSource, 'https://a.ltrbxd.com/x.jpg');
 
   assert.equal(items[1].review, '');
   assert.equal(items[1].rewatch, true);
@@ -51,6 +52,9 @@ test('rating and link helpers stay strict', () => {
   assert.equal(ratingStars('nope'), '');
   assert.equal(letterboxdUrl('https://evil.example/film'), '');
   assert.equal(letterboxdUrl('https://letterboxd.com/mattdoes/film/x/'), 'https://letterboxd.com/mattdoes/film/x/');
+  assert.equal(posterSource('<img src="https://evil.example/a.jpg">'), '');
+  assert.equal(posterSource('<img src="http://a.ltrbxd.com/x.jpg">'), '');
+  assert.equal(posterSource('<img src="https://s.ltrbxd.com/z.jpg">'), 'https://s.ltrbxd.com/z.jpg');
 });
 
 test('fetchWatches stays empty when offline and uncached', async () => {

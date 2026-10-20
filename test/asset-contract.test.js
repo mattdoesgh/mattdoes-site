@@ -13,7 +13,6 @@ import { listShippedAssets } from '../lib/emit/assets.js';
 import { buildFixtureVault, REPO_ROOT } from './helpers/run-build.js';
 
 const STATIC_DIR = path.join(REPO_ROOT, 'static');
-const TEMPLATES_DIR = path.join(REPO_ROOT, 'templates');
 
 let distDir;
 
@@ -23,8 +22,8 @@ test.before(() => {
 
 test('every shipped asset gets a hashed dist twin; no unhashed original ships', () => {
   const distFiles = fs.readdirSync(distDir);
-  const shipped = listShippedAssets(STATIC_DIR, TEMPLATES_DIR);
-  assert.ok(shipped.length >= 11, 'expected the full shipped-asset set');
+  const shipped = listShippedAssets(STATIC_DIR);
+  assert.ok(shipped.length >= 2, 'expected station.css and station.js');
   for (const [filename] of shipped) {
     const ext = path.extname(filename);
     const stem = filename.slice(0, -ext.length);
@@ -37,9 +36,8 @@ test('every shipped asset gets a hashed dist twin; no unhashed original ships', 
   }
 });
 
-test('templates/ browser modules are part of the shipped-asset list as ES modules', () => {
-  const kinds = Object.fromEntries(listShippedAssets(STATIC_DIR, TEMPLATES_DIR));
-  assert.equal(kinds['rows.js'], 'mjs');
-  assert.equal(kinds['_helpers.js'], 'mjs');
-  assert.equal(kinds['_shared.css'], 'css');
+test('station.css and station.js are the shipped shell', () => {
+  const kinds = Object.fromEntries(listShippedAssets(STATIC_DIR));
+  assert.equal(kinds['station.css'], 'css');
+  assert.equal(kinds['station.js'], 'js');
 });

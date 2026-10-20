@@ -9,7 +9,10 @@ import { buildFixtureVault, readDist } from './helpers/run-build.js';
 import { parseHeadersFile, headerValues } from './helpers/parse-headers.js';
 
 const HTML_ROUTES = ['/', '/*/', '/*.html'];
-const EARLY_HINT_ASSETS = ['_shared', 'theme-boot', 'tweaks', 'nav-prefetch'];
+const EARLY_HINT_ASSETS = [
+  { stem: 'station.', as: 'style' },
+  { stem: 'station.', as: 'script' },
+];
 
 let distDir;
 let routes;
@@ -26,13 +29,14 @@ test('global security headers include CSP, HSTS, and framing controls', () => {
     "default-src 'self'",
     "script-src 'self' https://static.cloudflareinsights.com 'inline-speculation-rules'",
     "connect-src 'self' https://cloudflareinsights.com",
-    "frame-src https://embed.music.apple.com https://bandcamp.com",
+    "frame-src https://embed.music.apple.com",
     "object-src 'none'",
     'upgrade-insecure-requests',
   ]) {
     assert.match(csp, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
       `CSP must include ${token}`);
   }
+  assert.doesNotMatch(csp, /bandcamp/i, 'an unset Bandcamp URL must not widen frame-src');
 
   const hsts = headerValues(routes, '/*', 'strict-transport-security')[0];
   assert.match(hsts, /max-age=31536000/, 'HSTS must be set with a one-year max-age');
@@ -58,8 +62,9 @@ test('report-only CSP points at the same-origin report collector', () => {
   assert.ok(reportOnly, '/* must set Content-Security-Policy-Report-Only');
   assert.match(reportOnly, /report-uri https:\/\/mattdoes\.online\/api\/csp-report/,
     'report-only CSP must target the csp-report Worker');
-  assert.match(reportOnly, /frame-src https:\/\/embed\.music\.apple\.com https:\/\/bandcamp\.com/,
+  assert.match(reportOnly, /frame-src https:\/\/embed\.music\.apple\.com(?! https:\/\/bandcamp\.com)/,
     'report-only frame-src must match the enforced player allowlist');
+  assert.doesNotMatch(reportOnly, /bandcamp/i, 'an unset Bandcamp URL must not widen frame-src');
 });
 
 test('hashed JS and CSS assets are immutable for one year', () => {
@@ -96,16 +101,15 @@ test('a missing hashed asset cannot fall through to the HTML shell', () => {
   // must be HTTP 404, content-type must not be a stylesheet, and the
   // response must not include "immutable".
   const notFound = fs.readFileSync(path.join(distDir, '404.html'), 'utf8');
-  assert.match(notFound, /<h1>Not found<\/h1>/);
+  assert.match(notFound, /<h1 class="sign">No carrier<\/h1>/);
   assert.match(notFound, /<main id="main">/);
-  assert.doesNotMatch(notFound, /site-field|class="topbar"/,
-    'the 404 page must not be the homepage shell');
+  assert.doesNotMatch(notFound, /<h1 class="ident">/,
+    'the 404 page must not be the homepage');
 
-  const shared = fs.readdirSync(distDir).find((name) => /^_shared\.[0-9a-f]{8}\.css$/.test(name));
-  assert.ok(shared, 'hashed shared stylesheet must exist');
-  const css = fs.readFileSync(path.join(distDir, shared), 'utf8');
-  assert.match(css, /syntax:"<angle>"/);
-  assert.doesNotMatch(css, /--css-rev/);
+  const station = fs.readdirSync(distDir).find((name) => /^station\.[0-9a-f]{8}\.css$/.test(name));
+  assert.ok(station, 'hashed station stylesheet must exist');
+  const css = fs.readFileSync(path.join(distDir, station), 'utf8');
+  assert.doesNotMatch(css, /linear-gradient|background-image/);
 });
 
 test('HTML routes carry edge cache policy and Early Hint preloads', () => {
@@ -120,11 +124,11 @@ test('HTML routes carry edge cache policy and Early Hint preloads', () => {
     assert.match(edge, /s-maxage=21600/, `${route} must set a 6h edge TTL`);
 
     const links = headerValues(routes, route, 'link');
-    assert.ok(links.length >= 4, `${route} must append Early Hint Link preloads`);
+    assert.ok(links.length >= 2, `${route} must append Early Hint Link preloads`);
 
-    for (const stem of EARLY_HINT_ASSETS) {
-      const preload = links.find(l => l.includes(`rel=preload`) && l.includes(stem));
-      assert.ok(preload, `${route} must preload the hashed ${stem} asset`);
+    for (const asset of EARLY_HINT_ASSETS) {
+      const preload = links.find((l) => l.includes('rel=preload') && l.includes(`as=${asset.as}`) && l.includes(asset.stem));
+      assert.ok(preload, `${route} must preload the hashed station ${asset.as}`);
       const match = preload.match(/<\/([^>]+)>/);
       assert.ok(match, `preload link must name a path: ${preload}`);
       assert.ok(distFiles.has(match[1]),

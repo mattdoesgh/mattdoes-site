@@ -11,7 +11,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { formatScrobbleCount } from '../templates/_helpers.js';
+import { formatScrobbleCount } from '../lib/format.js';
 import {
   buildFixtureVault, readDist, seedLastfmCache, REPO_ROOT,
 } from './helpers/run-build.js';
@@ -36,8 +36,8 @@ test('server-rendered scrobble counts equal the shared formatter output', () => 
   // the locale formatting actually happened.
   assert.ok(expected.includes(','), 'fixture playcount should exercise comma grouping');
 
-  assert.equal(scrobbleText(readDist(distDir, 'listening/index.html')), expected,
-    '/listening/ IdentityRail stat must match formatScrobbleCount');
+  assert.equal(scrobbleText(readDist(distDir, 'listen/index.html')), expected,
+    '/listen/ scrobble count must match formatScrobbleCount');
   assert.doesNotMatch(readDist(distDir, 'index.html'), /id="scrobble-count"/,
     'the editorial homepage must not emit an activity counter');
 });

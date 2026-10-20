@@ -1,34 +1,30 @@
 # mattdoes.online
 
-Source for [mattdoes.online](https://mattdoes.online). Static HTML from in-repo notes, plus digs and a build-time Letterboxd snapshot. Hosted on Cloudflare Pages. Live listening and geo sit on same-origin Workers.
+Source for [mattdoes.online](https://mattdoes.online). Static HTML from a small verb registry, hosted on Cloudflare Pages. Live listening sits on a same-origin Worker.
 
 ## what's on it
 
-- **home** — name, a short bio, and shelves for listening, digs, movies, and grok says.
-- **listening** (`/listening/`) — recent plays from Last.fm, baked at build time and refreshed live.
-- **digs** (`/digs/`) — weekly music picks in `content/digs/`. Favorites also show on **grok says…** (`/grok/`), with anything else in `content/recommendations.json`.
-- **movies** (`/movies/`) — the last 25 Letterboxd watches, from the diary RSS at build time.
-- **search** — client-side filter over a static index.
-- **about** and **colophon** — `content/about.md` (`publish: about`), and a generated colophon.
-- **X** — `@mattdoes` in the topbar links to [x.com/mattdoes](https://x.com/mattdoes). Letterboxd sits beside it, the same chip, to [letterboxd.com/mattdoes](https://letterboxd.com/mattdoes).
+- **home** (`/`) — "matt does …", with watch, listen, and unshared as the menu.
+- **watch** (`/watch/`) — recent Letterboxd watches. Reviews are the witness statements. Posters are mirrored to `media.mattdoes.online` at build time.
+- **listen** (`/listen/`) — recent plays from the listening worker, baked at build time and refreshed live.
+- **unshared** (`/unshared/`) — the music project. A public mailbox is rendered only when `unsharedContact.email` is set.
+- **404** — in character, and it links the index of anomalies.
 
-Journal, making, and thoughts notes are still accepted. They are not published.
+`/frequency/` is a noindex page and is not in the menu or the sitemap. `/movies` redirects to `/watch`, `/listening` to `/listen`, and the retired sections redirect home.
 
 ## how it's built
 
-`content/about.md` is the about page. `build.js` reads markdown notes from `content/`, fetches listening data (disk-cached under `.cache/`), and writes `dist/`. Pages are React components rendered to static HTML (`design-system/`). The browser gets plain HTML plus small scripts. `/listening/` rows are rendered by `templates/rows.js` so live updates can swap the same markup.
+`site/verbs.ts` lists the verbs. `build.js` fetches listening data and the Letterboxd RSS, mirrors posters when `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are set, and writes `dist/`. A failed poster fetch or upload leaves the Evidence placeholder and does not fail the build.
 
 `scripts/pages-prebuild.sh` does not clone anything. The Cloudflare Pages build command stays `bash scripts/pages-prebuild.sh && npm run build`.
 
-Three Cloudflare Workers, same-origin under `/api/`:
+Workers, same-origin under `/api/`:
 
-- **`mattdoes-listening`** — `/api/listening/now` and `/api/listening/recent`. A Durable Object polls Last.fm and writes KV. The request path only reads KV.
-- **`mattdoes-geo`** — reverse-geocodes a visitor's city only if they opt in. The default map is `static/home.geojson`.
+- **`mattdoes-listening`** — `/api/listening/now` and `/api/listening/recent`.
+- **`mattdoes-geo`** — still deployed. The page no longer draws a map.
 - **`mattdoes-csp-report`** — collects CSP reports.
 
-They share `workers/lib/transport.js`. Editing that file means redeploying all three.
-
-`mattdoes-rebuild` has no route. Every six hours it POSTs the Pages deploy hook so the Letterboxd snapshot baked by `lib/watches.js` stays current. The hook URL is the `DEPLOY_HOOK` secret, set outside the repo.
+`mattdoes-rebuild` has no route. Every six hours it POSTs the Pages deploy hook so the Letterboxd snapshot stays current.
 
 ## running it
 
@@ -37,18 +33,18 @@ npm install
 npm run build
 ```
 
-Output lands in `dist/`. With no markdown notes under `content/`, the other pages still build and the command does not error.
+Output lands in `dist/`.
 
 ```
 npm test
+npm run typecheck
 npm run lint             # html-validate against dist/**/*.html
 npm run audit            # npm audit --audit-level=moderate
-npm run bake-geo         # re-bake static/home.geojson
 npm run optimize-media   # .webp variants from content/attachments, if that directory exists
 npm run sync-media       # push those files to R2 (needs a CF token; uses the wrangler pin in workers/)
 ```
 
-CI (`.github/workflows/build.yml`) audits, builds the in-repo content, lints HTML, and runs tests. Cloudflare Pages deploys from a successful GitHub push on its own.
+CI (`.github/workflows/build.yml`) audits, typechecks `site/`, builds, lints HTML, and runs tests. Cloudflare Pages deploys from a successful GitHub push on its own.
 
 ## workers
 
@@ -58,4 +54,4 @@ KV bindings, routes, and secret names live in each `wrangler.toml`. From the rep
 npm run deploy:workers
 ```
 
-Listening secrets are `LASTFM_USERNAME` and `LASTFM_API_KEY`. From `workers/listening`, after `npm ci --prefix workers`: `node ../node_modules/wrangler/bin/wrangler.js secret put LASTFM_API_KEY`.
+Listening secrets are `LASTFM_USERNAME` and `LASTFM_API_KEY`. Wrangler stays the version pinned in `workers/package-lock.json`. Do not run `npx wrangler`.

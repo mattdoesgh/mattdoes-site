@@ -1,11 +1,10 @@
-// Regression coverage for security remediations that cross the build
-// boundary: authored raw HTML sanitization and attachment symlink rejection.
+// Notes are not rendered. Symlinked attachments are still refused.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { makeTempDir, runBuild, readDist } from './helpers/run-build.js';
+import { makeTempDir, runBuild, listDistHtml } from './helpers/run-build.js';
 
 function writeVault(files) {
   const vault = makeTempDir('mattdoes-sec-vault-');
@@ -17,72 +16,48 @@ function writeVault(files) {
   return vault;
 }
 
-test('authored raw HTML is sanitized before it reaches pages or feeds', () => {
+test('authored notes are not published into pages or feeds', () => {
   const vault = writeVault({
     'notes/raw-html.md': `---
 publish: about
 title: Raw HTML
-slug: raw-html
-date: 2026-01-01
 ---
 
 <script>alert(1)</script>
-<style>body{display:none}</style>
-<a href="javascript:alert(1)" onclick="alert(2)">bad link</a>
-<img src="data:text/html,<script>x</script>" onerror="alert(3)" style="color:red">
-<div style="background:url(https://evil.example/x)">styled</div>
-<a href="https://example.com/good" onclick="alert(4)">good link</a>
+<a href="javascript:alert(1)">bad link</a>
+<a href="https://example.com/good">good link</a>
 `,
   });
-
   const res = runBuild({ contentDir: vault });
   assert.equal(res.status, 0, `build failed:\n${res.stderr}`);
-
-  const html = readDist(res.distDir, 'about/index.html');
-  assert.equal(fs.existsSync(path.join(res.distDir, 'feed.xml')), false,
-    'retired posts must not publish an Atom feed');
-  for (const output of [html]) {
-    assert.ok(!/<script\b[^>]*>\s*(?:alert|x)/i.test(output),
-      'authored script tags must be stripped');
-    assert.ok(!/<style\b/i.test(output), 'style tags must be stripped');
-    assert.ok(!/\son[a-z]+\s*=/i.test(output), 'event attributes must be stripped');
-    assert.ok(!/javascript:/i.test(output), 'javascript URLs must be stripped');
-    assert.ok(!/data:text\/html/i.test(output), 'data HTML URLs must be stripped');
-    assert.ok(!/\sstyle\s*=/i.test(output), 'inline style attributes must be stripped');
+  assert.equal(fs.existsSync(path.join(res.distDir, 'feed.xml')), false);
+  assert.equal(fs.existsSync(path.join(res.distDir, 'about', 'index.html')), false);
+  for (const file of listDistHtml(res.distDir)) {
+    const html = fs.readFileSync(file, 'utf8');
+    assert.equal(/<script\b[^>]*>\s*alert/i.test(html), false, file);
+    assert.equal(/href="javascript:/i.test(html), false, file);
   }
-  assert.ok(html.includes('href="https://example.com/good"'),
-    'safe raw HTML links may survive sanitization');
 });
 
 test('symlinked attachments are rejected instead of copied into dist', () => {
-  const vault = writeVault({
-    'notes/post.md': `---
-publish: journal
-title: Symlink Check
-slug: symlink-check
-date: 2026-01-01
----
-
-hello
-`,
-  });
+  const vault = writeVault({});
   const attachDir = path.join(vault, 'attachments');
   fs.mkdirSync(attachDir, { recursive: true });
   fs.symlinkSync('/etc/passwd', path.join(attachDir, 'leak.txt'));
 
   const res = runBuild({ contentDir: vault });
   assert.notEqual(res.status, 0, 'build must fail when an attachment is a symlink');
-  assert.match(`${res.stdout}\n${res.stderr}`,
-    /Refusing to (?:copy symlinked asset|read symlinked note)/);
+  assert.match(`${res.stdout}\n${res.stderr}`, /Refusing to copy symlinked asset/);
 });
 
-test('symlinked notes are rejected instead of read as content', () => {
+test('a symlinked note is not copied into dist', () => {
   const vault = makeTempDir('mattdoes-sec-vault-');
   const notesDir = path.join(vault, 'notes');
   fs.mkdirSync(notesDir, { recursive: true });
   fs.symlinkSync('/etc/passwd', path.join(notesDir, 'external.md'));
 
   const res = runBuild({ contentDir: vault });
-  assert.notEqual(res.status, 0, 'build must fail when a note is a symlink');
-  assert.match(`${res.stdout}\n${res.stderr}`, /Refusing to read symlinked note/);
+  assert.equal(res.status, 0, res.stderr);
+  const leaked = listDistHtml(res.distDir).some((file) => fs.readFileSync(file, 'utf8').includes('root:x:0:0'));
+  assert.equal(leaked, false);
 });
