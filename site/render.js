@@ -114,6 +114,18 @@ export function contactBlock(email) {
 }
 
 /**
+ * The same outlink as Apple Music and Spotify. Visible text is "email".
+ *
+ * @param {unknown} email
+ * @returns {string}
+ */
+function emailOutlink(email) {
+  const address = contactAddress(email);
+  if (!address) return '';
+  return `<li><a href="${esc(`mailto:${address}`)}" aria-label="email unshared">email</a></li>`;
+}
+
+/**
  * The player slot. Empty when no Bandcamp URL is configured.
  *
  * @param {unknown} url
@@ -409,9 +421,9 @@ export function renderUnshared(ctx) {
     robots: '',
     main: `<h1 class="sign">${esc(heading)}</h1>
       <p class="lede">Fun is unshared</p>
-      ${contactBlock(unsharedContact.email)}
       ${bandcampSlot(unsharedPlayer.bandcamp)}
       <ul class="outlinks">
+        ${emailOutlink(unsharedContact.email)}
         <li>${link(APPLE, 'Apple Music')}</li>
         <li>${link(SPOTIFY, 'Spotify')}</li>
       </ul>

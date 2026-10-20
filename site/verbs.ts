@@ -35,14 +35,16 @@ export interface UnsharedPlayer {
 export const unsharedPlayer: UnsharedPlayer = {};
 
 /**
- * Public Unshared address. `email` is optional. Leave it unset until the
- * mailbox exists. An unset field emits no mailto and no contact heading.
+ * Public Unshared address. `email` is optional. An unset field emits no
+ * mailto and no contact heading.
  */
 export interface UnsharedContact {
   readonly email?: string;
 }
 
-export const unsharedContact: UnsharedContact = {};
+export const unsharedContact: UnsharedContact = {
+  email: 'luciadoes+unshared@mail.grokbot.com',
+};
 
 const REQUIRED_SLUGS = ['watching', 'listening', 'unshared'] as const;
 

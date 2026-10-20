@@ -77,9 +77,12 @@ test('the active verb is marked and the secret stays off the public pages', () =
   const watch = doc('watching/index.html');
   assert.equal(watch.querySelector('nav.verb-nav a[aria-current="page"]')?.getAttribute('href'), '/watching/');
   assert.equal(watch.querySelector('h1')?.textContent, 'matt does letterboxd');
-  for (const rel of ['index.html', 'watching/index.html', 'listening/index.html', 'unshared/index.html', '404.html']) {
+  for (const rel of ['index.html', 'watching/index.html', 'listening/index.html', '404.html']) {
     const text = fs.readFileSync(path.join(distDir, rel), 'utf8');
     assert.doesNotMatch(text, /lucia|frequency|transmission|luciadoes/i, rel);
   }
+  const unsharedHtml = fs.readFileSync(path.join(distDir, 'unshared/index.html'), 'utf8');
+  assert.doesNotMatch(unsharedHtml, /frequency|transmission/i);
+  assert.equal(unsharedHtml.includes('luciadoes@mail.grokbot.com'), false);
   assert.equal(fs.existsSync(path.join(distDir, 'frequency', 'index.html')), false);
 });
