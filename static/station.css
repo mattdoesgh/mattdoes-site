@@ -275,11 +275,18 @@ body[data-polarity="flip"] .verb-name {
   vertical-align: baseline;
 }
 
+/* Anton's trailing space is trimmed, so the gap lives in padding.
+   The text node still ends with a normal space for the accessible name. */
+.verb-prefix > span {
+  display: inline-block;
+  padding-right: 0.24em;
+}
+
 .verb-label {
   white-space: nowrap;
 }
 
-/* "matt does " is 4.28em in Anton. The cap leaves room for the glyph edges. */
+/* "matt does" is 4.04em in Anton, plus the 0.24em gap. */
 @media (hover: hover) {
   .verb-prefix {
     transition: max-width 180ms ease;
@@ -287,16 +294,31 @@ body[data-polarity="flip"] .verb-name {
 
   .verb:hover .verb-prefix,
   .verb:focus-visible .verb-prefix {
-    max-width: 4.32em;
+    max-width: 4.4em;
   }
 }
 
 /* Narrow screens without hover. One small kicker, then the verbs.
    "letterboxd" is 4.14em in Anton, so the size stays inside 360 and 390. */
 @media (hover: none) and (max-width: 1023px) {
+  body:has(.verbs) {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body:has(.verbs) main {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(2rem, 5vh, 3rem);
+  }
+
   .verb-kicker {
     display: block;
-    margin: 0 0 0.85rem;
+    margin: 0 0 clamp(1.35rem, 3vh, 2rem);
     color: #f7c8d8;
     font-family: var(--display);
     font-size: 1.15rem;
@@ -306,13 +328,13 @@ body[data-polarity="flip"] .verb-name {
   .verbs {
     display: flex;
     flex-direction: column;
-    gap: 1.35rem;
+    gap: clamp(2rem, 4.8vh, 3.15rem);
   }
 
   .verb-row {
     flex-direction: column;
     align-items: stretch;
-    gap: 0.35rem;
+    gap: 0.12rem;
     padding: 0;
     border-top: 0;
   }
@@ -330,6 +352,22 @@ body[data-polarity="flip"] .verb-name {
   .verb:active {
     background: #f7c8d8;
     color: #000000;
+  }
+
+  .preview,
+  .preview a,
+  .preview .stars {
+    color: #f7c8d8;
+  }
+
+  body:has(.verbs) .site-footer {
+    border-top: 0;
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  body:has(.verbs) .redaction {
+    margin-top: 0;
   }
 }
 
@@ -699,7 +737,11 @@ body[data-polarity="flip"] .total-num {
   display: block;
   width: min(100%, 28rem);
   height: 1.55rem;
-  background: currentColor;
+  background: #f7c8d8;
+}
+
+body[data-polarity="flip"] .redaction-bar {
+  background: #000000;
 }
 
 .redaction-hint {

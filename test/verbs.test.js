@@ -81,6 +81,9 @@ test('home links keep matt does in a separate prefix', () => {
     assert.equal(label?.textContent, verb.label);
     assert.equal(prefix.getAttribute('aria-hidden'), null);
     assert.equal(link.textContent, verbHeading(verb.label));
+    assert.equal(link.textContent, `matt does ${verb.label}`);
+    assert.equal(link.textContent.includes('\u00a0'), false);
+    assert.equal(link.textContent.split(' ').length, 3);
   }
 });
 
