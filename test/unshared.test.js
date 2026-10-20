@@ -45,27 +45,26 @@ function walkFiles(dir) {
   return files;
 }
 
-test('unshared@mattdoes.online is not emitted while the contact is unset', () => {
-  assert.equal(unsharedContact.email, undefined);
-  assert.equal(contactBlock(unsharedContact.email), '');
+test('the unshared contact mailto is the tagged grokbot address', () => {
+  const address = 'luciadoes+unshared@mail.grokbot.com';
+  assert.equal(unsharedContact.email, address);
   assert.equal(contactBlock('not-an-email'), '');
-
-  for (const file of walkFiles(distDir)) {
-    const text = fs.readFileSync(file);
-    const rel = path.relative(distDir, file);
-    assert.equal(text.includes('unshared@mattdoes.online'), false, rel);
-    if (!file.endsWith('.html')) continue;
-    const doc = new JSDOM(text.toString('utf8')).window.document;
-    const headings = [...doc.querySelectorAll('h1, h2, h3, h4, h5, h6')];
-    assert.equal(headings.some((node) => node.textContent.trim().toLowerCase() === 'contact'), false, rel);
-  }
 
   const html = readDist(distDir, 'unshared/index.html');
   const doc = new JSDOM(html).window.document;
-  assert.equal(doc.querySelector('.contact'), null);
-  assert.equal(doc.querySelector('a[href^="mailto:unshared@"]'), null);
+  const link = doc.querySelector('.contact a');
+  assert.equal(link?.getAttribute('href'), `mailto:${address}`);
+  assert.equal(link?.textContent, address);
+  assert.equal(doc.querySelector('.contact h2')?.textContent, 'Contact');
+  assert.equal(doc.querySelector('a[href="mailto:unshared@mattdoes.online"]'), null);
 
-  assert.equal(fs.existsSync(path.join(distDir, 'frequency', 'index.html')), false);
+  for (const file of walkFiles(distDir)) {
+    if (!file.endsWith('.html')) continue;
+    const text = fs.readFileSync(file, 'utf8');
+    const rel = path.relative(distDir, file);
+    assert.equal(text.includes('unshared@mattdoes.online'), false, rel);
+    assert.equal(text.includes('luciadoes@mail.grokbot.com'), false, rel);
+  }
 });
 
 test('the frequency page source still renders the prize mailto', () => {
@@ -78,10 +77,10 @@ test('the frequency page source still renders the prize mailto', () => {
 });
 
 test('a configured email renders the contact mailto', () => {
-  const html = contactBlock('unshared@mattdoes.online');
+  const html = contactBlock('person@example.com');
   const doc = new JSDOM(`<body>${html}</body>`).window.document;
   assert.equal(doc.querySelector('h2')?.textContent, 'Contact');
-  assert.equal(doc.querySelector('a')?.getAttribute('href'), 'mailto:unshared@mattdoes.online');
+  assert.equal(doc.querySelector('a')?.getAttribute('href'), 'mailto:person@example.com');
 });
 
 test('a configured Bandcamp URL renders the player slot', () => {
