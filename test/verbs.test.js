@@ -94,6 +94,8 @@ test('the home prefix is clipped shut until hover', () => {
   assert.match(rule, /overflow:\s*clip/);
   assert.match(rule, /white-space:\s*nowrap/);
   assert.match(css, /\.verb:hover \.verb-prefix,\s*\.verb:focus-visible \.verb-prefix \{\s*width:\s*4\.08em;\s*margin-right:\s*0\.24em;/);
+  assert.doesNotMatch(css, /\.verb-prefix[^{]*\{[^}]*transition/);
+  assert.doesNotMatch(css, /@keyframes[\s\S]*verb-prefix|verb-prefix[\s\S]*@keyframes/);
 });
 
 test('the home kicker says matt does once and stays out of the accessible name', () => {
