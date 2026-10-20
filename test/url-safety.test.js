@@ -84,7 +84,7 @@ test('Last.fm cache values are sanitized on the homepage', () => {
   assert.equal(res.status, 0);
 
   const home = readDist(res.distDir, 'index.html');
-  const listen = readDist(res.distDir, 'listen/index.html');
+  const listen = readDist(res.distDir, 'listening/index.html');
 
   assert.ok(!/href="javascript:/i.test(home),
     'homepage must not emit a javascript: listening href');

@@ -1,4 +1,5 @@
 // Verb registry. Nav, routes, and the sitemap are generated from `verbs`.
+// The slug is the URL. The label is the visible words after "matt does".
 // `/` and `/404` are the shell. `/frequency/` is the only secret page:
 // built, noindex, and absent from this list.
 
@@ -11,18 +12,17 @@ export type RendererName = (typeof RENDERERS)[number];
 export interface Verb {
   readonly slug: string;
   readonly label: string;
-  readonly number: string;
   readonly source: DataSource;
   readonly renderer: RendererName;
 }
 
 export const verbs = [
-  { slug: 'watch', label: 'watch', number: '01', source: 'letterboxd', renderer: 'watch' },
-  { slug: 'listen', label: 'listen', number: '02', source: 'listening', renderer: 'listen' },
-  { slug: 'unshared', label: 'unshared', number: '03', source: 'static', renderer: 'unshared' },
+  { slug: 'watching', label: 'letterboxd', source: 'letterboxd', renderer: 'watch' },
+  { slug: 'listening', label: 'last.fm', source: 'listening', renderer: 'listen' },
+  { slug: 'unshared', label: 'unshared', source: 'static', renderer: 'unshared' },
 ] as const satisfies readonly Verb[];
 
-/** Built, but not a verb: noindex, not in the menu, sitemap, or anomaly index. */
+/** Built, but not a verb: noindex, not in the menu or the sitemap. */
 export const SECRET_PATHS = ['/frequency/'] as const;
 
 /**
@@ -45,7 +45,12 @@ export interface UnsharedContact {
 
 export const unsharedContact: UnsharedContact = {};
 
-const REQUIRED_SLUGS = ['watch', 'listen', 'unshared'] as const;
+const REQUIRED_SLUGS = ['watching', 'listening', 'unshared'] as const;
+
+/** The one visible name. Nav links and each verb's h1 use this. */
+export function verbHeading(label: string): string {
+  return `matt does ${label}`;
+}
 
 export function verbPath(slug: string): string {
   return `/${slug}/`;
@@ -57,13 +62,20 @@ export function sitemapPaths(): readonly string[] {
 }
 
 export function validateVerbs(
-  list: readonly { slug: string; label: string; number: string; source: string; renderer: string }[],
+  list: readonly { slug: string; label: string; source: string; renderer: string }[],
   knownRenderers: readonly string[],
 ): void {
   const slugs = new Set<string>();
   for (const verb of list) {
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(verb.slug)) {
       throw new Error(`verb registry: invalid slug "${verb.slug}"`);
+    }
+    if (!/^[a-z.]+$/.test(verb.label)) {
+      throw new Error(`verb registry: invalid label "${verb.label}"`);
+    }
+    const heading = verbHeading(verb.label);
+    if (!/^matt does [a-z.]+$/.test(heading)) {
+      throw new Error(`verb registry: invalid heading "${heading}"`);
     }
     if (slugs.has(verb.slug)) {
       throw new Error(`verb registry: duplicate slug "${verb.slug}"`);

@@ -114,16 +114,15 @@ body {
 
 .ident,
 .sign,
-.verb-name,
-.total-num,
-.broadcast a,
+.verb,
 .verb-nav a,
 .contact a,
-.prize a {
+.prize a,
+.prize-line a {
   font-family: var(--display);
   font-weight: 400;
-  text-transform: uppercase;
-  line-height: 0.84;
+  text-transform: none;
+  line-height: 0.9;
 }
 
 .ident {
@@ -177,21 +176,64 @@ body[data-polarity="flip"] .sign {
 
 .verbs {
   list-style: none;
-  margin: 1.5rem 0 0;
+  margin: 0;
   padding: 0;
 }
 
-.verb {
-  display: grid;
-  grid-template-columns: 2.75rem 1fr;
-  gap: 0.35rem 1rem;
+.verb-row {
+  display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  padding: 0.85rem 0.35rem 1rem;
+  gap: 0.35rem 1.25rem;
+  padding: 0.85rem 0.15rem 1rem;
   border-top: 1px solid var(--rule);
-  color: inherit;
+}
+
+.verb {
+  color: #f7c8d8;
   text-decoration: none;
+  font-size: clamp(2.4rem, 8vw, 4.6rem);
   min-height: 44px;
-  transition: background-color 140ms linear, color 140ms linear;
+  display: inline-flex;
+  align-items: center;
+}
+
+.preview {
+  font-size: 1.15rem;
+  line-height: 1.35;
+}
+
+.preview a,
+.stars {
+  color: inherit;
+}
+
+.stars {
+  font-family: var(--body);
+  letter-spacing: 0.06em;
+}
+
+.credit {
+  margin: 0.8rem 0 0;
+  font-size: 1.15rem;
+}
+
+.credit a,
+.home-link a {
+  color: inherit;
+}
+
+.home-link {
+  margin: 0 0 0.6rem;
+}
+
+.prize-line {
+  margin: 0;
+}
+
+.prize-line a {
+  color: #f7c8d8;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
 }
 
 .verb-no {
@@ -232,10 +274,8 @@ body[data-polarity="flip"] .verb-name {
   outline-color: #000000;
 }
 
-.verb:hover .verb-no,
-.verb:focus-visible .verb-no,
-.verb:hover .verb-name,
-.verb:focus-visible .verb-name {
+.verb:hover,
+.verb:focus-visible {
   color: #000000;
 }
 
@@ -246,10 +286,13 @@ body[data-polarity="flip"] .verb:focus-visible {
   outline-color: #f7c8d8;
 }
 
-body[data-polarity="flip"] .verb:hover .verb-no,
-body[data-polarity="flip"] .verb:focus-visible .verb-no,
-body[data-polarity="flip"] .verb:hover .verb-name,
-body[data-polarity="flip"] .verb:focus-visible .verb-name {
+body[data-polarity="flip"] .verb,
+body[data-polarity="flip"] .verb-nav a {
+  color: #000000;
+}
+
+body[data-polarity="flip"] .verb:hover,
+body[data-polarity="flip"] .verb:focus-visible {
   color: #f7c8d8;
 }
 
@@ -453,38 +496,27 @@ body[data-polarity="flip"] .total-num {
   margin-top: 0.2rem;
 }
 
-.log {
+.tracks {
   list-style: none;
-  margin: 0.5rem 0 0;
+  margin: 1rem 0 0;
   padding: 0;
 }
 
-.log li {
-  display: grid;
-  gap: 0.15rem 1rem;
-  padding: 0.85rem 0;
+.tracks li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.75rem;
+  padding: 0.75rem 0;
   border-top: 1px solid var(--rule);
 }
 
-.log a {
+.tracks a {
   color: inherit;
   font-size: 1.2rem;
 }
 
-.log .by,
-.log .album {
-  display: block;
-}
-
-@media (min-width: 720px) {
-  .log li {
-    grid-template-columns: 12.5rem 1fr;
-    align-items: baseline;
-  }
-
-  .log .time {
-    grid-row: span 3;
-  }
+.tracks .album::before {
+  content: "· ";
 }
 
 .feed {
@@ -621,16 +653,13 @@ body[data-polarity="flip"] .total-num {
 }
 
 .redaction[open] .redaction-hint {
-  position: static;
-  width: auto;
-  height: auto;
-  margin: 0;
-  overflow: visible;
-  clip: auto;
-  white-space: normal;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-size: 0.85rem;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
 }
 
 .redaction-body {
@@ -771,7 +800,7 @@ body[data-polarity="flip"] .anomalies summary {
 @media (prefers-contrast: more) {
   .verb,
   .incident,
-  .log li,
+  .tracks li,
   .broadcast,
   .site-footer {
     border-top-width: 3px;

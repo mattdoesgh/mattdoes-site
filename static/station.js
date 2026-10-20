@@ -1,13 +1,9 @@
-/* Keyword layer and live listening refresh.
-   The trail does not need this file: redaction bars are native details.
+/* Keyword layer and live track refresh.
+   The trail does not need this file: the bars are native details.
    The mailto addresses are not in this file. */
 (function () {
   var phrase = 'lucia';
   var buffer = '';
-
-  function formatScrobbleCount(n) {
-    return Number(n || 0).toLocaleString('en-US');
-  }
 
   function httpsHref(link) {
     if (typeof link !== 'string') return '';
@@ -29,62 +25,8 @@
     window.location.assign(root + 'frequency/');
   }
 
-  function setText(id, text) {
-    var node = document.getElementById(id);
-    if (node) node.textContent = text;
-  }
-
-  function apply(data) {
-    var tracks = Array.isArray(data.tracks) ? data.tracks : [];
-    if (tracks.length && !(Number(data.playcount) > 0)) return;
-    var live = null;
-    var newest = null;
-    for (var i = 0; i < tracks.length; i += 1) {
-      var row = tracks[i];
-      if (!row) continue;
-      if (row.nowPlaying && !live) live = row;
-      if (!row.nowPlaying && row.date && (!newest || String(row.date) > String(newest.date))) newest = row;
-    }
-    var teaser = live || newest;
-    if (teaser) {
-      var name = [teaser.artist, teaser.track].filter(Boolean).join(' — ');
-      setText('listen-teaser', live ? 'live · ' + name : name);
-    }
-    var count = document.getElementById('scrobble-count');
-    if (count && data.playcount != null) count.textContent = formatScrobbleCount(data.playcount);
-    var state = document.getElementById('signal-state');
-    if (state) state.textContent = live ? 'live' : 'idle';
-    var bars = document.getElementById('signal-bars');
-    if (bars) {
-      var spans = bars.querySelectorAll('span');
-      for (var b = 0; b < spans.length; b += 1) {
-        var on = !!live || (!live && tracks.length && b < 2);
-        spans[b].classList.toggle('on', on);
-      }
-    }
-    var log = document.getElementById('listen-log');
-    if (!log || log.tagName !== 'OL') return;
-    var ordered = [];
-    if (live) ordered.push(live);
-    var rest = tracks.filter(function (row) { return row && !row.nowPlaying && row.date; });
-    rest.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
-    ordered = ordered.concat(rest).slice(0, 25);
-    log.replaceChildren();
-    for (var n = 0; n < ordered.length; n += 1) {
-      log.appendChild(logItem(ordered[n]));
-    }
-  }
-
-  function logItem(row) {
+  function trackItem(row) {
     var li = document.createElement('li');
-    var time = document.createElement('time');
-    time.className = 'time';
-    if (row.nowPlaying) {
-      time.textContent = 'live';
-    } else {
-      time.setAttribute('datetime', String(row.date || ''));
-      time.textContent = String(row.date || '').slice(0, 16).replace('T', ' ') + (row.date ? ' UTC' : '');
-    }
     var what = document.createElement('span');
     what.className = 'what';
     var href = httpsHref(row.link);
@@ -101,7 +43,7 @@
     var by = document.createElement('span');
     by.className = 'by';
     by.textContent = row.artist || '';
-    li.append(time, what, by);
+    li.append(what, by);
     if (row.album) {
       var album = document.createElement('span');
       album.className = 'album';
@@ -109,6 +51,27 @@
       li.appendChild(album);
     }
     return li;
+  }
+
+  function apply(data) {
+    var tracks = Array.isArray(data.tracks) ? data.tracks : [];
+    if (tracks.length && !(Number(data.playcount) > 0)) return;
+    var live = null;
+    for (var i = 0; i < tracks.length; i += 1) {
+      var row = tracks[i];
+      if (row && row.nowPlaying && !live) live = row;
+    }
+    var list = document.getElementById('tracks');
+    if (!list || list.tagName !== 'OL') return;
+    var ordered = [];
+    if (live) ordered.push(live);
+    var rest = tracks.filter(function (row) { return row && !row.nowPlaying && row.date; });
+    rest.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+    ordered = ordered.concat(rest).slice(0, 25);
+    list.replaceChildren();
+    for (var n = 0; n < ordered.length; n += 1) {
+      list.appendChild(trackItem(ordered[n]));
+    }
   }
 
   function refresh() {

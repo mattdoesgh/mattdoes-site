@@ -44,14 +44,15 @@ test('a mirrored poster is an image with alt text and intrinsic size', () => {
   assert.equal(img.getAttribute('height'), '450');
   assert.equal(img.getAttribute('loading'), 'eager');
   assert.equal(img.getAttribute('fetchpriority'), 'high');
-  assert.equal(img.closest('figure')?.querySelector('.kicker')?.textContent, 'Evidence');
+  assert.equal(img.closest('figure')?.querySelector('.kicker'), null);
+  assert.doesNotMatch(img.closest('figure').textContent, /Evidence/);
 });
 
-test('an unmirrored poster falls back to the Evidence placeholder', () => {
+test('an unmirrored poster is omitted', () => {
   const boxes = [...doc.querySelectorAll('.evidence')];
-  assert.equal(boxes.length, 2);
-  assert.equal(boxes[1].querySelector('img'), null);
-  assert.match(boxes[1].textContent, /No still on file/);
+  assert.equal(boxes.length, 1);
+  assert.equal(boxes[0].querySelector('img')?.getAttribute('alt').includes('Blue Heron'), true);
+  assert.doesNotMatch(doc.body.textContent, /No still on file|Evidence/);
 });
 
 test('later posters would be lazy', () => {

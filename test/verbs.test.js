@@ -8,18 +8,21 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
 import { buildFixtureVault, listDistHtml, readDist, REPO_ROOT } from './helpers/run-build.js';
-import { verbs, sitemapPaths, SECRET_PATHS, assertRegistry, validateVerbs } from '../site/verbs.ts';
+import { verbs, sitemapPaths, SECRET_PATHS, assertRegistry, validateVerbs, verbHeading } from '../site/verbs.ts';
 
 let distDir;
 test.before(() => { ({ distDir } = buildFixtureVault()); });
 
-test('the registry names watch, listen, and unshared once each', () => {
+test('the registry names watching, listening, and unshared once each', () => {
   const slugs = verbs.map((verb) => verb.slug);
-  assert.deepEqual(slugs, ['watch', 'listen', 'unshared']);
+  assert.deepEqual(slugs, ['watching', 'listening', 'unshared']);
   assert.equal(new Set(slugs).size, slugs.length);
+  assert.equal(verbs.find((verb) => verb.slug === 'watching').label, 'letterboxd');
+  assert.equal(verbs.find((verb) => verb.slug === 'listening').label, 'last.fm');
   for (const verb of verbs) {
     assert.ok(['letterboxd', 'listening', 'static'].includes(verb.source), verb.slug);
     assert.ok(['watch', 'listen', 'unshared'].includes(verb.renderer), verb.slug);
+    assert.match(verbHeading(verb.label), /^matt does [a-z.]+$/);
   }
 });
 
@@ -27,20 +30,40 @@ test('an unknown source, a duplicate, or a missing renderer fails', () => {
   assert.doesNotThrow(() => assertRegistry(['watch', 'listen', 'unshared']));
   assert.throws(() => assertRegistry(['watch', 'listen']), /missing renderer "unshared"/);
   assert.throws(() => validateVerbs([
-    { slug: 'watch', label: 'watch', number: '01', source: 'nope', renderer: 'watch' },
-    { slug: 'listen', label: 'listen', number: '02', source: 'listening', renderer: 'listen' },
-    { slug: 'unshared', label: 'unshared', number: '03', source: 'static', renderer: 'unshared' },
+    { slug: 'watching', label: 'letterboxd', source: 'nope', renderer: 'watch' },
+    { slug: 'listening', label: 'last.fm', source: 'listening', renderer: 'listen' },
+    { slug: 'unshared', label: 'unshared', source: 'static', renderer: 'unshared' },
   ], ['watch', 'listen', 'unshared']), /unknown data source "nope"/);
   assert.throws(() => validateVerbs([
-    { slug: 'watch', label: 'watch', number: '01', source: 'letterboxd', renderer: 'watch' },
-    { slug: 'watch', label: 'watch', number: '01', source: 'letterboxd', renderer: 'watch' },
-    { slug: 'listen', label: 'listen', number: '02', source: 'listening', renderer: 'listen' },
-    { slug: 'unshared', label: 'unshared', number: '03', source: 'static', renderer: 'unshared' },
-  ], ['watch', 'listen', 'unshared']), /duplicate slug "watch"/);
+    { slug: 'watching', label: 'letterboxd', source: 'letterboxd', renderer: 'watch' },
+    { slug: 'watching', label: 'letterboxd', source: 'letterboxd', renderer: 'watch' },
+    { slug: 'listening', label: 'last.fm', source: 'listening', renderer: 'listen' },
+    { slug: 'unshared', label: 'unshared', source: 'static', renderer: 'unshared' },
+  ], ['watch', 'listen', 'unshared']), /duplicate slug "watching"/);
   assert.throws(() => validateVerbs([
-    { slug: 'listen', label: 'listen', number: '02', source: 'listening', renderer: 'listen' },
-    { slug: 'unshared', label: 'unshared', number: '03', source: 'static', renderer: 'unshared' },
-  ], ['listen', 'unshared']), /missing verb "watch"/);
+    { slug: 'listening', label: 'last.fm', source: 'listening', renderer: 'listen' },
+    { slug: 'unshared', label: 'unshared', source: 'static', renderer: 'unshared' },
+  ], ['listen', 'unshared']), /missing verb "watching"/);
+});
+
+test('every nav label and page h1 is matt does plus the label', () => {
+  const home = new JSDOM(readDist(distDir, 'index.html')).window.document;
+  for (const verb of verbs) {
+    const heading = verbHeading(verb.label);
+    assert.match(heading, /^matt does [a-z.]+$/);
+    const homeLink = [...home.querySelectorAll('a.verb')].find((anchor) => anchor.getAttribute('href') === `/${verb.slug}/`);
+    assert.equal(homeLink?.textContent, heading, verb.slug);
+    const page = new JSDOM(readDist(distDir, `${verb.slug}/index.html`)).window.document;
+    assert.equal(page.querySelector('h1')?.textContent, heading, verb.slug);
+    const nav = [...page.querySelectorAll('nav.verb-nav a')].find((anchor) => anchor.getAttribute('href') === `/${verb.slug}/`);
+    assert.equal(nav?.textContent, heading, verb.slug);
+  }
+  const watching = readDist(distDir, 'watching/index.html');
+  const listening = readDist(distDir, 'listening/index.html');
+  assert.match(watching, /Letterboxd/);
+  assert.match(watching, /https:\/\/letterboxd\.com\/mattdoes\//);
+  assert.match(listening, /Last\.fm/);
+  assert.match(listening, /https:\/\/www\.last\.fm\/user\/djverism/);
 });
 
 test('emit fails the build through assertRegistry', () => {
@@ -74,7 +97,8 @@ test('nothing public is built outside the registry except / and /404', () => {
   const sitemap = readDist(distDir, 'sitemap.xml');
   assert.equal(sitemap.includes('/frequency/'), false);
   assert.equal(sitemap.includes('/movies/'), false);
-  assert.equal(sitemap.includes('/listening/'), false);
+  assert.equal(sitemap.includes('<loc>https://mattdoes.online/watch/</loc>'), false);
+  assert.equal(sitemap.includes('<loc>https://mattdoes.online/listen/</loc>'), false);
   assert.equal(sitemap.includes('/digs/'), false);
   const frequency = readDist(distDir, 'frequency/index.html');
   assert.match(frequency, /name="robots" content="noindex"/);

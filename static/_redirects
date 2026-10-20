@@ -1,34 +1,8 @@
 # Cloudflare Pages — URL redirects
 # Docs: https://developers.cloudflare.com/pages/configuration/redirects/
+#
+# This site does not keep legacy path redirects. Old URLs 404.
+# The host rule below is the pre-existing Pages apex line.
+# The zone-level www bulk redirect is separate and is not in this repo.
 
-# Apex canonicalization (handled at DNS + Pages custom domains, but belt-and-braces)
 https://www.mattdoes.online/*  https://mattdoes.online/:splat  301
-
-# Legacy paths from the pre-rebuild site (fill in as needed)
-# /old-path                    /new-path                        301
-
-# /blog/, /journal/, /making/, /thoughts/, and /posts/ are not sections.
-# No redirect keeps a deleted path looking like a content page.
-
-# Retired pages and the old verb paths. Subpaths included.
-/movies              /watch/          301
-/movies/             /watch/          301
-/movies/*            /watch/:splat    301
-/listening           /listen/         301
-/listening/          /listen/         301
-/listening/*         /listen/:splat   301
-/digs                /                301
-/digs/               /                301
-/digs/*              /                301
-/grok                /                301
-/grok/               /                301
-/grok/*              /                301
-/about               /                301
-/about/              /                301
-/about/*             /                301
-/search              /                301
-/search/             /                301
-/search/*            /                301
-/colophon            /                301
-/colophon/           /                301
-/colophon/*          /                301

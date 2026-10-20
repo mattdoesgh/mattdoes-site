@@ -1,5 +1,6 @@
 // Retired writing routes stay unpublished and unredirected.
-// /listen/ is a real page without JavaScript. Old paths 301 to the verbs.
+// /listening/ is a real page without JavaScript.
+// A redirect source must not be a real page. An empty or missing _redirects file passes.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -13,15 +14,25 @@ test.before(() => { ({ distDir } = buildFixtureVault()); });
 
 const RETIRED_ROUTES = ['journal', 'making', 'blog'];
 
+const REAL_PAGES = ['/', '/watching/', '/listening/', '/unshared/', '/frequency/'];
+
 function rules() {
-  return fs.readFileSync(path.join(REPO_ROOT, 'static', '_redirects'), 'utf8')
+  const file = path.join(REPO_ROOT, 'static', '_redirects');
+  if (!fs.existsSync(file)) return [];
+  return fs.readFileSync(file, 'utf8')
     .split('\n')
     .map((line) => line.trim())
     .filter((line) => line && !line.startsWith('#'));
 }
 
-test('listen is a real page without JavaScript', () => {
-  const html = readDist(distDir, 'listen/index.html');
+function redirectSourceKey(src) {
+  if (!src.startsWith('/')) return null;
+  const bare = src.replace(/\/\*$/, '').replace(/\/$/, '');
+  return bare === '' ? '/' : `${bare}/`;
+}
+
+test('listening is a real page without JavaScript', () => {
+  const html = readDist(distDir, 'listening/index.html');
   assert.ok(!/http-equiv=["']?refresh/i.test(html));
   const doc = new JSDOM(html).window.document;
   assert.ok(doc.querySelector('main#main'));
@@ -56,7 +67,8 @@ test('/posts/ and /thoughts/ are not pages and are not redirected', () => {
   const sitemap = readDist(distDir, 'sitemap.xml');
   assert.equal(sitemap.includes('/posts/'), false);
   assert.equal(sitemap.includes('/thoughts/'), false);
-  assert.ok(sitemap.includes('/listen/</loc>'));
+  assert.ok(sitemap.includes('/listening/</loc>'));
+  assert.ok(sitemap.includes('/watching/</loc>'));
 });
 
 test('static/_redirects does not revive retired writing routes', () => {
@@ -68,26 +80,12 @@ test('static/_redirects does not revive retired writing routes', () => {
   }
 });
 
-test('old sections 301 to the verbs or home, including subpaths', () => {
-  const text = rules().join('\n');
-  const expect = [
-    ['/movies', '/watch/'],
-    ['/movies/', '/watch/'],
-    ['/movies/*', '/watch/:splat'],
-    ['/listening', '/listen/'],
-    ['/listening/', '/listen/'],
-    ['/listening/*', '/listen/:splat'],
-  ];
-  for (const [from, to] of expect) {
-    assert.match(text, new RegExp(`${from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s+${to.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s+301`));
-  }
-  for (const section of ['digs', 'grok', 'about', 'search', 'colophon']) {
-    for (const from of [`/${section}`, `/${section}/`, `/${section}/*`]) {
-      assert.ok(rules().some((rule) => {
-        const [src, dest, code] = rule.split(/\s+/);
-        return src === from && dest === '/' && code === '301';
-      }), from);
-    }
+test('no redirect source is a real page', () => {
+  const real = new Set(REAL_PAGES);
+  for (const rule of rules()) {
+    const key = redirectSourceKey(rule.split(/\s+/)[0]);
+    if (!key) continue;
+    assert.equal(real.has(key), false, `${rule} would redirect a real page`);
   }
 });
 
