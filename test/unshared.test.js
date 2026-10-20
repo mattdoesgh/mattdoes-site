@@ -52,10 +52,14 @@ test('the unshared contact mailto is the tagged grokbot address', () => {
 
   const html = readDist(distDir, 'unshared/index.html');
   const doc = new JSDOM(html).window.document;
-  const link = doc.querySelector('.contact a');
+  const links = [...doc.querySelectorAll('.outlinks a')];
+  const link = links.find((anchor) => anchor.textContent === 'email');
   assert.equal(link?.getAttribute('href'), `mailto:${address}`);
-  assert.equal(link?.textContent, address);
-  assert.equal(doc.querySelector('.contact h2')?.textContent, 'Contact');
+  assert.equal(link?.textContent, 'email');
+  assert.equal(link?.getAttribute('aria-label'), 'email unshared');
+  assert.deepEqual(links.map((anchor) => anchor.textContent), ['email', 'Apple Music', 'Spotify']);
+  assert.equal(doc.querySelector('.contact'), null);
+  assert.equal(doc.body.textContent.includes('@'), false);
   assert.equal(doc.querySelector('a[href="mailto:unshared@mattdoes.online"]'), null);
 
   for (const file of walkFiles(distDir)) {
