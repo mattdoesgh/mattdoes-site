@@ -1,9 +1,8 @@
 # Dependabot — keep the small dependency surface current.
 #
-# The site has three npm package roots:
-#   /              build pipeline (marked, lightningcss, …)
-#   /workers       shared tooling for all three Workers (wrangler devDep)
-#   /design-system React component library + build toolchain
+# The site has two npm package roots:
+#   /              build pipeline (lightningcss, the site renderer, …)
+#   /workers       shared tooling for all Workers (wrangler devDep)
 #
 # Weekly cadence: the dep set is small and the maintenance budget is solo,
 # so daily PRs would only generate noise. Grouped minor + patch updates land
@@ -22,15 +21,6 @@ updates:
 
   - package-ecosystem: npm
     directory: "/workers"
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-    groups:
-      minor-and-patch:
-        update-types: ["minor", "patch"]
-
-  - package-ecosystem: npm
-    directory: "/design-system"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5

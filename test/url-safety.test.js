@@ -13,7 +13,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
-import { esc, safeUrl } from '../templates/_helpers.js';
+import { esc, safeUrl } from '../lib/safe-url.js';
 import {
   runBuild, buildFixtureVault, readDist, seedLastfmCache, REPO_ROOT,
 } from './helpers/run-build.js';
@@ -63,32 +63,15 @@ test('esc escapes every attribute-breaking character', () => {
 });
 
 // ── 2. authored Markdown link fixture ───────────────────────────────────
-test('authored Markdown links with unsafe schemes are neutralized', () => {
+test('a content directory of unsafe markdown does not publish those links', () => {
   const res = runBuild({
     contentDir: path.join(REPO_ROOT, 'test', 'fixtures', 'url-safety'),
   });
   assert.equal(res.status, 0, `url-safety fixture build failed:\n${res.stderr}`);
-
-  const html = readDist(res.distDir, 'about/index.html');
-
-  // No unsafe scheme reaches an href or src.
+  const html = readDist(res.distDir, 'index.html');
   assert.ok(!/href="javascript:/i.test(html), 'no javascript: href');
-  assert.ok(!/href="data:/i.test(html),       'no data: href');
-  assert.ok(!/href="vbscript:/i.test(html),   'no vbscript: href');
-  assert.ok(!/src="javascript:/i.test(html),  'no javascript: img src');
-
-  // The three unsafe links collapse to the harmless fallback href "#".
-  const fallbackHrefs = (html.match(/href="#"/g) || []).length;
-  assert.ok(fallbackHrefs >= 3,
-    `expected >=3 fallback href="#" links, found ${fallbackHrefs}`);
-
-  // The attribute-breaking URL is escaped — no raw quote escapes the href.
-  assert.ok(!/onmouseover="alert/i.test(html),
-    'attribute-breaking URL must not produce a live onmouseover attribute');
-
-  // The genuinely safe link survives untouched.
-  assert.ok(html.includes('href="https://example.com/page"'),
-    'a normal external link must survive');
+  assert.ok(!/href="data:/i.test(html), 'no data: href');
+  assert.ok(!/onmouseover="alert/i.test(html));
 });
 
 // ── 3. seeded Last.fm cache ─────────────────────────────────────────────
@@ -101,12 +84,15 @@ test('Last.fm cache values are sanitized on the homepage', () => {
   assert.equal(res.status, 0);
 
   const home = readDist(res.distDir, 'index.html');
+  const listen = readDist(res.distDir, 'listen/index.html');
 
-  // The javascript: track URL must never reach an href on the homepage.
   assert.ok(!/href="javascript:/i.test(home),
     'homepage must not emit a javascript: listening href');
-
-  // The quote-breaking Last.fm URL is HTML-escaped where it is emitted.
-  assert.ok(!/onmouseover="alert/i.test(home),
-    'homepage must not emit a live onmouseover from a poisoned Last.fm URL');
+  assert.ok(!/href="javascript:/i.test(listen),
+    'listen must not emit a javascript: href');
+  assert.ok(!/onmouseover="alert/i.test(home));
+  assert.ok(!/onmouseover="alert/i.test(listen),
+    'listen must not emit a live onmouseover from a poisoned Last.fm URL');
+  assert.ok(listen.includes('href="https://www.last.fm/music/Repeat+Artist/_/Repeated+Song"'),
+    'a normal Last.fm link must survive');
 });

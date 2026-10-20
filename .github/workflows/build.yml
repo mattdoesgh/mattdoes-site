@@ -27,19 +27,12 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      # --ignore-scripts skips the root postinstall (which installs the
-      # design-system toolchain) — audit root + workers first, then pull in
-      # the design-system lockfile explicitly below.
+      # --ignore-scripts skips lifecycle scripts. Audit root, then workers.
       - name: Install (root)
         run: npm ci --ignore-scripts
 
       - name: Audit (root, prod + dev)
         run: npm run audit
-
-      - name: Install + audit (design-system)
-        run: |
-          npm --prefix design-system ci --include=dev
-          npm --prefix design-system audit --audit-level=moderate
 
       # All three Workers share one tooling package root (workers/package.json,
       # wrangler devDep) — audit it once, same threshold.
@@ -62,17 +55,11 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      # `npm ci` triggers the root `postinstall`, which installs the
-      # design-system deps (react/react-dom + build toolchain) so the `prebuild`
-      # hook can build the SSG bundle that lib/emit/ imports.
       - name: Install
         run: npm ci
 
-      # The site build transpiles the SSG bundle with esbuild (no type check),
-      # so type-check the design system explicitly to enforce the render*/page
-      # prop contracts.
-      - name: Typecheck (design-system)
-        run: npm --prefix design-system run typecheck
+      - name: Typecheck (site)
+        run: npm run typecheck
 
       - name: Build
         env:
@@ -83,7 +70,7 @@ jobs:
           # real SITE_URL and reaches the Worker.
           LISTENING_OFFLINE: '1'
           # Same posture for the Letterboxd diary RSS (lib/watches.js). The
-          # production Pages build does not set this, so /movies/ is baked
+          # production Pages build does not set this, so /watch/ is baked
           # from the live feed there.
           LETTERBOXD_OFFLINE: '1'
         run: npm run build
@@ -120,8 +107,6 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      # `npm ci` triggers the root `postinstall` (design-system deps), so the
-      # fixture builds in the suite can build + import the SSG bundle.
       - name: Install
         run: npm ci
 

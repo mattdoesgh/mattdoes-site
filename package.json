@@ -5,35 +5,28 @@
   "description": "mattdoes.online — in-repo notes → static HTML",
   "type": "module",
   "scripts": {
-    "postinstall": "npm --prefix design-system ci --include=dev",
-    "build:ssg": "npm --prefix design-system run build:ssg",
-    "prebuild": "npm run build:ssg",
+    "typecheck": "tsc -p site/tsconfig.json --noEmit",
     "build": "NODE_ENV=production node build.js",
-    "clean": "rm -rf dist design-system/dist-ssg",
+    "clean": "rm -rf dist",
     "lint": "html-validate \"dist/**/*.html\"",
     "audit": "npm audit --audit-level=moderate",
     "check:assets": "node scripts/check-asset-budget.js",
     "scan:secrets": "npx --yes gitleaks detect --source . --verbose",
-    "pretest": "npm run build:ssg && NODE_ENV=production LISTENING_OFFLINE=1 LETTERBOXD_OFFLINE=1 SITE_URL=https://mattdoes.online node build.js",
+    "pretest": "NODE_ENV=production LISTENING_OFFLINE=1 LETTERBOXD_OFFLINE=1 SITE_URL=https://mattdoes.online node build.js",
     "test": "node --test \"test/**/*.test.js\"",
     "deploy:workers": "node scripts/deploy-workers.js",
-    "bake-geo": "node scripts/bake-home-geojson.js",
     "optimize-media": "node scripts/optimize-media.js",
     "sync-media": "node --env-file-if-exists=.env scripts/sync-media.js"
   },
   "dependencies": {
-    "marked": "^18.1.1",
-    "marked-footnote": "^1.4.0",
-    "sanitize-html": "^2.17.5",
-    "shiki": "^4.5.0",
-    "sharp": "^0.35.3",
-    "yaml": "^2.9.1"
+    "sharp": "^0.35.3"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
     "axe-core": "^4.14.0",
+    "typescript": "^5.9.3",
     "culori": "^4.0.2",
     "html-validate": "^11.16.2",
     "jsdom": "^29.1.1",

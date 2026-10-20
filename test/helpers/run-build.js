@@ -62,22 +62,26 @@ export function runBuild({
   mediaManifest,
   env = {},
 }) {
+  const childEnv = {
+    ...process.env,
+    CONTENT_DIR: contentDir,
+    DIST_DIR: distDir,
+    CACHE_DIR: cacheDir,
+    SITE_URL: siteUrl,
+    ...(mediaManifest ? { MEDIA_MANIFEST: mediaManifest } : {}),
+    // Keep build subprocesses hermetic: never let the listening snapshot
+    // reach out to the Worker/Last.fm. Tests that want listening data seed a
+    // fresh cache (seedLastfmCache), which short-circuits the network anyway.
+    LISTENING_OFFLINE: '1',
+    LETTERBOXD_OFFLINE: '1',
+    ...env,
+  };
+  // Poster mirroring must not use a developer token during tests.
+  delete childEnv.CLOUDFLARE_API_TOKEN;
+  delete childEnv.CLOUDFLARE_ACCOUNT_ID;
   const res = spawnSync(process.execPath, ['build.js'], {
     cwd: REPO_ROOT,
-    env: {
-      ...process.env,
-      CONTENT_DIR: contentDir,
-      DIST_DIR: distDir,
-      CACHE_DIR: cacheDir,
-      SITE_URL: siteUrl,
-      ...(mediaManifest ? { MEDIA_MANIFEST: mediaManifest } : {}),
-      // Keep build subprocesses hermetic: never let the listening snapshot
-      // reach out to the Worker/Last.fm. Tests that want listening data seed a
-      // fresh cache (seedLastfmCache), which short-circuits the network anyway.
-      LISTENING_OFFLINE: '1',
-      LETTERBOXD_OFFLINE: '1',
-      ...env,
-    },
+    env: childEnv,
     encoding: 'utf8',
     timeout: 60_000,
   });

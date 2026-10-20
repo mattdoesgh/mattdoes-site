@@ -3,7 +3,6 @@ dist/
 # SSG bundle Emit imports. Rebuilt by the prebuild step / CI / Pages.
 dist-ssg/
 dist-client/
-design-system/.preview/
 .DS_Store
 .env
 .env.local

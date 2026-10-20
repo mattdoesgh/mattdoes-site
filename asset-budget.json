@@ -1,13 +1,9 @@
 {
   "perFileMaxKb": {
-    "_shared": 40,
-    "geo-background": 9,
-    "theme-boot": 1,
-    "tweaks": 4,
-    "nav-prefetch": 2
+    "station": 20
   },
   "totals": {
-    "totalJsKb": 30,
-    "totalCssKb": 42
+    "totalJsKb": 8,
+    "totalCssKb": 16
   }
 }

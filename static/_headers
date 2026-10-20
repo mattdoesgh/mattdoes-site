@@ -11,19 +11,15 @@
   # plus the interest-cohort / browsing-topics opt-outs.
   Permissions-Policy: geolocation=(self), camera=(), microphone=(), payment=(), usb=(), midi=(), magnetometer=(), accelerometer=(), gyroscope=(), display-capture=(), screen-wake-lock=(), xr-spatial-tracking=(), serial=(), bluetooth=(), hid=(), interest-cohort=(), browsing-topics=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-  # CSP keeps style-src strict: Shiki highlighted-code tokens are emitted as
-  # build-time CSS classes (lib/shiki-csp.js) instead of inline style attributes.
+  # CSP keeps style-src strict: pages ship one stylesheet and no inline styles.
   # Report-only twin collects any regressions before enforcement changes.
-  # The build (lib/emit/csp.js → injectInlineScriptCsp) appends a sha256 for EACH
-  # inline <script> (the importmap + the speculation rules) to script-src in the
-  # emitted dist/_headers. A hash source disables keyword inline allowances, so
-  # 'inline-speculation-rules' stops working once the importmap is hashed — both
-  # inline scripts must be hashed together or one is silently dropped (ADR 0001,
-  # ADR 0007). Don't hardcode the hashes here: the importmap one moves with the
-  # hashed rows.js/_helpers.js URLs and they are recomputed each build.
-  # frame-src admits the two players /digs/ embeds (Apple Music, Bandcamp).
-  # Both are lazy iframes — no third-party script or connect. Add a host here
-  # only when lib/digs.js embedUrl() allows it too. See docs/recommendations.md.
+  # The station shell has no inline scripts, so the build does not append
+  # sha256 sources. A hash source would disable 'inline-speculation-rules',
+  # which stays as a keyword. If an inline script is added, hash every one
+  # of them together (lib/emit/csp.js).
+  # frame-src admits the Apple Music and Bandcamp players. The Unshared
+  # Bandcamp slot is a placeholder until there is a URL. Add a host here
+  # only for a player the page actually embeds.
   #
   # Declare each CSP header on this one rule only. Pages joins a header that
   # appears on two matching rules with a comma, and browsers then enforce both
@@ -79,17 +75,16 @@
 # the edge on deploy, so a 6h s-maxage is safe and dramatically lifts
 # edge hit rate for repeat visitors that already have the asset shell
 # cached. 103 Early Hints push the shell preloads while origin renders.
-# Only the critical JetBrains Mono Regular face is preloaded — it is the sole
-# font on the critical render path (see static/_shared.css @font-face rules).
+# Anton latin is the only self-hosted face (signage). Body text is system-ui.
 /
   Cache-Control: public, max-age=0, must-revalidate
   CDN-Cache-Control: public, s-maxage=21600, stale-while-revalidate=604800
-  Link: </fonts/JetBrainsMono-Regular.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
+  Link: </fonts/Anton-latin.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
 
 /*/
   Cache-Control: public, max-age=0, must-revalidate
   CDN-Cache-Control: public, s-maxage=21600, stale-while-revalidate=604800
-  Link: </fonts/JetBrainsMono-Regular.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
+  Link: </fonts/Anton-latin.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
 
 /*.html
   Cache-Control: public, max-age=0, must-revalidate

@@ -37,5 +37,5 @@ test('prebuild script has no vault clone and no token requirement', () => {
   assert.doesNotMatch(src, /git clone/);
   assert.doesNotMatch(src, /mattdoes-vault/);
   assert.match(src, /set -euo pipefail/);
-  assert.match(src, /content\/about\.md/);
+  assert.match(src, /site\/verbs\.ts/);
 });
