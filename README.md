@@ -5,8 +5,8 @@ Source for [mattdoes.online](https://mattdoes.online). Static HTML from a small 
 ## what's on it
 
 - **home** (`/`) — the verb list. The letterboxd row also shows the newest film and its stars.
-- **watching** (`/watching/`) — recent Letterboxd watches. The page links Letterboxd. Posters are mirrored to `media.mattdoes.online` at build time.
-- **listening** (`/listening/`) — recent plays from the listening worker, baked at build time and refreshed live. The page links Last.fm.
+- **watching** (`/watching/`) — recent Letterboxd watches. Posters are mirrored to `media.mattdoes.online` at build time.
+- **listening** (`/listening/`) — recent plays from the listening worker, baked at build time and refreshed live.
 - **unshared** (`/unshared/`) — "Fun is unshared", plus its links. A public mailbox is rendered only when `unsharedContact.email` is set.
 - **404** — not found.
 

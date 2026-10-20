@@ -58,12 +58,16 @@ test('every nav label and page h1 is matt does plus the label', () => {
     const nav = [...page.querySelectorAll('nav.verb-nav a')].find((anchor) => anchor.getAttribute('href') === `/${verb.slug}/`);
     assert.equal(nav?.textContent, heading, verb.slug);
   }
-  const watching = readDist(distDir, 'watching/index.html');
-  const listening = readDist(distDir, 'listening/index.html');
-  assert.match(watching, /Letterboxd/);
-  assert.match(watching, /https:\/\/letterboxd\.com\/mattdoes\//);
-  assert.match(listening, /Last\.fm/);
-  assert.match(listening, /https:\/\/www\.last\.fm\/user\/djverism/);
+  const watching = new JSDOM(readDist(distDir, 'watching/index.html')).window.document;
+  const listening = new JSDOM(readDist(distDir, 'listening/index.html')).window.document;
+  assert.equal(watching.querySelector('h1')?.textContent, 'matt does letterboxd');
+  assert.equal(listening.querySelector('h1')?.textContent, 'matt does last.fm');
+  assert.equal(watching.querySelector('.credit'), null);
+  assert.equal(listening.querySelector('.credit'), null);
+  assert.equal(watching.querySelector('a[href="https://letterboxd.com/mattdoes/"]'), null);
+  assert.equal(listening.querySelector('a[href="https://www.last.fm/user/djverism"]'), null);
+  assert.doesNotMatch(watching.body.textContent, /Letterboxd/);
+  assert.doesNotMatch(listening.body.textContent, /Last\.fm/);
 });
 
 test('emit fails the build through assertRegistry', () => {

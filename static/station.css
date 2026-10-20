@@ -213,12 +213,6 @@ body[data-polarity="flip"] .sign {
   letter-spacing: 0.06em;
 }
 
-.credit {
-  margin: 0.8rem 0 0;
-  font-size: 1.15rem;
-}
-
-.credit a,
 .home-link a {
   color: inherit;
 }
@@ -985,13 +979,6 @@ body[data-polarity="flip"] .anomalies summary {
     background: #000000;
     color: #f7c8d8;
     outline-color: #f7c8d8;
-  }
-
-  .credit {
-    margin: 0.35rem 0 0;
-    font-family: var(--display);
-    font-size: clamp(1.7rem, 2.2vw, 2.8rem);
-    line-height: 0.95;
   }
 
   .feed {
