@@ -342,6 +342,14 @@ body[data-polarity="flip"] .broadcast a:focus-visible {
   text-transform: uppercase;
 }
 
+.slot iframe {
+  display: block;
+  width: 100%;
+  min-height: 8rem;
+  border: 0;
+  background: #ffffff;
+}
+
 .apple {
   display: block;
   width: min(100%, 40rem);

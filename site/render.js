@@ -1,6 +1,6 @@
 // Signal / Station pages. String HTML, no React. Routes come from site/verbs.ts.
 
-import { verbs, verbPath } from './verbs.ts';
+import { verbs, verbPath, unsharedPlayer } from './verbs.ts';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 import { formatScrobbleCount } from '../lib/format.js';
 
@@ -73,6 +73,43 @@ function httpsHref(link) {
  */
 function link(href, text) {
   return `<a href="${esc(href)}"${relFor(href)}>${esc(text)}</a>`;
+}
+
+/**
+ * https URL on bandcamp.com only. Anything else is not a player.
+ *
+ * @param {unknown} url
+ * @returns {string}
+ */
+export function bandcampSrc(url) {
+  if (typeof url !== 'string' || !url.trim()) return '';
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return '';
+  }
+  if (parsed.protocol !== 'https:') return '';
+  if (parsed.username || parsed.password) return '';
+  if (!/(^|\.)bandcamp\.com$/i.test(parsed.hostname)) return '';
+  return parsed.href;
+}
+
+/**
+ * The player slot. Empty when no Bandcamp URL is configured.
+ *
+ * @param {unknown} url
+ * @returns {string}
+ */
+export function bandcampSlot(url) {
+  const src = bandcampSrc(url);
+  if (!src) return '';
+  return `<section class="players" aria-labelledby="player-heading">
+        <h2 id="player-heading">Player</h2>
+        <div class="slot">
+          <iframe title="Bandcamp" src="${esc(src)}" loading="lazy" referrerpolicy="no-referrer"></iframe>
+        </div>
+      </section>`;
 }
 
 /**
@@ -388,19 +425,12 @@ export function renderUnshared(ctx) {
     robots: '',
     main: `<h1 class="sign"><span class="sign-small">matt does</span> unshared</h1>
       <p class="stamp">Restricted</p>
-      <!-- TODO: Matt replaces this intro and supplies the Bandcamp URL. -->
-      <p class="lede"><strong>TODO</strong> — stand-in intro. Unshared is the music project. One-offs, released when they finish. No album cycle and no schedule.</p>
+      <p class="lede">Fun is unshared</p>
       <section class="contact">
         <h2>Contact</h2>
         <p><a href="${PUBLIC_MAIL}">unshared@mattdoes.online</a></p>
       </section>
-      <section class="players" aria-labelledby="player-heading">
-        <h2 id="player-heading">Player</h2>
-        <div class="slot">
-          <p class="kicker">Bandcamp</p>
-          <p><strong>TODO</strong> — embed placeholder. Waiting on the Bandcamp URL.</p>
-        </div>
-      </section>
+      ${bandcampSlot(unsharedPlayer.bandcamp)}
       <ul class="outlinks">
         <li>${link(APPLE, 'Apple Music')}</li>
         <li>${link(SPOTIFY, 'Spotify')}</li>

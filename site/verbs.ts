@@ -25,6 +25,16 @@ export const verbs = [
 /** Built, but not a verb: noindex, not in the menu, sitemap, or anomaly index. */
 export const SECRET_PATHS = ['/frequency/'] as const;
 
+/**
+ * Unshared player. `bandcamp` is optional. Leave it unset until there is a URL.
+ * An unset field emits no Bandcamp markup and does not need a frame-src host.
+ */
+export interface UnsharedPlayer {
+  readonly bandcamp?: string;
+}
+
+export const unsharedPlayer: UnsharedPlayer = {};
+
 const REQUIRED_SLUGS = ['watch', 'listen', 'unshared'] as const;
 
 export function verbPath(slug: string): string {

@@ -29,13 +29,14 @@ test('global security headers include CSP, HSTS, and framing controls', () => {
     "default-src 'self'",
     "script-src 'self' https://static.cloudflareinsights.com 'inline-speculation-rules'",
     "connect-src 'self' https://cloudflareinsights.com",
-    "frame-src https://embed.music.apple.com https://bandcamp.com",
+    "frame-src https://embed.music.apple.com",
     "object-src 'none'",
     'upgrade-insecure-requests',
   ]) {
     assert.match(csp, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
       `CSP must include ${token}`);
   }
+  assert.doesNotMatch(csp, /bandcamp/i, 'an unset Bandcamp URL must not widen frame-src');
 
   const hsts = headerValues(routes, '/*', 'strict-transport-security')[0];
   assert.match(hsts, /max-age=31536000/, 'HSTS must be set with a one-year max-age');
@@ -61,8 +62,9 @@ test('report-only CSP points at the same-origin report collector', () => {
   assert.ok(reportOnly, '/* must set Content-Security-Policy-Report-Only');
   assert.match(reportOnly, /report-uri https:\/\/mattdoes\.online\/api\/csp-report/,
     'report-only CSP must target the csp-report Worker');
-  assert.match(reportOnly, /frame-src https:\/\/embed\.music\.apple\.com https:\/\/bandcamp\.com/,
+  assert.match(reportOnly, /frame-src https:\/\/embed\.music\.apple\.com(?! https:\/\/bandcamp\.com)/,
     'report-only frame-src must match the enforced player allowlist');
+  assert.doesNotMatch(reportOnly, /bandcamp/i, 'an unset Bandcamp URL must not widen frame-src');
 });
 
 test('hashed JS and CSS assets are immutable for one year', () => {
