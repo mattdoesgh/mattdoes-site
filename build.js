@@ -36,6 +36,7 @@ import { fetchWatches } from './lib/watches.js';
 import { loadDigs, favoritePicks } from './lib/digs.js';
 import { loadRecommendations } from './lib/recommendations.js';
 import { siteConfig } from './site.config.js';
+import { emitConceptPreview } from './scripts/emit-concept-preview.js';
 
 const __dirname  = path.dirname(fileURLToPath(import.meta.url));
 const CONTENT_DIR = process.env.CONTENT_DIR || path.resolve(__dirname, 'content');
@@ -71,6 +72,13 @@ const { distSize } = await emit(model, {
   recommendations,
   watches,
 });
+
+// Branch previews only. Production (main) and local/CI builds leave dist/
+// as the current site. See scripts/emit-concept-preview.js.
+const concept = emitConceptPreview({ distDir: DIST_DIR });
+if (concept.emitted) {
+  console.log(`  concept preview: ${concept.urlPath}`);
+}
 
 console.log(`✓ built in ${((Date.now() - t0) / 1000).toFixed(2)}s`);
 console.log(`  ${model.notes.length} notes read → ${model.about.length} about`);

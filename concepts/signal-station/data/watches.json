@@ -1,0 +1,87 @@
+{
+  "source": "https://letterboxd.com/mattdoes/rss/",
+  "fetchedAt": "2026-10-20T04:51:00.000Z",
+  "note": "Recent window from the public Letterboxd diary RSS. Same shape as lib/letterboxd.js.",
+  "watches": [
+    {
+      "title": "Blue Heron",
+      "year": "2025",
+      "rating": 4,
+      "stars": "★★★★",
+      "watchedDate": "2026-10-18",
+      "rewatch": false,
+      "link": "https://letterboxd.com/mattdoes/film/blue-heron/",
+      "review": ""
+    },
+    {
+      "title": "You Can See Everything",
+      "year": "2026",
+      "rating": 5,
+      "stars": "★★★★★",
+      "watchedDate": "2026-10-16",
+      "rewatch": false,
+      "link": "https://letterboxd.com/mattdoes/film/you-can-see-everything/",
+      "review": "never thought i would share an existential crisis with nathan fielder but i should have expected that"
+    },
+    {
+      "title": "The Texas Chain Saw Massacre",
+      "year": "1974",
+      "rating": 5,
+      "stars": "★★★★★",
+      "watchedDate": "2026-10-13",
+      "rewatch": false,
+      "link": "https://letterboxd.com/mattdoes/film/the-texas-chain-saw-massacre/",
+      "review": "the third act of this movie puts it into all time classic territory as it just relentlessly pushes through to the end. I love it."
+    },
+    {
+      "title": "The Thing",
+      "year": "1982",
+      "rating": 5,
+      "stars": "★★★★★",
+      "watchedDate": "2026-10-12",
+      "rewatch": true,
+      "link": "https://letterboxd.com/mattdoes/film/the-thing/",
+      "review": ""
+    },
+    {
+      "title": "Disclosure Day",
+      "year": "2026",
+      "rating": 3,
+      "stars": "★★★",
+      "watchedDate": "2026-10-12",
+      "rewatch": false,
+      "link": "https://letterboxd.com/mattdoes/film/disclosure-day/",
+      "review": ""
+    },
+    {
+      "title": "Paranormal Activity: The Marked Ones",
+      "year": "2014",
+      "rating": 3,
+      "stars": "★★★",
+      "watchedDate": "2026-10-09",
+      "rewatch": false,
+      "link": "https://letterboxd.com/mattdoes/film/paranormal-activity-the-marked-ones/",
+      "review": ""
+    },
+    {
+      "title": "Other Mommy",
+      "year": "2026",
+      "rating": 1.5,
+      "stars": "★½",
+      "watchedDate": "2026-10-08",
+      "rewatch": false,
+      "link": "https://letterboxd.com/mattdoes/film/other-mommy/",
+      "review": "Struggling to find nice things to write here. The trailer happens in the first 2 minutes and it is downhill from there"
+    },
+    {
+      "title": "Digger",
+      "year": "2026",
+      "rating": 4.5,
+      "stars": "★★★★½",
+      "watchedDate": "2026-10-03",
+      "rewatch": false,
+      "link": "https://letterboxd.com/mattdoes/film/digger-2026/",
+      "review": "this movie is so meta even this review. really captures the time we are in well"
+    }
+  ]
+}
