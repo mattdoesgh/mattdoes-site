@@ -66,6 +66,11 @@ export function runBuild({
     cwd: REPO_ROOT,
     env: {
       ...process.env,
+      // Fixture builds stay production-shaped. A test that wants the concept
+      // preview passes CONCEPT_PREVIEW / CF_PAGES in opts.env, which wins.
+      CONCEPT_PREVIEW: '',
+      CF_PAGES: '',
+      CF_PAGES_BRANCH: '',
       CONTENT_DIR: contentDir,
       DIST_DIR: distDir,
       CACHE_DIR: cacheDir,
