@@ -7,7 +7,7 @@ Source for [mattdoes.online](https://mattdoes.online). Static HTML from a small 
 - **home** (`/`) — "matt does …", with watch, listen, and unshared as the menu.
 - **watch** (`/watch/`) — recent Letterboxd watches. Reviews are the witness statements. Posters are mirrored to `media.mattdoes.online` at build time.
 - **listen** (`/listen/`) — recent plays from the listening worker, baked at build time and refreshed live.
-- **unshared** (`/unshared/`) — the music project, with a public `mailto:unshared@mattdoes.online` link.
+- **unshared** (`/unshared/`) — the music project. A public mailbox is rendered only when `unsharedContact.email` is set.
 - **404** — in character, and it links the index of anomalies.
 
 `/frequency/` is a noindex page and is not in the menu or the sitemap. `/movies` redirects to `/watch`, `/listening` to `/listen`, and the retired sections redirect home.

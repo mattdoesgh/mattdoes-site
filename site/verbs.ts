@@ -35,6 +35,16 @@ export interface UnsharedPlayer {
 
 export const unsharedPlayer: UnsharedPlayer = {};
 
+/**
+ * Public Unshared address. `email` is optional. Leave it unset until the
+ * mailbox exists. An unset field emits no mailto and no contact heading.
+ */
+export interface UnsharedContact {
+  readonly email?: string;
+}
+
+export const unsharedContact: UnsharedContact = {};
+
 const REQUIRED_SLUGS = ['watch', 'listen', 'unshared'] as const;
 
 export function verbPath(slug: string): string {

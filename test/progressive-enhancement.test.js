@@ -36,7 +36,7 @@ test('the redaction trail is a native details element', () => {
   const unshared = new JSDOM(readDist(distDir, 'unshared/index.html')).window.document;
   const second = unshared.querySelector('details.redaction a');
   assert.equal(second?.getAttribute('href'), '/frequency/');
-  assert.ok(unshared.querySelector('a[href="mailto:unshared@mattdoes.online"]'));
+  assert.equal(unshared.querySelector('a[href="mailto:unshared@mattdoes.online"]'), null);
   assert.equal(unshared.querySelector('details.redaction a[href^="mailto:"]'), null);
 });
 

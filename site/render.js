@@ -1,6 +1,6 @@
 // Signal / Station pages. String HTML, no React. Routes come from site/verbs.ts.
 
-import { verbs, verbPath, unsharedPlayer } from './verbs.ts';
+import { verbs, verbPath, unsharedPlayer, unsharedContact } from './verbs.ts';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 import { formatScrobbleCount } from '../lib/format.js';
 
@@ -9,7 +9,6 @@ const X = 'https://x.com/mattdoes';
 const SPOTIFY = 'https://open.spotify.com/artist/617fKVTXkDafXJshlNUzF3';
 // Catalog id only. The platform slug is omitted until the project name is settled.
 const APPLE = 'https://music.apple.com/us/artist/1676956374';
-const PUBLIC_MAIL = 'mailto:unshared@mattdoes.online';
 const LUCIA_MAIL = 'mailto:luciadoes@mail.grokbot.com';
 
 /**
@@ -93,6 +92,35 @@ export function bandcampSrc(url) {
   if (parsed.username || parsed.password) return '';
   if (!/(^|\.)bandcamp\.com$/i.test(parsed.hostname)) return '';
   return parsed.href;
+}
+
+/**
+ * A bare mailbox. Anything else is not a public contact.
+ *
+ * @param {unknown} email
+ * @returns {string}
+ */
+export function contactAddress(email) {
+  if (typeof email !== 'string') return '';
+  const value = email.trim();
+  if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value)) return '';
+  return value;
+}
+
+/**
+ * The contact block. Empty when no address is configured.
+ *
+ * @param {unknown} email
+ * @returns {string}
+ */
+export function contactBlock(email) {
+  const address = contactAddress(email);
+  if (!address) return '';
+  const href = `mailto:${address}`;
+  return `<section class="contact">
+        <h2>Contact</h2>
+        <p><a href="${esc(href)}">${esc(address)}</a></p>
+      </section>`;
 }
 
 /**
@@ -417,7 +445,7 @@ export function renderUnshared(ctx) {
     ...ctx,
     path: '/unshared/',
     title: 'matt does unshared · mattdoes.online',
-    description: 'Unshared, the music project. Public contact is unshared@mattdoes.online.',
+    description: 'Unshared, the music project.',
     polarity: 'flip',
     current: 'unshared',
     showVerbNav: true,
@@ -426,16 +454,13 @@ export function renderUnshared(ctx) {
     main: `<h1 class="sign"><span class="sign-small">matt does</span> unshared</h1>
       <p class="stamp">Restricted</p>
       <p class="lede">Fun is unshared</p>
-      <section class="contact">
-        <h2>Contact</h2>
-        <p><a href="${PUBLIC_MAIL}">unshared@mattdoes.online</a></p>
-      </section>
+      ${contactBlock(unsharedContact.email)}
       ${bandcampSlot(unsharedPlayer.bandcamp)}
       <ul class="outlinks">
         <li>${link(APPLE, 'Apple Music')}</li>
         <li>${link(SPOTIFY, 'Spotify')}</li>
       </ul>
-      ${redaction(`<p>The public address is the one above. The night operator signs Lucia. Her carrier is not listed with the anomalies.</p>
+      ${redaction(`<p>The night operator signs Lucia. Her carrier is not listed with the anomalies.</p>
           <p>${link('/frequency/', 'Open the night file')}</p>`)}`,
   });
 }
