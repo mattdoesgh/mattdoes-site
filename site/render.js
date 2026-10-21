@@ -1,6 +1,7 @@
 // Pages from site/verbs.ts. String HTML, no React.
 
-import { verbs, verbCatalog, verbPath, verbHeading, unsharedPlayer, unsharedContact, unsharedEnabled, SECRET_PATHS } from './verbs.ts';
+import { verbs, verbCatalog, socials, verbPath, verbHeading, unsharedPlayer, unsharedContact, unsharedEnabled, SECRET_PATHS } from './verbs.ts';
+import { socialIcon } from './social-icons.js';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 
 const SPOTIFY = 'https://open.spotify.com/artist/617fKVTXkDafXJshlNUzF3';
@@ -177,6 +178,22 @@ function verbNav(current) {
 }
 
 /**
+ * Quiet footer row of brand marks. The accessible name is the aria-label.
+ * rel="me" marks these as the same person. Same tab.
+ * Not the shared https helper: that adds noreferrer and drops me.
+ *
+ * @returns {string}
+ */
+function socialNav() {
+  const links = socials.map((item) =>
+    `<a href="${esc(item.href)}" rel="me noopener" aria-label="${esc(item.label)}">${socialIcon(item.label)}</a>`,
+  ).join('\n          ');
+  return `<nav class="socials" aria-label="socials">
+          ${links}
+        </nav>`;
+}
+
+/**
  * @param {object} page
  * @returns {string}
  */
@@ -223,6 +240,7 @@ function shell({
     <footer class="site-footer">
       ${home}
       ${nav}
+      ${socialNav()}
     </footer>
     <script src="/${esc(js)}" defer></script>
   </body>

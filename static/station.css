@@ -45,12 +45,19 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   padding: clamp(1rem, 3vw, 2.75rem);
   background-color: var(--field);
   color: var(--ink);
   font-family: var(--body);
   font-size: 1.125rem;
   line-height: 1.5;
+}
+
+main {
+  flex: 1 1 auto;
 }
 
 :focus {
@@ -831,6 +838,7 @@ body[data-polarity="flip"] .redaction-bar {
 }
 
 .site-footer {
+  flex: 0 0 auto;
   margin-top: 2.5rem;
   padding-top: 1rem;
   border-top: 1px solid var(--rule);
@@ -859,6 +867,53 @@ body[data-polarity="flip"] .verb-nav a {
 .verb-nav a[aria-current="page"] {
   text-decoration: underline;
   text-underline-offset: 0.12em;
+}
+
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.1rem 0.85rem;
+  margin: 0;
+}
+
+.socials a {
+  color: #f7c8d8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  text-decoration: none;
+  transition: none;
+}
+
+.socials svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  display: block;
+  fill: currentColor;
+  transition: none;
+}
+
+.socials a:hover,
+.socials a:focus-visible {
+  background: #f7c8d8;
+  color: #000000;
+  outline-color: #000000;
+}
+
+body[data-polarity="flip"] .socials a {
+  color: #000000;
+}
+
+body[data-polarity="flip"] .socials a:hover,
+body[data-polarity="flip"] .socials a:focus-visible {
+  background: #000000;
+  color: #f7c8d8;
+  outline-color: #f7c8d8;
 }
 
 .anomalies summary {
@@ -1202,6 +1257,10 @@ body[data-polarity="flip"] .anomalies summary {
     border-top: 0;
     margin-top: clamp(2rem, 5vh, 4rem);
     padding-top: 0;
+  }
+
+  body:has(.verbs) .site-footer {
+    margin-top: 0.5rem;
   }
 
   .site-footer:empty {

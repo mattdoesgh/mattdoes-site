@@ -65,8 +65,8 @@ test('every nav label and page h1 is matt does plus the label', () => {
   assert.equal(listening.querySelector('h1')?.textContent, 'matt does last.fm');
   assert.equal(watching.querySelector('.credit'), null);
   assert.equal(listening.querySelector('.credit'), null);
-  assert.equal(watching.querySelector('a[href="https://letterboxd.com/mattdoes/"]'), null);
-  assert.equal(listening.querySelector('a[href="https://www.last.fm/user/djverism"]'), null);
+  assert.equal(watching.querySelector('main a[href="https://letterboxd.com/mattdoes/"]'), null);
+  assert.equal(listening.querySelector('main a[href="https://www.last.fm/user/djverism"]'), null);
   assert.doesNotMatch(watching.body.textContent, /Letterboxd/);
   assert.doesNotMatch(listening.body.textContent, /Last\.fm/);
 });

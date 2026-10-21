@@ -26,6 +26,20 @@ export const verbCatalog = [
 
 export const verbs = verbCatalog.filter((verb) => unsharedEnabled || verb.slug !== 'unshared');
 
+/** Footer socials. One line to add or remove a link. */
+export interface SocialLink {
+  readonly label: string;
+  readonly href: string;
+}
+
+export const socials = [
+  { label: 'x', href: 'https://x.com/mattdoes' },
+  { label: 'instagram', href: 'https://www.instagram.com/mattdoes.ig/' },
+  { label: 'letterboxd', href: 'https://letterboxd.com/mattdoes/' },
+  { label: 'last.fm', href: 'https://www.last.fm/user/djverism' },
+  { label: 'github', href: 'https://github.com/mattdoesgh' },
+] as const satisfies readonly SocialLink[];
+
 /** Add '/frequency/' to bring that page back. Empty keeps it offline. */
 export const SECRET_PATHS: readonly string[] = [];
 
@@ -102,4 +116,31 @@ export function validateVerbs(
 /** Fail the build when the registry and the renderers disagree. */
 export function assertRegistry(knownRenderers: readonly string[]): void {
   validateVerbs(verbs, knownRenderers);
+  validateSocials(socials);
+}
+
+/** Labels stay lowercase words. Hrefs stay https profile links. */
+export function validateSocials(list: readonly SocialLink[]): void {
+  const labels = new Set<string>();
+  for (const item of list) {
+    if (!/^[a-z0-9.]+$/.test(item.label)) {
+      throw new Error(`social registry: invalid label "${item.label}"`);
+    }
+    if (labels.has(item.label)) {
+      throw new Error(`social registry: duplicate label "${item.label}"`);
+    }
+    labels.add(item.label);
+    let parsed: URL;
+    try {
+      parsed = new URL(item.href);
+    } catch {
+      throw new Error(`social registry: invalid href "${item.href}"`);
+    }
+    if (parsed.protocol !== 'https:') {
+      throw new Error(`social registry: href must be https "${item.href}"`);
+    }
+    if (parsed.pathname.includes('/unshared')) {
+      throw new Error(`social registry: href must not point at unshared "${item.href}"`);
+    }
+  }
 }
