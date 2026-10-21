@@ -8,8 +8,8 @@ import { buildFixtureVault, readDist } from './helpers/run-build.js';
 import { parseHeadersFile, headerValues } from './helpers/parse-headers.js';
 import fs from 'node:fs';
 import path from 'node:path';
-import { unsharedPlayer, unsharedContact } from '../site/verbs.ts';
-import { bandcampSlot, contactBlock, renderFrequency } from '../site/render.js';
+import { unsharedPlayer, unsharedContact, unsharedEnabled } from '../site/verbs.ts';
+import { bandcampSlot, contactBlock, renderFrequency, renderUnshared } from '../site/render.js';
 
 let distDir;
 test.before(() => { ({ distDir } = buildFixtureVault()); });
@@ -20,14 +20,7 @@ test('no Bandcamp markup is emitted when the optional URL is unset', () => {
   assert.equal(bandcampSlot(''), '');
   assert.equal(bandcampSlot('https://example.com/bandcamp'), '');
 
-  const html = readDist(distDir, 'unshared/index.html');
-  const doc = new JSDOM(html).window.document;
-  assert.equal(doc.querySelector('p.lede')?.textContent, 'Fun is unshared');
-  assert.equal(html.includes('TODO'), false);
-  assert.equal(doc.querySelector('iframe'), null);
-  assert.equal(doc.querySelector('.players, .slot'), null);
-  assert.equal(doc.querySelector('a[href*="bandcamp" i]'), null);
-  assert.doesNotMatch(html, /bandcamp/i);
+  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), false);
 
   const routes = parseHeadersFile(readDist(distDir, '_headers'));
   for (const name of ['content-security-policy', 'content-security-policy-report-only']) {
@@ -45,29 +38,31 @@ function walkFiles(dir) {
   return files;
 }
 
-test('the unshared contact mailto is the tagged grokbot address', () => {
+test('the unshared contact mailto stays in source and out of the build', () => {
   const address = 'luciadoes+unshared@mail.grokbot.com';
+  assert.equal(unsharedEnabled, false);
   assert.equal(unsharedContact.email, address);
   assert.equal(contactBlock('not-an-email'), '');
+  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), false);
 
-  const html = readDist(distDir, 'unshared/index.html');
+  const html = renderUnshared({
+    siteUrl: 'https://mattdoes.online',
+    assets: { 'station.css': 'station.css', 'station.js': 'station.js' },
+  });
   const doc = new JSDOM(html).window.document;
   const links = [...doc.querySelectorAll('.outlinks a')];
   const link = links.find((anchor) => anchor.textContent === 'email');
+  assert.equal(doc.querySelector('p.lede')?.textContent, 'Fun is unshared');
   assert.equal(link?.getAttribute('href'), `mailto:${address}`);
   assert.equal(link?.textContent, 'email');
   assert.equal(link?.getAttribute('aria-label'), 'email unshared');
-  assert.deepEqual(links.map((anchor) => anchor.textContent), ['email', 'Apple Music', 'Spotify']);
-  assert.equal(doc.querySelector('.contact'), null);
-  assert.equal(doc.body.textContent.includes('@'), false);
-  assert.equal(doc.querySelector('a[href="mailto:unshared@mattdoes.online"]'), null);
 
   for (const file of walkFiles(distDir)) {
-    if (!file.endsWith('.html')) continue;
     const text = fs.readFileSync(file, 'utf8');
     const rel = path.relative(distDir, file);
     assert.equal(text.includes('unshared@mattdoes.online'), false, rel);
-    assert.equal(text.includes('luciadoes@mail.grokbot.com'), false, rel);
+    assert.equal(text.includes('luciadoes+unshared@'), false, rel);
+    assert.equal(text.includes('/unshared/'), false, rel);
   }
 });
 

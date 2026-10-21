@@ -1,6 +1,6 @@
 // axe-core on the generated pages, WCAG A/AA. color-contrast is disabled
 // here because jsdom does not lay out; test/contrast.test.js covers the tokens.
-// Smoke targets: home, watch, listen, unshared.
+// Smoke targets: home, watch, listen.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -17,7 +17,6 @@ const SMOKE = [
   'index.html',
   'watching/index.html',
   'listening/index.html',
-  'unshared/index.html',
 ];
 
 let distDir;
@@ -36,7 +35,7 @@ function doc(rel) {
   return new JSDOM(fs.readFileSync(path.join(distDir, rel), 'utf8')).window.document;
 }
 
-test('home, watch, listen, and unshared have zero WCAG A/AA axe violations', async (t) => {
+test('home, watch, and listen have zero WCAG A/AA axe violations', async (t) => {
   for (const rel of SMOKE) {
     await t.test(rel, async () => {
       const results = await axeScan(fs.readFileSync(path.join(distDir, rel), 'utf8'));
@@ -81,8 +80,6 @@ test('the active verb is marked and the secret stays off the public pages', () =
     const text = fs.readFileSync(path.join(distDir, rel), 'utf8');
     assert.doesNotMatch(text, /lucia|frequency|transmission|luciadoes/i, rel);
   }
-  const unsharedHtml = fs.readFileSync(path.join(distDir, 'unshared/index.html'), 'utf8');
-  assert.doesNotMatch(unsharedHtml, /frequency|transmission/i);
-  assert.equal(unsharedHtml.includes('luciadoes@mail.grokbot.com'), false);
+  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), false);
   assert.equal(fs.existsSync(path.join(distDir, 'frequency', 'index.html')), false);
 });

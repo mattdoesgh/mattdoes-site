@@ -71,7 +71,8 @@ test('no internal link 404s', () => {
 test('sitemap locs are pages that were built', () => {
   const sitemap = fs.readFileSync(path.join(distDir, 'sitemap.xml'), 'utf8');
   const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
-  assert.ok(locs.length >= 4);
+  assert.ok(locs.length >= 3);
+  assert.equal(locs.some((loc) => loc.includes('/unshared/')), false);
   for (const loc of locs) {
     const url = new URL(loc);
     assert.equal(fs.existsSync(fileForPath(url.pathname)), true, loc);

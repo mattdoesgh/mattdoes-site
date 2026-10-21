@@ -15,11 +15,16 @@ export interface Verb {
   readonly renderer: RendererName;
 }
 
-export const verbs = [
+/** Set true to publish /unshared/ again. The page renderer stays. */
+export const unsharedEnabled = false;
+
+export const verbCatalog = [
   { slug: 'watching', label: 'letterboxd', source: 'letterboxd', renderer: 'watch' },
   { slug: 'listening', label: 'last.fm', source: 'listening', renderer: 'listen' },
   { slug: 'unshared', label: 'unshared', source: 'static', renderer: 'unshared' },
 ] as const satisfies readonly Verb[];
+
+export const verbs = verbCatalog.filter((verb) => unsharedEnabled || verb.slug !== 'unshared');
 
 /** Add '/frequency/' to bring that page back. Empty keeps it offline. */
 export const SECRET_PATHS: readonly string[] = [];
@@ -46,7 +51,7 @@ export const unsharedContact: UnsharedContact = {
   email: 'luciadoes+unshared@mail.grokbot.com',
 };
 
-const REQUIRED_SLUGS = ['watching', 'listening', 'unshared'] as const;
+const REQUIRED_SLUGS = ['watching', 'listening'] as const;
 
 /** The one visible name. Nav links and each verb's h1 use this. */
 export function verbHeading(label: string): string {

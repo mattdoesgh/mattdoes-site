@@ -8,14 +8,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
 import { buildFixtureVault, listDistHtml, readDist, REPO_ROOT } from './helpers/run-build.js';
-import { verbs, sitemapPaths, SECRET_PATHS, assertRegistry, validateVerbs, verbHeading } from '../site/verbs.ts';
+import { verbs, sitemapPaths, SECRET_PATHS, unsharedEnabled, assertRegistry, validateVerbs, verbHeading } from '../site/verbs.ts';
 
 let distDir;
 test.before(() => { ({ distDir } = buildFixtureVault()); });
 
-test('the registry names watching, listening, and unshared once each', () => {
+test('the registry names watching and listening while unshared is offline', () => {
+  assert.equal(unsharedEnabled, false);
   const slugs = verbs.map((verb) => verb.slug);
-  assert.deepEqual(slugs, ['watching', 'listening', 'unshared']);
+  assert.deepEqual(slugs, ['watching', 'listening']);
   assert.equal(new Set(slugs).size, slugs.length);
   assert.equal(verbs.find((verb) => verb.slug === 'watching').label, 'letterboxd');
   assert.equal(verbs.find((verb) => verb.slug === 'listening').label, 'last.fm');
@@ -27,8 +28,8 @@ test('the registry names watching, listening, and unshared once each', () => {
 });
 
 test('an unknown source, a duplicate, or a missing renderer fails', () => {
-  assert.doesNotThrow(() => assertRegistry(['watch', 'listen', 'unshared']));
-  assert.throws(() => assertRegistry(['watch', 'listen']), /missing renderer "unshared"/);
+  assert.doesNotThrow(() => assertRegistry(['watch', 'listen']));
+  assert.throws(() => assertRegistry(['listen']), /missing renderer "watch"/);
   assert.throws(() => validateVerbs([
     { slug: 'watching', label: 'letterboxd', source: 'nope', renderer: 'watch' },
     { slug: 'listening', label: 'last.fm', source: 'listening', renderer: 'listen' },
@@ -139,14 +140,38 @@ test('nothing public is built outside the registry except / and /404', () => {
   const html = listDistHtml(distDir).map((file) => path.relative(distDir, file).split(path.sep).join('/'));
   assert.deepEqual(html.filter((file) => !allowed.has(file)), []);
   const sitemap = readDist(distDir, 'sitemap.xml');
+  assert.equal(sitemap.includes('/unshared/'), false);
   assert.equal(sitemap.includes('/frequency/'), false);
   assert.equal(sitemap.includes('/movies/'), false);
   assert.equal(sitemap.includes('<loc>https://mattdoes.online/watch/</loc>'), false);
   assert.equal(sitemap.includes('<loc>https://mattdoes.online/listen/</loc>'), false);
   assert.equal(sitemap.includes('/digs/'), false);
+  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), false);
   assert.equal(fs.existsSync(path.join(distDir, 'frequency', 'index.html')), false);
   const home = readDist(distDir, 'index.html');
+  assert.equal(home.includes('/unshared/'), false);
   assert.doesNotMatch(home, /frequency|lucia|luciadoes/i);
+});
+
+test('/unshared/ is not built and no built file links to it or names the mailto', () => {
+  assert.equal(unsharedEnabled, false);
+  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), false);
+  const files = [];
+  const walk = (dir) => {
+    for (const name of fs.readdirSync(dir)) {
+      const file = path.join(dir, name);
+      if (fs.statSync(file).isDirectory()) walk(file);
+      else files.push(file);
+    }
+  };
+  walk(distDir);
+  assert.ok(files.length > 0);
+  for (const file of files) {
+    const text = fs.readFileSync(file).toString('latin1');
+    const rel = path.relative(distDir, file);
+    assert.equal(text.includes('/unshared/'), false, rel);
+    assert.equal(text.includes('luciadoes+unshared@'), false, rel);
+  }
 });
 
 test('/frequency/ is not built and no built HTML or JS names it', () => {
