@@ -7,7 +7,7 @@ Source for [mattdoes.online](https://mattdoes.online). Static HTML from a small 
 - **home** (`/`) — the verb list. The letterboxd row also shows the newest film and its stars.
 - **watching** (`/watching/`) — recent Letterboxd watches. Posters are mirrored to `media.mattdoes.online` at build time.
 - **listening** (`/listening/`) — recent plays from the listening worker, baked at build time and refreshed live.
-- **unshared** (`/unshared/`) — "Fun is unshared", plus its links. A public mailbox is rendered only when `unsharedContact.email` is set.
+- **unshared** (`/unshared/`) — offline while `unsharedEnabled` is false. The page code stays. A public mailbox is rendered only when the page is published and `unsharedContact.email` is set.
 - **404** — not found.
 
 `/frequency/` is a noindex page and is not in the menu or the sitemap. This site does not keep legacy redirects.
