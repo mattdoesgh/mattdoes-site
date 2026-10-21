@@ -74,7 +74,8 @@ test('every page has a skip link, one main, and a description', () => {
 
 test('the active verb is marked and the secret stays off the public pages', () => {
   const watch = doc('watching/index.html');
-  assert.equal(watch.querySelector('nav.verb-nav a[aria-current="page"]')?.getAttribute('href'), '/watching/');
+  assert.equal(watch.querySelector('nav.verb-nav'), null);
+  assert.equal(watch.querySelector('h1 a')?.getAttribute('href'), '/');
   assert.equal(watch.querySelector('h1')?.textContent, 'matt does letterboxd');
   for (const rel of ['index.html', 'watching/index.html', 'listening/index.html', '404.html']) {
     const text = fs.readFileSync(path.join(distDir, rel), 'utf8');

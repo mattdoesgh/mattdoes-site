@@ -32,13 +32,18 @@ export interface SocialLink {
   readonly href: string;
 }
 
-export const socials = [
+/** Set true to show the last.fm logo in the footer again. The icon stays. */
+export const lastfmSocialEnabled = false;
+
+const socialCatalog = [
   { label: 'x', href: 'https://x.com/mattdoes' },
   { label: 'instagram', href: 'https://www.instagram.com/mattdoes.ig/' },
   { label: 'letterboxd', href: 'https://letterboxd.com/mattdoes/' },
   { label: 'last.fm', href: 'https://www.last.fm/user/djverism' },
   { label: 'github', href: 'https://github.com/mattdoesgh' },
 ] as const satisfies readonly SocialLink[];
+
+export const socials = socialCatalog.filter((item) => lastfmSocialEnabled || item.label !== 'last.fm');
 
 /** Add '/frequency/' to bring that page back. Empty keeps it offline. */
 export const SECRET_PATHS: readonly string[] = [];

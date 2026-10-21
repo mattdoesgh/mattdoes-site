@@ -7,22 +7,23 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
 import { buildFixtureVault, listDistHtml } from './helpers/run-build.js';
-import { socials, validateSocials } from '../site/verbs.ts';
+import { socials, lastfmSocialEnabled, validateSocials } from '../site/verbs.ts';
 import { socialIcon } from '../site/social-icons.js';
 
 const EXPECTED = [
   { label: 'x', href: 'https://x.com/mattdoes' },
   { label: 'instagram', href: 'https://www.instagram.com/mattdoes.ig/' },
   { label: 'letterboxd', href: 'https://letterboxd.com/mattdoes/' },
-  { label: 'last.fm', href: 'https://www.last.fm/user/djverism' },
   { label: 'github', href: 'https://github.com/mattdoesgh' },
 ];
 
 let distDir;
 test.before(() => { ({ distDir } = buildFixtureVault()); });
 
-test('the registry lists the five socials', () => {
+test('the registry lists the footer socials without last.fm', () => {
+  assert.equal(lastfmSocialEnabled, false);
   assert.deepEqual(socials.map((item) => ({ label: item.label, href: item.href })), EXPECTED);
+  assert.equal(socialIcon('last.fm').includes('<svg'), true);
   for (const item of EXPECTED) {
     const icon = socialIcon(item.label);
     assert.match(icon, /^<svg viewBox="0 0 24 24" aria-hidden="true"><path d="[^"]+"\/><\/svg>$/);
@@ -42,7 +43,14 @@ test('the registry lists the five socials', () => {
   ]), /must not point at unshared/);
 });
 
-test('every built page footer has the five social hrefs and names', () => {
+test('the home last.fm verb still opens /listening/', () => {
+  const home = new JSDOM(fs.readFileSync(path.join(distDir, 'index.html'), 'utf8')).window.document;
+  const link = [...home.querySelectorAll('a.verb')].find((anchor) => anchor.getAttribute('href') === '/listening/');
+  assert.equal(link?.querySelector('.verb-label')?.textContent, 'last.fm');
+  assert.equal(fs.existsSync(path.join(distDir, 'listening', 'index.html')), true);
+});
+
+test('every built page footer has the social hrefs and names', () => {
   const files = listDistHtml(distDir);
   assert.ok(files.length >= 4);
   for (const file of files) {
@@ -62,6 +70,13 @@ test('every built page footer has the five social hrefs and names', () => {
       rel: 'me noopener',
       target: null,
     })), rel);
+    assert.equal(footer.querySelector('nav.verb-nav'), null, rel);
+    assert.equal(footer.querySelector('.home-link'), null, rel);
+    assert.equal(footer.textContent.includes('matt does'), false, rel);
+    assert.equal(footer.innerHTML.includes('https://www.last.fm/user/djverism'), false, rel);
+    if (rel !== 'index.html') {
+      assert.equal(doc.querySelector('h1 a')?.getAttribute('href'), '/', rel);
+    }
     for (const anchor of links) {
       assert.equal(anchor.textContent.trim(), '', rel);
       assert.equal(anchor.querySelectorAll('svg').length, 1, rel);

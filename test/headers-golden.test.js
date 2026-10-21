@@ -101,7 +101,7 @@ test('a missing hashed asset cannot fall through to the HTML shell', () => {
   // must be HTTP 404, content-type must not be a stylesheet, and the
   // response must not include "immutable".
   const notFound = fs.readFileSync(path.join(distDir, '404.html'), 'utf8');
-  assert.match(notFound, /<h1 class="sign">not found<\/h1>/);
+  assert.match(notFound, /<h1 class="sign"><a href="\/">not found<\/a><\/h1>/);
   assert.match(notFound, /<main id="main">/);
   assert.doesNotMatch(notFound, /<h1 class="ident">/,
     'the 404 page must not be the homepage');
