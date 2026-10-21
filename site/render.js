@@ -163,21 +163,6 @@ function bar(href, name) {
 }
 
 /**
- * @param {string} current slug or ''
- * @returns {string}
- */
-function verbNav(current) {
-  const links = verbs.map((verb) => {
-    const currentAttr = verb.slug === current ? ' aria-current="page"' : '';
-    const heading = verbHeading(verb.label);
-    return `<a href="${verbPath(verb.slug)}"${currentAttr}>${esc(heading)}</a>`;
-  }).join('\n          ');
-  return `<nav class="verb-nav" aria-label="verbs">
-          ${links}
-        </nav>`;
-}
-
-/**
  * Quiet footer row of brand marks. The accessible name is the aria-label.
  * rel="me" marks these as the same person. Same tab.
  * Not the shared https helper: that adds noreferrer and drops me.
@@ -204,8 +189,6 @@ function shell({
   title,
   description,
   polarity,
-  current,
-  showVerbNav,
   robots,
   main,
 }) {
@@ -215,8 +198,6 @@ function shell({
   const canonical = `${siteUrl}${path}`;
   const polarityAttr = polarity === 'flip' ? ' data-polarity="flip"' : '';
   const robotsMeta = robots ? `\n    <meta name="robots" content="${esc(robots)}">` : '';
-  const nav = showVerbNav ? verbNav(current) : '';
-  const home = path === '/' ? '' : '<p class="home-link"><a href="/">home</a></p>';
   return `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -238,8 +219,6 @@ function shell({
       ${main}
     </main>
     <footer class="site-footer">
-      ${home}
-      ${nav}
       ${socialNav()}
     </footer>
     <script src="/${esc(js)}" defer></script>
@@ -387,7 +366,7 @@ export function renderWatch(ctx) {
     current: verb.slug,
     showVerbNav: true,
     robots: '',
-    main: `<h1 class="sign">${esc(heading)}</h1>
+    main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
       ${feed}`,
   });
 }
@@ -428,7 +407,7 @@ export function renderListen(ctx) {
     current: verb.slug,
     showVerbNav: true,
     robots: '',
-    main: `<h1 class="sign">${esc(heading)}</h1>
+    main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
       ${list}`,
   });
 }
@@ -449,7 +428,7 @@ export function renderUnshared(ctx) {
     current: verb.slug,
     showVerbNav: true,
     robots: '',
-    main: `<h1 class="sign">${esc(heading)}</h1>
+    main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
       <p class="lede">Fun is unshared</p>
       ${bandcampSlot(unsharedPlayer.bandcamp)}
       <ul class="outlinks">
@@ -495,7 +474,7 @@ export function renderNotFound(ctx) {
     current: '',
     showVerbNav: true,
     robots: 'noindex',
-    main: '<h1 class="sign">not found</h1>',
+    main: '<h1 class="sign"><a href="/">not found</a></h1>',
   });
 }
 

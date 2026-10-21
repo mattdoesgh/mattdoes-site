@@ -56,8 +56,9 @@ test('every nav label and page h1 is matt does plus the label', () => {
     assert.equal(homeLink?.textContent, heading, verb.slug);
     const page = new JSDOM(readDist(distDir, `${verb.slug}/index.html`)).window.document;
     assert.equal(page.querySelector('h1')?.textContent, heading, verb.slug);
-    const nav = [...page.querySelectorAll('nav.verb-nav a')].find((anchor) => anchor.getAttribute('href') === `/${verb.slug}/`);
-    assert.equal(nav?.textContent, heading, verb.slug);
+    assert.equal(page.querySelector('footer nav.verb-nav'), null, verb.slug);
+    assert.equal(page.querySelector('h1 a')?.getAttribute('href'), '/', verb.slug);
+    assert.equal(page.querySelector('footer')?.textContent.includes('matt does'), false, verb.slug);
   }
   const watching = new JSDOM(readDist(distDir, 'watching/index.html')).window.document;
   const listening = new JSDOM(readDist(distDir, 'listening/index.html')).window.document;
