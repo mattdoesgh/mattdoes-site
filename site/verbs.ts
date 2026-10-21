@@ -29,6 +29,7 @@ export interface SocialLink {
 
 export const socials = [
   { label: 'instagram', href: 'https://www.instagram.com/mattdoes.ig/' },
+  { label: 'x', href: 'https://x.com/mattdoes' },
   { label: 'letterboxd', href: 'https://letterboxd.com/mattdoes/' },
   { label: 'last.fm', href: 'https://www.last.fm/user/djverism' },
   { label: 'github', href: 'https://github.com/mattdoesgh' },

@@ -8,9 +8,11 @@ import path from 'node:path';
 import { JSDOM } from 'jsdom';
 import { buildFixtureVault, listDistHtml } from './helpers/run-build.js';
 import { socials, validateSocials } from '../site/verbs.ts';
+import { socialIcon } from '../site/social-icons.js';
 
 const EXPECTED = [
   { label: 'instagram', href: 'https://www.instagram.com/mattdoes.ig/' },
+  { label: 'x', href: 'https://x.com/mattdoes' },
   { label: 'letterboxd', href: 'https://letterboxd.com/mattdoes/' },
   { label: 'last.fm', href: 'https://www.last.fm/user/djverism' },
   { label: 'github', href: 'https://github.com/mattdoesgh' },
@@ -19,8 +21,14 @@ const EXPECTED = [
 let distDir;
 test.before(() => { ({ distDir } = buildFixtureVault()); });
 
-test('the registry lists the four socials', () => {
+test('the registry lists the five socials', () => {
   assert.deepEqual(socials.map((item) => ({ label: item.label, href: item.href })), EXPECTED);
+  for (const item of EXPECTED) {
+    const icon = socialIcon(item.label);
+    assert.match(icon, /^<svg viewBox="0 0 24 24" aria-hidden="true"><path d="[^"]+"\/><\/svg>$/);
+    assert.doesNotMatch(icon, /https?:|simpleicons|unpkg|jsdelivr|fontawesome/i);
+  }
+  assert.throws(() => socialIcon('missing'), /missing icon/);
   assert.doesNotThrow(() => validateSocials(socials));
   assert.throws(() => validateSocials([
     { label: 'Instagram', href: 'https://www.instagram.com/mattdoes.ig/' },
@@ -34,7 +42,7 @@ test('the registry lists the four socials', () => {
   ]), /must not point at unshared/);
 });
 
-test('every built page footer has the four social hrefs', () => {
+test('every built page footer has the five social hrefs and names', () => {
   const files = listDistHtml(distDir);
   assert.ok(files.length >= 4);
   for (const file of files) {
@@ -44,7 +52,7 @@ test('every built page footer has the four social hrefs', () => {
     assert.ok(footer, rel);
     const links = [...footer.querySelectorAll('nav.socials a')];
     assert.deepEqual(links.map((anchor) => ({
-      label: anchor.textContent,
+      label: anchor.getAttribute('aria-label'),
       href: anchor.getAttribute('href'),
       rel: anchor.getAttribute('rel'),
       target: anchor.getAttribute('target'),
@@ -55,8 +63,10 @@ test('every built page footer has the four social hrefs', () => {
       target: null,
     })), rel);
     for (const anchor of links) {
-      assert.equal(anchor.textContent.includes('@'), false, rel);
-      assert.equal(/https?:/i.test(anchor.textContent), false, rel);
+      assert.equal(anchor.textContent.trim(), '', rel);
+      assert.equal(anchor.querySelectorAll('svg').length, 1, rel);
+      assert.equal(anchor.querySelector('svg')?.getAttribute('aria-hidden'), 'true', rel);
+      assert.equal(/https?:/i.test(anchor.querySelector('svg').innerHTML), false, rel);
       assert.equal(String(anchor.getAttribute('href')).includes('/unshared'), false, rel);
     }
   }
