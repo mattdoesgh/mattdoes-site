@@ -11,8 +11,8 @@ import { socials, validateSocials } from '../site/verbs.ts';
 import { socialIcon } from '../site/social-icons.js';
 
 const EXPECTED = [
-  { label: 'instagram', href: 'https://www.instagram.com/mattdoes.ig/' },
   { label: 'x', href: 'https://x.com/mattdoes' },
+  { label: 'instagram', href: 'https://www.instagram.com/mattdoes.ig/' },
   { label: 'letterboxd', href: 'https://letterboxd.com/mattdoes/' },
   { label: 'last.fm', href: 'https://www.last.fm/user/djverism' },
   { label: 'github', href: 'https://github.com/mattdoesgh' },
