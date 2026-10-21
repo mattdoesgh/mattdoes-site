@@ -861,6 +861,44 @@ body[data-polarity="flip"] .verb-nav a {
   text-underline-offset: 0.12em;
 }
 
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.1rem 0.85rem;
+  margin: 0;
+}
+
+.socials a {
+  color: #f7c8d8;
+  font-family: var(--body);
+  font-size: 0.95rem;
+  line-height: 1;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.15rem;
+}
+
+.socials a:hover,
+.socials a:focus-visible {
+  background: #f7c8d8;
+  color: #000000;
+  outline-color: #000000;
+}
+
+body[data-polarity="flip"] .socials a {
+  color: #000000;
+}
+
+body[data-polarity="flip"] .socials a:hover,
+body[data-polarity="flip"] .socials a:focus-visible {
+  background: #000000;
+  color: #f7c8d8;
+  outline-color: #f7c8d8;
+}
+
 .anomalies summary {
   cursor: pointer;
   min-height: 44px;
@@ -1202,6 +1240,10 @@ body[data-polarity="flip"] .anomalies summary {
     border-top: 0;
     margin-top: clamp(2rem, 5vh, 4rem);
     padding-top: 0;
+  }
+
+  body:has(.verbs) .site-footer {
+    margin-top: 0.5rem;
   }
 
   .site-footer:empty {

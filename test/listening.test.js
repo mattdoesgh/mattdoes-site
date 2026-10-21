@@ -5,6 +5,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { JSDOM } from 'jsdom';
 import {
   buildFixtureVault, readDist, seedLastfmCache, REPO_ROOT,
 } from './helpers/run-build.js';
@@ -16,7 +17,8 @@ test('a tracks cache bakes names into /listening/', () => {
   const html = readDist(distDir, 'listening/index.html');
   assert.match(html, /Poisoned Track/);
   assert.doesNotMatch(html, /Last\.fm/);
-  assert.doesNotMatch(html, /https:\/\/www\.last\.fm\/user\/djverism/);
+  const main = new JSDOM(html).window.document.querySelector('main');
+  assert.doesNotMatch(main.innerHTML, /https:\/\/www\.last\.fm\/user\/djverism/);
   assert.doesNotMatch(html, /scrobble-count/);
 });
 
