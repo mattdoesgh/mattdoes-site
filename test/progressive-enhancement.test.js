@@ -14,7 +14,7 @@ test.before(() => { ({ distDir } = buildFixtureVault()); });
 
 const RETIRED_ROUTES = ['journal', 'making', 'blog'];
 
-const REAL_PAGES = ['/', '/watching/', '/listening/', '/unshared/'];
+const REAL_PAGES = ['/', '/watching/', '/listening/'];
 
 function rules() {
   const file = path.join(REPO_ROOT, 'static', '_redirects');
@@ -39,16 +39,11 @@ test('listening is a real page without JavaScript', () => {
   assert.equal(doc.querySelector('iframe'), null);
 });
 
-test('the redaction trail is a native details element', () => {
+test('the home page does not link to the offline unshared page', () => {
   const home = new JSDOM(readDist(distDir, 'index.html')).window.document;
-  const bar = home.querySelector('details.redaction');
-  assert.ok(bar?.querySelector('summary'));
-  assert.equal(bar.querySelector('a')?.getAttribute('href'), '/unshared/');
-  const unshared = new JSDOM(readDist(distDir, 'unshared/index.html')).window.document;
-  assert.equal(unshared.querySelector('details.redaction'), null);
-  assert.equal(unshared.querySelector('a[href="/frequency/"]'), null);
-  assert.equal(unshared.querySelector('a[href="mailto:unshared@mattdoes.online"]'), null);
-  assert.equal(unshared.querySelector('details.redaction a[href^="mailto:"]'), null);
+  assert.equal(home.querySelector('a[href="/unshared/"]'), null);
+  assert.equal(home.querySelector('details.redaction'), null);
+  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), false);
 });
 
 test('journal, making, and blog are not generated', () => {

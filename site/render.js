@@ -1,6 +1,6 @@
 // Pages from site/verbs.ts. String HTML, no React.
 
-import { verbs, verbPath, verbHeading, unsharedPlayer, unsharedContact, SECRET_PATHS } from './verbs.ts';
+import { verbs, verbCatalog, verbPath, verbHeading, unsharedPlayer, unsharedContact, unsharedEnabled, SECRET_PATHS } from './verbs.ts';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 
 const SPOTIFY = 'https://open.spotify.com/artist/617fKVTXkDafXJshlNUzF3';
@@ -250,6 +250,18 @@ function watchPreview(watch) {
 }
 
 /**
+ * Names the published verbs. Two read as "a and b"; more use a serial comma.
+ *
+ * @returns {string}
+ */
+function homeDescription() {
+  const labels = verbs.map((verb) => verb.label);
+  if (labels.length < 2) return `matt does ${labels.join('')}.`;
+  if (labels.length === 2) return `matt does ${labels[0]} and ${labels[1]}.`;
+  return `matt does ${labels.slice(0, -1).join(', ')}, and ${labels[labels.length - 1]}.`;
+}
+
+/**
  * @param {object} ctx
  * @returns {string}
  */
@@ -269,7 +281,7 @@ export function renderHome(ctx) {
     ...ctx,
     path: '/',
     title: 'mattdoes.online',
-    description: 'matt does letterboxd, last.fm, and unshared.',
+    description: homeDescription(),
     polarity: 'field',
     current: '',
     showVerbNav: false,
@@ -280,7 +292,7 @@ export function renderHome(ctx) {
         ${items}
         </ol>
       </nav>
-      ${bar('/unshared/', 'unshared')}`,
+      ${unsharedEnabled ? bar('/unshared/', 'unshared') : ''}`,
   });
 }
 
@@ -336,7 +348,7 @@ function film(watch, index) {
  * @returns {string}
  */
 function verbByRenderer(renderer) {
-  const verb = verbs.find((item) => item.renderer === renderer);
+  const verb = verbCatalog.find((item) => item.renderer === renderer);
   if (!verb) throw new Error(`verb registry: missing verb for renderer "${renderer}"`);
   return verb;
 }
