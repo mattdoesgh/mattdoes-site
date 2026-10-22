@@ -22,6 +22,7 @@ test('a tracks cache bakes names into /listening/', () => {
   assert.equal(main.querySelector('h1')?.nextElementSibling?.className, 'total');
   assert.equal(main.querySelector('.total-num')?.textContent, '12,345');
   assert.equal(main.querySelector('.total-label')?.textContent, 'scrobbles');
+  assert.equal(main.querySelector('.total')?.textContent, '12,345 scrobbles');
   assert.equal(main.querySelector('.periods'), null);
   assert.doesNotMatch(main.innerHTML, /https:\/\/www\.last\.fm\/user\/djverism/);
   assert.doesNotMatch(html, /scrobble-count/);

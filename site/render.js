@@ -482,7 +482,7 @@ export function renderListen(ctx) {
   const heading = verbHeading(verb.label);
   const charts = albumGrid(ctx.periods);
   const count = Number(ctx.playcount) > 0
-    ? `<p class="total"><span class="total-num">${esc(formatScrobbleCount(ctx.playcount))}</span><span class="total-label">scrobbles</span></p>`
+    ? `<p class="total"><span class="total-num">${esc(formatScrobbleCount(ctx.playcount))}</span> <span class="total-label">scrobbles</span></p>`
     : '';
   const recent = rows.length ? '<h2 class="recent-label">recent</h2>' : '';
   const list = `<ol class="tracks" id="tracks">

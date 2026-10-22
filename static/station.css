@@ -503,17 +503,22 @@ body[data-polarity="flip"] .verb-nav a {
 }
 
 .total {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  gap: 0.45rem;
   margin: 1.4rem 0 0;
+  max-width: 100%;
 }
 
 .total-num {
-  display: block;
   color: #f7c8d8;
   font-family: var(--display);
   font-weight: 400;
   font-size: clamp(3.5rem, 12vw, 6.5rem);
   line-height: 0.9;
   letter-spacing: 0;
+  white-space: nowrap;
 }
 
 body[data-polarity="flip"] .total-num {
@@ -521,8 +526,13 @@ body[data-polarity="flip"] .total-num {
 }
 
 .total-label {
-  display: block;
-  margin-top: 0.2rem;
+  font-family: var(--body);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 3.4vw, 2.25rem);
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
 }
 
 .recent-label {
