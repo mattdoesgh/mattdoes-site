@@ -53,7 +53,8 @@ const HALF_MARK = '½';
 /**
  * The diary string is ★ plus a trailing ½. The fraction is drawn as the
  * left half of a ★ (same glyph, clipped in CSS) so it is not a separate
- * character and does not depend on a half-star codepoint.
+ * character and does not depend on a half-star codepoint. The outer box
+ * carries the cut line; the inner glyph is the clipped fill.
  *
  * @param {unknown} stars
  * @returns {string}
@@ -64,7 +65,9 @@ function starGlyphs(stars) {
   const half = value.endsWith(HALF_MARK);
   const full = half ? value.slice(0, -HALF_MARK.length) : value;
   if ([...full].some((ch) => ch !== FULL_STAR)) return esc(value);
-  const clipped = half ? `<span class="star-half">${FULL_STAR}</span>` : '';
+  const clipped = half
+    ? `<span class="star-half"><span class="star-glyph">${FULL_STAR}</span></span>`
+    : '';
   return `${full}${clipped}`;
 }
 
