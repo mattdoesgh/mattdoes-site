@@ -3,7 +3,7 @@
 // Routes (read path):
 //   GET /api/listening/now      → current scrobble (or { nowPlaying: false })
 //   GET /api/listening/recent   → playcount + 25 most recent tracks
-//   GET /api/listening/charts   → top 25 albums, with cover art, for the fixed periods
+//   GET /api/listening/charts   → top albums for the last month, covers only
 //
 // /now and /recent are called client-side by /now-playing.js (topbar pill)
 // and /listening-live.js (the /listening/ page). Response shapes for those
@@ -25,8 +25,8 @@
 //     has a snapshot, and must-revalidate stops the edge from serving that
 //     snapshot when a refresh fails.
 //   • CHARTS — GET /api/listening/charts reads a KV entry cached for hours.
-//     A miss calls user.gettopalbums (limit 25) for the fixed period list,
-//     keeps the largest real cover URL, then stores the result. The poller
+//     A miss calls user.gettopalbums once, for the last month, deep enough
+//     to skip albums with no real cover and still fill the grid. The poller
 //     is not involved. The Last.fm user is the Worker secret, never a
 //     request field.
 //
@@ -68,8 +68,8 @@ import {
   json, errorJson, withCache, corsPreflight, kvGet, kvPut, getClientIp, sha256Hex,
 } from '../../lib/transport.js';
 import {
-  LISTENING_PERIODS, TOP_LIMIT, decodeTopAlbums, decodeTrack,
-  decodeTracks, lastfmError, recentTracksUrl, topAlbumsUrl,
+  CHART_POOL, LISTENING_PERIODS, TOP_LIMIT, albumsWithCovers, decodeTopAlbums,
+  decodeTrack, decodeTracks, lastfmError, recentTracksUrl, topAlbumsUrl,
 } from '../../../lib/lastfm.js';
 
 // Poller cadence (milliseconds). ~25s keeps now-playing sub-minute.
@@ -93,9 +93,10 @@ const USER_AGENT   = 'mattdoes-site/1.0 (+https://mattdoes.online)';
 const CHARTS_TTL_MS         = 6 * 60 * 60 * 1000;
 const CHARTS_EDGE_TTL_S     = 6 * 60 * 60;
 const CHARTS_BROWSER_TTL_S  = CHARTS_EDGE_TTL_S;
-// `charts` is the old five-name list. `charts:covers` dropped every cover
-// because Last.fm's current image host was not on the allowlist yet.
-const CHARTS_KEY         = 'charts:img';
+// `charts` was the five-name list. `charts:covers` dropped every cover.
+// `charts:img` stored four periods already sliced to 25, so a blank in that
+// window could not be replaced from further down the chart.
+const CHARTS_KEY         = 'charts:month';
 const CHARTS_LOCK_KEY    = 'charts:lock';
 
 /**
@@ -281,7 +282,7 @@ async function handle(env, kind) {
 }
 
 /**
- * Top albums for the fixed period list. The Last.fm user is
+ * Top albums for the last month. The Last.fm user is
  * the Worker secret, never a request field, and it is not copied into the
  * payload. A miss fetches Last.fm once and stores the result for hours. A
  * failed refresh keeps the previous payload when there is one.
@@ -346,8 +347,9 @@ async function fetchOneChart(url, decode) {
 }
 
 /**
- * Fixed periods only. Returns null when every call failed so the caller can
- * keep a stale snapshot instead of caching an empty page.
+ * The monthly chart only. Returns null when the call failed so the caller can
+ * keep a stale snapshot instead of caching an empty page. Albums with no real
+ * cover are dropped and the next rows fill the grid.
  *
  * @param {Env} env
  * @returns {Promise<object|null>}
@@ -358,7 +360,10 @@ async function fetchChartPeriods(env) {
   let any = false;
   const periods = {};
   await Promise.all(LISTENING_PERIODS.map(async ({ id }) => {
-    const albums = await fetchOneChart(topAlbumsUrl(user, key, id, TOP_LIMIT), decodeTopAlbums);
+    const albums = await fetchOneChart(
+      topAlbumsUrl(user, key, id, CHART_POOL),
+      (body) => albumsWithCovers(decodeTopAlbums(body, CHART_POOL), TOP_LIMIT),
+    );
     // null is a failed call. An array, including an empty one, is a success.
     if (albums !== null) any = true;
     periods[id] = { albums: albums || [] };
@@ -547,7 +552,7 @@ function withEdgeStale(response, edgeTtlS) {
 
 /**
  * Long-cache only a real chart payload. Reason responses and anything
- * without the fixed period ids stay uncached.
+ * without the monthly period stay uncached.
  *
  * @param {object|null} body
  * @returns {boolean}

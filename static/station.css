@@ -509,7 +509,11 @@ body[data-polarity="flip"] .verb-nav a {
 .total-num {
   display: block;
   color: #f7c8d8;
+  font-family: var(--display);
+  font-weight: 400;
   font-size: clamp(3.5rem, 12vw, 6.5rem);
+  line-height: 0.9;
+  letter-spacing: 0;
 }
 
 body[data-polarity="flip"] .total-num {
@@ -521,22 +525,71 @@ body[data-polarity="flip"] .total-num {
   margin-top: 0.2rem;
 }
 
-.source {
-  margin: 0.4rem 0 0;
+.recent-label {
+  margin: 1.4rem 0 0;
 }
 
-.recent-label{margin:.7rem 0 0;font:400 .95rem/1.5 var(--body)}
-.period-switch{display:flex;flex-wrap:wrap;gap:.35rem .9rem;margin:1.2rem 0 0}
-.period-label{padding:.45rem 0;font:400 .95rem/1 var(--body);cursor:pointer}
-.period-input:checked+.period-label{text-decoration:underline;text-underline-offset:.18em}
-.period-input:focus-visible+.period-label{outline:2px solid;outline-offset:2px}
-.album-grid{display:none;grid-template-columns:repeat(5,minmax(0,1fr));margin:.7rem 0 0}
-.period-switch:has(#period-overall:checked)~.g-o,.period-switch:has(#period-12month:checked)~.g-y,.period-switch:has(#period-3month:checked)~.g-s,.period-switch:has(#period-1month:checked)~.g-m{display:grid}
-.album-tile{position:relative;display:block;aspect-ratio:1;min-width:0;overflow:hidden;color:inherit;text-decoration:none;background:#000}
-.album-tile img{display:block;width:100%;height:100%;object-fit:cover}
-.album-cap{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;padding:.3rem;overflow:hidden;background:#000;color:#f7c8d8;text-align:center;font:400 clamp(.55rem,1.5vw,.8rem)/1.15 var(--body)}
-.is-plain>.album-cap{display:flex}
-@media(hover:hover){.album-tile:hover>.album-cap,.album-tile:focus-visible>.album-cap{display:flex}}
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 1.25rem 0 0;
+}
+
+.album-tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  background: #000000;
+}
+
+.album-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.album-cap {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.3rem;
+  overflow: hidden;
+  background: #000000;
+  color: #f7c8d8;
+  text-align: center;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(1.05rem, 2.8vw, 1.65rem);
+  line-height: 0.88;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.album-by {
+  display: block;
+  font-family: var(--body);
+  font-weight: 400;
+  font-size: 0.72em;
+  line-height: 1.35;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+@media (hover: hover) {
+  .album-tile:hover > .album-cap,
+  .album-tile:focus-visible > .album-cap {
+    display: flex;
+  }
+}
 
 .tracks {
   list-style: none;
@@ -552,9 +605,14 @@ body[data-polarity="flip"] .total-num {
   border-top: 1px solid var(--rule);
 }
 
-.tracks a {
-  color: inherit;
-  font-size: 1.2rem;
+.tracks .by,
+.tracks .album {
+  font-family: var(--body);
+  font-weight: 400;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .tracks .album::before {
@@ -574,23 +632,32 @@ body[data-polarity="flip"] .total-num {
   border-top: 1px solid var(--rule);
 }
 
-.incident h2 {
-  margin: 0;
+.incident h2,
+.recent-label,
+.tracks .what {
   font-family: var(--display);
   font-weight: 400;
   text-transform: uppercase;
   font-size: clamp(2rem, 6vw, 3.3rem);
   line-height: 0.88;
+  letter-spacing: 0;
   overflow-wrap: anywhere;
 }
 
-.incident h2 a {
+.incident h2 {
+  margin: 0;
+}
+
+.incident h2 a,
+.tracks a {
   color: inherit;
   text-decoration: none;
 }
 
 .incident h2 a:hover,
-.incident h2 a:focus-visible {
+.incident h2 a:focus-visible,
+.tracks a:hover,
+.tracks a:focus-visible {
   text-decoration: underline;
   text-underline-offset: 0.08em;
 }
@@ -682,7 +749,6 @@ body[data-polarity="flip"] .redaction-bar {
   background: #000000;
 }
 
-.period-input,
 .redaction-hint {
   position: absolute;
   width: 1px;
@@ -1031,9 +1097,19 @@ body[data-polarity="flip"] .socials a:focus-visible {
     border-top: 0;
   }
 
-  .incident h2 {
+  .incident h2,
+  .recent-label,
+  .tracks .what {
     font-size: clamp(1.65rem, 1.7vw, 2.45rem);
     overflow-wrap: break-word;
+  }
+
+  .album-grid {
+    margin-top: clamp(1.6rem, 3vh, 2.6rem);
+  }
+
+  .album-cap {
+    font-size: clamp(1.65rem, 1.7vw, 2.45rem);
   }
 
   .incident p,
@@ -1071,21 +1147,6 @@ body[data-polarity="flip"] .socials a:focus-visible {
     gap: 0.2rem;
     padding: 0;
     border-top: 0;
-  }
-
-  .tracks a {
-    font-family: var(--display);
-    font-size: clamp(1.7rem, 2vw, 2.6rem);
-    line-height: 0.95;
-    text-decoration: none;
-    max-width: 100%;
-    overflow-wrap: break-word;
-  }
-
-  .tracks a:hover,
-  .tracks a:focus-visible {
-    text-decoration: underline;
-    text-underline-offset: 0.08em;
   }
 
   .tracks .by,

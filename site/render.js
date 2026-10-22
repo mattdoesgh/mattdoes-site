@@ -4,7 +4,7 @@ import { verbs, verbCatalog, socials, verbPath, verbHeading, unsharedPlayer, uns
 import { socialIcon } from './social-icons.js';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 import { formatScrobbleCount } from '../lib/format.js';
-import { LISTENING_PERIODS, TOP_LIMIT, albumImageUrl, musicUrl } from '../lib/lastfm.js';
+import { LISTENING_PERIODS, albumImageUrl, albumsWithCovers, musicUrl } from '../lib/lastfm.js';
 
 const SPOTIFY = 'https://open.spotify.com/artist/617fKVTXkDafXJshlNUzF3';
 // Catalog id only. The platform slug is omitted until the project name is settled.
@@ -436,8 +436,7 @@ function albumLabel(name, artist) {
 }
 
 /**
- * One cover tile. No art (empty or the Last.fm star) is a plain tile.
- * Play counts are not printed.
+ * One cover tile. Albums with no real art are omitted. Play counts are not printed.
  *
  * @param {object} row
  * @returns {string}
@@ -445,63 +444,46 @@ function albumLabel(name, artist) {
 function albumTile(row) {
   const name = String(row?.name || '').trim();
   if (!name) return '';
+  const image = albumImageUrl(row?.image);
+  if (!image) return '';
   const artist = String(row?.artist || '').trim();
   const label = albumLabel(name, artist);
   const href = musicUrl(row?.url);
-  const image = albumImageUrl(row?.image);
   const cap = `<span class="album-cap"><span class="album-name">${esc(name)}</span>${
     artist ? `<span class="album-by">${esc(artist)}</span>` : ''
   }</span>`;
-  const img = image
-    ? `<img src="${esc(image)}" alt="${esc(label)}" width="300" height="300" loading="lazy" decoding="async">`
-    : '';
-  const cls = image ? 'album-tile' : 'album-tile is-plain';
+  const img = `<img src="${esc(image)}" alt="${esc(label)}" width="300" height="300" loading="lazy" decoding="async">`;
   const title = ` title="${esc(label)}"`;
-  if (href) return `<a class="${cls}" href="${esc(href)}"${relFor(href)}${title}>${img}${cap}</a>`;
-  return `<div class="${cls}"${title}>${img}${cap}</div>`;
+  if (href) return `<a class="album-tile" href="${esc(href)}"${relFor(href)}${title}>${img}${cap}</a>`;
+  return `<div class="album-tile"${title}>${img}${cap}</div>`;
 }
 
 /**
- * Period switcher plus one 5×5 grid per period that has albums. The checked
- * radio is overall when that period has covers. CSS shows the matching grid.
- * No script: the page CSP has no unsafe-inline.
+ * The monthly cover grid. Other periods are not drawn. Albums with no real
+ * cover are skipped and later rows fill the empty slots. A short chart ends
+ * on the last real cover.
  *
  * @param {unknown} periods
  * @returns {string}
  */
-function periodsBlock(periods) {
+function albumGrid(periods) {
   if (!periods || typeof periods !== 'object') return '';
-  const ready = [];
-  for (const { id, label } of LISTENING_PERIODS) {
-    const tiles = (Array.isArray(periods[id]?.albums) ? periods[id].albums : [])
-      .map(albumTile)
-      .filter(Boolean)
-      .slice(0, TOP_LIMIT);
-    if (!tiles.length) continue;
-    ready.push({ id, label, tiles });
-  }
-  if (!ready.length) return '';
-  const checkedId = ready.some((row) => row.id === 'overall') ? 'overall' : ready[0].id;
-  const gridClass = { overall: 'g-o', '12month': 'g-y', '3month': 'g-s', '1month': 'g-m' };
-  const controls = ready.map(({ id, label }) => {
-    const checked = id === checkedId ? ' checked' : '';
-    return `<input class="period-input" type="radio" name="listening-period" id="period-${esc(id)}"${checked}><label class="period-label" for="period-${esc(id)}">${esc(label)}</label>`;
-  }).join('');
-  const grids = ready.map(({ id, tiles }) => (
-    `<div class="album-grid ${gridClass[id]}" data-period="${esc(id)}">${tiles.join('')}</div>`
-  )).join('');
-  return `<div class="album-charts"><div class="period-switch">${controls}</div>${grids}</div>`;
+  const id = LISTENING_PERIODS[0]?.id;
+  if (!id) return '';
+  const rows = Array.isArray(periods[id]?.albums) ? periods[id].albums : [];
+  const tiles = albumsWithCovers(rows).map(albumTile).filter(Boolean);
+  if (!tiles.length) return '';
+  return `<div class="album-charts"><div class="album-grid">${tiles.join('')}</div></div>`;
 }
 
 export function renderListen(ctx) {
   const rows = listeningRows(ctx.tracks);
   const verb = verbByRenderer('listen');
   const heading = verbHeading(verb.label);
-  const charts = periodsBlock(ctx.periods);
+  const charts = albumGrid(ctx.periods);
   const count = Number(ctx.playcount) > 0
     ? `<p class="total"><span class="total-num">${esc(formatScrobbleCount(ctx.playcount))}</span><span class="total-label">scrobbles</span></p>`
     : '';
-  const source = (charts || count || rows.length) ? '<p class="source">Last.fm</p>' : '';
   const recent = rows.length ? '<h2 class="recent-label">recent</h2>' : '';
   const list = `<ol class="tracks" id="tracks">
         ${rows.map(trackItem).join('\n        ')}
@@ -516,7 +498,6 @@ export function renderListen(ctx) {
     showVerbNav: true,
     robots: '',
     main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
-      ${source}
       ${count}
       ${charts}
       ${recent}
