@@ -3,7 +3,7 @@
 // Routes (read path):
 //   GET /api/listening/now      → current scrobble (or { nowPlaying: false })
 //   GET /api/listening/recent   → playcount + 25 most recent tracks
-//   GET /api/listening/charts   → top artists and albums for the fixed periods
+//   GET /api/listening/charts   → top 25 albums, with cover art, for the fixed periods
 //
 // /now and /recent are called client-side by /now-playing.js (topbar pill)
 // and /listening-live.js (the /listening/ page). Response shapes for those
@@ -25,9 +25,10 @@
 //     has a snapshot, and must-revalidate stops the edge from serving that
 //     snapshot when a refresh fails.
 //   • CHARTS — GET /api/listening/charts reads a KV entry cached for hours.
-//     A miss calls user.gettopartists and user.gettopalbums for the fixed
-//     period list, then stores the result. The poller is not involved. The
-//     Last.fm user is the Worker secret, never a request field.
+//     A miss calls user.gettopalbums (limit 25) for the fixed period list,
+//     keeps the largest real cover URL, then stores the result. The poller
+//     is not involved. The Last.fm user is the Worker secret, never a
+//     request field.
 //
 // Bootstrap / liveness: a DO alarm is durable once set and self-perpetuates,
 // but nothing starts it on first deploy (or if the chain ever permanently
@@ -67,8 +68,8 @@ import {
   json, errorJson, withCache, corsPreflight, kvGet, kvPut, getClientIp, sha256Hex,
 } from '../../lib/transport.js';
 import {
-  LISTENING_PERIODS, TOP_LIMIT, decodeTopAlbums, decodeTopArtists, decodeTrack,
-  decodeTracks, lastfmError, recentTracksUrl, topAlbumsUrl, topArtistsUrl,
+  LISTENING_PERIODS, TOP_LIMIT, decodeTopAlbums, decodeTrack,
+  decodeTracks, lastfmError, recentTracksUrl, topAlbumsUrl,
 } from '../../../lib/lastfm.js';
 
 // Poller cadence (milliseconds). ~25s keeps now-playing sub-minute.
@@ -92,7 +93,9 @@ const USER_AGENT   = 'mattdoes-site/1.0 (+https://mattdoes.online)';
 const CHARTS_TTL_MS         = 6 * 60 * 60 * 1000;
 const CHARTS_EDGE_TTL_S     = 6 * 60 * 60;
 const CHARTS_BROWSER_TTL_S  = CHARTS_EDGE_TTL_S;
-const CHARTS_KEY         = 'charts';
+// Not `charts`: that entry is the old five-name list with no artwork, and a
+// fresh key makes the next read a miss so the cover grid is fetched now.
+const CHARTS_KEY         = 'charts:covers';
 const CHARTS_LOCK_KEY    = 'charts:lock';
 
 /**
@@ -146,7 +149,7 @@ export default {
    * Read path. Pure KV reader for:
    *   `GET /api/listening/now`     → current scrobble
    *   `GET /api/listening/recent`  → playcount + recent tracks
-   *   `GET /api/listening/charts`  → top artists and albums, cached for hours
+   *   `GET /api/listening/charts`  → top albums and covers, cached for hours
    * `/now` and `/recent` never call Last.fm. `/charts` calls Last.fm only on
    * a cache miss, then stores the result for CHARTS_TTL_MS. The recent-tracks
    * poller is not involved.
@@ -278,7 +281,7 @@ async function handle(env, kind) {
 }
 
 /**
- * Top artists and top albums for the fixed period list. The Last.fm user is
+ * Top albums for the fixed period list. The Last.fm user is
  * the Worker secret, never a request field, and it is not copied into the
  * payload. A miss fetches Last.fm once and stores the result for hours. A
  * failed refresh keeps the previous payload when there is one.
@@ -355,13 +358,10 @@ async function fetchChartPeriods(env) {
   let any = false;
   const periods = {};
   await Promise.all(LISTENING_PERIODS.map(async ({ id }) => {
-    const [artists, albums] = await Promise.all([
-      fetchOneChart(topArtistsUrl(user, key, id, TOP_LIMIT), decodeTopArtists),
-      fetchOneChart(topAlbumsUrl(user, key, id, TOP_LIMIT), decodeTopAlbums),
-    ]);
+    const albums = await fetchOneChart(topAlbumsUrl(user, key, id, TOP_LIMIT), decodeTopAlbums);
     // null is a failed call. An array, including an empty one, is a success.
-    if (artists !== null || albums !== null) any = true;
-    periods[id] = { artists: artists || [], albums: albums || [] };
+    if (albums !== null) any = true;
+    periods[id] = { albums: albums || [] };
   }));
   return any ? periods : null;
 }

@@ -26,7 +26,34 @@
         { "name": "Second Artist", "playcount": 2500, "url": "javascript:alert(1)" }
       ],
       "albums": [
-        { "name": "Fixture Album", "artist": "Fixture Artist", "playcount": 800, "url": "https://www.last.fm/music/Fixture+Artist/Fixture+Album" }
+        {
+          "name": "Fixture Album",
+          "artist": "Fixture Artist",
+          "playcount": 800,
+          "url": "https://www.last.fm/music/Fixture+Artist/Fixture+Album",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/fixturecover.jpg"
+        },
+        {
+          "name": "Plain Album",
+          "artist": "Plain Artist",
+          "playcount": 10,
+          "url": "",
+          "image": ""
+        },
+        {
+          "name": "Star Album",
+          "artist": "Star Artist",
+          "playcount": 9,
+          "url": "https://www.last.fm/music/Star+Artist/Star+Album",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png"
+        },
+        {
+          "name": "Foreign Album",
+          "artist": "Foreign Artist",
+          "playcount": 8,
+          "url": "javascript:alert(1)",
+          "image": "https://evil.example/x.jpg"
+        }
       ]
     },
     "12month": {
@@ -34,19 +61,39 @@
         { "name": "Year Artist", "playcount": 900, "url": "https://www.last.fm/user/djverism" }
       ],
       "albums": [
-        { "name": "Year Album", "artist": "Year Artist", "playcount": 300, "url": "" }
+        {
+          "name": "Year Album",
+          "artist": "Year Artist",
+          "playcount": 300,
+          "url": "",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/yearcover.jpg"
+        }
       ]
     },
     "3month": {
       "artists": [
         { "name": "Season Artist", "playcount": 120, "url": "" }
       ],
-      "albums": []
+      "albums": [
+        {
+          "name": "Season Album",
+          "artist": "Season Artist",
+          "playcount": 12,
+          "url": "",
+          "image": ""
+        }
+      ]
     },
     "1month": {
       "artists": [],
       "albums": [
-        { "name": "Month Album", "artist": "Month Artist", "playcount": 40, "url": "" }
+        {
+          "name": "Month Album",
+          "artist": "Month Artist",
+          "playcount": 40,
+          "url": "",
+          "image": "http://lastfm.freetls.fastly.net/i/u/300x300/month.jpg"
+        }
       ]
     }
   }

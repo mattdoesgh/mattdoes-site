@@ -8,7 +8,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  decodeTopAlbums, decodeTopArtists, decodeTrack, decodeTracks, lastfmError,
+  albumImageUrl, decodeTopAlbums, decodeTopArtists, decodeTrack, decodeTracks, lastfmError,
   musicUrl, recentTracksUrl, topAlbumsUrl, topArtistsUrl,
 } from '../lib/lastfm.js';
 
@@ -152,7 +152,39 @@ test('lastfm: chart decode keeps names and drops profile urls', () => {
   assert.deepEqual(albums, [{
     name: 'Album', artist: 'Via Text', playcount: 3,
     url: 'https://www.last.fm/music/Via+Text/Album',
+    image: '',
   }]);
   assert.deepEqual(decodeTopArtists(undefined), []);
   assert.deepEqual(decodeTopAlbums({}), []);
+});
+
+test('lastfm: album art keeps the largest real Last.fm cover', () => {
+  const star = 'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
+  const small = 'https://lastfm.freetls.fastly.net/i/u/34s/abc.jpg';
+  const large = 'https://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg';
+  assert.equal(albumImageUrl(star), '');
+  assert.equal(albumImageUrl('http://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg'), '');
+  assert.equal(albumImageUrl('https://evil.example/abc.jpg'), '');
+  assert.equal(albumImageUrl(large), large);
+  const albums = decodeTopAlbums({
+    topalbums: {
+      album: [
+        {
+          name: 'Has Art',
+          artist: 'A',
+          playcount: '1',
+          image: [
+            { size: 'small', '#text': small },
+            { size: 'extralarge', '#text': large },
+            { size: 'mega', '#text': star },
+          ],
+        },
+        { name: 'No Art', artist: 'B', playcount: '1', image: [{ '#text': star }] },
+      ],
+    },
+  });
+  assert.equal(albums[0].image, large);
+  assert.equal(albums[1].image, '');
+  const many = Array.from({ length: 30 }, (_, i) => ({ name: `A${i}`, artist: 'Z', playcount: '1' }));
+  assert.equal(decodeTopAlbums({ topalbums: { album: many } }).length, 25);
 });

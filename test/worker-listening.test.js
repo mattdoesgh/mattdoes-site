@@ -493,19 +493,10 @@ function chartEnv(kv = new KVStub()) {
 }
 
 function lastfmChart(url) {
-  const period = new URL(url).searchParams.get('period');
-  if (url.includes('method=user.gettopartists')) {
-    return jsonResponse({
-      topartists: {
-        artist: {
-          name: `Artist ${period}`,
-          playcount: '4',
-          url: `https://www.last.fm/user/${CHART_USER}`,
-        },
-        '@attr': { user: CHART_USER },
-      },
-    });
-  }
+  const parsed = new URL(url);
+  const period = parsed.searchParams.get('period');
+  assert.equal(parsed.searchParams.get('limit'), '25');
+  assert.doesNotMatch(url, /gettopartists/);
   if (url.includes('method=user.gettopalbums')) {
     return jsonResponse({
       topalbums: {
@@ -514,7 +505,13 @@ function lastfmChart(url) {
           playcount: '2',
           artist: { name: 'Album Artist' },
           url: 'https://www.last.fm/music/Album+Artist/Album',
+          image: [
+            { size: 'small', '#text': 'https://lastfm.freetls.fastly.net/i/u/34s/abc.jpg' },
+            { size: 'extralarge', '#text': 'https://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg' },
+            { size: 'mega', '#text': 'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png' },
+          ],
         }],
+        '@attr': { user: CHART_USER },
       },
     });
   }
@@ -549,7 +546,7 @@ async function fetchCharts(url, env, fetchHandler, headers = {}) {
 }
 
 function seedCharts(kv, fetchedAt, periods) {
-  return kv.put('charts', JSON.stringify({ data: { periods }, fetchedAt }));
+  return kv.put('charts:covers', JSON.stringify({ data: { periods }, fetchedAt }));
 }
 
 test('charts: a cold miss fetches the four periods and hides the username', async () => {
@@ -557,14 +554,16 @@ test('charts: a cold miss fetches the four periods and hides the username', asyn
   const { status, body, headers, calls } = await fetchCharts(CHARTS, chartEnv(kv), lastfmChart);
 
   assert.equal(status, 200);
-  assert.equal(calls.length, 8, 'four periods, artists and albums');
+  assert.equal(calls.length, 4, 'four period album charts');
   assert.ok(calls.every((url) => url.includes(`user=${encodeURIComponent(CHART_USER)}`)));
   assert.ok(calls.every((url) => url.includes('api_key=secret-key')));
-  assert.equal(calls.filter((url) => url.includes('gettopartists')).length, 4);
+  assert.equal(calls.filter((url) => url.includes('gettopartists')).length, 0);
   assert.equal(calls.filter((url) => url.includes('gettopalbums')).length, 4);
   assert.equal('reason' in body, false);
-  assert.equal(body.periods.overall.artists[0].name, 'Artist overall');
-  assert.equal(body.periods.overall.artists[0].url, '', 'profile urls are dropped');
+  assert.equal(body.periods.overall.albums[0].name, 'Album overall');
+  assert.equal(body.periods.overall.albums[0].url, 'https://www.last.fm/music/Album+Artist/Album');
+  assert.equal(body.periods.overall.albums[0].image, 'https://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg');
+  assert.equal(body.periods.overall.artists, undefined);
   assert.equal(body.periods['1month'].albums[0].name, 'Album 1month');
   for (const id of PERIODS) assert.ok(body.periods[id]);
   assert.equal(JSON.stringify(body).includes(CHART_USER), false);
@@ -576,22 +575,23 @@ test('charts: a cold miss fetches the four periods and hides the username', asyn
     'public, max-age=21600, stale-while-revalidate=86400, stale-if-error=86400',
   );
 
-  const stored = await kv.get('charts', { type: 'json' });
-  assert.equal(stored.data.periods.overall.artists[0].name, 'Artist overall');
+  const stored = await kv.get('charts:covers', { type: 'json' });
+  assert.equal(stored.data.periods.overall.albums[0].name, 'Album overall');
+  assert.equal(stored.data.periods.overall.albums[0].image, 'https://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg');
   assert.equal(JSON.stringify(stored).includes(CHART_USER), false);
 
   const again = await fetchCharts(CHARTS, chartEnv(kv), () => {
     throw new Error('fresh charts must not call Last.fm');
   });
   assert.equal(again.calls.length, 0);
-  assert.equal(again.body.periods.overall.artists[0].name, 'Artist overall');
+  assert.equal(again.body.periods.overall.albums[0].name, 'Album overall');
 });
 
 test('cache: browser max-age matches the freshness of now, recent, and charts', async () => {
   const kv = new KVStub();
   await seed(kv, 'now:u', { nowPlaying: false });
   await seed(kv, 'recent:u', { playcount: 3, tracks: [] });
-  await kv.put('charts', JSON.stringify({
+  await kv.put('charts:covers', JSON.stringify({
     data: {
       periods: {
         overall: { artists: [], albums: [] },
@@ -797,8 +797,8 @@ test('charts: a total Last.fm failure is not cached and carries a reason', async
   assert.equal(status, 200);
   assert.equal(body.reason, 'unavailable');
   assert.deepEqual(body.periods, {});
-  assert.equal(calls.length, 8);
-  assert.equal(await kv.get('charts'), null);
+  assert.equal(calls.length, 4);
+  assert.equal(await kv.get('charts:covers'), null);
   assert.equal(JSON.stringify(body).includes(CHART_USER), false);
 });
 
@@ -806,19 +806,19 @@ test('charts: a failed refresh keeps the previous payload', async () => {
   const kv = new KVStub();
   const staleAt = Date.now() - (7 * 60 * 60 * 1000);
   const periods = {
-    overall: { artists: [{ name: 'Kept', playcount: 3, url: '' }], albums: [] },
-    '12month': { artists: [], albums: [] },
-    '3month': { artists: [], albums: [] },
-    '1month': { artists: [], albums: [] },
+    overall: { albums: [{ name: 'Kept', artist: 'Kept Artist', playcount: 3, url: '', image: '' }] },
+    '12month': { albums: [] },
+    '3month': { albums: [] },
+    '1month': { albums: [] },
   };
   await seedCharts(kv, staleAt, periods);
   const { status, body, calls } = await fetchCharts(
     CHARTS, chartEnv(kv), () => new Response('no', { status: 500 }));
   assert.equal(status, 200);
   assert.equal('reason' in body, false);
-  assert.equal(body.periods.overall.artists[0].name, 'Kept');
-  assert.equal(calls.length, 8);
-  const stored = await kv.get('charts', { type: 'json' });
+  assert.equal(body.periods.overall.albums[0].name, 'Kept');
+  assert.equal(calls.length, 4);
+  const stored = await kv.get('charts:covers', { type: 'json' });
   assert.equal(stored.fetchedAt, staleAt, 'a failed refresh must not overwrite the snapshot');
 });
 

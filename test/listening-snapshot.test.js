@@ -135,6 +135,10 @@ function workerChartPayload() {
         artist: 'Album Artist',
         playcount: 7,
         url: 'https://www.last.fm/music/Album+Artist/Album',
+        image: id === '3month'
+          ? 'https://evil.example/cover.jpg'
+          : 'https://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg',
+        user: 'djverism',
       }],
     };
   }
@@ -162,6 +166,8 @@ test('snapshot: period charts come from the worker and a failure keeps the track
     assert.equal(snap.periods.overall.artists[0].url, '', 'profile urls are dropped');
     assert.equal(snap.periods.overall.artists[0].user, undefined, 'extra fields are dropped');
     assert.equal(snap.periods['12month'].albums[0].name, 'Album 12month');
+    assert.equal(snap.periods.overall.albums[0].image, 'https://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg');
+    assert.equal(snap.periods['3month'].albums[0].image, '', 'a foreign cover host is dropped');
     assert.deepEqual(snap.periods['3month'].artists, []);
     assert.equal(snap.periods['3month'].albums[0].name, 'Album 3month');
     assert.ok(snap.periods['1month']);
