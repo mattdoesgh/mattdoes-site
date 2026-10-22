@@ -37,8 +37,9 @@
 // EDGE_TTL_S (s-maxage). Concurrent visitors polling within the same window
 // collapse to a single Worker invocation; the rest are served from the edge.
 // EDGE_TTL_S ≪ POLL_INTERVAL_MS so it never widens the staleness the poller
-// sets. The browser still sees max-age=0 + must-revalidate, so each poll
-// re-asks the edge — scrobble updates aren't hidden by a stale browser cache.
+// sets. Browser max-age is separate and matches how fresh the payload is:
+// seconds for /now, a short minute for /recent, and six hours for /charts.
+// must-revalidate stops a browser from serving a copy past that window.
 //
 // Env (wrangler secrets):
 //   LASTFM_USERNAME  — Last.fm user to query
@@ -69,13 +70,18 @@ import {
 // Poller cadence (milliseconds). ~25s keeps now-playing sub-minute.
 const POLL_INTERVAL_MS = 25 * 1000;
 const EDGE_TTL_S       = 15;          // edge-cache window; must be ≪ POLL_INTERVAL_MS / 1000
+// Browser freshness. /now is the live scrobble, so it expires with the edge
+// window. /recent is the same snapshot shown as a list, and a minute is enough.
+const NOW_BROWSER_TTL_S    = 15;
+const RECENT_BROWSER_TTL_S = 60;
 
 const RECENT_LIMIT = 25;
 const USER_AGENT   = 'mattdoes-site/1.0 (+https://mattdoes.online)';
 // Charts move on a scale of months. Six hours matches the site rebuild and
 // keeps a cold Pages build from calling Last.fm again on the next deploy.
-const CHARTS_TTL_MS      = 6 * 60 * 60 * 1000;
-const CHARTS_EDGE_TTL_S  = 6 * 60 * 60;
+const CHARTS_TTL_MS         = 6 * 60 * 60 * 1000;
+const CHARTS_EDGE_TTL_S     = 6 * 60 * 60;
+const CHARTS_BROWSER_TTL_S  = CHARTS_EDGE_TTL_S;
 const CHARTS_KEY         = 'charts';
 const CHARTS_LOCK_KEY    = 'charts:lock';
 
@@ -263,15 +269,15 @@ export class ListeningPoller {
 async function handle(env, kind) {
   if (kind === 'charts') return handleCharts(env);
   if (!env.LASTFM_API_KEY || !env.LASTFM_USERNAME) {
-    return toClient(json(emptyPayload(kind, 'unavailable')));
+    return toClient(json(emptyPayload(kind, 'unavailable')), kind);
   }
   if (!env.LASTFM_CACHE) {
     return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
   }
 
   const cached = await readCache(env, `${kind}:${env.LASTFM_USERNAME}`);
-  if (cached) return toClient(json(cached.data));
-  return toClient(json(emptyPayload(kind, 'warming')));
+  if (cached) return toClient(json(cached.data), kind);
+  return toClient(json(emptyPayload(kind, 'warming')), kind);
 }
 
 /**
@@ -507,17 +513,18 @@ function trackToNow(t) {
 // workers/lib/transport.js; only this Worker's caching POLICY lives here.
 //
 // Two-layer caching policy:
-//   • s-maxage=EDGE_TTL_S  → Cloudflare edge stores the response for that long,
-//     so concurrent polls collapse to one Worker run per window.
-//   • max-age=0, must-revalidate → browser always re-asks (the request hits
-//     the edge cache, not the Worker, on a HIT). Scrobble updates aren't
-//     hidden behind a stale browser cache, matching the original intent.
-function toClient(response) {
-  return withCache(response, `public, max-age=0, s-maxage=${EDGE_TTL_S}, must-revalidate`);
+//   • s-maxage  → Cloudflare edge stores the response for that long, so
+//     concurrent polls collapse to one Worker run per window.
+//   • max-age   → the browser. /now is seconds, /recent is a minute, and
+//     /charts matches its six-hour edge window. must-revalidate means a
+//     browser past that age re-asks instead of replaying a stale scrobble.
+function toClient(response, kind) {
+  const browserTtlS = kind === 'now' ? NOW_BROWSER_TTL_S : RECENT_BROWSER_TTL_S;
+  return withCache(response, `public, max-age=${browserTtlS}, s-maxage=${EDGE_TTL_S}, must-revalidate`);
 }
 
 function toChartsClient(response) {
-  return withCache(response, `public, max-age=0, s-maxage=${CHARTS_EDGE_TTL_S}, must-revalidate`);
+  return withCache(response, `public, max-age=${CHARTS_BROWSER_TTL_S}, s-maxage=${CHARTS_EDGE_TTL_S}, must-revalidate`);
 }
 
 /**

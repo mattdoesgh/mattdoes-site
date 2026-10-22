@@ -569,7 +569,7 @@ test('charts: a cold miss fetches the four periods and hides the username', asyn
   assert.equal(JSON.stringify(body).includes(CHART_USER), false);
   assert.equal(JSON.stringify(body).includes('secret-key'), false);
   assertApiEnvelope(headers);
-  assert.match(headers.get('cache-control'), /s-maxage=21600/);
+  assert.equal(headers.get('cache-control'), 'public, max-age=21600, s-maxage=21600, must-revalidate');
 
   const stored = await kv.get('charts', { type: 'json' });
   assert.equal(stored.data.periods.overall.artists[0].name, 'Artist overall');
@@ -580,6 +580,49 @@ test('charts: a cold miss fetches the four periods and hides the username', asyn
   });
   assert.equal(again.calls.length, 0);
   assert.equal(again.body.periods.overall.artists[0].name, 'Artist overall');
+});
+
+test('cache: browser max-age matches the freshness of now, recent, and charts', async () => {
+  const kv = new KVStub();
+  await seed(kv, 'now:u', { nowPlaying: false });
+  await seed(kv, 'recent:u', { playcount: 3, tracks: [] });
+  await kv.put('charts', JSON.stringify({
+    data: {
+      periods: {
+        overall: { artists: [], albums: [] },
+        '12month': { artists: [], albums: [] },
+        '3month': { artists: [], albums: [] },
+        '1month': { artists: [], albums: [] },
+      },
+    },
+    fetchedAt: Date.now(),
+  }));
+  const env = {
+    LASTFM_API_KEY: 'k',
+    LASTFM_USERNAME: 'u',
+    LASTFM_CACHE: kv,
+    LISTEN_RL: { limit: async () => ({ success: true }) },
+  };
+  const caches = installCaches();
+  const fetchStub = installFetch(() => { throw new Error('cache policy must not call Last.fm'); });
+  try {
+    const hit = async (url) => {
+      const res = await listeningWorker.fetch(
+        workerRequest(url, { headers: { 'cf-connecting-ip': '203.0.113.9' } }),
+        env,
+        makeCtx(),
+      );
+      assert.equal(res.status, 200);
+      return res.headers.get('cache-control');
+    };
+    assert.equal(await hit(NOW), 'public, max-age=15, s-maxage=15, must-revalidate');
+    assert.equal(await hit(RECENT), 'public, max-age=60, s-maxage=15, must-revalidate');
+    assert.equal(await hit(CHARTS), 'public, max-age=21600, s-maxage=21600, must-revalidate');
+    assert.equal(fetchStub.calls.length, 0);
+  } finally {
+    caches.restore();
+    fetchStub.restore();
+  }
 });
 
 test('charts: a query string is a 404 and is not echoed', async () => {
