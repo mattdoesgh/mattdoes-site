@@ -47,6 +47,40 @@ function starLabel(rating) {
   return `${shown} out of 5 stars`;
 }
 
+const FULL_STAR = '★';
+const HALF_MARK = '½';
+
+/**
+ * The diary string is ★ plus a trailing ½. The fraction is drawn as the
+ * left half of a ★ (same glyph, clipped in CSS) so it is not a separate
+ * character and does not depend on a half-star codepoint.
+ *
+ * @param {unknown} stars
+ * @returns {string}
+ */
+function starGlyphs(stars) {
+  const value = String(stars ?? '');
+  if (!value) return '';
+  const half = value.endsWith(HALF_MARK);
+  const full = half ? value.slice(0, -HALF_MARK.length) : value;
+  if ([...full].some((ch) => ch !== FULL_STAR)) return esc(value);
+  const clipped = half ? `<span class="star-half">${FULL_STAR}</span>` : '';
+  return `${full}${clipped}`;
+}
+
+/**
+ * @param {unknown} stars
+ * @param {unknown} rating
+ * @returns {string}
+ */
+function starsMarkup(stars, rating) {
+  const glyphs = starGlyphs(stars);
+  if (!glyphs) return '';
+  const label = starLabel(rating);
+  const named = label ? ` aria-label="${esc(label)}"` : '';
+  return `<span class="stars" role="img"${named}>${glyphs}</span>`;
+}
+
 /**
  * https links only. javascript: and other schemes become no href.
  *
@@ -240,29 +274,9 @@ function watchPreview(watch) {
   const href = httpsHref(watch.link);
   const title = esc(watch.title);
   const name = href ? `<a href="${esc(href)}"${relFor(href)}>${title}</a>` : title;
-  const stars = watch.stars ? String(watch.stars) : '';
-  const label = starLabel(watch.rating);
-  const rating = stars
-    ? ` <span class="stars" role="img"${label ? ` aria-label="${esc(label)}"` : ''}>${esc(stars)}</span>`
-    : '';
+  const stars = starsMarkup(watch.stars, watch.rating);
+  const rating = stars ? ` ${stars}` : '';
   return `<span class="preview">${name}${rating}</span>`;
-}
-
-const MARK = 'matt does';
-
-/**
- * Outlines the wordmark and leaves the verb in the surrounding type.
- * Titles and descriptions stay plain text; this is body markup only.
- *
- * @param {string} text
- * @returns {string}
- */
-function markedHeading(text) {
-  const value = String(text);
-  if (value === MARK || value.startsWith(`${MARK} `)) {
-    return `<span class="mark">${esc(MARK)}</span>${esc(value.slice(MARK.length))}`;
-  }
-  return esc(value);
 }
 
 /**
@@ -289,7 +303,7 @@ export function renderHome(ctx) {
     const prefix = heading.slice(0, heading.length - verb.label.length);
     const preview = verb.slug === 'watching' ? watchPreview(recent) : '';
     return `<li class="verb-row">
-          <a class="verb" href="${verbPath(verb.slug)}"><span class="verb-prefix"><span class="mark">${esc(prefix)}</span></span><span class="verb-label">${esc(verb.label)}</span></a>
+          <a class="verb" href="${verbPath(verb.slug)}"><span class="verb-prefix"><span>${esc(prefix)}</span></span><span class="verb-label">${esc(verb.label)}</span></a>
           ${preview}
         </li>`;
   }).join('\n        ');
@@ -303,7 +317,7 @@ export function renderHome(ctx) {
     showVerbNav: false,
     robots: '',
     main: `<nav aria-label="verbs">
-        <p class="verb-kicker" aria-hidden="true"><span class="mark">${esc(kicker)}</span></p>
+        <p class="verb-kicker" aria-hidden="true">${esc(kicker)}</p>
         <ol class="verbs">
         ${items}
         </ol>
@@ -335,8 +349,9 @@ function film(watch, index) {
   const title = esc(watch.title || 'Untitled');
   const heading = href ? `<a href="${esc(href)}"${relFor(href)}>${title}</a>` : title;
   const year = watch.year ? `<p class="meta">${esc(watch.year)}</p>` : '';
-  const stars = watch.stars
-    ? `<p class="meta"><span class="stars" role="img"${starLabel(watch.rating) ? ` aria-label="${esc(starLabel(watch.rating))}"` : ''}>${esc(watch.stars)}</span>${watch.rewatch ? ' <span class="flag">rewatch</span>' : ''}</p>`
+  const stars = starsMarkup(watch.stars, watch.rating);
+  const rating = stars
+    ? `<p class="meta">${stars}${watch.rewatch ? ' <span class="flag">rewatch</span>' : ''}</p>`
     : (watch.rewatch ? '<p class="meta"><span class="flag">rewatch</span></p>' : '');
   const review = watch.review ? `<p class="statement">${esc(watch.review)}</p>` : '';
   const poster = servedPoster(watch.poster);
@@ -352,7 +367,7 @@ function film(watch, index) {
         <div>
           <h2>${heading}</h2>
           ${year}
-          ${stars}
+          ${rating}
         </div>
         ${review}
         ${still}
@@ -385,7 +400,7 @@ export function renderWatch(ctx) {
     current: verb.slug,
     showVerbNav: true,
     robots: '',
-    main: `<h1 class="sign"><a href="/">${markedHeading(heading)}</a></h1>
+    main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
       ${feed}`,
   });
 }
@@ -497,7 +512,7 @@ export function renderListen(ctx) {
     current: verb.slug,
     showVerbNav: true,
     robots: '',
-    main: `<h1 class="sign"><a href="/">${markedHeading(heading)}</a></h1>
+    main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
       ${source}
       ${count}
       ${charts}
@@ -522,7 +537,7 @@ export function renderUnshared(ctx) {
     current: verb.slug,
     showVerbNav: true,
     robots: '',
-    main: `<h1 class="sign"><a href="/">${markedHeading(heading)}</a></h1>
+    main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
       <p class="lede">Fun is unshared</p>
       ${bandcampSlot(unsharedPlayer.bandcamp)}
       <ul class="outlinks">
