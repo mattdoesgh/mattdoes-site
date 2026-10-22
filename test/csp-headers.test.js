@@ -116,6 +116,8 @@ test('beacon hosts are allowed and the rest of the policy stays strict', () => {
       `${header} connect-src 'self' covers same-origin /api/listening/* paths`);
     assert.ok(sources(csp, 'img-src').includes('https://lastfm.freetls.fastly.net'),
       `${header} img-src allows Last.fm album covers`);
+    assert.ok(sources(csp, 'img-src').includes('https://lastfm-img.freetls.fastly.net'),
+      `${header} img-src allows the current Last.fm cover host`);
     assert.ok(sources(csp, 'connect-src').includes(BEACON_CONNECT));
     assert.match(sources(csp, 'default-src').join(' '), /^'self'$/);
     assert.equal(sources(csp, 'style-src').join(' '), "'self'");

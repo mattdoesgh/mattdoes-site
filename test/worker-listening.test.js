@@ -546,7 +546,7 @@ async function fetchCharts(url, env, fetchHandler, headers = {}) {
 }
 
 function seedCharts(kv, fetchedAt, periods) {
-  return kv.put('charts:covers', JSON.stringify({ data: { periods }, fetchedAt }));
+  return kv.put('charts:img', JSON.stringify({ data: { periods }, fetchedAt }));
 }
 
 test('charts: a cold miss fetches the four periods and hides the username', async () => {
@@ -575,7 +575,7 @@ test('charts: a cold miss fetches the four periods and hides the username', asyn
     'public, max-age=21600, stale-while-revalidate=86400, stale-if-error=86400',
   );
 
-  const stored = await kv.get('charts:covers', { type: 'json' });
+  const stored = await kv.get('charts:img', { type: 'json' });
   assert.equal(stored.data.periods.overall.albums[0].name, 'Album overall');
   assert.equal(stored.data.periods.overall.albums[0].image, 'https://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg');
   assert.equal(JSON.stringify(stored).includes(CHART_USER), false);
@@ -591,7 +591,7 @@ test('cache: browser max-age matches the freshness of now, recent, and charts', 
   const kv = new KVStub();
   await seed(kv, 'now:u', { nowPlaying: false });
   await seed(kv, 'recent:u', { playcount: 3, tracks: [] });
-  await kv.put('charts:covers', JSON.stringify({
+  await kv.put('charts:img', JSON.stringify({
     data: {
       periods: {
         overall: { artists: [], albums: [] },
@@ -798,7 +798,7 @@ test('charts: a total Last.fm failure is not cached and carries a reason', async
   assert.equal(body.reason, 'unavailable');
   assert.deepEqual(body.periods, {});
   assert.equal(calls.length, 4);
-  assert.equal(await kv.get('charts:covers'), null);
+  assert.equal(await kv.get('charts:img'), null);
   assert.equal(JSON.stringify(body).includes(CHART_USER), false);
 });
 
@@ -818,7 +818,7 @@ test('charts: a failed refresh keeps the previous payload', async () => {
   assert.equal('reason' in body, false);
   assert.equal(body.periods.overall.albums[0].name, 'Kept');
   assert.equal(calls.length, 4);
-  const stored = await kv.get('charts:covers', { type: 'json' });
+  const stored = await kv.get('charts:img', { type: 'json' });
   assert.equal(stored.fetchedAt, staleAt, 'a failed refresh must not overwrite the snapshot');
 });
 

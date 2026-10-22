@@ -93,9 +93,9 @@ const USER_AGENT   = 'mattdoes-site/1.0 (+https://mattdoes.online)';
 const CHARTS_TTL_MS         = 6 * 60 * 60 * 1000;
 const CHARTS_EDGE_TTL_S     = 6 * 60 * 60;
 const CHARTS_BROWSER_TTL_S  = CHARTS_EDGE_TTL_S;
-// Not `charts`: that entry is the old five-name list with no artwork, and a
-// fresh key makes the next read a miss so the cover grid is fetched now.
-const CHARTS_KEY         = 'charts:covers';
+// `charts` is the old five-name list. `charts:covers` dropped every cover
+// because Last.fm's current image host was not on the allowlist yet.
+const CHARTS_KEY         = 'charts:img';
 const CHARTS_LOCK_KEY    = 'charts:lock';
 
 /**

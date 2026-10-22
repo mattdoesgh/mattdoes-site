@@ -56,6 +56,7 @@ test('album covers render on /listening/ without ranks, hours, or the username',
 
   const year = charts.querySelector('.album-grid[data-period="12month"] img');
   assert.equal(year?.getAttribute('alt'), 'Year Album — Year Artist');
+  assert.equal(year?.getAttribute('src'), 'https://lastfm-img.freetls.fastly.net/i/u/300x300/yearcover.jpg');
   const month = charts.querySelector('.album-grid[data-period="1month"] .album-tile');
   assert.equal(month.classList.contains('is-plain'), true, 'http artwork is dropped');
   assert.match(charts.textContent, /Season Album/);

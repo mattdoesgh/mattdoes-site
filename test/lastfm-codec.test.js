@@ -129,6 +129,14 @@ test('lastfm: chart decode keeps names and drops profile urls', () => {
   assert.equal(musicUrl('https://www.last.fm/user/djverism'), '');
   assert.equal(musicUrl('javascript:alert(1)'), '');
   assert.equal(musicUrl('https://www.last.fm/music/Artist'), 'https://www.last.fm/music/Artist');
+  assert.equal(
+    musicUrl('https://www.last.fm/music/Biosphere/Substrata+%2B+Man'),
+    'https://www.last.fm/music/Biosphere/Substrata+%2B+Man',
+  );
+  assert.equal(
+    musicUrl('https://www.last.fm/music/Biosphere/Substrata+%252B+Man'),
+    'https://www.last.fm/music/Biosphere/Substrata+%2B+Man',
+  );
   const artists = decodeTopArtists({
     topartists: {
       artist: [
@@ -162,10 +170,13 @@ test('lastfm: album art keeps the largest real Last.fm cover', () => {
   const star = 'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
   const small = 'https://lastfm.freetls.fastly.net/i/u/34s/abc.jpg';
   const large = 'https://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg';
+  const current = 'https://lastfm-img.freetls.fastly.net/i/u/300x300/abc.jpg';
   assert.equal(albumImageUrl(star), '');
   assert.equal(albumImageUrl('http://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg'), '');
   assert.equal(albumImageUrl('https://evil.example/abc.jpg'), '');
+  assert.equal(albumImageUrl('https://not-lastfm.freetls.fastly.net/i/u/300x300/abc.jpg'), '');
   assert.equal(albumImageUrl(large), large);
+  assert.equal(albumImageUrl(current), current);
   const albums = decodeTopAlbums({
     topalbums: {
       album: [

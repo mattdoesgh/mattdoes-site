@@ -12,7 +12,7 @@ routes = [
 ]
 
 # KV namespace for cached Last.fm payloads. The poller writes now/recent.
-# GET /api/listening/charts writes its own `charts` key on a cache miss.
+# GET /api/listening/charts writes its own `charts:img` key on a cache miss.
 #
 # One-time setup — wrangler validates the whole config before running any
 # command, so the binding block has to be commented out until the namespace
