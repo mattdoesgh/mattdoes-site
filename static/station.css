@@ -147,6 +147,39 @@ body[data-polarity="flip"] .sign {
   color: #000000;
 }
 
+/* "matt does" is black fill with a pink stroke that scales with the type.
+   Without the stroke the mark keeps the solid color it inherits.
+   A pink stroke on the pink field disappears, so those marks sit on black.
+   The black is only painted when the stroke exists, or the fallback would
+   be black on black. No transition: the hover box does not move. */
+@supports (-webkit-text-stroke: 0.025em #f7c8d8) {
+  .mark {
+    color: #000000;
+    -webkit-text-fill-color: #000000;
+    -webkit-text-stroke: 0.025em #f7c8d8;
+    paint-order: stroke fill;
+  }
+
+  body[data-polarity="flip"] .mark {
+    display: inline-block;
+    background-color: #000000;
+    line-height: inherit;
+    padding: 0.08em 0.03em;
+    margin: -0.08em -0.03em;
+    vertical-align: baseline;
+  }
+
+  .verb:hover .verb-prefix,
+  .verb:focus-visible .verb-prefix,
+  .verb:active .verb-prefix {
+    background-color: #000000;
+  }
+
+  .verb-prefix > .mark {
+    padding-left: 0.012em;
+  }
+}
+
 .lede,
 .incident p,
 .contact p,

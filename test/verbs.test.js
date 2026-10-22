@@ -100,6 +100,43 @@ test('the home prefix is clipped shut until hover', () => {
   assert.doesNotMatch(css, /@keyframes[\s\S]*verb-prefix|verb-prefix[\s\S]*@keyframes/);
 });
 
+test('matt does is outlined and the verb stays outside the mark', () => {
+  const css = fs.readFileSync(path.join(REPO_ROOT, 'static', 'station.css'), 'utf8');
+  const support = css.slice(css.indexOf('@supports (-webkit-text-stroke: 0.025em #f7c8d8)'));
+  assert.ok(support.startsWith('@supports'));
+  assert.match(support, /\.mark\s*\{[^}]*color:\s*#000000;/);
+  assert.match(support, /-webkit-text-fill-color:\s*#000000;/);
+  assert.match(support, /-webkit-text-stroke:\s*0\.025em #f7c8d8;/);
+  assert.match(support, /paint-order:\s*stroke fill;/);
+  assert.match(support, /body\[data-polarity="flip"\] \.mark\s*\{[^}]*background-color:\s*#000000;/);
+  assert.match(support, /\.verb:hover \.verb-prefix,\s*\.verb:focus-visible \.verb-prefix,\s*\.verb:active \.verb-prefix\s*\{[^}]*background-color:\s*#000000;/);
+  assert.doesNotMatch(css, /\.mark[^{]*\{[^}]*transition/);
+  assert.doesNotMatch(css, /@keyframes[\s\S]*\bmark\b/);
+  const home = new JSDOM(readDist(distDir, 'index.html')).window.document;
+  for (const verb of verbs) {
+    const link = [...home.querySelectorAll('a.verb')].find((anchor) => anchor.getAttribute('href') === `/${verb.slug}/`);
+    const mark = link?.querySelector('.verb-prefix .mark');
+    assert.equal(mark?.textContent, 'matt does ', verb.slug);
+    assert.equal(link?.querySelector('.verb-label')?.closest('.mark'), null, verb.slug);
+    const page = new JSDOM(readDist(distDir, `${verb.slug}/index.html`)).window.document;
+    const heading = page.querySelector('h1 .mark');
+    assert.equal(heading?.textContent, 'matt does', verb.slug);
+    assert.equal(page.querySelector('h1')?.textContent, `matt does ${verb.label}`, verb.slug);
+    assert.equal(page.querySelector('h1 .verb-label, h1 .mark .verb-label'), null);
+  }
+  const kicker = home.querySelector('.verb-kicker .mark');
+  assert.equal(kicker?.textContent, 'matt does');
+  assert.equal(home.querySelector('.verb-kicker')?.getAttribute('aria-hidden'), 'true');
+  const missing = new JSDOM(readDist(distDir, '404.html')).window.document;
+  assert.equal(missing.querySelector('.mark'), null);
+  assert.equal(missing.querySelector('h1')?.textContent, 'not found');
+  const shipped = fs.readdirSync(distDir).find((name) => /^station\.[0-9a-f]+\.css$/.test(name));
+  assert.ok(shipped);
+  const built = fs.readFileSync(path.join(distDir, shipped), 'utf8');
+  assert.match(built, /-webkit-text-stroke:\.025em #f7c8d8/);
+  assert.match(built, /paint-order:stroke fill/);
+});
+
 test('the home kicker says matt does once and stays out of the accessible name', () => {
   const home = new JSDOM(readDist(distDir, 'index.html')).window.document;
   const kickers = [...home.querySelectorAll('.verb-kicker')];
