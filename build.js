@@ -26,7 +26,7 @@ const SITE_URL = process.env.SITE_URL || siteConfig.url || 'https://mattdoes.onl
 
 const t0 = Date.now();
 
-const { tracks: lastfmTracks, playcount: scrobbleTotal } =
+const { tracks: lastfmTracks, playcount: scrobbleTotal, periods } =
   await fetchListeningSnapshot({ siteUrl: SITE_URL, cacheDir: CACHE_DIR });
 
 const watches = await mirrorPosters(await fetchWatches({ cacheDir: CACHE_DIR }));
@@ -37,6 +37,7 @@ const { distSize } = await emit({
   siteUrl: SITE_URL,
   lastfmTracks,
   scrobbleTotal,
+  periods,
   watches,
 });
 

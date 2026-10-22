@@ -118,6 +118,9 @@ export const siteConfig = {
     limit:    25,       // how many recent tracks to render on /listening/
     cacheTtl: 15 * 60,  // seconds — build-time on-disk cache TTL only
     showUser: false,    // do not render 'last.fm/<user>' link on /listening/
+    // Top artists and albums are fetched in lib/listening.js when the API
+    // key is present, and cached in the same file. The listening worker
+    // does not call those methods.
   },
 
   // Letterboxd diary RSS for /movies/. The page is a recent window (limit),

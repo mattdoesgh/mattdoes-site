@@ -3,6 +3,8 @@
 import { verbs, verbCatalog, socials, verbPath, verbHeading, unsharedPlayer, unsharedContact, unsharedEnabled, SECRET_PATHS } from './verbs.ts';
 import { socialIcon } from './social-icons.js';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
+import { formatScrobbleCount } from '../lib/format.js';
+import { LISTENING_PERIODS, TOP_LIMIT, musicUrl } from '../lib/lastfm.js';
 
 const SPOTIFY = 'https://open.spotify.com/artist/617fKVTXkDafXJshlNUzF3';
 // Catalog id only. The platform slug is omitted until the project name is settled.
@@ -391,10 +393,65 @@ function trackItem(row) {
  * @param {object} ctx
  * @returns {string}
  */
+/**
+ * One chart column. Empty input renders nothing, so a failed call leaves a gap
+ * instead of an empty heading.
+ *
+ * @param {unknown} items
+ * @param {'artists'|'albums'} label
+ * @returns {string}
+ */
+function chartColumn(items, label) {
+  const rows = (Array.isArray(items) ? items : [])
+    .filter((row) => row && String(row.name || '').trim())
+    .slice(0, TOP_LIMIT);
+  if (!rows.length) return '';
+  const lis = rows.map((row) => {
+    const name = esc(String(row.name).trim());
+    const href = musicUrl(row.url);
+    const title = href ? `<a href="${esc(href)}"${relFor(href)}>${name}</a>` : name;
+    const by = label === 'albums' && String(row.artist || '').trim()
+      ? `<span class="by">${esc(String(row.artist).trim())}</span>`
+      : '';
+    const count = `<span class="count">${esc(formatScrobbleCount(row.playcount))}</span>`;
+    return `<li><span class="what">${title}${by}</span>${count}</li>`;
+  }).join('');
+  return `<div><h3>${label}</h3><ul class="names">${lis}</ul></div>`;
+}
+
+/**
+ * Period charts. No ranks. A period with no names is omitted.
+ *
+ * @param {unknown} periods
+ * @returns {string}
+ */
+function periodsBlock(periods) {
+  if (!periods || typeof periods !== 'object') return '';
+  const blocks = LISTENING_PERIODS.map(({ id, label }) => {
+    const period = periods[id];
+    if (!period) return '';
+    const artists = chartColumn(period.artists, 'artists');
+    const albums = chartColumn(period.albums, 'albums');
+    if (!artists && !albums) return '';
+    const body = artists && albums
+      ? `<div class="period-split">${artists}${albums}</div>`
+      : `${artists}${albums}`;
+    return `<section class="period"><h2>${label}</h2>${body}</section>`;
+  }).filter(Boolean);
+  if (!blocks.length) return '';
+  return `<div class="periods">${blocks.join('')}</div>`;
+}
+
 export function renderListen(ctx) {
   const rows = listeningRows(ctx.tracks);
   const verb = verbByRenderer('listen');
   const heading = verbHeading(verb.label);
+  const charts = periodsBlock(ctx.periods);
+  const count = Number(ctx.playcount) > 0
+    ? `<p class="total"><span class="total-num">${esc(formatScrobbleCount(ctx.playcount))}</span><span class="total-label">scrobbles</span></p>`
+    : '';
+  const source = (charts || count || rows.length) ? '<p class="source">Last.fm</p>' : '';
+  const recent = rows.length ? '<h2 class="recent-label">recent</h2>' : '';
   const list = `<ol class="tracks" id="tracks">
         ${rows.map(trackItem).join('\n        ')}
       </ol>`;
@@ -408,6 +465,10 @@ export function renderListen(ctx) {
     showVerbNav: true,
     robots: '',
     main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
+      ${source}
+      ${count}
+      ${charts}
+      ${recent}
       ${list}`,
   });
 }

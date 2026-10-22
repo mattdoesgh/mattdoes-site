@@ -71,7 +71,7 @@ test('snapshot: a reason-tagged Worker payload is rejected (falls through to emp
   try {
     // No creds and no cache → nothing trustworthy remains.
     const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
-    assert.deepEqual(snap, { tracks: [], playcount: 0 });
+    assert.deepEqual(snap, { tracks: [], playcount: 0, periods: null });
   } finally { restore(); restoreEnv(); }
 });
 
@@ -83,7 +83,7 @@ test('snapshot: Worker tracks with a zero playcount are rejected as corrupt', as
   const { restore } = installFetch(() => jsonResponse({ playcount: 0, tracks: [SAMPLE_TRACK] }));
   try {
     const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
-    assert.deepEqual(snap, { tracks: [], playcount: 0 });
+    assert.deepEqual(snap, { tracks: [], playcount: 0, periods: null });
   } finally { restore(); restoreEnv(); }
 });
 
@@ -107,6 +107,113 @@ test('snapshot: LISTENING_OFFLINE skips all network sources', async () => {
   try {
     const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
     assert.equal(calls.length, 0, 'offline build must not call fetch');
-    assert.deepEqual(snap, { tracks: [], playcount: 0 });
+    assert.deepEqual(snap, { tracks: [], playcount: 0, periods: null });
+  } finally { restore(); restoreEnv(); }
+});
+
+function chartResponse(url) {
+  const period = new URL(url).searchParams.get('period');
+  if (url.includes('method=user.gettopartists')) {
+    return jsonResponse({
+      topartists: {
+        artist: {
+          name: `Artist ${period}`,
+          playcount: '12',
+          url: 'https://www.last.fm/user/djverism',
+        },
+        '@attr': { user: 'djverism' },
+      },
+    });
+  }
+  return jsonResponse({
+    topalbums: {
+      album: [{
+        name: `Album ${period}`,
+        playcount: '7',
+        artist: { name: 'Album Artist' },
+        url: 'https://www.last.fm/music/Album+Artist/Album',
+      }],
+    },
+  });
+}
+
+test('snapshot: period charts are fetched with the key and a failure keeps the tracks', async () => {
+  const restoreEnv = cleanEnv();
+  process.env.LASTFM_API_KEY = 'secret-key';
+  process.env.LASTFM_USERNAME = 'djverism';
+  const cacheDir = makeTempDir('mattdoes-cache-');
+  const { calls, restore } = installFetch((url) => {
+    if (url.includes('/api/listening/recent')) {
+      return jsonResponse({ playcount: 120022, tracks: [SAMPLE_TRACK] });
+    }
+    if (url.includes('period=3month') && url.includes('gettopartists')) {
+      return jsonResponse({ error: 8, message: 'Operation failed' }, 200);
+    }
+    if (url.includes('method=user.gettop')) return chartResponse(url);
+    throw new Error(`unexpected url ${url}`);
+  });
+  try {
+    const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
+    assert.equal(snap.playcount, 120022);
+    assert.equal(snap.tracks.length, 1);
+    assert.equal(snap.periods.overall.artists[0].name, 'Artist overall');
+    assert.equal(snap.periods.overall.artists[0].url, '', 'profile urls are dropped');
+    assert.equal(snap.periods['12month'].albums[0].name, 'Album 12month');
+    assert.deepEqual(snap.periods['3month'].artists, []);
+    assert.equal(snap.periods['3month'].albums[0].name, 'Album 3month');
+    assert.ok(snap.periods['1month']);
+    const workerCalls = calls.filter((url) => url.includes('/api/listening/recent'));
+    const chartCalls = calls.filter((url) => url.includes('method=user.gettop'));
+    assert.equal(workerCalls.length, 1, 'the worker is still one recent-tracks call');
+    assert.equal(chartCalls.length, 8, 'four periods, artists and albums');
+    assert.ok(chartCalls.every((url) => url.includes('api_key=secret-key')));
+    const cached = JSON.parse(fs.readFileSync(path.join(cacheDir, 'lastfm.json'), 'utf8'));
+    assert.equal(cached.periods.overall.artists[0].name, 'Artist overall');
+    assert.equal(JSON.stringify(cached).includes('djverism'), false);
+    assert.equal(JSON.stringify(cached).includes('secret-key'), false);
+  } finally { restore(); restoreEnv(); }
+});
+
+test('snapshot: a total chart failure still bakes the recent tracks', async () => {
+  const restoreEnv = cleanEnv();
+  process.env.LASTFM_API_KEY = 'secret-key';
+  process.env.LASTFM_USERNAME = 'djverism';
+  const cacheDir = makeTempDir('mattdoes-cache-');
+  const { restore } = installFetch((url) => {
+    if (url.includes('/api/listening/recent')) {
+      return jsonResponse({ playcount: 50, tracks: [SAMPLE_TRACK] });
+    }
+    return jsonResponse({ error: 29, message: 'Rate limit exceeded' }, 200);
+  });
+  try {
+    const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
+    assert.equal(snap.playcount, 50);
+    assert.equal(snap.tracks.length, 1);
+    assert.equal(snap.periods, null);
+    const cached = JSON.parse(fs.readFileSync(path.join(cacheDir, 'lastfm.json'), 'utf8'));
+    assert.equal(cached.periods, undefined);
+  } finally { restore(); restoreEnv(); }
+});
+
+test('snapshot: a fresh cache with charts does not call the network', async () => {
+  const restoreEnv = cleanEnv();
+  process.env.LASTFM_API_KEY = 'secret-key';
+  process.env.LASTFM_USERNAME = 'djverism';
+  const cacheDir = makeTempDir('mattdoes-cache-');
+  const periods = {
+    overall: { artists: [{ name: 'Cached', playcount: 3, url: '' }], albums: [] },
+    '12month': { artists: [], albums: [] },
+    '3month': { artists: [], albums: [] },
+    '1month': { artists: [], albums: [] },
+  };
+  fs.writeFileSync(path.join(cacheDir, 'lastfm.json'), JSON.stringify({
+    playcount: 9, tracks: [SAMPLE_TRACK], periods,
+  }));
+  const { calls, restore } = installFetch(() => { throw new Error('network'); });
+  try {
+    const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
+    assert.equal(calls.length, 0);
+    assert.equal(snap.periods.overall.artists[0].name, 'Cached');
+    assert.equal(snap.playcount, 9);
   } finally { restore(); restoreEnv(); }
 });
