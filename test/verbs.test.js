@@ -113,6 +113,7 @@ test('matt does is outlined and the verb stays outside the mark', () => {
   assert.match(support, /\.mark,\s*\.stars\s*\{[^}]*color:\s*#000000;/);
   assert.match(support, /-webkit-text-fill-color:\s*#000000;/);
   assert.match(support, /-webkit-text-stroke:\s*0\.025em #f7c8d8;/);
+  assert.match(support, /-webkit-text-stroke:\s*max\(0\.025em,\s*1\.5px\) #f7c8d8;/);
   assert.match(support, /paint-order:\s*stroke fill;/);
   assert.match(support, /body\[data-polarity="flip"\] \.mark\s*\{[^}]*background-color:\s*#000000;/);
   assert.match(support, /\.verb:hover \.verb-prefix,\s*\.verb:focus-visible \.verb-prefix,\s*\.verb:active \.verb-prefix\s*\{[^}]*background-color:\s*#000000;/);
@@ -140,6 +141,7 @@ test('matt does is outlined and the verb stays outside the mark', () => {
   assert.ok(shipped);
   const built = fs.readFileSync(path.join(distDir, shipped), 'utf8');
   assert.match(built, /-webkit-text-stroke:\.025em #f7c8d8/);
+  assert.match(built, /-webkit-text-stroke:max\(\.025em,\s*1\.5px\) #f7c8d8/);
   assert.match(built, /paint-order:stroke fill/);
 });
 
