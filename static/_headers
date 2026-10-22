@@ -3,24 +3,31 @@
 
 /*
   X-Content-Type-Options: nosniff
-  X-Frame-Options: SAMEORIGIN
+  X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
-  # Permissions-Policy: geolocation is allowed for self only — the opt-in
-  # city map in the tweaks panel reverse-geocodes the visitor's coords.
-  # Every other powerful feature the site does not use is explicitly denied,
+  # COOP + CORP isolate the browsing context. COEP is omitted: posters on
+  # media.mattdoes.online and the analytics beacon do not send CORP, and
+  # require-corp would blank them. Same-origin CORP still blocks other sites
+  # from embedding these responses as no-cors subresources.
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  Origin-Agent-Cluster: ?1
+  # The page no longer calls geolocation. Every powerful feature is denied,
   # plus the interest-cohort / browsing-topics opt-outs.
-  Permissions-Policy: geolocation=(self), camera=(), microphone=(), payment=(), usb=(), midi=(), magnetometer=(), accelerometer=(), gyroscope=(), display-capture=(), screen-wake-lock=(), xr-spatial-tracking=(), serial=(), bluetooth=(), hid=(), interest-cohort=(), browsing-topics=()
-  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-  # CSP keeps style-src strict: pages ship one stylesheet and no inline styles.
-  # Report-only twin collects any regressions before enforcement changes.
-  # The station shell has no inline scripts, so the build does not append
-  # sha256 sources. A hash source would disable 'inline-speculation-rules',
-  # which stays as a keyword. If an inline script is added, hash every one
-  # of them together (lib/emit/csp.js).
-  # frame-src admits a player the page actually embeds. Bandcamp is
-  # omitted while unsharedPlayer.bandcamp in site/verbs.ts is unset.
-  # Add https://bandcamp.com here only together with that URL.
-  #
+  Permissions-Policy: accelerometer=(), browsing-topics=(), camera=(), clipboard-read=(), clipboard-write=(), display-capture=(), geolocation=(), gyroscope=(), hid=(), interest-cohort=(), magnetometer=(), microphone=(), midi=(), payment=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), sync-xhr=(), usb=(), xr-spatial-tracking=()
+  # max-age only. includeSubDomains waits until every hostname, including
+  # media.mattdoes.online, is confirmed HTTPS. preload is omitted because
+  # submitting the domain is effectively irreversible. The listening
+  # worker sends the same value: HSTS is host-wide, and every page fetches
+  # /api/listening/recent.
+  Strict-Transport-Security: max-age=31536000
+  # Page CSP is assembled in lib/csp-policy.js. Each host is one line in
+  # that directive's sources list. The build overwrites the two marker
+  # lines below from that list, so the enforced policy and the report-only
+  # twin cannot drift. Add an origin there. Do not edit the markers.
+  # connect-src 'self' already allows /api/listening/* and any later path
+  # on this host. A cross-origin fetch, image, or player host is one new
+  # line on connect-src, img-src, media-src, or frame-src.
   # Declare each CSP header on this one rule only. Pages joins a header that
   # appears on two matching rules with a comma, and browsers then enforce both
   # policies. A path-specific rule (/, /*/, /*.html) must not repeat it.
@@ -30,12 +37,18 @@
   # path is Cloudflare's, not a Pages function or a Worker route.
   # https://static.cloudflareinsights.com is the Pages Web Analytics beacon.
   # connect-src allows that beacon to report to https://cloudflareinsights.com.
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com 'inline-speculation-rules'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self'; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; frame-ancestors 'self'; frame-src https://embed.music.apple.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
-  # Report-only twin of the enforced CSP — collects browser violations at the
-  # same-origin /api/csp-report Worker before tightening style-src.
-  # Keep its sources identical to the enforced policy (plus report-uri) so the
-  # beacon is not reported as a violation after it is allowed.
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com 'inline-speculation-rules'; img-src 'self' https://media.mattdoes.online data:; media-src 'self' https://media.mattdoes.online; style-src 'self'; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; frame-ancestors 'self'; frame-src https://embed.music.apple.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests; report-uri https://mattdoes.online/api/csp-report
+  # The station shell has no inline scripts, so the build does not append
+  # sha256 sources. A hash source would disable 'inline-speculation-rules',
+  # which stays as a keyword. If an inline script is added, hash every one
+  # of them together (lib/emit/csp.js).
+  # frame-src admits a player the page actually embeds. Bandcamp is
+  # omitted while unsharedPlayer.bandcamp in site/verbs.ts is unset.
+  # Add https://bandcamp.com in lib/csp-policy.js only together with that URL.
+  # upgrade-insecure-requests is enforced only. The report-only twin adds
+  # report-uri and omits that directive, because browsers log an error and
+  # ignore it in a report-only policy.
+  Content-Security-Policy: replaced-at-build
+  Content-Security-Policy-Report-Only: replaced-at-build
 
 # ── Fonts ───────────────────────────────────────────────────────────────
 # Stable filenames, cached for a year. Hashed CSS and JS are not listed

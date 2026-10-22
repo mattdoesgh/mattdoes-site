@@ -64,7 +64,18 @@ test('rebuild is a six-hour cron that expects the DEPLOY_HOOK secret', () => {
 
   const src = source('rebuild');
   assert.match(src, /env\.DEPLOY_HOOK/);
+  assert.match(src, /allowedDeployHook/);
   assert.match(src, /method:\s*'POST'/);
+  assert.match(src, /redirect:\s*'manual'/);
   assert.match(src, /status:\s*404/);
   assert.doesNotMatch(src, /https?:\/\/[a-z0-9.-]+\./i, 'the deploy hook URL must not be committed');
+  assert.match(cfg, /\[observability\.traces\]\s+enabled\s*=\s*false/);
+  assert.match(cfg, /redact_query_string\s*=\s*true/);
+});
+
+test('listening traces stay off so the Last.fm query string is not recorded', () => {
+  const cfg = toml('listening');
+  assert.match(cfg, /redact_query_string\s*=\s*true/);
+  assert.match(cfg, /\[observability\.traces\]\s+enabled\s*=\s*false/);
+  assert.doesNotMatch(cfg, /LASTFM_API_KEY\s*=\s*"[^"]+"/);
 });

@@ -210,7 +210,7 @@ async function checkUpstreamBudget(request, env) {
   // per minute. Missing or throwing fails closed: a partially deployed Worker
   // must not reach Nominatim.
   try {
-    const { success } = await env.GEO_RL.limit({ key: `${ip}:lookup` });
+    const { success } = await env.GEO_RL.limit({ key: `${await sha256Hex(ip)}:lookup` });
     if (!success) return errorJson({ error: 'rate_limited' }, 429, { retryAfterS: 60 });
   } catch {
     return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });

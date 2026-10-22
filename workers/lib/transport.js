@@ -7,9 +7,40 @@
 //
 // ⚠ Deploy coupling: this file is bundled into every Worker that imports it.
 // Editing it (or any other module a Worker bundles) means redeploying ALL
-// workers — `npm run deploy:workers` from the repo root does both.
+// workers. From the repo root, `npm run deploy:workers` deploys listening,
+// geo, csp-report, and rebuild with the wrangler pin in
+// workers/package-lock.json.
 
 export const ALLOWED_ORIGIN = 'https://mattdoes.online';
+
+// JSON API responses are not documents. This policy is intentionally tighter
+// than the HTML CSP in lib/csp-policy.js, and it is the only CSP these Worker
+// routes send: Workers-on-Routes replace the Pages response, so _headers is
+// not merged in. Do not add script sources here.
+const API_CSP = "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+
+const API_PERMISSIONS = [
+  'accelerometer=()',
+  'browsing-topics=()',
+  'camera=()',
+  'clipboard-read=()',
+  'clipboard-write=()',
+  'display-capture=()',
+  'geolocation=()',
+  'gyroscope=()',
+  'hid=()',
+  'interest-cohort=()',
+  'magnetometer=()',
+  'microphone=()',
+  'midi=()',
+  'payment=()',
+  'publickey-credentials-get=()',
+  'screen-wake-lock=()',
+  'serial=()',
+  'sync-xhr=()',
+  'usb=()',
+  'xr-spatial-tracking=()',
+].join(', ');
 
 /**
  * Baseline security headers stamped on every Worker response. Exported so
@@ -20,8 +51,19 @@ export const ALLOWED_ORIGIN = 'https://mattdoes.online';
  */
 export function securityHeaders() {
   return {
-    'x-content-type-options': 'nosniff',
-    'referrer-policy':       'strict-origin-when-cross-origin',
+    'content-security-policy':       API_CSP,
+    'x-content-type-options':        'nosniff',
+    'x-frame-options':               'DENY',
+    'referrer-policy':               'strict-origin-when-cross-origin',
+    // Host-wide, so this must match static/_headers: max-age only.
+    // includeSubDomains waits until every hostname is HTTPS, and preload
+    // is omitted because submitting it is effectively irreversible. A
+    // response from /api/listening/recent would otherwise set both for
+    // the whole site.
+    'strict-transport-security':     'max-age=31536000',
+    'cross-origin-opener-policy':    'same-origin',
+    'cross-origin-resource-policy':  'same-origin',
+    'permissions-policy':            API_PERMISSIONS,
   };
 }
 
@@ -29,19 +71,22 @@ export function securityHeaders() {
  * JSON response with the site's CORS envelope. Every Worker payload —
  * success or error — goes through here so the header set stays uniform.
  *
+ * The origin is a fixed allowlist, never the request's Origin header.
+ *
  * @param {object} obj    response body
  * @param {number} [status]
  * @param {string} [origin]
+ * @param {string} [methods]
  * @returns {Response}
  */
-export function json(obj, status = 200, origin = ALLOWED_ORIGIN) {
+export function json(obj, status = 200, origin = ALLOWED_ORIGIN, methods = 'GET, OPTIONS') {
   return new Response(JSON.stringify(obj), {
     status,
     headers: {
       ...securityHeaders(),
       'content-type':                 'application/json; charset=utf-8',
       'access-control-allow-origin':  origin,
-      'access-control-allow-methods': 'GET, OPTIONS',
+      'access-control-allow-methods': methods,
       'access-control-allow-headers': 'content-type',
     },
   });
@@ -60,10 +105,11 @@ export function json(obj, status = 200, origin = ALLOWED_ORIGIN) {
  *   (0 = `no-store`; the browser never caches errors either way)
  * @param {number} [opts.retryAfterS]  seconds for a `retry-after` header
  * @param {string} [opts.origin]
+ * @param {string} [opts.methods]
  * @returns {Response}
  */
-export function errorJson(obj, status, { edgeTtlS = 0, retryAfterS = null, origin = ALLOWED_ORIGIN } = {}) {
-  const res = json(obj, status, origin);
+export function errorJson(obj, status, { edgeTtlS = 0, retryAfterS = null, origin = ALLOWED_ORIGIN, methods = 'GET, OPTIONS' } = {}) {
+  const res = json(obj, status, origin, methods);
   const h = new Headers(res.headers);
   if (edgeTtlS > 0) {
     // No browser caching — only the shared edge cache holds it briefly so a
@@ -97,15 +143,17 @@ export function withCache(response, cacheControl, origin = ALLOWED_ORIGIN) {
  * CORS preflight response (OPTIONS).
  *
  * @param {string} [origin]
+ * @param {string} [methods] allowed methods. Listening and geo are GET;
+ *   the CSP report collector allows POST.
  * @returns {Response}
  */
-export function corsPreflight(origin = ALLOWED_ORIGIN) {
+export function corsPreflight(origin = ALLOWED_ORIGIN, methods = 'GET, OPTIONS') {
   return new Response(null, {
     status: 204,
     headers: {
       ...securityHeaders(),
       'access-control-allow-origin':  origin,
-      'access-control-allow-methods': 'GET, OPTIONS',
+      'access-control-allow-methods': methods,
       'access-control-allow-headers': 'content-type',
       'access-control-max-age':       '86400',
     },
@@ -157,4 +205,17 @@ export async function kvPut(namespace, key, value, opts) {
  */
 export function getClientIp(request) {
   return request.headers.get('cf-connecting-ip');
+}
+
+/**
+ * Hex SHA-256 of a client IP so rate-limit keys and KV names never store
+ * the address itself.
+ *
+ * @param {string} value
+ * @returns {Promise<string>}
+ */
+export async function sha256Hex(value) {
+  const data = new TextEncoder().encode(String(value));
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, '0')).join('');
 }

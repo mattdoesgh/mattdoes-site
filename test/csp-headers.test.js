@@ -16,6 +16,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { buildFixtureVault, readDist, REPO_ROOT } from './helpers/run-build.js';
 import { parseHeadersFile, headerValues } from './helpers/parse-headers.js';
+import { contentSecurityPolicy, CSP_REPORT_URI, directiveSources } from '../lib/csp-policy.js';
 
 const BEACON_SCRIPT = 'https://static.cloudflareinsights.com';
 const BEACON_CONNECT = 'https://cloudflareinsights.com';
@@ -106,12 +107,20 @@ test('beacon hosts are allowed and the rest of the policy stays strict', () => {
     const scriptSrc = sources(csp, 'script-src');
     const hashes = scriptSrc.filter((token) => token.startsWith("'sha256-"));
     const plain = scriptSrc.filter((token) => !token.startsWith("'sha256-"));
-    assert.deepEqual(plain, ["'self'", BEACON_SCRIPT, "'inline-speculation-rules'"],
-      `${header} script-src hosts drifted`);
+    assert.deepEqual(plain, directiveSources('script-src'),
+      `${header} script-src must match lib/csp-policy.js`);
+    assert.ok(plain.includes(BEACON_SCRIPT), `${header} must keep the analytics beacon script host`);
     assert.equal(hashes.length, 0, `${header} has no inline scripts, so script-src carries no hashes`);
-    assert.deepEqual(sources(csp, 'connect-src'), ["'self'", BEACON_CONNECT]);
+    assert.deepEqual(sources(csp, 'connect-src'), directiveSources('connect-src'));
+    assert.ok(sources(csp, 'connect-src').includes("'self'"),
+      `${header} connect-src 'self' covers same-origin /api/listening/* paths`);
+    assert.ok(sources(csp, 'connect-src').includes(BEACON_CONNECT));
     assert.match(sources(csp, 'default-src').join(' '), /^'self'$/);
     assert.equal(sources(csp, 'style-src').join(' '), "'self'");
+    assert.equal(sources(csp, 'style-src-attr').join(' '), "'none'");
+    assert.equal(sources(csp, 'script-src-attr').join(' '), "'none'");
+    assert.equal(sources(csp, 'worker-src').join(' '), "'none'");
+    assert.equal(sources(csp, 'frame-ancestors').join(' '), "'none'");
     assert.equal(sources(csp, 'object-src').join(' '), "'none'");
     assert.ok(!csp.includes("'unsafe-inline'"), `${header} must not allow unsafe-inline`);
     assert.ok(!csp.includes("'unsafe-eval'"), `${header} must not allow unsafe-eval`);
@@ -119,7 +128,12 @@ test('beacon hosts are allowed and the rest of the policy stays strict', () => {
 
   const enforced = headerValues(routes, '/*', 'content-security-policy')[0];
   const reportOnly = headerValues(routes, '/*', 'content-security-policy-report-only')[0];
+  assert.equal(enforced, contentSecurityPolicy());
+  assert.equal(reportOnly, contentSecurityPolicy({ reportUri: CSP_REPORT_URI }));
   assert.ok(!enforced.includes('report-uri'), 'the enforced CSP must not add a report endpoint');
+  assert.match(enforced, /upgrade-insecure-requests/);
+  assert.doesNotMatch(reportOnly, /upgrade-insecure-requests/,
+    'report-only upgrade-insecure-requests is ignored and logged as a console error');
   assert.match(reportOnly, /report-uri https:\/\/mattdoes\.online\/api\/csp-report$/);
   assert.ok(sources(enforced, 'script-src').includes("'self'"),
     `script-src 'self' must keep admitting ${EMAIL_DECODE}`);
@@ -159,8 +173,13 @@ test('no Worker route or Pages function intercepts /cdn-cgi', () => {
   for (const name of fs.readdirSync(sharedLib)) {
     if (!name.endsWith('.js')) continue;
     const src = fs.readFileSync(path.join(sharedLib, name), 'utf8');
+    if (name === 'transport.js') {
+      assert.match(src, /default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'/);
+      assert.doesNotMatch(src, /unsafe-inline|unsafe-eval|static\.cloudflareinsights/);
+      continue;
+    }
     assert.doesNotMatch(src, /['"]content-security-policy/i,
-      `workers/lib/${name} must not set a second CSP header`);
+      `workers/lib/${name} must not set a CSP header`);
   }
 
   for (const rel of ['functions', '_worker.js', 'static/_worker.js', 'public/_worker.js']) {

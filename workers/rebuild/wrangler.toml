@@ -12,7 +12,8 @@ crons = ["0 */6 * * *"]
 
 # DEPLOY_HOOK is the Pages deploy hook URL. Set it outside this repo.
 # The value is a secret and must never be committed — do not put it in
-# [vars], .dev.vars, or a comment.
+# [vars], .dev.vars, or a comment. The scheduled handler posts it only when
+# the URL is a Cloudflare Pages or Workers deploy hook.
 #
 # From this directory, after `npm ci --prefix workers`, using the wrangler
 # pinned in workers/package-lock.json:
@@ -22,13 +23,17 @@ crons = ["0 */6 * * *"]
 [secrets]
 required = ["DEPLOY_HOOK"]
 
+# Logs stay on for the status-only events in src/index.js. Traces stay off:
+# a fetch span records url.full, and the deploy hook URL is the secret.
+# redact_query_string does not cover a secret that lives in the path.
 [observability]
 enabled = true
+redact_query_string = true
 
   [observability.logs]
   enabled = true
   head_sampling_rate = 1
 
   [observability.traces]
-  enabled = true
-  head_sampling_rate = 1
+  enabled = false
+  head_sampling_rate = 0
