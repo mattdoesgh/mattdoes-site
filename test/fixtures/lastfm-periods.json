@@ -22,17 +22,47 @@
   "periods": {
     "overall": {
       "artists": [
-        { "name": "Fixture Artist", "playcount": 4000, "url": "https://www.last.fm/music/Fixture+Artist" },
-        { "name": "Second Artist", "playcount": 2500, "url": "javascript:alert(1)" }
+        {
+          "name": "Fixture Artist",
+          "playcount": 4000,
+          "url": "https://www.last.fm/music/Fixture+Artist"
+        }
       ],
       "albums": [
         {
-          "name": "Fixture Album",
-          "artist": "Fixture Artist",
+          "name": "Overall Album",
+          "artist": "Overall Artist",
           "playcount": 800,
-          "url": "https://www.last.fm/music/Fixture+Artist/Fixture+Album",
-          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/fixturecover.jpg"
-        },
+          "url": "https://www.last.fm/music/Overall+Artist/Overall+Album",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/overall.jpg"
+        }
+      ]
+    },
+    "12month": {
+      "albums": [
+        {
+          "name": "Year Album",
+          "artist": "Year Artist",
+          "playcount": 300,
+          "url": "",
+          "image": "https://lastfm-img.freetls.fastly.net/i/u/300x300/yearcover.jpg"
+        }
+      ]
+    },
+    "3month": {
+      "albums": [
+        {
+          "name": "Season Album",
+          "artist": "Season Artist",
+          "playcount": 12,
+          "url": "",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/season.jpg"
+        }
+      ]
+    },
+    "1month": {
+      "artists": [],
+      "albums": [
         {
           "name": "Plain Album",
           "artist": "Plain Artist",
@@ -53,46 +83,195 @@
           "playcount": 8,
           "url": "javascript:alert(1)",
           "image": "https://evil.example/x.jpg"
-        }
-      ]
-    },
-    "12month": {
-      "artists": [
-        { "name": "Year Artist", "playcount": 900, "url": "https://www.last.fm/user/djverism" }
-      ],
-      "albums": [
+        },
         {
-          "name": "Year Album",
-          "artist": "Year Artist",
-          "playcount": 300,
-          "url": "",
-          "image": "https://lastfm-img.freetls.fastly.net/i/u/300x300/yearcover.jpg"
-        }
-      ]
-    },
-    "3month": {
-      "artists": [
-        { "name": "Season Artist", "playcount": 120, "url": "" }
-      ],
-      "albums": [
-        {
-          "name": "Season Album",
-          "artist": "Season Artist",
-          "playcount": 12,
-          "url": "",
-          "image": ""
-        }
-      ]
-    },
-    "1month": {
-      "artists": [],
-      "albums": [
-        {
-          "name": "Month Album",
-          "artist": "Month Artist",
-          "playcount": 40,
+          "name": "Http Album",
+          "artist": "Http Artist",
+          "playcount": 7,
           "url": "",
           "image": "http://lastfm.freetls.fastly.net/i/u/300x300/month.jpg"
+        },
+        {
+          "name": "Cover 01",
+          "artist": "Cover Artist",
+          "playcount": 99,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+01",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover01.jpg"
+        },
+        {
+          "name": "Cover 02",
+          "artist": "Cover Artist",
+          "playcount": 98,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+02",
+          "image": "https://lastfm-img.freetls.fastly.net/i/u/300x300/cover02.jpg"
+        },
+        {
+          "name": "Cover 03",
+          "artist": "Cover Artist",
+          "playcount": 97,
+          "url": "https://www.last.fm/user/djverism",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover03.jpg"
+        },
+        {
+          "name": "Cover 04",
+          "artist": "Cover Artist",
+          "playcount": 96,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+04",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover04.jpg"
+        },
+        {
+          "name": "Cover 05",
+          "artist": "Cover Artist",
+          "playcount": 95,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+05",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover05.jpg"
+        },
+        {
+          "name": "Cover 06",
+          "artist": "Cover Artist",
+          "playcount": 94,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+06",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover06.jpg"
+        },
+        {
+          "name": "Cover 07",
+          "artist": "Cover Artist",
+          "playcount": 93,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+07",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover07.jpg"
+        },
+        {
+          "name": "Cover 08",
+          "artist": "Cover Artist",
+          "playcount": 92,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+08",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover08.jpg"
+        },
+        {
+          "name": "Cover 09",
+          "artist": "Cover Artist",
+          "playcount": 91,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+09",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover09.jpg"
+        },
+        {
+          "name": "Cover 10",
+          "artist": "Cover Artist",
+          "playcount": 90,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+10",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover10.jpg"
+        },
+        {
+          "name": "Cover 11",
+          "artist": "Cover Artist",
+          "playcount": 89,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+11",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover11.jpg"
+        },
+        {
+          "name": "Cover 12",
+          "artist": "Cover Artist",
+          "playcount": 88,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+12",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover12.jpg"
+        },
+        {
+          "name": "Cover 13",
+          "artist": "Cover Artist",
+          "playcount": 87,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+13",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover13.jpg"
+        },
+        {
+          "name": "Cover 14",
+          "artist": "Cover Artist",
+          "playcount": 86,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+14",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover14.jpg"
+        },
+        {
+          "name": "Cover 15",
+          "artist": "Cover Artist",
+          "playcount": 85,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+15",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover15.jpg"
+        },
+        {
+          "name": "Cover 16",
+          "artist": "Cover Artist",
+          "playcount": 84,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+16",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover16.jpg"
+        },
+        {
+          "name": "Cover 17",
+          "artist": "Cover Artist",
+          "playcount": 83,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+17",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover17.jpg"
+        },
+        {
+          "name": "Cover 18",
+          "artist": "Cover Artist",
+          "playcount": 82,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+18",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover18.jpg"
+        },
+        {
+          "name": "Cover 19",
+          "artist": "Cover Artist",
+          "playcount": 81,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+19",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover19.jpg"
+        },
+        {
+          "name": "Cover 20",
+          "artist": "Cover Artist",
+          "playcount": 80,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+20",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover20.jpg"
+        },
+        {
+          "name": "Cover 21",
+          "artist": "Cover Artist",
+          "playcount": 79,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+21",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover21.jpg"
+        },
+        {
+          "name": "Cover 22",
+          "artist": "Cover Artist",
+          "playcount": 78,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+22",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover22.jpg"
+        },
+        {
+          "name": "Cover 23",
+          "artist": "Cover Artist",
+          "playcount": 77,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+23",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover23.jpg"
+        },
+        {
+          "name": "Cover 24",
+          "artist": "Cover Artist",
+          "playcount": 76,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+24",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover24.jpg"
+        },
+        {
+          "name": "Cover 25",
+          "artist": "Cover Artist",
+          "playcount": 75,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+25",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover25.jpg"
+        },
+        {
+          "name": "Cover 26",
+          "artist": "Cover Artist",
+          "playcount": 74,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+26",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cover26.jpg"
         }
       ]
     }

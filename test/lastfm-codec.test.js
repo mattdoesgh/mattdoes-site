@@ -8,8 +8,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  albumImageUrl, decodeTopAlbums, decodeTopArtists, decodeTrack, decodeTracks, lastfmError,
-  musicUrl, recentTracksUrl, topAlbumsUrl, topArtistsUrl,
+  albumImageUrl, albumsWithCovers, decodeTopAlbums, decodeTopArtists, decodeTrack, decodeTracks,
+  lastfmError, musicUrl, recentTracksUrl, topAlbumsUrl, topArtistsUrl,
 } from '../lib/lastfm.js';
 
 const RAW_TRACK = {
@@ -198,4 +198,24 @@ test('lastfm: album art keeps the largest real Last.fm cover', () => {
   assert.equal(albums[1].image, '');
   const many = Array.from({ length: 30 }, (_, i) => ({ name: `A${i}`, artist: 'Z', playcount: '1' }));
   assert.equal(decodeTopAlbums({ topalbums: { album: many } }).length, 25);
+  assert.equal(decodeTopAlbums({ topalbums: { album: many } }, 100).length, 30);
+});
+
+test('lastfm: albums with no real cover are skipped and later rows fill the grid', () => {
+  const star = 'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
+  const rows = [
+    { name: 'Plain', artist: 'A', image: '' },
+    { name: 'Star', artist: 'B', image: star },
+    { name: 'Foreign', artist: 'C', image: 'https://evil.example/x.jpg' },
+    { name: '', artist: 'D', image: 'https://lastfm.freetls.fastly.net/i/u/300x300/noname.jpg' },
+    ...Array.from({ length: 4 }, (_, i) => ({
+      name: `Cover ${i + 1}`,
+      artist: 'E',
+      image: `https://lastfm.freetls.fastly.net/i/u/300x300/c${i + 1}.jpg`,
+    })),
+  ];
+  const kept = albumsWithCovers(rows, 3);
+  assert.deepEqual(kept.map((row) => row.name), ['Cover 1', 'Cover 2', 'Cover 3']);
+  assert.equal(albumsWithCovers(null).length, 0);
+  assert.equal(albumsWithCovers(rows, 0).length, 0);
 });

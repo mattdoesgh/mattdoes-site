@@ -121,29 +121,59 @@ test('snapshot: LISTENING_OFFLINE skips all network sources', async () => {
 });
 
 function workerChartPayload() {
-  const periods = {};
-  for (const id of ['overall', '12month', '3month', '1month']) {
-    periods[id] = {
-      artists: [{
-        name: `Artist ${id}`,
-        playcount: 12,
-        url: 'https://www.last.fm/user/djverism',
-        user: 'djverism',
-      }],
-      albums: [{
-        name: `Album ${id}`,
-        artist: 'Album Artist',
-        playcount: 7,
-        url: 'https://www.last.fm/music/Album+Artist/Album',
-        image: id === '3month'
-          ? 'https://evil.example/cover.jpg'
-          : 'https://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg',
-        user: 'djverism',
-      }],
-    };
-  }
-  periods['3month'].artists = [];
-  return { periods };
+  return {
+    periods: {
+      overall: {
+        artists: [{ name: 'Retired Artist', playcount: 1, url: '' }],
+        albums: [{
+          name: 'Retired Album',
+          artist: 'Retired',
+          playcount: 1,
+          url: '',
+          image: 'https://lastfm.freetls.fastly.net/i/u/300x300/retired.jpg',
+        }],
+      },
+      '1month': {
+        artists: [{
+          name: 'Artist 1month',
+          playcount: 12,
+          url: 'https://www.last.fm/user/djverism',
+          user: 'djverism',
+        }],
+        albums: [
+          {
+            name: 'Plain Album',
+            artist: 'Plain',
+            playcount: 9,
+            url: '',
+            image: '',
+          },
+          {
+            name: 'Album 1month',
+            artist: 'Album Artist',
+            playcount: 7,
+            url: 'https://www.last.fm/music/Album+Artist/Album',
+            image: 'https://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg',
+            user: 'djverism',
+          },
+          {
+            name: 'Foreign Album',
+            artist: 'Foreign',
+            playcount: 2,
+            url: '',
+            image: 'https://evil.example/cover.jpg',
+          },
+          {
+            name: 'Backfill Album',
+            artist: 'Backfill',
+            playcount: 1,
+            url: '',
+            image: 'https://lastfm-img.freetls.fastly.net/i/u/300x300/back.jpg',
+          },
+        ],
+      },
+    },
+  };
 }
 
 test('snapshot: period charts come from the worker and a failure keeps the tracks', async () => {
@@ -162,21 +192,26 @@ test('snapshot: period charts come from the worker and a failure keeps the track
     const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
     assert.equal(snap.playcount, 120022);
     assert.equal(snap.tracks.length, 1);
-    assert.equal(snap.periods.overall.artists[0].name, 'Artist overall');
-    assert.equal(snap.periods.overall.artists[0].url, '', 'profile urls are dropped');
-    assert.equal(snap.periods.overall.artists[0].user, undefined, 'extra fields are dropped');
-    assert.equal(snap.periods['12month'].albums[0].name, 'Album 12month');
-    assert.equal(snap.periods.overall.albums[0].image, 'https://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg');
-    assert.equal(snap.periods['3month'].albums[0].image, '', 'a foreign cover host is dropped');
-    assert.deepEqual(snap.periods['3month'].artists, []);
-    assert.equal(snap.periods['3month'].albums[0].name, 'Album 3month');
-    assert.ok(snap.periods['1month']);
+    assert.equal(snap.periods.overall, undefined, 'retired periods are not kept');
+    assert.equal(snap.periods['1month'].artists[0].name, 'Artist 1month');
+    assert.equal(snap.periods['1month'].artists[0].url, '', 'profile urls are dropped');
+    assert.equal(snap.periods['1month'].artists[0].user, undefined, 'extra fields are dropped');
+    assert.deepEqual(
+      snap.periods['1month'].albums.map((row) => row.name),
+      ['Album 1month', 'Backfill Album'],
+    );
+    assert.equal(snap.periods['1month'].albums[0].image, 'https://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg');
+    assert.equal(
+      snap.periods['1month'].albums[1].image,
+      'https://lastfm-img.freetls.fastly.net/i/u/300x300/back.jpg',
+    );
     assert.equal(calls.filter((url) => url.endsWith('/api/listening/recent')).length, 1);
     assert.equal(calls.filter((url) => url.endsWith('/api/listening/charts')).length, 1);
     assert.equal(calls.some((url) => url.includes('audioscrobbler') || url.includes('gettop')), false,
       'the build does not call Last.fm chart methods, even when a key is set');
     const cached = JSON.parse(fs.readFileSync(path.join(cacheDir, 'lastfm.json'), 'utf8'));
-    assert.equal(cached.periods.overall.artists[0].name, 'Artist overall');
+    assert.equal(cached.periods['1month'].artists[0].name, 'Artist 1month');
+    assert.equal(cached.periods.overall, undefined);
     assert.equal(JSON.stringify(cached).includes('djverism'), false);
     assert.equal(JSON.stringify(cached).includes('secret-key'), false);
   } finally { restore(); restoreEnv(); }
@@ -207,10 +242,7 @@ test('snapshot: a fresh cache with charts does not call the network', async () =
   process.env.LASTFM_USERNAME = 'djverism';
   const cacheDir = makeTempDir('mattdoes-cache-');
   const periods = {
-    overall: { artists: [{ name: 'Cached', playcount: 3, url: '' }], albums: [] },
-    '12month': { artists: [], albums: [] },
-    '3month': { artists: [], albums: [] },
-    '1month': { artists: [], albums: [] },
+    '1month': { artists: [{ name: 'Cached', playcount: 3, url: '' }], albums: [] },
   };
   fs.writeFileSync(path.join(cacheDir, 'lastfm.json'), JSON.stringify({
     playcount: 9, tracks: [SAMPLE_TRACK], periods,
@@ -219,7 +251,7 @@ test('snapshot: a fresh cache with charts does not call the network', async () =
   try {
     const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
     assert.equal(calls.length, 0);
-    assert.equal(snap.periods.overall.artists[0].name, 'Cached');
+    assert.equal(snap.periods['1month'].artists[0].name, 'Cached');
     assert.equal(snap.playcount, 9);
   } finally { restore(); restoreEnv(); }
 });
@@ -239,7 +271,7 @@ test('snapshot: a fresh cache without charts fetches only the charts endpoint', 
     const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
     assert.equal(calls.length, 1);
     assert.equal(snap.playcount, 9);
-    assert.equal(snap.periods.overall.artists[0].name, 'Artist overall');
+    assert.equal(snap.periods['1month'].artists[0].name, 'Artist 1month');
     assert.equal(calls.some((url) => url.includes('gettop')), false);
   } finally { restore(); restoreEnv(); }
 });
