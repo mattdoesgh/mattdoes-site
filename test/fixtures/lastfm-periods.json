@@ -1,0 +1,53 @@
+{
+  "fetchedAt": "2026-10-20T13:20:00.000Z",
+  "playcount": 120022,
+  "tracks": [
+    {
+      "track": "Fixture Track",
+      "artist": "Fixture Artist",
+      "album": "Fixture Album",
+      "link": "https://www.last.fm/music/Fixture+Artist/_/Fixture+Track",
+      "date": "2026-10-18T16:18:28.000Z",
+      "nowPlaying": false
+    },
+    {
+      "track": "Second Fixture Track",
+      "artist": "Second Artist",
+      "album": "Second Album",
+      "link": "https://www.last.fm/music/Second+Artist/_/Second+Fixture+Track",
+      "date": "2026-10-18T15:00:00.000Z",
+      "nowPlaying": false
+    }
+  ],
+  "periods": {
+    "overall": {
+      "artists": [
+        { "name": "Fixture Artist", "playcount": 4000, "url": "https://www.last.fm/music/Fixture+Artist" },
+        { "name": "Second Artist", "playcount": 2500, "url": "javascript:alert(1)" }
+      ],
+      "albums": [
+        { "name": "Fixture Album", "artist": "Fixture Artist", "playcount": 800, "url": "https://www.last.fm/music/Fixture+Artist/Fixture+Album" }
+      ]
+    },
+    "12month": {
+      "artists": [
+        { "name": "Year Artist", "playcount": 900, "url": "https://www.last.fm/user/djverism" }
+      ],
+      "albums": [
+        { "name": "Year Album", "artist": "Year Artist", "playcount": 300, "url": "" }
+      ]
+    },
+    "3month": {
+      "artists": [
+        { "name": "Season Artist", "playcount": 120, "url": "" }
+      ],
+      "albums": []
+    },
+    "1month": {
+      "artists": [],
+      "albums": [
+        { "name": "Month Album", "artist": "Month Artist", "playcount": 40, "url": "" }
+      ]
+    }
+  }
+}

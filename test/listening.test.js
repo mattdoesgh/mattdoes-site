@@ -16,8 +16,11 @@ test('a tracks cache bakes names into /listening/', () => {
   const { distDir } = buildFixtureVault({ cacheDir: seedLastfmCache(fixtureCache) });
   const html = readDist(distDir, 'listening/index.html');
   assert.match(html, /Poisoned Track/);
-  assert.doesNotMatch(html, /Last\.fm/);
   const main = new JSDOM(html).window.document.querySelector('main');
+  assert.equal(main.querySelector('.source')?.textContent, 'Last.fm');
+  assert.equal(main.querySelector('.total-num')?.textContent, '12,345');
+  assert.equal(main.querySelector('.total-label')?.textContent, 'scrobbles');
+  assert.equal(main.querySelector('.periods'), null);
   assert.doesNotMatch(main.innerHTML, /https:\/\/www\.last\.fm\/user\/djverism/);
   assert.doesNotMatch(html, /scrobble-count/);
 });

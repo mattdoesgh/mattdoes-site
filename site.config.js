@@ -118,6 +118,9 @@ export const siteConfig = {
     limit:    25,       // how many recent tracks to render on /listening/
     cacheTtl: 15 * 60,  // seconds — build-time on-disk cache TTL only
     showUser: false,    // do not render 'last.fm/<user>' link on /listening/
+    // Top artists and albums come from the listening worker
+    // (GET /api/listening/charts) at build time. The Pages build does not
+    // need a Last.fm key for them. A failed fetch hides the charts.
   },
 
   // Letterboxd diary RSS for /movies/. The page is a recent window (limit),

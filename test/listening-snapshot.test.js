@@ -49,17 +49,26 @@ test('snapshot: uses the Worker payload and writes it to the cache', async () =>
   const restoreEnv = cleanEnv();
   const cacheDir = makeTempDir('mattdoes-cache-');
   const { calls, restore } = installFetch((url) => {
-    assert.match(url, /\/api\/listening\/recent$/);
-    return jsonResponse({ playcount: 117481, tracks: [SAMPLE_TRACK] });
+    if (url.endsWith('/api/listening/recent')) {
+      return jsonResponse({ playcount: 117481, tracks: [SAMPLE_TRACK] });
+    }
+    if (url.endsWith('/api/listening/charts')) {
+      return jsonResponse({ periods: {}, reason: 'unavailable' });
+    }
+    throw new Error(`unexpected url ${url}`);
   });
   try {
     const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
     assert.equal(snap.playcount, 117481);
     assert.deepEqual(snap.tracks, [SAMPLE_TRACK]);
-    assert.equal(calls.length, 1, 'exactly one upstream call');
+    assert.equal(snap.periods, null, 'a reason-tagged charts payload is not baked');
+    assert.equal(calls.filter((url) => url.endsWith('/api/listening/recent')).length, 1);
+    assert.equal(calls.filter((url) => url.endsWith('/api/listening/charts')).length, 1);
+    assert.equal(calls.some((url) => url.includes('gettop')), false);
     const cached = JSON.parse(fs.readFileSync(path.join(cacheDir, 'lastfm.json'), 'utf8'));
     assert.equal(cached.playcount, 117481, 'successful Worker fetch must be cached');
     assert.equal(cached.tracks.length, 1);
+    assert.equal(cached.periods, undefined);
   } finally { restore(); restoreEnv(); }
 });
 
@@ -71,7 +80,7 @@ test('snapshot: a reason-tagged Worker payload is rejected (falls through to emp
   try {
     // No creds and no cache → nothing trustworthy remains.
     const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
-    assert.deepEqual(snap, { tracks: [], playcount: 0 });
+    assert.deepEqual(snap, { tracks: [], playcount: 0, periods: null });
   } finally { restore(); restoreEnv(); }
 });
 
@@ -83,7 +92,7 @@ test('snapshot: Worker tracks with a zero playcount are rejected as corrupt', as
   const { restore } = installFetch(() => jsonResponse({ playcount: 0, tracks: [SAMPLE_TRACK] }));
   try {
     const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
-    assert.deepEqual(snap, { tracks: [], playcount: 0 });
+    assert.deepEqual(snap, { tracks: [], playcount: 0, periods: null });
   } finally { restore(); restoreEnv(); }
 });
 
@@ -107,6 +116,124 @@ test('snapshot: LISTENING_OFFLINE skips all network sources', async () => {
   try {
     const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
     assert.equal(calls.length, 0, 'offline build must not call fetch');
-    assert.deepEqual(snap, { tracks: [], playcount: 0 });
+    assert.deepEqual(snap, { tracks: [], playcount: 0, periods: null });
+  } finally { restore(); restoreEnv(); }
+});
+
+function workerChartPayload() {
+  const periods = {};
+  for (const id of ['overall', '12month', '3month', '1month']) {
+    periods[id] = {
+      artists: [{
+        name: `Artist ${id}`,
+        playcount: 12,
+        url: 'https://www.last.fm/user/djverism',
+        user: 'djverism',
+      }],
+      albums: [{
+        name: `Album ${id}`,
+        artist: 'Album Artist',
+        playcount: 7,
+        url: 'https://www.last.fm/music/Album+Artist/Album',
+      }],
+    };
+  }
+  periods['3month'].artists = [];
+  return { periods };
+}
+
+test('snapshot: period charts come from the worker and a failure keeps the tracks', async () => {
+  const restoreEnv = cleanEnv();
+  process.env.LASTFM_API_KEY = 'secret-key';
+  process.env.LASTFM_USERNAME = 'djverism';
+  const cacheDir = makeTempDir('mattdoes-cache-');
+  const { calls, restore } = installFetch((url) => {
+    if (url.endsWith('/api/listening/recent')) {
+      return jsonResponse({ playcount: 120022, tracks: [SAMPLE_TRACK] });
+    }
+    if (url.endsWith('/api/listening/charts')) return jsonResponse(workerChartPayload());
+    throw new Error(`unexpected url ${url}`);
+  });
+  try {
+    const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
+    assert.equal(snap.playcount, 120022);
+    assert.equal(snap.tracks.length, 1);
+    assert.equal(snap.periods.overall.artists[0].name, 'Artist overall');
+    assert.equal(snap.periods.overall.artists[0].url, '', 'profile urls are dropped');
+    assert.equal(snap.periods.overall.artists[0].user, undefined, 'extra fields are dropped');
+    assert.equal(snap.periods['12month'].albums[0].name, 'Album 12month');
+    assert.deepEqual(snap.periods['3month'].artists, []);
+    assert.equal(snap.periods['3month'].albums[0].name, 'Album 3month');
+    assert.ok(snap.periods['1month']);
+    assert.equal(calls.filter((url) => url.endsWith('/api/listening/recent')).length, 1);
+    assert.equal(calls.filter((url) => url.endsWith('/api/listening/charts')).length, 1);
+    assert.equal(calls.some((url) => url.includes('audioscrobbler') || url.includes('gettop')), false,
+      'the build does not call Last.fm chart methods, even when a key is set');
+    const cached = JSON.parse(fs.readFileSync(path.join(cacheDir, 'lastfm.json'), 'utf8'));
+    assert.equal(cached.periods.overall.artists[0].name, 'Artist overall');
+    assert.equal(JSON.stringify(cached).includes('djverism'), false);
+    assert.equal(JSON.stringify(cached).includes('secret-key'), false);
+  } finally { restore(); restoreEnv(); }
+});
+
+test('snapshot: a total chart failure still bakes the recent tracks', async () => {
+  const restoreEnv = cleanEnv();
+  const cacheDir = makeTempDir('mattdoes-cache-');
+  const { restore } = installFetch((url) => {
+    if (url.endsWith('/api/listening/recent')) {
+      return jsonResponse({ playcount: 50, tracks: [SAMPLE_TRACK] });
+    }
+    return jsonResponse({ periods: {}, reason: 'unavailable' });
+  });
+  try {
+    const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
+    assert.equal(snap.playcount, 50);
+    assert.equal(snap.tracks.length, 1);
+    assert.equal(snap.periods, null);
+    const cached = JSON.parse(fs.readFileSync(path.join(cacheDir, 'lastfm.json'), 'utf8'));
+    assert.equal(cached.periods, undefined);
+  } finally { restore(); restoreEnv(); }
+});
+
+test('snapshot: a fresh cache with charts does not call the network', async () => {
+  const restoreEnv = cleanEnv();
+  process.env.LASTFM_API_KEY = 'secret-key';
+  process.env.LASTFM_USERNAME = 'djverism';
+  const cacheDir = makeTempDir('mattdoes-cache-');
+  const periods = {
+    overall: { artists: [{ name: 'Cached', playcount: 3, url: '' }], albums: [] },
+    '12month': { artists: [], albums: [] },
+    '3month': { artists: [], albums: [] },
+    '1month': { artists: [], albums: [] },
+  };
+  fs.writeFileSync(path.join(cacheDir, 'lastfm.json'), JSON.stringify({
+    playcount: 9, tracks: [SAMPLE_TRACK], periods,
+  }));
+  const { calls, restore } = installFetch(() => { throw new Error('network'); });
+  try {
+    const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
+    assert.equal(calls.length, 0);
+    assert.equal(snap.periods.overall.artists[0].name, 'Cached');
+    assert.equal(snap.playcount, 9);
+  } finally { restore(); restoreEnv(); }
+});
+
+test('snapshot: a fresh cache without charts fetches only the charts endpoint', async () => {
+  const restoreEnv = cleanEnv();
+  process.env.LASTFM_API_KEY = 'secret-key';
+  const cacheDir = makeTempDir('mattdoes-cache-');
+  fs.writeFileSync(path.join(cacheDir, 'lastfm.json'), JSON.stringify({
+    playcount: 9, tracks: [SAMPLE_TRACK],
+  }));
+  const { calls, restore } = installFetch((url) => {
+    assert.equal(url.endsWith('/api/listening/charts'), true);
+    return jsonResponse(workerChartPayload());
+  });
+  try {
+    const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
+    assert.equal(calls.length, 1);
+    assert.equal(snap.playcount, 9);
+    assert.equal(snap.periods.overall.artists[0].name, 'Artist overall');
+    assert.equal(calls.some((url) => url.includes('gettop')), false);
   } finally { restore(); restoreEnv(); }
 });

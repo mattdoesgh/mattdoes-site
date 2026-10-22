@@ -3,22 +3,31 @@
 // Routes (read path):
 //   GET /api/listening/now      → current scrobble (or { nowPlaying: false })
 //   GET /api/listening/recent   → playcount + 25 most recent tracks
+//   GET /api/listening/charts   → top artists and albums for the fixed periods
 //
-// Called client-side by /now-playing.js (topbar pill) and /listening-live.js
-// (the /listening/ page). Response shapes are unchanged.
+// /now and /recent are called client-side by /now-playing.js (topbar pill)
+// and /listening-live.js (the /listening/ page). Response shapes for those
+// two are unchanged. /charts is fetched by the Pages build (lib/listening.js).
+// The page does not call it from the browser, so connect-src stays 'self'.
 //
 // Producer / reader split:
-//   • PRODUCER — a single-writer Durable Object (ListeningPoller) is the ONLY
-//     thing that calls Last.fm. It self-reschedules an alarm every
-//     POLL_INTERVAL_MS, makes ONE user.getrecenttracks call (limit=25),
-//     derives BOTH payloads (now + recent) from that one decode, and writes
-//     both KV keys. On upstream failure it writes nothing, so the last good
-//     snapshot survives, and the alarm is already re-armed (see alarm()).
-//   • READER — the fetch() handler is a pure KV reader. It never calls
-//     Last.fm, never blocks, and has zero Last.fm knowledge: rate-limit →
-//     edge cache → read KV → serve verbatim. Visitors never reach the DO, so
-//     upstream call volume is constant (~1 call / POLL_INTERVAL_MS),
-//     independent of how many people are on the site.
+//   • PRODUCER — a Durable Object (ListeningPoller) is the only caller of
+//     user.getrecenttracks. It self-reschedules an alarm every
+//     POLL_INTERVAL_MS, makes ONE call (limit=25), derives BOTH payloads
+//     (now + recent) from that one decode, and writes both KV keys. On
+//     upstream failure it writes nothing, so the last good snapshot
+//     survives, and the alarm is already re-armed (see alarm()).
+//   • READER — /now and /recent never call Last.fm: rate-limit → read KV →
+//     serve the last good snapshot. Visitors never reach the DO, so recent-
+//     track call volume stays constant (~1 call / POLL_INTERVAL_MS). The
+//     reader does not wait on the Cache API. A match against a missing or
+//     expired entry is recorded as a 504 (edgeWorkerCacheAPI) even when KV
+//     has a snapshot, and must-revalidate stops the edge from serving that
+//     snapshot when a refresh fails.
+//   • CHARTS — GET /api/listening/charts reads a KV entry cached for hours.
+//     A miss calls user.gettopartists and user.gettopalbums for the fixed
+//     period list, then stores the result. The poller is not involved. The
+//     Last.fm user is the Worker secret, never a request field.
 //
 // Bootstrap / liveness: a DO alarm is durable once set and self-perpetuates,
 // but nothing starts it on first deploy (or if the chain ever permanently
@@ -28,12 +37,13 @@
 // monitoring" resilience posture: detect-and-re-arm a dropped poller without
 // ever touching the read path.
 //
-// On top of the reader, responses are stored in the Cloudflare edge cache for
-// EDGE_TTL_S (s-maxage). Concurrent visitors polling within the same window
-// collapse to a single Worker invocation; the rest are served from the edge.
-// EDGE_TTL_S ≪ POLL_INTERVAL_MS so it never widens the staleness the poller
-// sets. The browser still sees max-age=0 + must-revalidate, so each poll
-// re-asks the edge — scrobble updates aren't hidden by a stale browser cache.
+// Browser max-age matches how fresh the payload is: seconds for /now, a short
+// minute for /recent, and six hours for /charts. must-revalidate stops a
+// browser from serving a copy past that window. The edge is told separately,
+// via Cloudflare-CDN-Cache-Control, that it may serve the last good response
+// while it revalidates and when that revalidation fails. That header is not
+// sent for warming or unavailable payloads, so an empty fallback is not
+// pinned at the edge.
 //
 // Env (wrangler secrets):
 //   LASTFM_USERNAME  — Last.fm user to query
@@ -46,22 +56,44 @@
 //   LISTENING_POLLER — Durable Object namespace for the producer.
 //
 // Notes on Last.fm API etiquette:
-//   • The request path never calls Last.fm; only the DO alarm does, at a
-//     constant cadence regardless of traffic.
-//   • A descriptive User-Agent is sent so Last.fm can identify / rate-limit
-//     this client distinctly.
+//   • /now and /recent never call Last.fm. The DO alarm does, at a constant
+//     cadence, one user.getrecenttracks per tick.
+//   • /charts calls Last.fm only when its KV entry is older than
+//     CHARTS_TTL_MS. A short lock collapses a burst into one round.
+//   • A descriptive User-Agent is sent so Last.fm can identify this client.
+//     Request URLs are not logged: they carry the API key.
 
 import {
   json, errorJson, withCache, corsPreflight, kvGet, kvPut, getClientIp, sha256Hex,
 } from '../../lib/transport.js';
-import { decodeTrack, decodeTracks, lastfmError, recentTracksUrl } from '../../../lib/lastfm.js';
+import {
+  LISTENING_PERIODS, TOP_LIMIT, decodeTopAlbums, decodeTopArtists, decodeTrack,
+  decodeTracks, lastfmError, recentTracksUrl, topAlbumsUrl, topArtistsUrl,
+} from '../../../lib/lastfm.js';
 
 // Poller cadence (milliseconds). ~25s keeps now-playing sub-minute.
 const POLL_INTERVAL_MS = 25 * 1000;
-const EDGE_TTL_S       = 15;          // edge-cache window; must be ≪ POLL_INTERVAL_MS / 1000
+const EDGE_TTL_S       = 15;          // edge freshness; must be ≪ POLL_INTERVAL_MS / 1000
+// How long the edge may keep the last good response after EDGE_TTL_S: while a
+// refresh is in flight, and when the refresh fails. Browsers do not see this.
+const STALE_SERVE_S   = 24 * 60 * 60;
+// Last.fm calls. The poller and the charts miss path share one deadline so a
+// hung upstream cannot pin a Durable Object alarm or a charts request.
+const UPSTREAM_TIMEOUT_MS = 8000;
+// Browser freshness. /now is the live scrobble, so it expires with the edge
+// window. /recent is the same snapshot shown as a list, and a minute is enough.
+const NOW_BROWSER_TTL_S    = 15;
+const RECENT_BROWSER_TTL_S = 60;
 
 const RECENT_LIMIT = 25;
 const USER_AGENT   = 'mattdoes-site/1.0 (+https://mattdoes.online)';
+// Charts move on a scale of months. Six hours matches the site rebuild and
+// keeps a cold Pages build from calling Last.fm again on the next deploy.
+const CHARTS_TTL_MS         = 6 * 60 * 60 * 1000;
+const CHARTS_EDGE_TTL_S     = 6 * 60 * 60;
+const CHARTS_BROWSER_TTL_S  = CHARTS_EDGE_TTL_S;
+const CHARTS_KEY         = 'charts';
+const CHARTS_LOCK_KEY    = 'charts:lock';
 
 /**
  * @typedef {object} Env
@@ -97,7 +129,7 @@ async function checkRateLimit(request, env) {
   const ip = getClientIp(request);
   if (!ip) return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
   // Hash the address so the rate-limit key is not the raw IP. Path stays in
-  // the key so /now and /recent are budgeted independently.
+  // the key so /now, /recent, and /charts are budgeted independently.
   const key = `${await sha256Hex(ip)}:${new URL(request.url).pathname}`;
   try {
     const { success } = await env.LISTEN_RL.limit({ key });
@@ -114,8 +146,10 @@ export default {
    * Read path. Pure KV reader for:
    *   `GET /api/listening/now`     → current scrobble
    *   `GET /api/listening/recent`  → playcount + recent tracks
-   * Never calls Last.fm. Responses go through the edge Cache API so client
-   * polling collapses to a single Worker invocation per EDGE_TTL_S window.
+   *   `GET /api/listening/charts`  → top artists and albums, cached for hours
+   * `/now` and `/recent` never call Last.fm. `/charts` calls Last.fm only on
+   * a cache miss, then stores the result for CHARTS_TTL_MS. The recent-tracks
+   * poller is not involved.
    *
    * @param {Request} request
    * @param {Env} env
@@ -127,34 +161,40 @@ export default {
     if (request.method !== 'GET')     return json({ error: 'method_not_allowed' }, 405);
 
     const url = new URL(request.url);
-    // Exact paths only. endsWith('/now') would also admit a route that
-    // merely finished with that suffix if the Worker route ever widened.
+    // Exact paths only. A suffix match would admit a route that merely
+    // finished with /now if the Worker route ever widened. /charts takes
+    // no query string: the period list and the Last.fm user come from
+    // this Worker, not the request.
     let kind;
-    if      (url.pathname === '/api/listening/now')    kind = 'now';
+    if (url.pathname === '/api/listening/now') kind = 'now';
     else if (url.pathname === '/api/listening/recent') kind = 'recent';
+    else if (url.pathname === '/api/listening/charts') kind = 'charts';
     else return json({ error: 'not_found' }, 404);
 
-    // Per-IP rate limit. Runs before the edge-cache lookup so a flood of
-    // requests from a single IP can't consume cache CPU even on cold paths.
+    // Per-IP rate limit. Runs before the KV read so a flood from one IP
+    // cannot spend reads on the cold path.
     const limited = await checkRateLimit(request, env);
     if (limited) return limited;
+    // A query string is not an input. 404, no-store, and the body does not
+    // echo it. Rate limit already ran, so a scan still spends the budget.
+    if (kind === 'charts' && url.search) return errorJson({ error: 'not_found' }, 404);
 
-    // Edge cache layer. Cache key is just the URL — there are no per-user or
-    // per-origin variations (CORS only allows ALLOWED_ORIGIN). Workers
-    // responses bypass the edge cache by default, so we drive it via the
-    // Cache API explicitly. cache.put honours the s-maxage set in toClient.
-    const cache    = caches.default;
-    const cacheKey = new Request(url.toString(), { method: 'GET' });
-    const hit      = await cache.match(cacheKey);
-    if (hit) return hit;
-
+    // KV is the cache the visitor waits on. caches.default.match() is not:
+    // a missing or expired Cache API entry is logged as a 504
+    // (edgeWorkerCacheAPI) and returns undefined to the Worker, and a stored
+    // must-revalidate response makes the edge hand that 504 to the visitor
+    // instead of the last good snapshot. /now and /recent only read KV.
+    // /charts reads KV and, on a miss, calls Last.fm with a timeout.
     const res = await handle(env, kind);
-    // Only cache successful payloads — a transient unavailable/warming
-    // response shouldn't lock in for the full window.
-    if (res.status === 200) {
-      ctx.waitUntil(cache.put(cacheKey, res.clone()));
+    if (kind !== 'charts' || res.status !== 200) return res;
+    const body = await res.clone().json().catch(() => null);
+    if (!chartsCacheable(body)) {
+      // A reason payload must not sit in a browser or edge cache.
+      const headers = new Headers(res.headers);
+      headers.set('cache-control', 'no-store');
+      return new Response(res.body, { status: res.status, headers });
     }
-    return res;
+    return toChartsClient(res);
   },
 
   /**
@@ -178,7 +218,7 @@ export default {
 
 // ── producer: ListeningPoller Durable Object ─────────────────────────────
 /**
- * The single Last.fm writer. A classic (non-RPC) Durable Object class so the
+ * The single recent-tracks writer. A classic (non-RPC) Durable Object class so the
  * Worker module stays importable under `node --test` without the
  * `cloudflare:workers` module (the read-path test harness imports this file
  * directly). It owns exactly two behaviours:
@@ -212,28 +252,118 @@ export class ListeningPoller {
 
 // ── reader ───────────────────────────────────────────────────────────────
 /**
- * Pure KV reader. Serves the last snapshot the poller wrote; never calls
- * Last.fm and never blocks. Before the first poll (e.g. right after deploy,
- * until the watchdog arms the alarm) KV is empty and we return a `warming`
- * fallback — a truthy `reason` so clients keep their last-known-good UI
- * (contract C7) and the build-time snapshot (lib/listening.js) falls through
- * to its disk cache rather than baking an empty page.
+ * /now and /recent serve the last snapshot the poller wrote and never call
+ * Last.fm. /charts is dispatched first. Before the first poll (e.g. right
+ * after deploy, until the watchdog arms the alarm) KV is empty and we return
+ * a `warming` fallback — a truthy `reason` so clients keep their last-known-
+ * good UI (contract C7) and the build-time snapshot (lib/listening.js) falls
+ * through to its disk cache rather than baking an empty page.
  *
  * @param {Env} env
- * @param {'now'|'recent'} kind which payload to return
+ * @param {'now'|'recent'|'charts'} kind which payload to return
  * @returns {Promise<Response>}
  */
 async function handle(env, kind) {
+  if (kind === 'charts') return handleCharts(env);
   if (!env.LASTFM_API_KEY || !env.LASTFM_USERNAME) {
-    return toClient(json(emptyPayload(kind, 'unavailable')));
+    return toClient(json(emptyPayload(kind, 'unavailable')), kind);
   }
   if (!env.LASTFM_CACHE) {
     return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
   }
 
   const cached = await readCache(env, `${kind}:${env.LASTFM_USERNAME}`);
-  if (cached) return toClient(json(cached.data));
-  return toClient(json(emptyPayload(kind, 'warming')));
+  if (cached) return toClient(json(cached.data), kind, true);
+  return toClient(json(emptyPayload(kind, 'warming')), kind);
+}
+
+/**
+ * Top artists and top albums for the fixed period list. The Last.fm user is
+ * the Worker secret, never a request field, and it is not copied into the
+ * payload. A miss fetches Last.fm once and stores the result for hours. A
+ * failed refresh keeps the previous payload when there is one.
+ *
+ * @param {Env} env
+ * @returns {Promise<Response>}
+ */
+async function handleCharts(env) {
+  if (!env.LASTFM_API_KEY || !env.LASTFM_USERNAME) {
+    return json({ periods: {}, reason: 'unavailable' });
+  }
+  if (!env.LASTFM_CACHE) {
+    return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
+  }
+
+  const cached = await readCache(env, CHARTS_KEY);
+  const fresh = cached && (Date.now() - cached.fetchedAt < CHARTS_TTL_MS) && cached.data?.periods;
+  if (fresh) return json(cached.data);
+
+  const lock = await kvGet(env.LASTFM_CACHE, CHARTS_LOCK_KEY);
+  if (lock) {
+    if (cached?.data?.periods) return json(cached.data);
+    return json({ periods: {}, reason: 'warming' });
+  }
+  // Short lock so a burst of cold requests shares one Last.fm round.
+  await kvPut(env.LASTFM_CACHE, CHARTS_LOCK_KEY, '1', { expirationTtl: 60 });
+  try {
+    const periods = await fetchChartPeriods(env);
+    if (!periods) {
+      if (cached?.data?.periods) return json(cached.data);
+      return json({ periods: {}, reason: 'unavailable' });
+    }
+    const data = { periods };
+    await writeCache(env, CHARTS_KEY, data);
+    return json(data);
+  } finally {
+    try { await env.LASTFM_CACHE.delete(CHARTS_LOCK_KEY); } catch { /* ttl clears it */ }
+  }
+}
+
+/**
+ * One Last.fm chart call. Null on any failure. The URL is not logged: it
+ * carries the API key.
+ *
+ * @param {string} url
+ * @param {(body: object) => object[]} decode
+ * @returns {Promise<object[]|null>}
+ */
+async function fetchOneChart(url, decode) {
+  try {
+    const res = await fetch(url, {
+      headers: { 'User-Agent': USER_AGENT, accept: 'application/json' },
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (lastfmError(data)) return null;
+    return decode(data);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fixed periods only. Returns null when every call failed so the caller can
+ * keep a stale snapshot instead of caching an empty page.
+ *
+ * @param {Env} env
+ * @returns {Promise<object|null>}
+ */
+async function fetchChartPeriods(env) {
+  const user = env.LASTFM_USERNAME;
+  const key = env.LASTFM_API_KEY;
+  let any = false;
+  const periods = {};
+  await Promise.all(LISTENING_PERIODS.map(async ({ id }) => {
+    const [artists, albums] = await Promise.all([
+      fetchOneChart(topArtistsUrl(user, key, id, TOP_LIMIT), decodeTopArtists),
+      fetchOneChart(topAlbumsUrl(user, key, id, TOP_LIMIT), decodeTopAlbums),
+    ]);
+    // null is a failed call. An array, including an empty one, is a success.
+    if (artists !== null || albums !== null) any = true;
+    periods[id] = { artists: artists || [], albums: albums || [] };
+  }));
+  return any ? periods : null;
 }
 
 // ── producer fetch ───────────────────────────────────────────────────────
@@ -241,8 +371,8 @@ async function handle(env, kind) {
  * Call Last.fm's `user.getrecenttracks` ONCE and write BOTH payloads to KV
  * from a single decode, so `/now` and `/recent` can never disagree and only
  * one upstream call covers both. On any failure — bad creds/binding, non-200,
- * Last.fm error JSON, parse error — write nothing: the last good snapshot
- * survives in KV and the next alarm retries.
+ * Last.fm error JSON, parse error, or the upstream deadline — write nothing:
+ * the last good snapshot survives in KV and the next alarm retries.
  *
  * @param {Env} env
  * @returns {Promise<void>}
@@ -251,7 +381,10 @@ async function refreshBoth(env) {
   if (!env.LASTFM_API_KEY || !env.LASTFM_USERNAME || !env.LASTFM_CACHE) return;
   try {
     const api = recentTracksUrl(env.LASTFM_USERNAME, env.LASTFM_API_KEY, RECENT_LIMIT);
-    const res = await fetch(api, { headers: { 'User-Agent': USER_AGENT } });
+    const res = await fetch(api, {
+      headers: { 'User-Agent': USER_AGENT },
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    });
     if (!res.ok) throw new Error(`lastfm ${res.status}`);
     const body = await res.json();
     if (lastfmError(body)) throw new Error(body.message || `lastfm error ${body.error}`);
@@ -380,11 +513,48 @@ function trackToNow(t) {
 // workers/lib/transport.js; only this Worker's caching POLICY lives here.
 //
 // Two-layer caching policy:
-//   • s-maxage=EDGE_TTL_S  → Cloudflare edge stores the response for that long,
-//     so concurrent polls collapse to one Worker run per window.
-//   • max-age=0, must-revalidate → browser always re-asks (the request hits
-//     the edge cache, not the Worker, on a HIT). Scrobble updates aren't
-//     hidden behind a stale browser cache, matching the original intent.
-function toClient(response) {
-  return withCache(response, `public, max-age=0, s-maxage=${EDGE_TTL_S}, must-revalidate`);
+//   • Cache-Control max-age → the browser. /now is seconds, /recent is a
+//     minute, and /charts matches its six-hour window. must-revalidate means
+//     a browser past that age re-asks instead of replaying a stale scrobble.
+//     s-maxage stays in this header for downstream shared caches. Cloudflare
+//     itself follows Cloudflare-CDN-Cache-Control when that header is present,
+//     so must-revalidate here does not forbid the edge from serving stale.
+//   • Cloudflare-CDN-Cache-Control → the edge only, and only on a real
+//     snapshot. max-age is the fresh window (s-maxage would disable stale
+//     serving). stale-while-revalidate and stale-if-error let the edge return
+//     the last good response instead of a 504.
+function toClient(response, kind, serveStale = false) {
+  const browserTtlS = kind === 'now' ? NOW_BROWSER_TTL_S : RECENT_BROWSER_TTL_S;
+  const wrapped = withCache(response, `public, max-age=${browserTtlS}, s-maxage=${EDGE_TTL_S}, must-revalidate`);
+  return serveStale ? withEdgeStale(wrapped, EDGE_TTL_S) : wrapped;
+}
+
+function toChartsClient(response) {
+  return withEdgeStale(
+    withCache(response, `public, max-age=${CHARTS_BROWSER_TTL_S}, s-maxage=${CHARTS_EDGE_TTL_S}, must-revalidate`),
+    CHARTS_EDGE_TTL_S,
+  );
+}
+
+function withEdgeStale(response, edgeTtlS) {
+  const headers = new Headers(response.headers);
+  headers.set(
+    'cloudflare-cdn-cache-control',
+    `public, max-age=${edgeTtlS}, stale-while-revalidate=${STALE_SERVE_S}, stale-if-error=${STALE_SERVE_S}`,
+  );
+  return new Response(response.body, { status: response.status, headers });
+}
+
+/**
+ * Long-cache only a real chart payload. Reason responses and anything
+ * without the fixed period ids stay uncached.
+ *
+ * @param {object|null} body
+ * @returns {boolean}
+ */
+function chartsCacheable(body) {
+  if (!body || body.reason) return false;
+  const periods = body.periods;
+  if (!periods || typeof periods !== 'object' || Array.isArray(periods)) return false;
+  return LISTENING_PERIODS.some(({ id }) => Object.prototype.hasOwnProperty.call(periods, id));
 }

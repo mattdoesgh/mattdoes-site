@@ -8,7 +8,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  decodeTrack, decodeTracks, lastfmError, recentTracksUrl,
+  decodeTopAlbums, decodeTopArtists, decodeTrack, decodeTracks, lastfmError,
+  musicUrl, recentTracksUrl, topAlbumsUrl, topArtistsUrl,
 } from '../lib/lastfm.js';
 
 const RAW_TRACK = {
@@ -113,4 +114,45 @@ test('lastfm: the recent-tracks URL builder emits the exact query string', () =>
   assert.equal(
     recentTracksUrl('a user', 'k&y', 25),
     'https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=a%20user&api_key=k%26y&format=json&limit=25');
+});
+
+test('lastfm: chart URL builders pin the period and drop nothing into the path', () => {
+  assert.equal(
+    topArtistsUrl('dj verism', 'k&y', '12month', 5),
+    'https://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=dj%20verism&api_key=k%26y&period=12month&limit=5&format=json');
+  assert.equal(
+    topAlbumsUrl('dj verism', 'k&y', 'overall', 5),
+    'https://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&user=dj%20verism&api_key=k%26y&period=overall&limit=5&format=json');
+});
+
+test('lastfm: chart decode keeps names and drops profile urls', () => {
+  assert.equal(musicUrl('https://www.last.fm/user/djverism'), '');
+  assert.equal(musicUrl('javascript:alert(1)'), '');
+  assert.equal(musicUrl('https://www.last.fm/music/Artist'), 'https://www.last.fm/music/Artist');
+  const artists = decodeTopArtists({
+    topartists: {
+      artist: [
+        { name: 'One', playcount: '8', url: 'https://www.last.fm/user/djverism' },
+        { name: '  ', playcount: '1', url: '' },
+      ],
+      '@attr': { user: 'djverism' },
+    },
+  });
+  assert.deepEqual(artists, [{ name: 'One', playcount: 8, url: '' }]);
+  const albums = decodeTopAlbums({
+    topalbums: {
+      album: {
+        name: 'Album',
+        playcount: '3',
+        artist: { '#text': 'Via Text' },
+        url: 'https://www.last.fm/music/Via+Text/Album',
+      },
+    },
+  });
+  assert.deepEqual(albums, [{
+    name: 'Album', artist: 'Via Text', playcount: 3,
+    url: 'https://www.last.fm/music/Via+Text/Album',
+  }]);
+  assert.deepEqual(decodeTopArtists(undefined), []);
+  assert.deepEqual(decodeTopAlbums({}), []);
 });
