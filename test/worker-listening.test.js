@@ -14,9 +14,10 @@
 // payload carries one. The static clients use the presence of `reason` to
 // decide whether to keep stale UI or apply the update.
 //
-// Each reader test installs a FRESH `caches` stub: the edge cache keys purely
-// on the request URL, so reusing one stub across scenarios with the same route
-// would leak a cached response between tests.
+// Each reader test installs a FRESH `caches` stub. The reader must not wait on
+// it: a missing or expired Cache API entry is logged as a 504, and the last
+// good snapshot lives in KV. Reusing one stub across scenarios with the same
+// route would also leak a cached response if a test started consulting it.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -570,6 +571,10 @@ test('charts: a cold miss fetches the four periods and hides the username', asyn
   assert.equal(JSON.stringify(body).includes('secret-key'), false);
   assertApiEnvelope(headers);
   assert.equal(headers.get('cache-control'), 'public, max-age=21600, s-maxage=21600, must-revalidate');
+  assert.equal(
+    headers.get('cloudflare-cdn-cache-control'),
+    'public, max-age=21600, stale-while-revalidate=86400, stale-if-error=86400',
+  );
 
   const stored = await kv.get('charts', { type: 'json' });
   assert.equal(stored.data.periods.overall.artists[0].name, 'Artist overall');
@@ -606,6 +611,7 @@ test('cache: browser max-age matches the freshness of now, recent, and charts', 
   const caches = installCaches();
   const fetchStub = installFetch(() => { throw new Error('cache policy must not call Last.fm'); });
   try {
+    const EDGE_RECENT = 'public, max-age=15, stale-while-revalidate=86400, stale-if-error=86400';
     const hit = async (url) => {
       const res = await listeningWorker.fetch(
         workerRequest(url, { headers: { 'cf-connecting-ip': '203.0.113.9' } }),
@@ -613,14 +619,138 @@ test('cache: browser max-age matches the freshness of now, recent, and charts', 
         makeCtx(),
       );
       assert.equal(res.status, 200);
-      return res.headers.get('cache-control');
+      return {
+        browser: res.headers.get('cache-control'),
+        edge: res.headers.get('cloudflare-cdn-cache-control'),
+      };
     };
-    assert.equal(await hit(NOW), 'public, max-age=15, s-maxage=15, must-revalidate');
-    assert.equal(await hit(RECENT), 'public, max-age=60, s-maxage=15, must-revalidate');
-    assert.equal(await hit(CHARTS), 'public, max-age=21600, s-maxage=21600, must-revalidate');
+    const now = await hit(NOW);
+    const recent = await hit(RECENT);
+    const charts = await hit(CHARTS);
+    assert.equal(now.browser, 'public, max-age=15, s-maxage=15, must-revalidate');
+    assert.equal(recent.browser, 'public, max-age=60, s-maxage=15, must-revalidate');
+    assert.equal(charts.browser, 'public, max-age=21600, s-maxage=21600, must-revalidate');
+    assert.equal(now.edge, EDGE_RECENT);
+    assert.equal(recent.edge, EDGE_RECENT);
+    assert.equal(charts.edge, 'public, max-age=21600, stale-while-revalidate=86400, stale-if-error=86400');
     assert.equal(fetchStub.calls.length, 0);
   } finally {
     caches.restore();
+    fetchStub.restore();
+  }
+});
+
+test('reader: a hung edge cache still serves the last KV snapshot', { timeout: 1500 }, async () => {
+  const kv = new KVStub();
+  await seed(kv, 'recent:u', { playcount: 42, tracks: [] });
+  const env = {
+    LASTFM_API_KEY: 'k',
+    LASTFM_USERNAME: 'u',
+    LASTFM_CACHE: kv,
+    LISTEN_RL: { limit: async () => ({ success: true }) },
+  };
+  const prior = globalThis.caches;
+  let matchCalls = 0;
+  globalThis.caches = {
+    default: {
+      match() {
+        matchCalls += 1;
+        return new Promise(() => {});
+      },
+      async put() {},
+    },
+  };
+  const fetchStub = installFetch(() => { throw new Error('reader must not call Last.fm'); });
+  try {
+    const started = Date.now();
+    const res = await listeningWorker.fetch(
+      workerRequest(RECENT, { headers: { 'cf-connecting-ip': '203.0.113.9' } }),
+      env,
+      makeCtx(),
+    );
+    const elapsed = Date.now() - started;
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.playcount, 42);
+    assert.equal('reason' in body, false);
+    assert.ok(elapsed < 500, `last snapshot served in ${elapsed}ms`);
+    assert.equal(fetchStub.calls.length, 0);
+    assert.equal(matchCalls, 0, 'the reader must not wait on caches.default');
+    assert.equal(
+      res.headers.get('cloudflare-cdn-cache-control'),
+      'public, max-age=15, stale-while-revalidate=86400, stale-if-error=86400',
+    );
+  } finally {
+    fetchStub.restore();
+    if (prior === undefined) delete globalThis.caches;
+    else globalThis.caches = prior;
+  }
+});
+
+test('reader: an empty snapshot is not pinned as stale at the edge', async () => {
+  const caches = installCaches();
+  const fetchStub = installFetch(() => jsonResponse({}));
+  try {
+    const res = await listeningWorker.fetch(
+      workerRequest(RECENT, { headers: { 'cf-connecting-ip': '203.0.113.9' } }),
+      {
+        LASTFM_API_KEY: 'k',
+        LASTFM_USERNAME: 'u',
+        LASTFM_CACHE: new KVStub(),
+        LISTEN_RL: { limit: async () => ({ success: true }) },
+      },
+      makeCtx(),
+    );
+    const body = await res.json();
+    assert.equal(res.status, 200);
+    assert.equal(body.reason, 'warming');
+    assert.equal(res.headers.get('cloudflare-cdn-cache-control'), null);
+    assert.equal(fetchStub.calls.length, 0);
+  } finally {
+    caches.restore();
+    fetchStub.restore();
+  }
+});
+
+test('poller: a hung Last.fm call times out and leaves KV intact', { timeout: 1500 }, async () => {
+  const kv = new KVStub();
+  await seed(kv, 'recent:u', { playcount: 7, tracks: [] });
+  await seed(kv, 'now:u', { nowPlaying: false });
+  const env = { LASTFM_API_KEY: 'k', LASTFM_USERNAME: 'u', LASTFM_CACHE: kv };
+  const timeouts = new WeakMap();
+  const originalTimeout = AbortSignal.timeout;
+  // AbortSignal.timeout's own timer does not keep the test runner's event
+  // loop alive. Record the deadline the worker asked for, and abort on a
+  // ref'd timer so a hung fetch still fails the poll.
+  AbortSignal.timeout = (ms) => {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(new DOMException('timeout', 'TimeoutError')), 20);
+    timeouts.set(controller.signal, ms);
+    return controller.signal;
+  };
+  const fetchStub = installFetch((_url, init) => new Promise((_resolve, reject) => {
+    const signal = init?.signal;
+    if (!signal) {
+      reject(new Error('missing abort signal'));
+      return;
+    }
+    assert.equal(timeouts.get(signal), 8000);
+    const fail = () => reject(signal.reason ?? new Error('aborted'));
+    if (signal.aborted) fail();
+    else signal.addEventListener('abort', fail, { once: true });
+  }));
+  const state = new DurableStateStub();
+  try {
+    await new ListeningPoller(state, env).alarm();
+    assert.equal(fetchStub.calls.length, 1);
+    const recent = await kv.get('recent:u', { type: 'json' });
+    const now = await kv.get('now:u', { type: 'json' });
+    assert.equal(recent.fetchedAt, 1_700_000_000_000, 'hung upstream must not overwrite KV');
+    assert.equal(recent.data.playcount, 7);
+    assert.equal(now.data.nowPlaying, false);
+    assert.notEqual(await state.storage.getAlarm(), null, 'alarm stays armed');
+  } finally {
+    AbortSignal.timeout = originalTimeout;
     fetchStub.restore();
   }
 });

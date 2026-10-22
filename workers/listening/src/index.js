@@ -17,9 +17,13 @@
 //     (now + recent) from that one decode, and writes both KV keys. On
 //     upstream failure it writes nothing, so the last good snapshot
 //     survives, and the alarm is already re-armed (see alarm()).
-//   • READER — /now and /recent never call Last.fm: rate-limit → edge cache
-//     → read KV → serve verbatim. Visitors never reach the DO, so recent-
-//     track call volume stays constant (~1 call / POLL_INTERVAL_MS).
+//   • READER — /now and /recent never call Last.fm: rate-limit → read KV →
+//     serve the last good snapshot. Visitors never reach the DO, so recent-
+//     track call volume stays constant (~1 call / POLL_INTERVAL_MS). The
+//     reader does not wait on the Cache API. A match against a missing or
+//     expired entry is recorded as a 504 (edgeWorkerCacheAPI) even when KV
+//     has a snapshot, and must-revalidate stops the edge from serving that
+//     snapshot when a refresh fails.
 //   • CHARTS — GET /api/listening/charts reads a KV entry cached for hours.
 //     A miss calls user.gettopartists and user.gettopalbums for the fixed
 //     period list, then stores the result. The poller is not involved. The
@@ -33,13 +37,13 @@
 // monitoring" resilience posture: detect-and-re-arm a dropped poller without
 // ever touching the read path.
 //
-// On top of the reader, responses are stored in the Cloudflare edge cache for
-// EDGE_TTL_S (s-maxage). Concurrent visitors polling within the same window
-// collapse to a single Worker invocation; the rest are served from the edge.
-// EDGE_TTL_S ≪ POLL_INTERVAL_MS so it never widens the staleness the poller
-// sets. Browser max-age is separate and matches how fresh the payload is:
-// seconds for /now, a short minute for /recent, and six hours for /charts.
-// must-revalidate stops a browser from serving a copy past that window.
+// Browser max-age matches how fresh the payload is: seconds for /now, a short
+// minute for /recent, and six hours for /charts. must-revalidate stops a
+// browser from serving a copy past that window. The edge is told separately,
+// via Cloudflare-CDN-Cache-Control, that it may serve the last good response
+// while it revalidates and when that revalidation fails. That header is not
+// sent for warming or unavailable payloads, so an empty fallback is not
+// pinned at the edge.
 //
 // Env (wrangler secrets):
 //   LASTFM_USERNAME  — Last.fm user to query
@@ -69,7 +73,13 @@ import {
 
 // Poller cadence (milliseconds). ~25s keeps now-playing sub-minute.
 const POLL_INTERVAL_MS = 25 * 1000;
-const EDGE_TTL_S       = 15;          // edge-cache window; must be ≪ POLL_INTERVAL_MS / 1000
+const EDGE_TTL_S       = 15;          // edge freshness; must be ≪ POLL_INTERVAL_MS / 1000
+// How long the edge may keep the last good response after EDGE_TTL_S: while a
+// refresh is in flight, and when the refresh fails. Browsers do not see this.
+const STALE_SERVE_S   = 24 * 60 * 60;
+// Last.fm calls. The poller and the charts miss path share one deadline so a
+// hung upstream cannot pin a Durable Object alarm or a charts request.
+const UPSTREAM_TIMEOUT_MS = 8000;
 // Browser freshness. /now is the live scrobble, so it expires with the edge
 // window. /recent is the same snapshot shown as a list, and a minute is enough.
 const NOW_BROWSER_TTL_S    = 15;
@@ -161,43 +171,30 @@ export default {
     else if (url.pathname === '/api/listening/charts') kind = 'charts';
     else return json({ error: 'not_found' }, 404);
 
-    // Per-IP rate limit. Runs before the edge-cache lookup so a flood of
-    // requests from a single IP can't consume cache CPU even on cold paths.
+    // Per-IP rate limit. Runs before the KV read so a flood from one IP
+    // cannot spend reads on the cold path.
     const limited = await checkRateLimit(request, env);
     if (limited) return limited;
     // A query string is not an input. 404, no-store, and the body does not
     // echo it. Rate limit already ran, so a scan still spends the budget.
     if (kind === 'charts' && url.search) return errorJson({ error: 'not_found' }, 404);
 
-    // Edge cache layer. Cache key is just the URL — there are no per-user or
-    // per-origin variations (CORS only allows ALLOWED_ORIGIN). Workers
-    // responses bypass the edge cache by default, so we drive it via the
-    // Cache API explicitly. cache.put honours the s-maxage set in toClient.
-    const cache    = caches.default;
-    const cacheKey = new Request(url.toString(), { method: 'GET' });
-    const hit      = await cache.match(cacheKey);
-    if (hit) return hit;
-
+    // KV is the cache the visitor waits on. caches.default.match() is not:
+    // a missing or expired Cache API entry is logged as a 504
+    // (edgeWorkerCacheAPI) and returns undefined to the Worker, and a stored
+    // must-revalidate response makes the edge hand that 504 to the visitor
+    // instead of the last good snapshot. /now and /recent only read KV.
+    // /charts reads KV and, on a miss, calls Last.fm with a timeout.
     const res = await handle(env, kind);
-    // Only cache successful payloads — a transient unavailable/warming
-    // response shouldn't lock in for the full window. Chart failures carry
-    // `reason` and stay uncached so the next build can try again.
-    if (res.status === 200 && kind !== 'charts') {
-      ctx.waitUntil(cache.put(cacheKey, res.clone()));
-    }
-    if (kind === 'charts' && res.status === 200) {
-      const body = await res.clone().json().catch(() => null);
-      if (chartsCacheable(body)) {
-        const cached = toChartsClient(res);
-        ctx.waitUntil(cache.put(cacheKey, cached.clone()));
-        return cached;
-      }
+    if (kind !== 'charts' || res.status !== 200) return res;
+    const body = await res.clone().json().catch(() => null);
+    if (!chartsCacheable(body)) {
       // A reason payload must not sit in a browser or edge cache.
       const headers = new Headers(res.headers);
       headers.set('cache-control', 'no-store');
       return new Response(res.body, { status: res.status, headers });
     }
-    return res;
+    return toChartsClient(res);
   },
 
   /**
@@ -276,7 +273,7 @@ async function handle(env, kind) {
   }
 
   const cached = await readCache(env, `${kind}:${env.LASTFM_USERNAME}`);
-  if (cached) return toClient(json(cached.data), kind);
+  if (cached) return toClient(json(cached.data), kind, true);
   return toClient(json(emptyPayload(kind, 'warming')), kind);
 }
 
@@ -334,7 +331,7 @@ async function fetchOneChart(url, decode) {
   try {
     const res = await fetch(url, {
       headers: { 'User-Agent': USER_AGENT, accept: 'application/json' },
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
     });
     if (!res.ok) return null;
     const data = await res.json();
@@ -374,8 +371,8 @@ async function fetchChartPeriods(env) {
  * Call Last.fm's `user.getrecenttracks` ONCE and write BOTH payloads to KV
  * from a single decode, so `/now` and `/recent` can never disagree and only
  * one upstream call covers both. On any failure — bad creds/binding, non-200,
- * Last.fm error JSON, parse error — write nothing: the last good snapshot
- * survives in KV and the next alarm retries.
+ * Last.fm error JSON, parse error, or the upstream deadline — write nothing:
+ * the last good snapshot survives in KV and the next alarm retries.
  *
  * @param {Env} env
  * @returns {Promise<void>}
@@ -384,7 +381,10 @@ async function refreshBoth(env) {
   if (!env.LASTFM_API_KEY || !env.LASTFM_USERNAME || !env.LASTFM_CACHE) return;
   try {
     const api = recentTracksUrl(env.LASTFM_USERNAME, env.LASTFM_API_KEY, RECENT_LIMIT);
-    const res = await fetch(api, { headers: { 'User-Agent': USER_AGENT } });
+    const res = await fetch(api, {
+      headers: { 'User-Agent': USER_AGENT },
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    });
     if (!res.ok) throw new Error(`lastfm ${res.status}`);
     const body = await res.json();
     if (lastfmError(body)) throw new Error(body.message || `lastfm error ${body.error}`);
@@ -513,18 +513,36 @@ function trackToNow(t) {
 // workers/lib/transport.js; only this Worker's caching POLICY lives here.
 //
 // Two-layer caching policy:
-//   • s-maxage  → Cloudflare edge stores the response for that long, so
-//     concurrent polls collapse to one Worker run per window.
-//   • max-age   → the browser. /now is seconds, /recent is a minute, and
-//     /charts matches its six-hour edge window. must-revalidate means a
-//     browser past that age re-asks instead of replaying a stale scrobble.
-function toClient(response, kind) {
+//   • Cache-Control max-age → the browser. /now is seconds, /recent is a
+//     minute, and /charts matches its six-hour window. must-revalidate means
+//     a browser past that age re-asks instead of replaying a stale scrobble.
+//     s-maxage stays in this header for downstream shared caches. Cloudflare
+//     itself follows Cloudflare-CDN-Cache-Control when that header is present,
+//     so must-revalidate here does not forbid the edge from serving stale.
+//   • Cloudflare-CDN-Cache-Control → the edge only, and only on a real
+//     snapshot. max-age is the fresh window (s-maxage would disable stale
+//     serving). stale-while-revalidate and stale-if-error let the edge return
+//     the last good response instead of a 504.
+function toClient(response, kind, serveStale = false) {
   const browserTtlS = kind === 'now' ? NOW_BROWSER_TTL_S : RECENT_BROWSER_TTL_S;
-  return withCache(response, `public, max-age=${browserTtlS}, s-maxage=${EDGE_TTL_S}, must-revalidate`);
+  const wrapped = withCache(response, `public, max-age=${browserTtlS}, s-maxage=${EDGE_TTL_S}, must-revalidate`);
+  return serveStale ? withEdgeStale(wrapped, EDGE_TTL_S) : wrapped;
 }
 
 function toChartsClient(response) {
-  return withCache(response, `public, max-age=${CHARTS_BROWSER_TTL_S}, s-maxage=${CHARTS_EDGE_TTL_S}, must-revalidate`);
+  return withEdgeStale(
+    withCache(response, `public, max-age=${CHARTS_BROWSER_TTL_S}, s-maxage=${CHARTS_EDGE_TTL_S}, must-revalidate`),
+    CHARTS_EDGE_TTL_S,
+  );
+}
+
+function withEdgeStale(response, edgeTtlS) {
+  const headers = new Headers(response.headers);
+  headers.set(
+    'cloudflare-cdn-cache-control',
+    `public, max-age=${edgeTtlS}, stale-while-revalidate=${STALE_SERVE_S}, stale-if-error=${STALE_SERVE_S}`,
+  );
+  return new Response(response.body, { status: response.status, headers });
 }
 
 /**

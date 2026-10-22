@@ -55,11 +55,10 @@ new_sqlite_classes = ["ListeningPoller"]
 [triggers]
 crons = ["* * * * *"]
 
-# Workers Rate Limiting binding (GA Sep 2025). Belt-and-braces alongside the
-# SWR cache: blocks abusive single-IP floods before they touch KV or the edge
-# cache. Keyed on a hash of cf-connecting-ip plus the pathname inside the
-# Worker so /now, /recent, and /charts are budgeted independently, and a
-# missing IP fails closed. The raw address is not the binding key.
+# Workers Rate Limiting binding (GA Sep 2025). Blocks abusive single-IP floods
+# before they touch KV. Keyed on a hash of cf-connecting-ip plus the pathname
+# inside the Worker so /now, /recent, and /charts are budgeted independently,
+# and a missing IP fails closed. The raw address is not the binding key.
 #
 # Constraint: `simple.period` only accepts 10 or 60. A "100 / 10 min" window
 # isn't expressible here; for a wider window switch to a WAF rate-limiting
