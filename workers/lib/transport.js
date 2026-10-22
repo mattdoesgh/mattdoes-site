@@ -19,7 +19,6 @@ const API_CSP = "default-src 'none'; base-uri 'none'; form-action 'none'; frame-
 
 const API_PERMISSIONS = [
   'accelerometer=()',
-  'bluetooth=()',
   'browsing-topics=()',
   'camera=()',
   'clipboard-read=()',

@@ -124,6 +124,9 @@ test('beacon hosts are allowed and the rest of the policy stays strict', () => {
   const enforced = headerValues(routes, '/*', 'content-security-policy')[0];
   const reportOnly = headerValues(routes, '/*', 'content-security-policy-report-only')[0];
   assert.ok(!enforced.includes('report-uri'), 'the enforced CSP must not add a report endpoint');
+  assert.match(enforced, /upgrade-insecure-requests/);
+  assert.doesNotMatch(reportOnly, /upgrade-insecure-requests/,
+    'report-only upgrade-insecure-requests is ignored and logged as a console error');
   assert.match(reportOnly, /report-uri https:\/\/mattdoes\.online\/api\/csp-report$/);
   assert.ok(sources(enforced, 'script-src').includes("'self'"),
     `script-src 'self' must keep admitting ${EMAIL_DECODE}`);
