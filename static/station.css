@@ -148,9 +148,8 @@ body[data-polarity="flip"] .sign {
 }
 
 /* Stars are black fill with a pink stroke. Small type floors at 1.5px;
-   big type keeps 0.025em. On the pink field the stroke would disappear,
-   so those stars sit on a black chip. Home stars are already on black.
-   The wordmark stays the solid color it inherits. No transition. */
+   big type keeps 0.025em. No chip behind them. The wordmark stays the
+   solid color it inherits. No transition. */
 @supports (-webkit-text-stroke: 0.025em #f7c8d8) {
   .stars {
     color: #000000;
@@ -158,12 +157,6 @@ body[data-polarity="flip"] .sign {
     -webkit-text-stroke: 0.025em #f7c8d8;
     -webkit-text-stroke: max(0.025em, 1.5px) #f7c8d8;
     paint-order: stroke fill;
-  }
-
-  /* The shadow covers the stroke and does not change the line. */
-  body[data-polarity="flip"] .stars {
-    background-color: #000000;
-    box-shadow: 0 0 0 max(0.03em, 1px) #000000;
   }
 }
 
@@ -234,10 +227,12 @@ body[data-polarity="flip"] .sign {
 
 /* Trailing half rating: the left half of ★, clipped to half its own
    advance so the cut stays centered in whatever font draws the star.
-   0.5em covers browsers without calc-size. clip-path leaves the inline
-   baseline alone (overflow would drop it) and keeps the stroke on the
-   uncut sides. No transition: the line does not move. */
+   0.5em covers browsers without calc-size. The ::after is the same ★,
+   painted pink and clipped to a stroke-wide strip on the cut, so the
+   open edge closes with a straight outline. clip-path leaves the inline
+   baseline alone. No transition: the line does not move. */
 .stars .star-half {
+  position: relative;
   display: inline-block;
   width: 0.5em;
   width: calc-size(fit-content, size * 0.5);
@@ -245,6 +240,23 @@ body[data-polarity="flip"] .sign {
   line-height: 1;
   white-space: nowrap;
   clip-path: inset(-0.15em 0 -0.15em -0.15em);
+}
+
+.stars .star-half::after {
+  content: "★";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200%;
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+  color: #f7c8d8;
+  -webkit-text-fill-color: #f7c8d8;
+  -webkit-text-stroke: max(0.025em, 1.5px) #f7c8d8;
+  paint-order: stroke fill;
+  pointer-events: none;
+  clip-path: inset(-0.2em 50% -0.2em calc(50% - max(0.025em, 1.5px)));
 }
 
 .home-link a {
