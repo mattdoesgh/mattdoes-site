@@ -26,7 +26,7 @@ test('transport: json() emits the full CORS envelope', async () => {
   assert.equal(res.headers.get('referrer-policy'),              'strict-origin-when-cross-origin');
   assert.equal(res.headers.get('cross-origin-opener-policy'),   'same-origin');
   assert.equal(res.headers.get('cross-origin-resource-policy'), 'same-origin');
-  assert.match(res.headers.get('strict-transport-security'),    /max-age=31536000/);
+  assert.equal(res.headers.get('strict-transport-security'),    'max-age=31536000');
   assert.match(res.headers.get('permissions-policy'),           /geolocation=\(\)/);
   assert.equal(
     res.headers.get('content-security-policy'),

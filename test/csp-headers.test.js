@@ -16,6 +16,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { buildFixtureVault, readDist, REPO_ROOT } from './helpers/run-build.js';
 import { parseHeadersFile, headerValues } from './helpers/parse-headers.js';
+import { contentSecurityPolicy, CSP_REPORT_URI, directiveSources } from '../lib/csp-policy.js';
 
 const BEACON_SCRIPT = 'https://static.cloudflareinsights.com';
 const BEACON_CONNECT = 'https://cloudflareinsights.com';
@@ -106,10 +107,14 @@ test('beacon hosts are allowed and the rest of the policy stays strict', () => {
     const scriptSrc = sources(csp, 'script-src');
     const hashes = scriptSrc.filter((token) => token.startsWith("'sha256-"));
     const plain = scriptSrc.filter((token) => !token.startsWith("'sha256-"));
-    assert.deepEqual(plain, ["'self'", BEACON_SCRIPT, "'inline-speculation-rules'"],
-      `${header} script-src hosts drifted`);
+    assert.deepEqual(plain, directiveSources('script-src'),
+      `${header} script-src must match lib/csp-policy.js`);
+    assert.ok(plain.includes(BEACON_SCRIPT), `${header} must keep the analytics beacon script host`);
     assert.equal(hashes.length, 0, `${header} has no inline scripts, so script-src carries no hashes`);
-    assert.deepEqual(sources(csp, 'connect-src'), ["'self'", BEACON_CONNECT]);
+    assert.deepEqual(sources(csp, 'connect-src'), directiveSources('connect-src'));
+    assert.ok(sources(csp, 'connect-src').includes("'self'"),
+      `${header} connect-src 'self' covers same-origin /api/listening/* paths`);
+    assert.ok(sources(csp, 'connect-src').includes(BEACON_CONNECT));
     assert.match(sources(csp, 'default-src').join(' '), /^'self'$/);
     assert.equal(sources(csp, 'style-src').join(' '), "'self'");
     assert.equal(sources(csp, 'style-src-attr').join(' '), "'none'");
@@ -123,6 +128,8 @@ test('beacon hosts are allowed and the rest of the policy stays strict', () => {
 
   const enforced = headerValues(routes, '/*', 'content-security-policy')[0];
   const reportOnly = headerValues(routes, '/*', 'content-security-policy-report-only')[0];
+  assert.equal(enforced, contentSecurityPolicy());
+  assert.equal(reportOnly, contentSecurityPolicy({ reportUri: CSP_REPORT_URI }));
   assert.ok(!enforced.includes('report-uri'), 'the enforced CSP must not add a report endpoint');
   assert.match(enforced, /upgrade-insecure-requests/);
   assert.doesNotMatch(reportOnly, /upgrade-insecure-requests/,

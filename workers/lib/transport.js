@@ -7,12 +7,14 @@
 //
 // ⚠ Deploy coupling: this file is bundled into every Worker that imports it.
 // Editing it (or any other module a Worker bundles) means redeploying ALL
-// workers — `npm run deploy:workers` from the repo root does both.
+// workers. From the repo root, `npm run deploy:workers` deploys listening,
+// geo, csp-report, and rebuild with the wrangler pin in
+// workers/package-lock.json.
 
 export const ALLOWED_ORIGIN = 'https://mattdoes.online';
 
 // JSON API responses are not documents. This policy is intentionally tighter
-// than the HTML CSP in static/_headers, and it is the only CSP these Worker
+// than the HTML CSP in lib/csp-policy.js, and it is the only CSP these Worker
 // routes send: Workers-on-Routes replace the Pages response, so _headers is
 // not merged in. Do not add script sources here.
 const API_CSP = "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
@@ -53,7 +55,12 @@ export function securityHeaders() {
     'x-content-type-options':        'nosniff',
     'x-frame-options':               'DENY',
     'referrer-policy':               'strict-origin-when-cross-origin',
-    'strict-transport-security':     'max-age=31536000; includeSubDomains; preload',
+    // Host-wide, so this must match static/_headers: max-age only.
+    // includeSubDomains waits until every hostname is HTTPS, and preload
+    // is omitted because submitting it is effectively irreversible. A
+    // response from /api/listening/recent would otherwise set both for
+    // the whole site.
+    'strict-transport-security':     'max-age=31536000',
     'cross-origin-opener-policy':    'same-origin',
     'cross-origin-resource-policy':  'same-origin',
     'permissions-policy':            API_PERMISSIONS,
