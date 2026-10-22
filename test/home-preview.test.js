@@ -55,8 +55,9 @@ test('the home movie link has no underline and stars use the pink stroke', () =>
   assert.match(css, /\.preview a:focus-visible \{\s*outline:\s*3px solid var\(--focus\);\s*outline-offset:\s*3px;/);
   assert.doesNotMatch(css, /\.preview a[^{]*\{[^}]*padding/);
   const support = css.slice(css.indexOf('@supports (-webkit-text-stroke: 0.025em #f7c8d8)'));
-  assert.match(support, /\.mark,\s*\.stars\s*\{[^}]*-webkit-text-stroke:\s*0\.025em #f7c8d8;/);
+  assert.match(support, /\.mark,\s*\.stars\s*\{[^}]*-webkit-text-stroke:\s*max\(0\.025em,\s*1\.5px\) #f7c8d8;/);
   assert.match(support, /body\[data-polarity="flip"\] \.stars\s*\{[^}]*background-color:\s*#000000;/);
+  assert.match(support, /body\[data-polarity="flip"\] \.stars\s*\{[^}]*box-shadow:\s*0 0 0 max\(0\.03em,\s*1px\) #000000;/);
   assert.doesNotMatch(css, /\.stars[^{]*\{[^}]*transition/);
 });
 
