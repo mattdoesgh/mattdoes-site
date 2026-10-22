@@ -248,6 +248,23 @@ function watchPreview(watch) {
   return `<span class="preview">${name}${rating}</span>`;
 }
 
+const MARK = 'matt does';
+
+/**
+ * Outlines the wordmark and leaves the verb in the surrounding type.
+ * Titles and descriptions stay plain text; this is body markup only.
+ *
+ * @param {string} text
+ * @returns {string}
+ */
+function markedHeading(text) {
+  const value = String(text);
+  if (value === MARK || value.startsWith(`${MARK} `)) {
+    return `<span class="mark">${esc(MARK)}</span>${esc(value.slice(MARK.length))}`;
+  }
+  return esc(value);
+}
+
 /**
  * Names the published verbs. Two read as "a and b"; more use a serial comma.
  *
@@ -272,7 +289,7 @@ export function renderHome(ctx) {
     const prefix = heading.slice(0, heading.length - verb.label.length);
     const preview = verb.slug === 'watching' ? watchPreview(recent) : '';
     return `<li class="verb-row">
-          <a class="verb" href="${verbPath(verb.slug)}"><span class="verb-prefix"><span>${esc(prefix)}</span></span><span class="verb-label">${esc(verb.label)}</span></a>
+          <a class="verb" href="${verbPath(verb.slug)}"><span class="verb-prefix"><span class="mark">${esc(prefix)}</span></span><span class="verb-label">${esc(verb.label)}</span></a>
           ${preview}
         </li>`;
   }).join('\n        ');
@@ -286,7 +303,7 @@ export function renderHome(ctx) {
     showVerbNav: false,
     robots: '',
     main: `<nav aria-label="verbs">
-        <p class="verb-kicker" aria-hidden="true">${esc(kicker)}</p>
+        <p class="verb-kicker" aria-hidden="true"><span class="mark">${esc(kicker)}</span></p>
         <ol class="verbs">
         ${items}
         </ol>
@@ -368,7 +385,7 @@ export function renderWatch(ctx) {
     current: verb.slug,
     showVerbNav: true,
     robots: '',
-    main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
+    main: `<h1 class="sign"><a href="/">${markedHeading(heading)}</a></h1>
       ${feed}`,
   });
 }
@@ -480,7 +497,7 @@ export function renderListen(ctx) {
     current: verb.slug,
     showVerbNav: true,
     robots: '',
-    main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
+    main: `<h1 class="sign"><a href="/">${markedHeading(heading)}</a></h1>
       ${source}
       ${count}
       ${charts}
@@ -505,7 +522,7 @@ export function renderUnshared(ctx) {
     current: verb.slug,
     showVerbNav: true,
     robots: '',
-    main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
+    main: `<h1 class="sign"><a href="/">${markedHeading(heading)}</a></h1>
       <p class="lede">Fun is unshared</p>
       ${bandcampSlot(unsharedPlayer.bandcamp)}
       <ul class="outlinks">
