@@ -43,10 +43,32 @@ test('the home output includes the latest watch title and its rating stars', () 
   const preview = row.querySelector('.preview');
   assert.equal(preview.querySelector('a')?.textContent, 'Blue Heron');
   assert.equal(preview.querySelector('a')?.getAttribute('href'), 'https://letterboxd.com/mattdoes/film/blue-heron/');
-  assert.equal(preview.querySelector('.stars')?.textContent, '★★★★½');
-  assert.equal(preview.querySelector('.stars')?.getAttribute('aria-label'), '4.5 out of 5 stars');
-  assert.equal(preview.querySelector('.stars')?.getAttribute('role'), 'img');
+  const stars = preview.querySelector('.stars');
+  assert.equal(stars?.childNodes[0]?.nodeValue, '★★★★');
+  assert.equal(stars?.querySelector('.star-half')?.textContent, '★');
+  assert.equal(stars?.textContent, '★★★★★');
+  assert.equal(stars?.textContent.includes('½'), false);
+  assert.equal(stars?.innerHTML.includes('\u2BE8'), false);
+  assert.equal(stars?.getAttribute('style'), null);
+  assert.equal(stars?.getAttribute('aria-label'), '4.5 out of 5 stars');
+  assert.equal(stars?.getAttribute('role'), 'img');
   assert.equal(html.includes('Older'), false);
+});
+
+test('a whole rating is only full stars', () => {
+  const html = home([
+    {
+      title: 'Whole',
+      watchedDate: '2026-04-04',
+      stars: '★★★',
+      rating: 3,
+      link: 'https://letterboxd.com/mattdoes/film/whole/',
+    },
+  ]);
+  const stars = new JSDOM(html).window.document.querySelector('.stars');
+  assert.equal(stars?.textContent, '★★★');
+  assert.equal(stars?.querySelector('.star-half'), null);
+  assert.equal(stars?.getAttribute('aria-label'), '3 out of 5 stars');
 });
 
 test('the home movie link has no underline and stars use the pink stroke', () => {
@@ -55,10 +77,15 @@ test('the home movie link has no underline and stars use the pink stroke', () =>
   assert.match(css, /\.preview a:focus-visible \{\s*outline:\s*3px solid var\(--focus\);\s*outline-offset:\s*3px;/);
   assert.doesNotMatch(css, /\.preview a[^{]*\{[^}]*padding/);
   const support = css.slice(css.indexOf('@supports (-webkit-text-stroke: 0.025em #f7c8d8)'));
-  assert.match(support, /\.mark,\s*\.stars\s*\{[^}]*-webkit-text-stroke:\s*max\(0\.025em,\s*1\.5px\) #f7c8d8;/);
+  assert.match(support, /\.stars\s*\{[^}]*-webkit-text-stroke:\s*max\(0\.025em,\s*1\.5px\) #f7c8d8;/);
+  assert.doesNotMatch(support, /\.mark\b/);
   assert.match(support, /body\[data-polarity="flip"\] \.stars\s*\{[^}]*background-color:\s*#000000;/);
   assert.match(support, /body\[data-polarity="flip"\] \.stars\s*\{[^}]*box-shadow:\s*0 0 0 max\(0\.03em,\s*1px\) #000000;/);
+  assert.match(css, /\.stars \.star-half\s*\{[^}]*width:\s*0\.5em;/);
+  assert.match(css, /\.stars \.star-half\s*\{[^}]*width:\s*calc-size\(fit-content,\s*size \* 0\.5\);/);
+  assert.match(css, /\.stars \.star-half\s*\{[^}]*clip-path:\s*inset\(-0\.15em 0 -0\.15em -0\.15em\);/);
   assert.doesNotMatch(css, /\.stars[^{]*\{[^}]*transition/);
+  assert.doesNotMatch(css, /\.star-half[^{]*\{[^}]*transition/);
 });
 
 test('an unrated latest watch is just the title', () => {

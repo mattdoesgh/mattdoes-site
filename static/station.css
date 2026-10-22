@@ -147,14 +147,11 @@ body[data-polarity="flip"] .sign {
   color: #000000;
 }
 
-/* "matt does" is black fill with a pink stroke that scales with the type.
-   Small type floors at 1.5px so the outline stays visible. Big type keeps
-   0.025em. Without the stroke the mark keeps the solid color it inherits.
-   A pink stroke on the pink field disappears, so those marks sit on black.
-   The black is only painted when the stroke exists, or the fallback would
-   be black on black. No transition: the hover box does not move. */
+/* Stars are black fill with a pink stroke. Small type floors at 1.5px;
+   big type keeps 0.025em. On the pink field the stroke would disappear,
+   so those stars sit on a black chip. Home stars are already on black.
+   The wordmark stays the solid color it inherits. No transition. */
 @supports (-webkit-text-stroke: 0.025em #f7c8d8) {
-  .mark,
   .stars {
     color: #000000;
     -webkit-text-fill-color: #000000;
@@ -163,30 +160,10 @@ body[data-polarity="flip"] .sign {
     paint-order: stroke fill;
   }
 
-  body[data-polarity="flip"] .mark {
-    display: inline-block;
-    background-color: #000000;
-    line-height: inherit;
-    padding: 0.08em 0.03em;
-    margin: -0.08em -0.03em;
-    vertical-align: baseline;
-  }
-
-  /* Stars on the pink field. The shadow covers the stroke and does not
-     change the line. Home stars sit on black, so they need no chip. */
+  /* The shadow covers the stroke and does not change the line. */
   body[data-polarity="flip"] .stars {
     background-color: #000000;
     box-shadow: 0 0 0 max(0.03em, 1px) #000000;
-  }
-
-  .verb:hover .verb-prefix,
-  .verb:focus-visible .verb-prefix,
-  .verb:active .verb-prefix {
-    background-color: #000000;
-  }
-
-  .verb-prefix > .mark {
-    padding-left: 0.012em;
   }
 }
 
@@ -253,6 +230,21 @@ body[data-polarity="flip"] .sign {
 .stars {
   font-family: var(--body);
   letter-spacing: 0.06em;
+}
+
+/* Trailing half rating: the left half of ★, clipped to half its own
+   advance so the cut stays centered in whatever font draws the star.
+   0.5em covers browsers without calc-size. clip-path leaves the inline
+   baseline alone (overflow would drop it) and keeps the stroke on the
+   uncut sides. No transition: the line does not move. */
+.stars .star-half {
+  display: inline-block;
+  width: 0.5em;
+  width: calc-size(fit-content, size * 0.5);
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+  clip-path: inset(-0.15em 0 -0.15em -0.15em);
 }
 
 .home-link a {
