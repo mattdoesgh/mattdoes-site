@@ -52,7 +52,7 @@
 //     this client distinctly.
 
 import {
-  json, errorJson, withCache, corsPreflight, kvGet, kvPut, getClientIp,
+  json, errorJson, withCache, corsPreflight, kvGet, kvPut, getClientIp, sha256Hex,
 } from '../../lib/transport.js';
 import { decodeTrack, decodeTracks, lastfmError, recentTracksUrl } from '../../../lib/lastfm.js';
 
@@ -77,10 +77,11 @@ const USER_AGENT   = 'mattdoes-site/1.0 (+https://mattdoes.online)';
 /**
  * Per-IP rate limit gate for the read path. Uses the native Workers Rate
  * Limiting binding (GA Sep 2025); fails closed when the binding isn't
- * configured or healthy so a partially-deployed Worker cannot bypass abuse
- * controls. The simple binding only supports period=10 or period=60
- * (seconds), so the limit configured in wrangler.toml is per-minute; wider
- * windows would need the WAF rate-limiting rules product.
+ * configured or healthy, or when Cloudflare did not supply a client IP, so
+ * a partially-deployed Worker cannot bypass abuse controls. The simple
+ * binding only supports period=10 or period=60 (seconds), so the limit
+ * configured in wrangler.toml is per-minute; wider windows would need the
+ * WAF rate-limiting rules product.
  *
  * @param {Request} request
  * @param {Env} env
@@ -91,9 +92,13 @@ async function checkRateLimit(request, env) {
   if (!env.LISTEN_RL || typeof env.LISTEN_RL.limit !== 'function') {
     return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
   }
-  const ip = getClientIp(request) || 'unknown';
-  // Key on IP + path so /now and /recent are budgeted independently.
-  const key = `${ip}:${new URL(request.url).pathname}`;
+  // No client IP means the binding cannot be keyed. Fail closed rather than
+  // sharing one 'unknown' bucket that a caller could hide in.
+  const ip = getClientIp(request);
+  if (!ip) return errorJson({ error: 'service_unavailable' }, 503, { retryAfterS: 60 });
+  // Hash the address so the rate-limit key is not the raw IP. Path stays in
+  // the key so /now and /recent are budgeted independently.
+  const key = `${await sha256Hex(ip)}:${new URL(request.url).pathname}`;
   try {
     const { success } = await env.LISTEN_RL.limit({ key });
     if (success) return null;
@@ -122,9 +127,11 @@ export default {
     if (request.method !== 'GET')     return json({ error: 'method_not_allowed' }, 405);
 
     const url = new URL(request.url);
+    // Exact paths only. endsWith('/now') would also admit a route that
+    // merely finished with that suffix if the Worker route ever widened.
     let kind;
-    if      (url.pathname.endsWith('/now'))    kind = 'now';
-    else if (url.pathname.endsWith('/recent')) kind = 'recent';
+    if      (url.pathname === '/api/listening/now')    kind = 'now';
+    else if (url.pathname === '/api/listening/recent') kind = 'recent';
     else return json({ error: 'not_found' }, 404);
 
     // Per-IP rate limit. Runs before the edge-cache lookup so a flood of

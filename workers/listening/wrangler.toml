@@ -55,8 +55,9 @@ crons = ["* * * * *"]
 
 # Workers Rate Limiting binding (GA Sep 2025). Belt-and-braces alongside the
 # SWR cache: blocks abusive single-IP floods before they touch KV or the edge
-# cache. Keyed on `${cf-connecting-ip}:${pathname}` inside the Worker so /now
-# and /recent are budgeted independently.
+# cache. Keyed on a hash of cf-connecting-ip plus the pathname inside the
+# Worker so /now and /recent are budgeted independently, and a missing IP
+# fails closed. The raw address is not the binding key.
 #
 # Constraint: `simple.period` only accepts 10 or 60. A "100 / 10 min" window
 # isn't expressible here; for a wider window switch to a WAF rate-limiting
@@ -75,3 +76,12 @@ namespace_id = "2001"
 
 # No [vars] block — LASTFM_USERNAME and LASTFM_API_KEY are set as secrets via
 # `wrangler secret put` so the username stays out of the public repo.
+
+# The poller's Last.fm URL carries the API key in the query string. Workers
+# traces record url.full and url.query for outbound fetch, so traces stay
+# off. redact_query_string strips that query if logs are turned on later.
+[observability]
+redact_query_string = true
+
+  [observability.traces]
+  enabled = false

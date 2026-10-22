@@ -112,6 +112,10 @@ test('beacon hosts are allowed and the rest of the policy stays strict', () => {
     assert.deepEqual(sources(csp, 'connect-src'), ["'self'", BEACON_CONNECT]);
     assert.match(sources(csp, 'default-src').join(' '), /^'self'$/);
     assert.equal(sources(csp, 'style-src').join(' '), "'self'");
+    assert.equal(sources(csp, 'style-src-attr').join(' '), "'none'");
+    assert.equal(sources(csp, 'script-src-attr').join(' '), "'none'");
+    assert.equal(sources(csp, 'worker-src').join(' '), "'none'");
+    assert.equal(sources(csp, 'frame-ancestors').join(' '), "'none'");
     assert.equal(sources(csp, 'object-src').join(' '), "'none'");
     assert.ok(!csp.includes("'unsafe-inline'"), `${header} must not allow unsafe-inline`);
     assert.ok(!csp.includes("'unsafe-eval'"), `${header} must not allow unsafe-eval`);
@@ -159,8 +163,13 @@ test('no Worker route or Pages function intercepts /cdn-cgi', () => {
   for (const name of fs.readdirSync(sharedLib)) {
     if (!name.endsWith('.js')) continue;
     const src = fs.readFileSync(path.join(sharedLib, name), 'utf8');
+    if (name === 'transport.js') {
+      assert.match(src, /default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'/);
+      assert.doesNotMatch(src, /unsafe-inline|unsafe-eval|static\.cloudflareinsights/);
+      continue;
+    }
     assert.doesNotMatch(src, /['"]content-security-policy/i,
-      `workers/lib/${name} must not set a second CSP header`);
+      `workers/lib/${name} must not set a CSP header`);
   }
 
   for (const rel of ['functions', '_worker.js', 'static/_worker.js', 'public/_worker.js']) {

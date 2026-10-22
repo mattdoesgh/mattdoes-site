@@ -149,6 +149,51 @@ test('csp-report: rate limit rejects before the body is read and nothing is stor
   assertSecurityHeaders(res);
 });
 
+test('csp-report: preflight allows POST and does not reflect a foreign Origin', async () => {
+  const res = await cspWorker.fetch(workerRequest(REPORT_URL, {
+    method: 'OPTIONS',
+    headers: { origin: 'https://evil.example' },
+  }), { CSP_RL: allowRl() }, makeCtx());
+  assert.equal(res.status, 204);
+  assert.equal(res.headers.get('access-control-allow-origin'), 'https://mattdoes.online');
+  assert.equal(res.headers.get('access-control-allow-methods'), 'POST, OPTIONS');
+  assert.equal(res.headers.get('x-frame-options'), 'DENY');
+});
+
+test('csp-report: stores a redacted report and rejects non-JSON', async () => {
+  const kv = new KVStub();
+  const ctx = makeCtx();
+  const leaked = JSON.stringify({
+    'csp-report': {
+      'document-uri': 'https://mattdoes.online/?api_key=supersecretvalue',
+      'blocked-uri': 'https://example.test/path?token=anothersecret',
+    },
+  });
+  const res = await cspWorker.fetch(
+    reportRequest(leaked),
+    { CSP_RL: allowRl(), CSP_REPORTS: kv },
+    ctx,
+  );
+  assert.equal(res.status, 204);
+  assert.equal(await res.text(), '');
+  await ctx.settle();
+  const stored = [...kv.store.values()][0].value;
+  assert.equal(stored.includes('supersecretvalue'), false);
+  assert.equal(stored.includes('anothersecret'), false);
+  assert.match(stored, /api_key=redacted/);
+  assert.match(stored, /token=redacted/);
+
+  const bad = new KVStub();
+  const badRes = await cspWorker.fetch(
+    reportRequest('not-json'),
+    { CSP_RL: allowRl(), CSP_REPORTS: bad },
+    makeCtx(),
+  );
+  assert.equal(badRes.status, 400);
+  assert.deepEqual(await badRes.json(), { error: 'bad_request' });
+  assert.equal(bad.store.size, 0);
+});
+
 test('csp-report: a missing client IP fails closed before the body is read', async () => {
   const req = workerRequest(REPORT_URL, {
     method: 'POST',

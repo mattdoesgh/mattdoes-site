@@ -86,7 +86,11 @@ async function read(url, env) {
   try {
     const ctx = makeCtx();
     const fullEnv = { LISTEN_RL: { limit: async () => ({ success: true }) }, ...env };
-    const res = await listeningWorker.fetch(workerRequest(url), fullEnv, ctx);
+    const res = await listeningWorker.fetch(
+      workerRequest(url, { headers: { 'cf-connecting-ip': '203.0.113.9' } }),
+      fullEnv,
+      ctx,
+    );
     await ctx.settle();
     const body = await res.clone().json();
     return { status: res.status, body, upstreamCalls: fetchStub.calls.length };
@@ -369,6 +373,71 @@ test('reader: an over-limit caller gets a 429 with the full CORS envelope', asyn
     assert.equal(res.headers.get('access-control-allow-headers'), 'content-type');
     assert.equal(res.headers.get('vary'),                         null);
   } finally { caches.restore(); fetchStub.restore(); }
+});
+
+test('reader: a missing client IP fails closed before Last.fm or KV is treated as a hit', async () => {
+  const kv = new KVStub();
+  await seed(kv, 'recent:u', { playcount: 42, tracks: [{ track: 'x' }] });
+  const caches = installCaches();
+  const fetchStub = installFetch(() => jsonResponse({}));
+  try {
+    const env = {
+      LASTFM_API_KEY: 'k', LASTFM_USERNAME: 'u', LASTFM_CACHE: kv,
+      LISTEN_RL: { limit: async () => ({ success: true }) },
+    };
+    const res = await listeningWorker.fetch(workerRequest(RECENT), env, makeCtx());
+    assert.equal(res.status, 503);
+    assert.deepEqual(await res.json(), { error: 'service_unavailable' });
+    assert.equal(fetchStub.calls.length, 0);
+  } finally { caches.restore(); fetchStub.restore(); }
+});
+
+test('reader: only the exact /now and /recent paths are served', async () => {
+  const env = { LASTFM_API_KEY: 'k', LASTFM_USERNAME: 'u', LASTFM_CACHE: new KVStub() };
+  const extra = await read('https://listening.mattdoes.online/api/listening/now/extra', env);
+  assert.equal(extra.status, 404);
+  assert.deepEqual(extra.body, { error: 'not_found' });
+  assert.equal(extra.upstreamCalls, 0);
+  const suffix = await read('https://listening.mattdoes.online/api/not-listening/now', env);
+  assert.equal(suffix.status, 404);
+});
+
+test('reader: a foreign Origin is not reflected', async () => {
+  const kv = new KVStub();
+  await seed(kv, 'recent:u', { playcount: 1, tracks: [] });
+  const caches = installCaches();
+  const fetchStub = installFetch(() => jsonResponse({}));
+  try {
+    const env = {
+      LASTFM_API_KEY: 'k', LASTFM_USERNAME: 'u', LASTFM_CACHE: kv,
+      LISTEN_RL: { limit: async () => ({ success: true }) },
+    };
+    const res = await listeningWorker.fetch(workerRequest(RECENT, {
+      headers: { 'cf-connecting-ip': '203.0.113.9', origin: 'https://evil.example' },
+    }), env, makeCtx());
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get('access-control-allow-origin'), 'https://mattdoes.online');
+    assert.equal(fetchStub.calls.length, 0);
+  } finally { caches.restore(); fetchStub.restore(); }
+});
+
+test('poller: an upstream failure does not log the API key', async () => {
+  const errors = [];
+  const logs = [];
+  const originalError = console.error;
+  const originalLog = console.log;
+  console.error = (...args) => { errors.push(args.map(String).join(' ')); };
+  console.log = (...args) => { logs.push(args.map(String).join(' ')); };
+  const key = 'supersecretlastfmkey123456';
+  try {
+    const env = { LASTFM_API_KEY: key, LASTFM_USERNAME: 'u', LASTFM_CACHE: new KVStub() };
+    await runPoll(env, () => { throw new Error(`boom ${key}`); });
+  } finally {
+    console.error = originalError;
+    console.log = originalLog;
+  }
+  const logged = `${errors.join('\n')}\n${logs.join('\n')}`;
+  assert.equal(logged.includes(key), false);
 });
 
 test('reader: a non-GET request is rejected', async () => {

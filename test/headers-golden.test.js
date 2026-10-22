@@ -29,6 +29,10 @@ test('global security headers include CSP, HSTS, and framing controls', () => {
     "default-src 'self'",
     "script-src 'self' https://static.cloudflareinsights.com 'inline-speculation-rules'",
     "connect-src 'self' https://cloudflareinsights.com",
+    "script-src-attr 'none'",
+    "worker-src 'none'",
+    "style-src-attr 'none'",
+    "frame-ancestors 'none'",
     "frame-src https://embed.music.apple.com",
     "object-src 'none'",
     'upgrade-insecure-requests',
@@ -43,7 +47,15 @@ test('global security headers include CSP, HSTS, and framing controls', () => {
   assert.match(hsts, /includeSubDomains/, 'HSTS must include subdomains');
 
   assert.equal(headerValues(routes, '/*', 'x-content-type-options')[0], 'nosniff');
-  assert.equal(headerValues(routes, '/*', 'x-frame-options')[0], 'SAMEORIGIN');
+  assert.equal(headerValues(routes, '/*', 'x-frame-options')[0], 'DENY');
+  assert.equal(headerValues(routes, '/*', 'cross-origin-opener-policy')[0], 'same-origin');
+  assert.equal(headerValues(routes, '/*', 'cross-origin-resource-policy')[0], 'same-origin');
+  assert.equal(headerValues(routes, '/*', 'origin-agent-cluster')[0], '?1');
+  assert.equal(headerValues(routes, '/*', 'cross-origin-embedder-policy').length, 0,
+    'COEP require-corp would block media.mattdoes.online posters and the analytics beacon');
+  const permissions = headerValues(routes, '/*', 'permissions-policy')[0];
+  assert.match(permissions, /geolocation=\(\)/);
+  assert.doesNotMatch(permissions, /geolocation=\(self\)/);
   assert.match(
     headerValues(routes, '/*', 'referrer-policy')[0],
     /strict-origin-when-cross-origin/,

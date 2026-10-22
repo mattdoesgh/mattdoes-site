@@ -22,7 +22,16 @@ test('transport: json() emits the full CORS envelope', async () => {
   assert.equal(res.headers.get('access-control-allow-headers'), 'content-type');
   assert.equal(res.headers.get('vary'),                         null);
   assert.equal(res.headers.get('x-content-type-options'),       'nosniff');
+  assert.equal(res.headers.get('x-frame-options'),              'DENY');
   assert.equal(res.headers.get('referrer-policy'),              'strict-origin-when-cross-origin');
+  assert.equal(res.headers.get('cross-origin-opener-policy'),   'same-origin');
+  assert.equal(res.headers.get('cross-origin-resource-policy'), 'same-origin');
+  assert.match(res.headers.get('strict-transport-security'),    /max-age=31536000/);
+  assert.match(res.headers.get('permissions-policy'),           /geolocation=\(\)/);
+  assert.equal(
+    res.headers.get('content-security-policy'),
+    "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+  );
   assert.deepEqual(await res.json(), { a: 1 });
 });
 
