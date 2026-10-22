@@ -116,7 +116,8 @@ test('the wordmark is solid type and the stars keep the pink stroke', () => {
   assert.match(support, /-webkit-text-stroke:\s*0\.025em #f7c8d8;/);
   assert.match(support, /-webkit-text-stroke:\s*max\(0\.025em,\s*1\.5px\) #f7c8d8;/);
   assert.match(support, /paint-order:\s*stroke fill;/);
-  assert.match(support, /body\[data-polarity="flip"\] \.stars\s*\{[^}]*background-color:\s*#000000;/);
+  assert.doesNotMatch(css, /body\[data-polarity="flip"\] \.stars\s*\{[^}]*background/);
+  assert.doesNotMatch(css, /\.stars[^{]*\{[^}]*box-shadow/);
   assert.doesNotMatch(css, /\.verb:hover \.verb-prefix,\s*\.verb:focus-visible \.verb-prefix,\s*\.verb:active \.verb-prefix\s*\{[^}]*background-color:\s*#000000;/);
   assert.doesNotMatch(css, /\.stars[^{]*\{[^}]*transition/);
   const home = new JSDOM(readDist(distDir, 'index.html')).window.document;
@@ -143,6 +144,8 @@ test('the wordmark is solid type and the stars keep the pink stroke', () => {
   assert.match(built, /-webkit-text-stroke:max\(\.025em,\s*1\.5px\) #f7c8d8/);
   assert.match(built, /paint-order:stroke fill/);
   assert.match(built, /calc-size\(fit-content,size \* \.5\)|calc-size\(fit-content, size \* \.5\)/);
+  assert.match(built, /content:"★"/);
+  assert.doesNotMatch(built, /box-shadow:0 0 0/);
   assert.doesNotMatch(built, /\.mark[\s,{]/);
 });
 
