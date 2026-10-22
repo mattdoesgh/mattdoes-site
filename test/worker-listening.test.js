@@ -4,8 +4,10 @@
 //   • PRODUCER — the ListeningPoller DO alarm: the ONLY Last.fm caller. One
 //     upstream call must write BOTH KV payloads from one decode; failures must
 //     leave KV intact and keep the alarm chain alive.
-//   • READER — the fetch() handler: a pure KV reader that must NEVER call
-//     Last.fm (assert upstreamCalls === 0 everywhere on this path).
+//   • READER — /now and /recent: a KV reader that must NEVER call Last.fm
+//     (assert upstreamCalls === 0 on those routes).
+//   • CHARTS — GET /api/listening/charts may call Last.fm on a cache miss.
+//     The poller alarm must still make exactly one getrecenttracks call.
 //
 // Contract C7 (documented in workers/listening/src/index.js): every error /
 // degraded / fallback payload carries a truthy `reason`; no genuine-success
@@ -473,4 +475,244 @@ test('scheduled: no-ops when the poller binding is absent', async () => {
   const ctx = makeCtx();
   await listeningWorker.scheduled({ cron: '* * * * *' }, {}, ctx);
   await ctx.settle(); // must not throw
+});
+
+// ── charts: cached for hours, fixed periods, no request input ───────────
+const CHARTS = 'https://listening.mattdoes.online/api/listening/charts';
+const CHART_USER = 'djverism-secret';
+const PERIODS = ['overall', '12month', '3month', '1month'];
+
+function chartEnv(kv = new KVStub()) {
+  return {
+    LASTFM_API_KEY: 'secret-key',
+    LASTFM_USERNAME: CHART_USER,
+    LASTFM_CACHE: kv,
+    LISTEN_RL: { limit: async () => ({ success: true }) },
+  };
+}
+
+function lastfmChart(url) {
+  const period = new URL(url).searchParams.get('period');
+  if (url.includes('method=user.gettopartists')) {
+    return jsonResponse({
+      topartists: {
+        artist: {
+          name: `Artist ${period}`,
+          playcount: '4',
+          url: `https://www.last.fm/user/${CHART_USER}`,
+        },
+        '@attr': { user: CHART_USER },
+      },
+    });
+  }
+  if (url.includes('method=user.gettopalbums')) {
+    return jsonResponse({
+      topalbums: {
+        album: [{
+          name: `Album ${period}`,
+          playcount: '2',
+          artist: { name: 'Album Artist' },
+          url: 'https://www.last.fm/music/Album+Artist/Album',
+        }],
+      },
+    });
+  }
+  return jsonResponse({ error: 3, message: `unknown method for ${CHART_USER}` }, 200);
+}
+
+const API_CSP = "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+
+function assertApiEnvelope(headers) {
+  assert.equal(headers.get('access-control-allow-origin'), 'https://mattdoes.online');
+  assert.equal(headers.get('access-control-allow-methods'), 'GET, OPTIONS');
+  assert.equal(headers.get('strict-transport-security'), 'max-age=31536000');
+  assert.equal(headers.get('content-security-policy'), API_CSP);
+  assert.equal(headers.get('x-content-type-options'), 'nosniff');
+}
+
+async function fetchCharts(url, env, fetchHandler, headers = {}) {
+  const caches = installCaches();
+  const fetchStub = installFetch(fetchHandler);
+  try {
+    const ctx = makeCtx();
+    const res = await listeningWorker.fetch(workerRequest(url, {
+      headers: { 'cf-connecting-ip': '203.0.113.9', origin: 'https://evil.example', ...headers },
+    }), env, ctx);
+    await ctx.settle();
+    const body = await res.clone().json();
+    return { status: res.status, body, headers: res.headers, calls: fetchStub.calls };
+  } finally {
+    caches.restore();
+    fetchStub.restore();
+  }
+}
+
+function seedCharts(kv, fetchedAt, periods) {
+  return kv.put('charts', JSON.stringify({ data: { periods }, fetchedAt }));
+}
+
+test('charts: a cold miss fetches the four periods and hides the username', async () => {
+  const kv = new KVStub();
+  const { status, body, headers, calls } = await fetchCharts(CHARTS, chartEnv(kv), lastfmChart);
+
+  assert.equal(status, 200);
+  assert.equal(calls.length, 8, 'four periods, artists and albums');
+  assert.ok(calls.every((url) => url.includes(`user=${encodeURIComponent(CHART_USER)}`)));
+  assert.ok(calls.every((url) => url.includes('api_key=secret-key')));
+  assert.equal(calls.filter((url) => url.includes('gettopartists')).length, 4);
+  assert.equal(calls.filter((url) => url.includes('gettopalbums')).length, 4);
+  assert.equal('reason' in body, false);
+  assert.equal(body.periods.overall.artists[0].name, 'Artist overall');
+  assert.equal(body.periods.overall.artists[0].url, '', 'profile urls are dropped');
+  assert.equal(body.periods['1month'].albums[0].name, 'Album 1month');
+  for (const id of PERIODS) assert.ok(body.periods[id]);
+  assert.equal(JSON.stringify(body).includes(CHART_USER), false);
+  assert.equal(JSON.stringify(body).includes('secret-key'), false);
+  assertApiEnvelope(headers);
+  assert.match(headers.get('cache-control'), /s-maxage=21600/);
+
+  const stored = await kv.get('charts', { type: 'json' });
+  assert.equal(stored.data.periods.overall.artists[0].name, 'Artist overall');
+  assert.equal(JSON.stringify(stored).includes(CHART_USER), false);
+
+  const again = await fetchCharts(CHARTS, chartEnv(kv), () => {
+    throw new Error('fresh charts must not call Last.fm');
+  });
+  assert.equal(again.calls.length, 0);
+  assert.equal(again.body.periods.overall.artists[0].name, 'Artist overall');
+});
+
+test('charts: a query string is a 404 and is not echoed', async () => {
+  const probe = 'user=djverism-secret&period=overall';
+  const { status, body, headers, calls } = await fetchCharts(
+    `${CHARTS}?${probe}`, chartEnv(), () => { throw new Error('query must not reach Last.fm'); });
+  assert.equal(status, 404);
+  assert.deepEqual(body, { error: 'not_found' });
+  assert.equal(JSON.stringify(body).includes(probe), false);
+  assert.equal(JSON.stringify(body).includes(CHART_USER), false);
+  assertApiEnvelope(headers);
+  assert.equal(headers.get('cache-control'), 'no-store');
+  assert.equal(calls.length, 0);
+});
+
+test('charts: missing credentials hide the charts and do not call Last.fm', async () => {
+  const { status, body, headers, calls } = await fetchCharts(
+    CHARTS, { LISTEN_RL: { limit: async () => ({ success: true }) }, LASTFM_CACHE: new KVStub() },
+    () => { throw new Error('missing creds must not call Last.fm'); });
+  assert.equal(status, 200);
+  assert.equal(body.reason, 'unavailable');
+  assert.deepEqual(body.periods, {});
+  assertApiEnvelope(headers);
+  assert.equal(headers.get('cache-control'), 'no-store');
+  assert.equal(calls.length, 0);
+});
+
+test('charts: without KV the worker fails closed', async () => {
+  const { status, body, calls } = await fetchCharts(
+    CHARTS,
+    { LASTFM_API_KEY: 'k', LASTFM_USERNAME: CHART_USER, LISTEN_RL: { limit: async () => ({ success: true }) } },
+    () => jsonResponse({}));
+  assert.equal(status, 503);
+  assert.deepEqual(body, { error: 'service_unavailable' });
+  assert.equal(calls.length, 0);
+});
+
+test('charts: a total Last.fm failure is not cached and carries a reason', async () => {
+  const kv = new KVStub();
+  const { status, body, calls } = await fetchCharts(
+    CHARTS, chartEnv(kv), () => new Response('no', { status: 500 }));
+  assert.equal(status, 200);
+  assert.equal(body.reason, 'unavailable');
+  assert.deepEqual(body.periods, {});
+  assert.equal(calls.length, 8);
+  assert.equal(await kv.get('charts'), null);
+  assert.equal(JSON.stringify(body).includes(CHART_USER), false);
+});
+
+test('charts: a failed refresh keeps the previous payload', async () => {
+  const kv = new KVStub();
+  const staleAt = Date.now() - (7 * 60 * 60 * 1000);
+  const periods = {
+    overall: { artists: [{ name: 'Kept', playcount: 3, url: '' }], albums: [] },
+    '12month': { artists: [], albums: [] },
+    '3month': { artists: [], albums: [] },
+    '1month': { artists: [], albums: [] },
+  };
+  await seedCharts(kv, staleAt, periods);
+  const { status, body, calls } = await fetchCharts(
+    CHARTS, chartEnv(kv), () => new Response('no', { status: 500 }));
+  assert.equal(status, 200);
+  assert.equal('reason' in body, false);
+  assert.equal(body.periods.overall.artists[0].name, 'Kept');
+  assert.equal(calls.length, 8);
+  const stored = await kv.get('charts', { type: 'json' });
+  assert.equal(stored.fetchedAt, staleAt, 'a failed refresh must not overwrite the snapshot');
+});
+
+test('charts: a held lock does not start another Last.fm round', async () => {
+  const kv = new KVStub();
+  await kv.put('charts:lock', '1', { expirationTtl: 60 });
+  const { body, calls } = await fetchCharts(
+    CHARTS, chartEnv(kv), () => { throw new Error('lock must hold the round'); });
+  assert.equal(body.reason, 'warming');
+  assert.deepEqual(body.periods, {});
+  assert.equal(calls.length, 0);
+});
+
+test('charts: an over-limit caller gets a 429 before Last.fm', async () => {
+  const env = chartEnv();
+  env.LISTEN_RL = { limit: async () => ({ success: false }) };
+  const { status, body, headers, calls } = await fetchCharts(
+    CHARTS, env, () => { throw new Error('rate limit must win'); });
+  assert.equal(status, 429);
+  assert.deepEqual(body, { error: 'rate_limited' });
+  assertApiEnvelope(headers);
+  assert.equal(headers.get('cache-control'), 'no-store');
+  assert.equal(calls.length, 0);
+});
+
+test('charts: a missing client IP fails closed', async () => {
+  const caches = installCaches();
+  const fetchStub = installFetch(() => jsonResponse({}));
+  try {
+    const res = await listeningWorker.fetch(workerRequest(CHARTS), chartEnv(), makeCtx());
+    assert.equal(res.status, 503);
+    assert.deepEqual(await res.json(), { error: 'service_unavailable' });
+    assert.equal(fetchStub.calls.length, 0);
+  } finally { caches.restore(); fetchStub.restore(); }
+});
+
+test('charts: a trailing slash is not a chart route', async () => {
+  const { status, body, calls } = await fetchCharts(`${CHARTS}/`, chartEnv(), () => jsonResponse({}));
+  assert.equal(status, 404);
+  assert.deepEqual(body, { error: 'not_found' });
+  assert.equal(calls.length, 0);
+});
+
+test('charts: a non-GET request is rejected', async () => {
+  const caches = installCaches();
+  const fetchStub = installFetch(() => jsonResponse({}));
+  try {
+    const res = await listeningWorker.fetch(
+      workerRequest(CHARTS, { method: 'POST', headers: { origin: 'https://evil.example' } }), chartEnv(), makeCtx());
+    assert.equal(res.status, 405);
+    assertApiEnvelope(res.headers);
+    assert.equal(fetchStub.calls.length, 0);
+  } finally { caches.restore(); fetchStub.restore(); }
+});
+
+test('poller: the alarm calls getrecenttracks and not the chart methods', async () => {
+  const env = { LASTFM_API_KEY: 'k', LASTFM_USERNAME: CHART_USER, LASTFM_CACHE: new KVStub() };
+  const fetchStub = installFetch((url) => {
+    assert.match(url, /method=user\.getrecenttracks/);
+    assert.doesNotMatch(url, /gettop/);
+    assert.match(url, new RegExp(`user=${encodeURIComponent(CHART_USER)}`));
+    return jsonResponse(lastfmBody(1, 1));
+  });
+  try {
+    await new ListeningPoller(new DurableStateStub(), env).alarm();
+    assert.equal(fetchStub.calls.length, 1);
+  } finally {
+    fetchStub.restore();
+  }
 });

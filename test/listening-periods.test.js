@@ -1,11 +1,11 @@
 // /listening/ period charts. Baked from the Last.fm cache. A missing chart
-// leaves the recent tracks alone. The listening worker is not a chart client.
+// leaves the recent tracks alone. The poller alarm does not fetch charts.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
+import { ListeningPoller } from '../workers/listening/src/index.js';
 import {
   buildFixtureVault, readDist, seedLastfmCache, REPO_ROOT,
 } from './helpers/run-build.js';
@@ -59,8 +59,8 @@ test('period charts render on /listening/ without ranks, hours, or the username'
   assert.doesNotMatch(home.body.textContent, /12 months/);
 });
 
-test('the listening worker still polls recent tracks only', () => {
-  const src = fs.readFileSync(path.join(REPO_ROOT, 'workers', 'listening', 'src', 'index.js'), 'utf8');
-  assert.match(src, /recentTracksUrl/);
-  assert.doesNotMatch(src, /topArtistsUrl|topAlbumsUrl|gettopartists|gettopalbums/);
+test('the listening poller alarm still refreshes recent tracks only', () => {
+  const alarm = ListeningPoller.prototype.alarm.toString();
+  assert.match(alarm, /refreshBoth/);
+  assert.doesNotMatch(alarm, /topArtists|topAlbums|gettop|fetchChart|charts/);
 });

@@ -7,11 +7,12 @@ workers_dev = false
 # handled here instead of returning a 404 from the static site.
 routes = [
   { pattern = "mattdoes.online/api/listening/now",    zone_name = "mattdoes.online" },
-  { pattern = "mattdoes.online/api/listening/recent", zone_name = "mattdoes.online" }
+  { pattern = "mattdoes.online/api/listening/recent", zone_name = "mattdoes.online" },
+  { pattern = "mattdoes.online/api/listening/charts", zone_name = "mattdoes.online" }
 ]
 
-# KV namespace for cached Last.fm payloads. The poller DO is the sole writer;
-# the request path only reads.
+# KV namespace for cached Last.fm payloads. The poller writes now/recent.
+# GET /api/listening/charts writes its own `charts` key on a cache miss.
 #
 # One-time setup — wrangler validates the whole config before running any
 # command, so the binding block has to be commented out until the namespace
@@ -28,10 +29,11 @@ routes = [
 binding = "LASTFM_CACHE"
 id      = "a6ea68e07a764aeba929a865d1d33a58"
 
-# Producer Durable Object — the single Last.fm writer. A self-rescheduling
+# Producer Durable Object — the single recent-tracks writer. A self-rescheduling
 # alarm (~25s, see POLL_INTERVAL_MS in src/index.js) makes one
-# user.getrecenttracks call and writes both KV payloads, so upstream call
-# volume is constant and the request path never touches Last.fm.
+# user.getrecenttracks call and writes both KV payloads, so that call volume
+# is constant. /now and /recent never touch Last.fm. /charts does, only when
+# its own KV entry is older than six hours.
 # A singleton instance (idFromName('singleton')); it serves no visitor traffic,
 # so it is a background poller, not a request bottleneck.
 [[durable_objects.bindings]]
@@ -56,8 +58,8 @@ crons = ["* * * * *"]
 # Workers Rate Limiting binding (GA Sep 2025). Belt-and-braces alongside the
 # SWR cache: blocks abusive single-IP floods before they touch KV or the edge
 # cache. Keyed on a hash of cf-connecting-ip plus the pathname inside the
-# Worker so /now and /recent are budgeted independently, and a missing IP
-# fails closed. The raw address is not the binding key.
+# Worker so /now, /recent, and /charts are budgeted independently, and a
+# missing IP fails closed. The raw address is not the binding key.
 #
 # Constraint: `simple.period` only accepts 10 or 60. A "100 / 10 min" window
 # isn't expressible here; for a wider window switch to a WAF rate-limiting
