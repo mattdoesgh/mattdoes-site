@@ -104,7 +104,7 @@ test('matt does is outlined and the verb stays outside the mark', () => {
   const css = fs.readFileSync(path.join(REPO_ROOT, 'static', 'station.css'), 'utf8');
   const support = css.slice(css.indexOf('@supports (-webkit-text-stroke: 0.025em #f7c8d8)'));
   assert.ok(support.startsWith('@supports'));
-  assert.match(support, /\.mark\s*\{[^}]*color:\s*#000000;/);
+  assert.match(support, /\.mark,\s*\.stars\s*\{[^}]*color:\s*#000000;/);
   assert.match(support, /-webkit-text-fill-color:\s*#000000;/);
   assert.match(support, /-webkit-text-stroke:\s*0\.025em #f7c8d8;/);
   assert.match(support, /paint-order:\s*stroke fill;/);

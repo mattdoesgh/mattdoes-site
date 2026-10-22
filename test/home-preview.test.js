@@ -2,8 +2,11 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import { JSDOM } from 'jsdom';
 import { renderHome } from '../site/render.js';
+import { REPO_ROOT } from './helpers/run-build.js';
 
 const assets = { 'station.css': 'station.abc12345.css', 'station.js': 'station.abc12345.js' };
 
@@ -42,7 +45,19 @@ test('the home output includes the latest watch title and its rating stars', () 
   assert.equal(preview.querySelector('a')?.getAttribute('href'), 'https://letterboxd.com/mattdoes/film/blue-heron/');
   assert.equal(preview.querySelector('.stars')?.textContent, '★★★★½');
   assert.equal(preview.querySelector('.stars')?.getAttribute('aria-label'), '4.5 out of 5 stars');
+  assert.equal(preview.querySelector('.stars')?.getAttribute('role'), 'img');
   assert.equal(html.includes('Older'), false);
+});
+
+test('the home movie link has no underline and stars use the pink stroke', () => {
+  const css = fs.readFileSync(path.join(REPO_ROOT, 'static', 'station.css'), 'utf8');
+  assert.match(css, /\.preview a,\s*\.preview a:hover,\s*\.preview a:focus,\s*\.preview a:focus-visible,\s*\.preview a:active \{\s*text-decoration:\s*none;/);
+  assert.match(css, /\.preview a:focus-visible \{\s*outline:\s*3px solid var\(--focus\);\s*outline-offset:\s*3px;/);
+  assert.doesNotMatch(css, /\.preview a[^{]*\{[^}]*padding/);
+  const support = css.slice(css.indexOf('@supports (-webkit-text-stroke: 0.025em #f7c8d8)'));
+  assert.match(support, /\.mark,\s*\.stars\s*\{[^}]*-webkit-text-stroke:\s*0\.025em #f7c8d8;/);
+  assert.match(support, /body\[data-polarity="flip"\] \.stars\s*\{[^}]*background-color:\s*#000000;/);
+  assert.doesNotMatch(css, /\.stars[^{]*\{[^}]*transition/);
 });
 
 test('an unrated latest watch is just the title', () => {

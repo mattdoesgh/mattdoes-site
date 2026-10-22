@@ -153,7 +153,8 @@ body[data-polarity="flip"] .sign {
    The black is only painted when the stroke exists, or the fallback would
    be black on black. No transition: the hover box does not move. */
 @supports (-webkit-text-stroke: 0.025em #f7c8d8) {
-  .mark {
+  .mark,
+  .stars {
     color: #000000;
     -webkit-text-fill-color: #000000;
     -webkit-text-stroke: 0.025em #f7c8d8;
@@ -167,6 +168,13 @@ body[data-polarity="flip"] .sign {
     padding: 0.08em 0.03em;
     margin: -0.08em -0.03em;
     vertical-align: baseline;
+  }
+
+  /* Stars on the pink field. The shadow covers the stroke and does not
+     change the line. Home stars sit on black, so they need no chip. */
+  body[data-polarity="flip"] .stars {
+    background-color: #000000;
+    box-shadow: 0 0 0 0.03em #000000;
   }
 
   .verb:hover .verb-prefix,
@@ -224,6 +232,20 @@ body[data-polarity="flip"] .sign {
 .preview a,
 .stars {
   color: inherit;
+}
+
+/* Beats the prefers-contrast underline on `a` (this selector is more specific). */
+.preview a,
+.preview a:hover,
+.preview a:focus,
+.preview a:focus-visible,
+.preview a:active {
+  text-decoration: none;
+}
+
+.preview a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
 }
 
 .stars {
@@ -889,8 +911,7 @@ body[data-polarity="flip"] .socials a:focus-visible {
 
   .preview a {
     color: #f7c8d8;
-    text-decoration-thickness: 0.06em;
-    text-underline-offset: 0.12em;
+    text-decoration: none;
   }
 
   .preview .stars {
