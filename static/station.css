@@ -346,7 +346,7 @@ body[data-polarity="flip"] .sign {
     margin: 0 0 clamp(1.35rem, 3vh, 2rem);
     color: #f7c8d8;
     font-family: var(--display);
-    font-size: 1.15rem;
+    font-size: 1.5rem;
     line-height: 1.2;
   }
 
@@ -819,8 +819,9 @@ body[data-polarity="flip"] .socials a:focus-visible {
 }
 
 /* Desktop. The three home lines fill the width and the stack fills the
-   height. "matt does letterboxd" is 8.42em in Anton, so the fluid size is
-   the content width divided by that measure. Phone styles stay below 1024. */
+   height. "matt does letterboxd" is 8.42em in Anton at one size. The home
+   prefix is 1.8em, so the verb is 0.7125 of that row and the open line
+   still fits. Phone styles stay below 1024. */
 @media (min-width: 1024px) {
   body {
     --row-size: clamp(4.5rem, calc((100vw - 5.6rem) / 8.55), 14rem);
@@ -842,10 +843,15 @@ body[data-polarity="flip"] .socials a:focus-visible {
     flex: 0 0 auto;
     align-items: center;
     width: 100%;
-    height: 1em;
-    min-height: 1em;
+    height: 1.75em;
+    min-height: 1.75em;
     padding: 0.03em 0.02em 0.05em;
     overflow: hidden;
+    font-size: calc(var(--row-size) * 0.7125);
+  }
+
+  .verb-prefix {
+    font-size: 1.8em;
   }
 
   .verb:hover,

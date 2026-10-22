@@ -95,7 +95,13 @@ test('the home prefix is clipped shut until hover', () => {
   assert.match(rule, /width:\s*0/);
   assert.match(rule, /overflow:\s*clip/);
   assert.match(rule, /white-space:\s*nowrap/);
+  const base = css.slice(css.indexOf('.verb-prefix {\n  display: block;'), css.indexOf('.verb-prefix > span'));
+  assert.doesNotMatch(base, /font-size/);
   assert.match(css, /\.verb:hover \.verb-prefix,\s*\.verb:focus-visible \.verb-prefix \{\s*width:\s*4\.08em;\s*margin-right:\s*0\.24em;/);
+  assert.match(css, /@media \(hover: none\) and \(max-width: 1023px\)[\s\S]*\.verb-kicker \{[^}]*font-size:\s*1\.5rem/);
+  assert.match(css, /@media \(min-width: 1024px\)[\s\S]*\.verb-prefix \{[^}]*font-size:\s*1\.8em/);
+  assert.match(css, /calc\(\(100vw - 5\.6rem\) \/ 8\.55\)/);
+  assert.match(css, /font-size:\s*calc\(var\(--row-size\) \* 0\.7125\)/);
   assert.doesNotMatch(css, /\.verb-prefix[^{]*\{[^}]*transition/);
   assert.doesNotMatch(css, /@keyframes[\s\S]*verb-prefix|verb-prefix[\s\S]*@keyframes/);
 });
