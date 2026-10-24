@@ -476,13 +476,25 @@ function albumGrid(periods) {
   return `<div class="album-charts"><div class="album-grid">${tiles.join('')}</div></div>`;
 }
 
+/**
+ * The word beside the count. Letters are a static sine in CSS. The spoken
+ * copy stays in the accessibility tree; the painted letters are hidden from it.
+ *
+ * @returns {string}
+ */
+function scrobbleLabel() {
+  const word = 'scrobbles';
+  const letters = [...word].map((ch) => `<span>${esc(ch)}</span>`).join('');
+  return `<span class="total-label"><span class="total-spoken">${esc(word)}</span><span class="wave" aria-hidden="true">${letters}</span></span>`;
+}
+
 export function renderListen(ctx) {
   const rows = listeningRows(ctx.tracks);
   const verb = verbByRenderer('listen');
   const heading = verbHeading(verb.label);
   const charts = albumGrid(ctx.periods);
   const count = Number(ctx.playcount) > 0
-    ? `<p class="total"><span class="total-num">${esc(formatScrobbleCount(ctx.playcount))}</span> <span class="total-label">scrobbles</span></p>`
+    ? `<p class="total"><span class="total-num">${esc(formatScrobbleCount(ctx.playcount))}</span> ${scrobbleLabel()}</p>`
     : '';
   const recent = rows.length ? '<h2 class="recent-label">recent</h2>' : '';
   const list = `<ol class="tracks" id="tracks">
