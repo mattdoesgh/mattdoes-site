@@ -1,11 +1,12 @@
 // build.js — mattdoes.online static site generator entrypoint.
 //
-//   fetchListeningSnapshot + fetchWatches → mirrorPosters → emit
+//   fetchListeningSnapshot + fetchWatches + fetchFilmCount → mirrorPosters → emit
 //
 // Pages come from site/verbs.ts. Listening is the /api/listening/* worker
-// (lib/listening.js). Watches are the Letterboxd RSS (lib/watches.js).
-// Poster mirroring no-ops without CLOUDFLARE_API_TOKEN and never fails
-// the build (lib/posters.js).
+// (lib/listening.js). Watches are the Letterboxd RSS. The films-watched
+// count is the public films page. Both are lib/watches.js. A missing count
+// hides the line and does not fail the build. Poster mirroring no-ops
+// without CLOUDFLARE_API_TOKEN and never fails the build (lib/posters.js).
 //
 // LISTENING_OFFLINE=1 and LETTERBOXD_OFFLINE=1 skip the network (tests, CI).
 
@@ -14,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 
 import { emit } from './lib/emit/index.js';
 import { fetchListeningSnapshot } from './lib/listening.js';
-import { fetchWatches } from './lib/watches.js';
+import { fetchFilmCount, fetchWatches } from './lib/watches.js';
 import { mirrorPosters } from './lib/posters.js';
 import { siteConfig } from './site.config.js';
 
@@ -29,7 +30,11 @@ const t0 = Date.now();
 const { tracks: lastfmTracks, playcount: scrobbleTotal, periods } =
   await fetchListeningSnapshot({ siteUrl: SITE_URL, cacheDir: CACHE_DIR });
 
-const watches = await mirrorPosters(await fetchWatches({ cacheDir: CACHE_DIR }));
+const [rawWatches, filmCount] = await Promise.all([
+  fetchWatches({ cacheDir: CACHE_DIR }),
+  fetchFilmCount({ cacheDir: CACHE_DIR }),
+]);
+const watches = await mirrorPosters(rawWatches);
 
 const { distSize } = await emit({
   distDir: DIST_DIR,
@@ -39,6 +44,7 @@ const { distSize } = await emit({
   scrobbleTotal,
   periods,
   watches,
+  filmCount,
 });
 
 console.log(`✓ built in ${((Date.now() - t0) / 1000).toFixed(2)}s`);

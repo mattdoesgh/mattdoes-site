@@ -36,7 +36,7 @@
  *   profile: string,     // public profile; also a footer/about link
  *   feed: string,        // diary RSS, fetched at build time
  *   limit: number,       // recent watches to render (not a full diary)
- *   cacheTtl: number,    // seconds — build-time cache only
+ *   cacheTtl: number,    // seconds — diary and films-watched count
  * }} letterboxd
  */
 
@@ -123,9 +123,10 @@ export const siteConfig = {
     // need a Last.fm key for it. A failed fetch hides the grid.
   },
 
-  // Letterboxd diary RSS for /movies/. The page is a recent window (limit),
-  // baked at build time — not a live feed and not a full diary export.
-  // LETTERBOXD_OFFLINE=1 skips the network (CI and tests). See lib/watches.js.
+  // Letterboxd for /watching/. The diary RSS is a recent window (limit),
+  // baked at build time. The lifetime films-watched count is the Watched
+  // total on {profile}/films/ — the RSS has no total. Same cache TTL.
+  // LETTERBOXD_OFFLINE=1 skips both fetches (CI and tests). See lib/watches.js.
   letterboxd: {
     profile:  'https://letterboxd.com/mattdoes',
     feed:     'https://letterboxd.com/mattdoes/rss/',

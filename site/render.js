@@ -394,6 +394,7 @@ export function renderWatch(ctx) {
   const feed = `<ol class="feed">
         ${watches.map(film).join('\n        ')}
       </ol>`;
+  const count = countLine(ctx.filmCount, 'films');
   return shell({
     ...ctx,
     path: verbPath(verb.slug),
@@ -404,6 +405,7 @@ export function renderWatch(ctx) {
     showVerbNav: true,
     robots: '',
     main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
+      ${count}
       ${feed}`,
   });
 }
@@ -477,15 +479,28 @@ function albumGrid(periods) {
 }
 
 /**
- * The word beside the count. Letters are a static sine in CSS. The spoken
- * copy stays in the accessibility tree; the painted letters are hidden from it.
+ * The word beside a count. Both totals use this. Letters are the static sine
+ * in `.wave`. The spoken copy stays in the accessibility tree; the painted
+ * letters are hidden from it.
  *
+ * @param {string} word
  * @returns {string}
  */
-function scrobbleLabel() {
-  const word = 'scrobbles';
+function waveLabel(word) {
   const letters = [...word].map((ch) => `<span>${esc(ch)}</span>`).join('');
   return `<span class="total-label"><span class="total-spoken">${esc(word)}</span><span class="wave" aria-hidden="true">${letters}</span></span>`;
+}
+
+/**
+ * Big number, word on the same line. Missing or zero hides the line.
+ *
+ * @param {unknown} count
+ * @param {string} word
+ * @returns {string}
+ */
+function countLine(count, word) {
+  if (!(Number(count) > 0)) return '';
+  return `<p class="total"><span class="total-num">${esc(formatScrobbleCount(count))}</span> ${waveLabel(word)}</p>`;
 }
 
 export function renderListen(ctx) {
@@ -493,9 +508,7 @@ export function renderListen(ctx) {
   const verb = verbByRenderer('listen');
   const heading = verbHeading(verb.label);
   const charts = albumGrid(ctx.periods);
-  const count = Number(ctx.playcount) > 0
-    ? `<p class="total"><span class="total-num">${esc(formatScrobbleCount(ctx.playcount))}</span> ${scrobbleLabel()}</p>`
-    : '';
+  const count = countLine(ctx.playcount, 'scrobbles');
   const recent = rows.length ? '<h2 class="recent-label">recent</h2>' : '';
   const list = `<ol class="tracks" id="tracks">
         ${rows.map(trackItem).join('\n        ')}
