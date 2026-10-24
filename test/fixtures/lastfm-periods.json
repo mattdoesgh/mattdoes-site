@@ -92,6 +92,20 @@
           "image": "http://lastfm.freetls.fastly.net/i/u/300x300/month.jpg"
         },
         {
+          "name": "Legacy Star",
+          "artist": "Legacy Artist",
+          "playcount": 6,
+          "url": "https://www.last.fm/music/Legacy+Artist/Legacy+Star",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/c6f59c1e5e7240a4c0d427abd71f3dbb.jpg"
+        },
+        {
+          "name": "Default Album",
+          "artist": "Default Artist",
+          "playcount": 5,
+          "url": "https://www.last.fm/music/Default+Artist/Default+Album",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/default_album.png"
+        },
+        {
           "name": "Cover 01",
           "artist": "Cover Artist",
           "playcount": 99,

@@ -120,6 +120,23 @@ test('snapshot: LISTENING_OFFLINE skips all network sources', async () => {
   } finally { restore(); restoreEnv(); }
 });
 
+function jpegCover() {
+  const bytes = new Uint8Array(32);
+  bytes[0] = 0xff;
+  bytes[1] = 0xd8;
+  bytes[30] = 0xff;
+  bytes[31] = 0xd9;
+  return new Response(bytes, { status: 200, headers: { 'content-type': 'image/jpeg' } });
+}
+
+function chartOrCover(url, recent) {
+  if (url.endsWith('/api/listening/recent')) return recent;
+  if (url.endsWith('/api/listening/charts')) return jsonResponse(workerChartPayload());
+  if (url.includes('/dead.jpg')) return new Response('missing', { status: 404 });
+  if (url.includes('/i/u/')) return jpegCover();
+  throw new Error(`unexpected url ${url}`);
+}
+
 function workerChartPayload() {
   return {
     periods: {
@@ -157,6 +174,20 @@ function workerChartPayload() {
             user: 'djverism',
           },
           {
+            name: 'Broken Cover',
+            artist: 'Broken',
+            playcount: 4,
+            url: 'https://www.last.fm/music/Broken/Broken+Cover',
+            image: 'https://lastfm.freetls.fastly.net/i/u/300x300/dead.jpg',
+          },
+          {
+            name: 'Default Album',
+            artist: 'Default',
+            playcount: 3,
+            url: '',
+            image: 'https://lastfm.freetls.fastly.net/i/u/300x300/default_album.png',
+          },
+          {
             name: 'Foreign Album',
             artist: 'Foreign',
             playcount: 2,
@@ -181,13 +212,10 @@ test('snapshot: period charts come from the worker and a failure keeps the track
   process.env.LASTFM_API_KEY = 'secret-key';
   process.env.LASTFM_USERNAME = 'djverism';
   const cacheDir = makeTempDir('mattdoes-cache-');
-  const { calls, restore } = installFetch((url) => {
-    if (url.endsWith('/api/listening/recent')) {
-      return jsonResponse({ playcount: 120022, tracks: [SAMPLE_TRACK] });
-    }
-    if (url.endsWith('/api/listening/charts')) return jsonResponse(workerChartPayload());
-    throw new Error(`unexpected url ${url}`);
-  });
+  const { calls, restore } = installFetch((url) => chartOrCover(
+    url,
+    jsonResponse({ playcount: 120022, tracks: [SAMPLE_TRACK] }),
+  ));
   try {
     const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
     assert.equal(snap.playcount, 120022);
@@ -200,6 +228,8 @@ test('snapshot: period charts come from the worker and a failure keeps the track
       snap.periods['1month'].albums.map((row) => row.name),
       ['Album 1month', 'Backfill Album'],
     );
+    assert.equal(snap.periods['1month'].albums.some((row) => row.name === 'Broken Cover'), false);
+    assert.equal(snap.periods['1month'].albums.some((row) => row.name === 'Default Album'), false);
     assert.equal(snap.periods['1month'].albums[0].image, 'https://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg');
     assert.equal(
       snap.periods['1month'].albums[1].image,
@@ -207,6 +237,8 @@ test('snapshot: period charts come from the worker and a failure keeps the track
     );
     assert.equal(calls.filter((url) => url.endsWith('/api/listening/recent')).length, 1);
     assert.equal(calls.filter((url) => url.endsWith('/api/listening/charts')).length, 1);
+    assert.equal(calls.some((url) => url.includes('/dead.jpg')), true);
+    assert.equal(calls.some((url) => url.includes('default_album')), false);
     assert.equal(calls.some((url) => url.includes('audioscrobbler') || url.includes('gettop')), false,
       'the build does not call Last.fm chart methods, even when a key is set');
     const cached = JSON.parse(fs.readFileSync(path.join(cacheDir, 'lastfm.json'), 'utf8'));
@@ -263,15 +295,14 @@ test('snapshot: a fresh cache without charts fetches only the charts endpoint', 
   fs.writeFileSync(path.join(cacheDir, 'lastfm.json'), JSON.stringify({
     playcount: 9, tracks: [SAMPLE_TRACK],
   }));
-  const { calls, restore } = installFetch((url) => {
-    assert.equal(url.endsWith('/api/listening/charts'), true);
-    return jsonResponse(workerChartPayload());
-  });
+  const { calls, restore } = installFetch((url) => chartOrCover(url));
   try {
     const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
-    assert.equal(calls.length, 1);
+    assert.equal(calls.filter((url) => url.endsWith('/api/listening/charts')).length, 1);
+    assert.equal(calls.some((url) => url.endsWith('/api/listening/recent')), false);
     assert.equal(snap.playcount, 9);
     assert.equal(snap.periods['1month'].artists[0].name, 'Artist 1month');
-    assert.equal(calls.some((url) => url.includes('gettop')), false);
+    assert.equal(snap.periods['1month'].albums.some((row) => row.name === 'Broken Cover'), false);
+    assert.equal(calls.some((url) => url.includes('audioscrobbler') || url.includes('gettop')), false);
   } finally { restore(); restoreEnv(); }
 });

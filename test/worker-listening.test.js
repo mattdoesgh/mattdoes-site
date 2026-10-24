@@ -482,7 +482,7 @@ test('scheduled: no-ops when the poller binding is absent', async () => {
 // ── charts: cached for hours, fixed periods, no request input ───────────
 const CHARTS = 'https://listening.mattdoes.online/api/listening/charts';
 const CHART_USER = 'djverism-secret';
-const CHARTS_KEY = 'charts:month';
+const CHARTS_KEY = 'charts:cover';
 
 function chartEnv(kv = new KVStub()) {
   return {
@@ -493,7 +493,23 @@ function chartEnv(kv = new KVStub()) {
   };
 }
 
+function jpegCover() {
+  const bytes = new Uint8Array(32);
+  bytes[0] = 0xff;
+  bytes[1] = 0xd8;
+  bytes[30] = 0xff;
+  bytes[31] = 0xd9;
+  return new Response(bytes, { status: 200, headers: { 'content-type': 'image/jpeg' } });
+}
+
 function lastfmChart(url) {
+  if (url.includes('/i/u/')) {
+    if (url.includes('/dead.jpg')) return new Response('missing', { status: 404 });
+    if (url.includes('/html.jpg')) {
+      return new Response('<html>', { status: 200, headers: { 'content-type': 'text/html' } });
+    }
+    return jpegCover();
+  }
   const parsed = new URL(url);
   assert.equal(parsed.searchParams.get('period'), '1month');
   assert.equal(parsed.searchParams.get('limit'), String(CHART_POOL));
@@ -523,6 +539,27 @@ function lastfmChart(url) {
       artist: { name: 'C' },
       url: 'javascript:alert(1)',
       image: [{ '#text': 'https://evil.example/x.jpg' }],
+    },
+    {
+      name: 'Dead',
+      playcount: '6',
+      artist: { name: 'D' },
+      url: 'https://www.last.fm/music/D/Dead',
+      image: [{ '#text': 'https://lastfm.freetls.fastly.net/i/u/300x300/dead.jpg' }],
+    },
+    {
+      name: 'Html',
+      playcount: '5',
+      artist: { name: 'E' },
+      url: 'https://www.last.fm/music/E/Html',
+      image: [{ '#text': 'https://lastfm.freetls.fastly.net/i/u/300x300/html.jpg' }],
+    },
+    {
+      name: 'Default Album',
+      playcount: '4',
+      artist: { name: 'F' },
+      url: 'https://www.last.fm/music/F/Default+Album',
+      image: [{ '#text': 'https://lastfm.freetls.fastly.net/i/u/300x300/default_album.png' }],
     },
   ];
   for (let i = 1; i <= 26; i += 1) {
@@ -579,23 +616,25 @@ test('charts: a cold miss fetches the monthly chart, skips blank covers, and hid
   const { status, body, headers, calls } = await fetchCharts(CHARTS, chartEnv(kv), lastfmChart);
 
   assert.equal(status, 200);
-  assert.equal(calls.length, 1, 'one monthly album chart');
+  assert.equal(calls.filter((url) => url.includes('gettopalbums')).length, 1, 'one monthly album chart');
   assert.ok(calls[0].includes('period=1month'));
   assert.ok(calls[0].includes(`limit=${CHART_POOL}`));
   assert.ok(calls[0].includes(`user=${encodeURIComponent(CHART_USER)}`));
   assert.ok(calls[0].includes('api_key=secret-key'));
   assert.equal(calls.filter((url) => url.includes('gettopartists')).length, 0);
-  assert.equal(calls.filter((url) => url.includes('gettopalbums')).length, 1);
+  assert.equal(calls.filter((url) => url.includes('/dead.jpg')).length, 1);
+  assert.equal(calls.filter((url) => url.includes('/html.jpg')).length, 1);
+  assert.equal(calls.some((url) => url.includes('default_album')), false);
   assert.equal('reason' in body, false);
   assert.equal(body.periods.overall, undefined);
   const albums = body.periods['1month'].albums;
-  assert.equal(albums.length, 25);
+  assert.equal(albums.length, 26);
   assert.equal(albums[0].name, 'Cover 1');
   assert.equal(albums[0].url, 'https://www.last.fm/music/Album+Artist/Album');
   assert.equal(albums[0].image, 'https://lastfm.freetls.fastly.net/i/u/300x300/cover1.jpg');
   assert.equal(albums[24].name, 'Cover 25');
-  assert.equal(albums.some((row) => row.name === 'Cover 26'), false);
-  assert.equal(albums.some((row) => ['No Art', 'Star', 'Foreign'].includes(row.name)), false);
+  assert.equal(albums[25].name, 'Cover 26');
+  assert.equal(albums.some((row) => ['No Art', 'Star', 'Foreign', 'Dead', 'Html', 'Default Album'].includes(row.name)), false);
   assert.equal(body.periods['1month'].artists, undefined);
   assert.equal(JSON.stringify(body).includes(CHART_USER), false);
   assert.equal(JSON.stringify(body).includes('secret-key'), false);
@@ -610,6 +649,7 @@ test('charts: a cold miss fetches the monthly chart, skips blank covers, and hid
   assert.equal(stored.data.periods['1month'].albums[0].name, 'Cover 1');
   assert.equal(stored.data.periods['1month'].albums[0].image, 'https://lastfm.freetls.fastly.net/i/u/300x300/cover1.jpg');
   assert.equal(await kv.get('charts:img'), null);
+  assert.equal(await kv.get('charts:month'), null);
   assert.equal(JSON.stringify(stored).includes(CHART_USER), false);
 
   const again = await fetchCharts(CHARTS, chartEnv(kv), () => {

@@ -8,9 +8,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  albumImageUrl, albumsWithCovers, decodeTopAlbums, decodeTopArtists, decodeTrack, decodeTracks,
+  albumImageUrl, albumsWithCovers, coverBytesOk, coverLoads, decodeTopAlbums, decodeTopArtists,
+  decodeTrack, decodeTracks, keepLoadedCovers,
   lastfmError, musicUrl, recentTracksUrl, topAlbumsUrl, topArtistsUrl,
 } from '../lib/lastfm.js';
+import { installFetch } from './helpers/worker-env.js';
 
 const RAW_TRACK = {
   name:   'Song A',
@@ -218,4 +220,42 @@ test('lastfm: albums with no real cover are skipped and later rows fill the grid
   assert.deepEqual(kept.map((row) => row.name), ['Cover 1', 'Cover 2', 'Cover 3']);
   assert.equal(albumsWithCovers(null).length, 0);
   assert.equal(albumsWithCovers(rows, 0).length, 0);
+});
+
+test('lastfm: placeholder art and a cover that does not load are skipped', async () => {
+  const oldStar = 'https://lastfm.freetls.fastly.net/i/u/300x300/c6f59c1e5e7240a4c0d427abd71f3dbb.jpg';
+  const blank = 'https://lastfm.freetls.fastly.net/i/u/300x300/default_album.png';
+  assert.equal(albumImageUrl(oldStar), '');
+  assert.equal(albumImageUrl(blank), '');
+  const jpeg = new Uint8Array(32);
+  jpeg[0] = 0xff;
+  jpeg[1] = 0xd8;
+  jpeg[30] = 0xff;
+  jpeg[31] = 0xd9;
+  assert.equal(coverBytesOk(jpeg), true);
+  assert.equal(coverBytesOk(jpeg.subarray(0, 16)), false);
+  assert.equal(coverBytesOk(new Uint8Array(32)), false);
+  const { calls, restore } = installFetch((url) => {
+    if (url.includes('/dead.jpg')) return new Response('missing', { status: 404 });
+    if (url.includes('/html.jpg')) {
+      return new Response('<html>', { status: 200, headers: { 'content-type': 'text/html' } });
+    }
+    if (url.includes('/slow.jpg')) throw new Error('timeout');
+    return new Response(jpeg, { status: 200, headers: { 'content-type': 'image/jpeg' } });
+  });
+  try {
+    const loaded = await keepLoadedCovers([
+      { name: 'Old Star', image: oldStar },
+      { name: 'Default Album', image: blank },
+      { name: 'Dead', image: 'https://lastfm.freetls.fastly.net/i/u/300x300/dead.jpg' },
+      { name: 'Html', image: 'https://lastfm.freetls.fastly.net/i/u/300x300/html.jpg' },
+      { name: 'Ok', image: 'https://lastfm.freetls.fastly.net/i/u/300x300/ok.jpg' },
+      { name: 'Slow', image: 'https://lastfm.freetls.fastly.net/i/u/300x300/slow.jpg' },
+    ], 2, coverLoads);
+    assert.deepEqual(loaded.map((row) => row.name), ['Ok', 'Slow']);
+    assert.equal(calls.some((url) => url.includes('default_album') || url.includes('c6f59')), false);
+    assert.equal(calls.some((url) => url.includes('/dead.jpg')), true);
+  } finally {
+    restore();
+  }
 });

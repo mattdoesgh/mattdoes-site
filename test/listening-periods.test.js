@@ -40,7 +40,7 @@ test('the monthly cover grid skips blank art and other periods', () => {
   assert.equal(charts.querySelector('script'), null);
   assert.equal(main.querySelectorAll('.album-grid').length, 1);
 
-  const tiles = [...charts.querySelectorAll('.album-tile')];
+  const tiles = [...charts.querySelectorAll('.album-grid .album-tile')];
   assert.equal(tiles.length, 25);
   assert.equal(tiles.every((tile) => tile.querySelector('img')), true);
   assert.equal(charts.querySelector('.is-plain'), null);
@@ -65,8 +65,14 @@ test('the monthly cover grid skips blank art and other periods', () => {
   assert.equal(tiles[2].querySelector('.album-name')?.textContent, 'Cover 03');
   assert.equal(tiles[24].querySelector('.album-name')?.textContent, 'Cover 25');
 
-  assert.doesNotMatch(main.textContent, /Plain Album|Star Album|Foreign Album|Http Album/);
-  assert.doesNotMatch(main.textContent, /Overall Album|Year Album|Season Album|Cover 26/);
+  const spares = charts.querySelector('.album-spares');
+  assert.equal(spares.hidden, true);
+  assert.equal(spares.querySelector('.album-name')?.textContent, 'Cover 26');
+  assert.equal(spares.querySelector('img')?.getAttribute('src'), 'https://lastfm.freetls.fastly.net/i/u/300x300/cover26.jpg');
+  assert.doesNotMatch(charts.querySelector('.album-grid').textContent, /Cover 26/);
+
+  assert.doesNotMatch(main.textContent, /Plain Album|Star Album|Legacy Star|Default Album|Foreign Album|Http Album/);
+  assert.doesNotMatch(main.textContent, /Overall Album|Year Album|Season Album/);
   assert.match(main.textContent, /Fixture Track/);
   assert.equal(main.querySelector('.recent-label')?.textContent, 'recent');
   assert.equal(main.querySelector('ol#tracks')?.tagName, 'OL');
@@ -124,8 +130,9 @@ test('a short monthly chart ends on the last real cover', () => {
   }));
   const { distDir } = buildFixtureVault({ cacheDir });
   const main = new JSDOM(readDist(distDir, 'listening/index.html')).window.document.querySelector('main');
-  const tiles = [...main.querySelectorAll('.album-tile')];
+  const tiles = [...main.querySelectorAll('.album-grid .album-tile')];
   assert.equal(tiles.length, 1);
+  assert.equal(main.querySelector('.album-spares'), null);
   assert.equal(tiles[0].querySelector('.album-name')?.textContent, 'Only Cover');
   assert.equal(tiles[0].querySelector('img')?.getAttribute('src'), 'https://lastfm.freetls.fastly.net/i/u/300x300/only.jpg');
   assert.equal(main.querySelector('.is-plain'), null);

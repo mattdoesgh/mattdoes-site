@@ -26,7 +26,9 @@
 //     snapshot when a refresh fails.
 //   • CHARTS — GET /api/listening/charts reads a KV entry cached for hours.
 //     A miss calls user.gettopalbums once, for the last month, deep enough
-//     to skip albums with no real cover and still fill the grid. The poller
+//     to skip albums with no real cover and still fill the grid. Each kept
+//     URL is fetched. A 404, an HTML body, or a known placeholder is dropped
+//     and the next row fills the slot. A timeout keeps the URL. The poller
 //     is not involved. The Last.fm user is the Worker secret, never a
 //     request field.
 //
@@ -68,8 +70,8 @@ import {
   json, errorJson, withCache, corsPreflight, kvGet, kvPut, getClientIp, sha256Hex,
 } from '../../lib/transport.js';
 import {
-  CHART_POOL, LISTENING_PERIODS, TOP_LIMIT, albumsWithCovers, decodeTopAlbums,
-  decodeTrack, decodeTracks, lastfmError, recentTracksUrl, topAlbumsUrl,
+  CHART_POOL, COVER_SPARES, LISTENING_PERIODS, TOP_LIMIT, coverLoads, decodeTopAlbums,
+  decodeTrack, decodeTracks, keepLoadedCovers, lastfmError, recentTracksUrl, topAlbumsUrl,
 } from '../../../lib/lastfm.js';
 
 // Poller cadence (milliseconds). ~25s keeps now-playing sub-minute.
@@ -95,8 +97,9 @@ const CHARTS_EDGE_TTL_S     = 6 * 60 * 60;
 const CHARTS_BROWSER_TTL_S  = CHARTS_EDGE_TTL_S;
 // `charts` was the five-name list. `charts:covers` dropped every cover.
 // `charts:img` stored four periods already sliced to 25, so a blank in that
-// window could not be replaced from further down the chart.
-const CHARTS_KEY         = 'charts:month';
+// window could not be replaced from further down the chart. `charts:month`
+// kept URL-valid covers without checking that the bytes were an image.
+const CHARTS_KEY         = 'charts:cover';
 const CHARTS_LOCK_KEY    = 'charts:lock';
 
 /**
@@ -349,7 +352,8 @@ async function fetchOneChart(url, decode) {
 /**
  * The monthly chart only. Returns null when the call failed so the caller can
  * keep a stale snapshot instead of caching an empty page. Albums with no real
- * cover are dropped and the next rows fill the grid.
+ * cover, and covers that are not image bytes, are dropped. Later rows fill
+ * the grid, plus a few spares for a cover that fails in the browser.
  *
  * @param {Env} env
  * @returns {Promise<object|null>}
@@ -359,14 +363,19 @@ async function fetchChartPeriods(env) {
   const key = env.LASTFM_API_KEY;
   let any = false;
   const periods = {};
+  const keep = TOP_LIMIT + COVER_SPARES;
   await Promise.all(LISTENING_PERIODS.map(async ({ id }) => {
-    const albums = await fetchOneChart(
+    const decoded = await fetchOneChart(
       topAlbumsUrl(user, key, id, CHART_POOL),
-      (body) => albumsWithCovers(decodeTopAlbums(body, CHART_POOL), TOP_LIMIT),
+      (body) => decodeTopAlbums(body, CHART_POOL),
     );
     // null is a failed call. An array, including an empty one, is a success.
-    if (albums !== null) any = true;
-    periods[id] = { albums: albums || [] };
+    if (decoded === null) {
+      periods[id] = { albums: [] };
+      return;
+    }
+    any = true;
+    periods[id] = { albums: await keepLoadedCovers(decoded, keep, coverLoads) };
   }));
   return any ? periods : null;
 }

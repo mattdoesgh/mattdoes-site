@@ -89,10 +89,58 @@
       .catch(function () {});
   }
 
+  var armedCovers = new WeakSet();
+
+  function coverTile(img) {
+    var tile = img && img.parentElement;
+    if (!tile || !tile.classList || !tile.classList.contains('album-tile')) return null;
+    return tile;
+  }
+
+  function dropCover(tile) {
+    var parent = tile.parentElement;
+    if (parent) parent.removeChild(tile);
+  }
+
+  function onCoverError(event) {
+    var tile = coverTile(event.currentTarget);
+    if (!tile) return;
+    var grid = tile.parentElement;
+    if (grid && grid.classList.contains('album-grid')) {
+      var charts = grid.parentElement;
+      var pool = charts && charts.querySelector('.album-spares');
+      var spare = pool && pool.querySelector('.album-tile');
+      if (spare) {
+        grid.replaceChild(spare, tile);
+        armCover(spare);
+        return;
+      }
+    }
+    dropCover(tile);
+  }
+
+  function armCover(tile) {
+    var img = tile.querySelector('img');
+    if (!img || armedCovers.has(img)) return;
+    armedCovers.add(img);
+    img.addEventListener('error', onCoverError);
+    if (typeof img.decode === 'function' && img.complete && img.naturalWidth === 0) {
+      onCoverError({ currentTarget: img });
+    }
+  }
+
+  function armCovers() {
+    var charts = document.querySelector('.album-charts');
+    if (!charts) return;
+    var tiles = charts.querySelectorAll('.album-tile');
+    for (var i = 0; i < tiles.length; i += 1) armCover(tiles[i]);
+  }
+
   function start() {
     /* frequency-key */
     document.addEventListener('keydown', onKey);
     /* frequency-key */
+    armCovers();
     refresh();
   }
 

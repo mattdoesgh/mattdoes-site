@@ -4,7 +4,7 @@ import { verbs, verbCatalog, socials, verbPath, verbHeading, unsharedPlayer, uns
 import { socialIcon } from './social-icons.js';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 import { formatScrobbleCount } from '../lib/format.js';
-import { LISTENING_PERIODS, albumImageUrl, albumsWithCovers, musicUrl } from '../lib/lastfm.js';
+import { COVER_SPARES, LISTENING_PERIODS, TOP_LIMIT, albumImageUrl, albumsWithCovers, musicUrl } from '../lib/lastfm.js';
 
 const SPOTIFY = 'https://open.spotify.com/artist/617fKVTXkDafXJshlNUzF3';
 // Catalog id only. The platform slug is omitted until the project name is settled.
@@ -462,8 +462,9 @@ function albumTile(row) {
 
 /**
  * The monthly cover grid. Other periods are not drawn. Albums with no real
- * cover are skipped and later rows fill the empty slots. A short chart ends
- * on the last real cover.
+ * cover are skipped and later rows fill the empty slots. The first 25 covers
+ * are the cells. Further covers sit hidden so a cover that fails in the
+ * browser can take that same cell. A short chart ends on the last real cover.
  *
  * @param {unknown} periods
  * @returns {string}
@@ -473,9 +474,14 @@ function albumGrid(periods) {
   const id = LISTENING_PERIODS[0]?.id;
   if (!id) return '';
   const rows = Array.isArray(periods[id]?.albums) ? periods[id].albums : [];
-  const tiles = albumsWithCovers(rows).map(albumTile).filter(Boolean);
+  const tiles = albumsWithCovers(rows, TOP_LIMIT + COVER_SPARES).map(albumTile).filter(Boolean);
   if (!tiles.length) return '';
-  return `<div class="album-charts"><div class="album-grid">${tiles.join('')}</div></div>`;
+  const shown = tiles.slice(0, TOP_LIMIT);
+  const spares = tiles.slice(TOP_LIMIT);
+  const spareBox = spares.length
+    ? `<div class="album-spares" hidden>${spares.join('')}</div>`
+    : '';
+  return `<div class="album-charts"><div class="album-grid">${shown.join('')}</div>${spareBox}</div>`;
 }
 
 /**
