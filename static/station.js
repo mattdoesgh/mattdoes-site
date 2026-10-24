@@ -113,12 +113,242 @@
     }
   }
 
+  function mediaPoster(link) {
+    var value = httpsHref(link);
+    if (!value) return '';
+    try {
+      var url = new URL(value);
+      if (url.protocol !== 'https:' || url.hostname !== 'media.mattdoes.online') return '';
+      return url.toString();
+    } catch (err) {
+      return '';
+    }
+  }
+
+  function letterboxdHref(link) {
+    var value = httpsHref(link);
+    if (!value) return '';
+    try {
+      var url = new URL(value);
+      if (url.protocol !== 'https:' || url.username || url.password) return '';
+      var host = url.hostname.toLowerCase();
+      if (host !== 'letterboxd.com' && host !== 'www.letterboxd.com') return '';
+      return url.toString();
+    } catch (err) {
+      return '';
+    }
+  }
+
+  function bindScene() {
+    var dialog = document.getElementById('scene');
+    var feed = document.querySelector('ol.feed');
+    if (!dialog || dialog.tagName !== 'DIALOG' || !feed) return;
+    if (typeof dialog.showModal !== 'function') return;
+
+    var closeBtn = dialog.querySelector('.scene-close');
+    var titleEl = document.getElementById('scene-title');
+    var yearEl = document.getElementById('scene-year');
+    var rateEl = document.getElementById('scene-rate');
+    var reviewEl = document.getElementById('scene-review');
+    var stillEl = dialog.querySelector('.scene-still');
+    if (!closeBtn || !titleEl || !yearEl || !rateEl || !reviewEl || !stillEl) return;
+
+    var restoreEl = null;
+    var currentId = '';
+
+    function findOpener(id) {
+      if (!/^\d+$/.test(String(id || ''))) return null;
+      return feed.querySelector('[data-scene="' + id + '"]');
+    }
+
+    function sourceLink(href) {
+      var source = dialog.querySelector('.scene-source');
+      if (!source) return;
+      var link = document.getElementById('scene-link');
+      if (!href) {
+        source.hidden = true;
+        if (link) link.removeAttribute('href');
+        return;
+      }
+      if (!link) {
+        link = document.createElement('a');
+        link.id = 'scene-link';
+        link.textContent = 'letterboxd';
+        source.appendChild(link);
+      }
+      link.href = href;
+      link.rel = 'noopener noreferrer';
+      source.hidden = false;
+    }
+
+    function sceneImg(url, width, height) {
+      var img = document.getElementById('scene-img');
+      if (!url) {
+        if (img) img.remove();
+        return;
+      }
+      if (!img) {
+        img = document.createElement('img');
+        img.id = 'scene-img';
+        img.alt = '';
+        stillEl.appendChild(img);
+      }
+      if (width > 0) img.width = width;
+      if (height > 0) img.height = height;
+      if (img.getAttribute('src') !== url) img.src = url;
+    }
+
+    function paint(opener) {
+      var review = opener.getAttribute('data-review') || '';
+      var reviewed = review.length > 0;
+      dialog.classList.toggle('is-review', reviewed);
+      dialog.classList.toggle('is-still', !reviewed);
+      var name = opener.querySelector('.name');
+      titleEl.textContent = name ? name.textContent : 'Untitled';
+      var year = opener.getAttribute('data-year') || '';
+      yearEl.textContent = year;
+      yearEl.hidden = !reviewed || !year;
+      reviewEl.textContent = review;
+      reviewEl.hidden = !reviewed;
+      if (reviewed) dialog.setAttribute('aria-describedby', 'scene-review');
+      else dialog.removeAttribute('aria-describedby');
+
+      rateEl.replaceChildren();
+      var stars = opener.querySelector('.stars');
+      if (stars) rateEl.appendChild(stars.cloneNode(true));
+      if (opener.getAttribute('data-rewatch') === '1') {
+        var flag = document.createElement('span');
+        flag.className = 'flag';
+        flag.textContent = 'rewatch';
+        rateEl.appendChild(flag);
+      }
+      rateEl.hidden = rateEl.childNodes.length === 0;
+      sourceLink(letterboxdHref(opener.getAttribute('href') || ''));
+      sceneImg(
+        mediaPoster(opener.getAttribute('data-full')),
+        Number(opener.getAttribute('data-full-width')),
+        Number(opener.getAttribute('data-full-height')),
+      );
+    }
+
+    function lock() {
+      if (document.documentElement.classList.contains('is-locked')) return;
+      document.documentElement.dataset.scrollY = String(window.scrollY || window.pageYOffset || 0);
+      document.documentElement.classList.add('is-locked');
+    }
+
+    function unlock() {
+      if (!document.documentElement.classList.contains('is-locked')) return;
+      var y = Number(document.documentElement.dataset.scrollY || '0');
+      document.documentElement.classList.remove('is-locked');
+      delete document.documentElement.dataset.scrollY;
+      window.scrollTo(0, y);
+    }
+
+    function setExpanded(id) {
+      var openers = feed.querySelectorAll('.film-open');
+      for (var i = 0; i < openers.length; i += 1) {
+        openers[i].setAttribute('aria-expanded', openers[i].getAttribute('data-scene') === String(id) ? 'true' : 'false');
+      }
+    }
+
+    function focusables() {
+      return [].filter.call(dialog.querySelectorAll('button, a[href]'), function (el) {
+        if (el.hidden || (el.closest && el.closest('[hidden]'))) return false;
+        var style = window.getComputedStyle(el);
+        return style.display !== 'none' && style.visibility !== 'hidden';
+      });
+    }
+
+    function openScene(opener, push) {
+      if (!opener) return;
+      paint(opener);
+      restoreEl = opener;
+      currentId = opener.getAttribute('data-scene') || '';
+      setExpanded(currentId);
+      lock();
+      dialog.hidden = false;
+      if (!dialog.open) dialog.showModal();
+      closeBtn.focus();
+      if (push) history.pushState({ scene: currentId }, '');
+    }
+
+    function finishClose(fromPop) {
+      if (dialog.open) dialog.close();
+      dialog.hidden = true;
+      unlock();
+      setExpanded('');
+      currentId = '';
+      var backTo = restoreEl;
+      restoreEl = null;
+      if (backTo) backTo.focus();
+      if (!fromPop && history.state && history.state.scene) history.back();
+    }
+
+    feed.addEventListener('click', function (event) {
+      if (event.button !== 0) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      var opener = event.target && event.target.closest ? event.target.closest('.film-open') : null;
+      if (!opener || !feed.contains(opener)) return;
+      event.preventDefault();
+      openScene(opener, true);
+    });
+
+    closeBtn.addEventListener('click', function () {
+      finishClose(false);
+    });
+
+    dialog.addEventListener('click', function (event) {
+      var target = event.target;
+      if (target && target.closest && target.closest('.scene-panel')) return;
+      finishClose(false);
+    });
+
+    dialog.addEventListener('cancel', function (event) {
+      event.preventDefault();
+      finishClose(false);
+    });
+
+    dialog.addEventListener('keydown', function (event) {
+      if (event.key !== 'Tab') return;
+      var items = focusables();
+      if (!items.length) return;
+      if (items.length === 1) {
+        event.preventDefault();
+        return;
+      }
+      var first = items[0];
+      var last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+
+    window.addEventListener('popstate', function () {
+      var id = history.state && history.state.scene;
+      if (id) {
+        var opener = findOpener(id);
+        if (opener) openScene(opener, false);
+        else if (dialog.open) finishClose(true);
+        return;
+      }
+      if (dialog.open) finishClose(true);
+    });
+
+    if (history.state && history.state.scene) openScene(findOpener(history.state.scene), false);
+  }
+
   armCovers();
 
   function start() {
     /* frequency-key */
     document.addEventListener('keydown', onKey);
     /* frequency-key */
+    bindScene();
     refresh();
   }
 

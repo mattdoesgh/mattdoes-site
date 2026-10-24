@@ -5,8 +5,9 @@
 // Pages come from site/verbs.ts. Listening is the /api/listening/* worker
 // (lib/listening.js). Watches are the Letterboxd RSS. The films-watched
 // count is the public films page. Both are lib/watches.js. A missing count
-// hides the line and does not fail the build. Poster mirroring no-ops
-// without CLOUDFLARE_API_TOKEN and never fails the build (lib/posters.js).
+// hides the line and does not fail the build. Poster uploads need
+// CLOUDFLARE_API_TOKEN. Without it, a poster already on the media host is
+// reused. A failed poster never fails the build (lib/posters.js).
 //
 // LISTENING_OFFLINE=1 and LETTERBOXD_OFFLINE=1 skip the network (tests, CI).
 

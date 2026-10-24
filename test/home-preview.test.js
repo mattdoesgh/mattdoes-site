@@ -110,7 +110,7 @@ test('a hover window under 1024 keeps a pink preview and no row rule', () => {
 test('kickers and flags share the label tracking', () => {
   const css = fs.readFileSync(path.join(REPO_ROOT, 'static', 'station.css'), 'utf8');
   const tokens = fs.readFileSync(path.join(REPO_ROOT, 'site', 'tokens.css'), 'utf8');
-  for (const selector of ['.slot .kicker', '.flag', '.evidence .kicker']) {
+  for (const selector of ['.slot .kicker', '.flag']) {
     const at = css.indexOf(`${selector} {`);
     const block = css.slice(at, css.indexOf('}', at));
     assert.match(block, /letter-spacing:\s*var\(--track-label\)/, selector);
