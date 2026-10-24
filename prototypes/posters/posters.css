@@ -1,0 +1,752 @@
+/* Throwaway poster studies for /watching/. Not the production stylesheet.
+   Colors, type, and radii come from site/tokens.css. */
+
+@import "../../site/tokens.css";
+
+@font-face {
+  font-family: "Anton";
+  font-style: normal;
+  font-weight: var(--weight-regular);
+  font-display: swap;
+  src: url("../../static/fonts/Anton-latin.woff2") format("woff2");
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  margin: var(--space-0);
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: var(--space-page);
+  background: var(--field);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--type-body);
+  line-height: 1.5;
+}
+
+:focus {
+  outline: var(--outline-none);
+}
+
+:focus-visible {
+  outline: var(--outline-focus);
+  outline-offset: var(--outline-offset);
+}
+
+::selection {
+  background: var(--pink);
+  color: var(--black);
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-1);
+  top: var(--space-0);
+  transform: translateY(-120%);
+  background: var(--pink);
+  color: var(--black);
+  padding: var(--space-skip);
+  z-index: 2;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  transform: none;
+  outline: var(--outline-black);
+  outline-offset: var(--outline-offset);
+}
+
+.sign {
+  margin: var(--space-0);
+  font-family: var(--display);
+  font-weight: var(--weight-regular);
+  font-size: var(--type-sign);
+  line-height: 0.9;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  color: var(--pink);
+}
+
+body[data-polarity="flip"] .sign {
+  color: var(--black);
+}
+
+.sign a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.feed {
+  list-style: none;
+  margin: var(--space-feed);
+  padding: var(--space-0);
+}
+
+.film {
+  min-width: var(--space-0);
+}
+
+.film button {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-row);
+  width: 100%;
+  margin: var(--space-0);
+  padding: var(--space-0);
+  border: var(--line-none);
+  border-radius: var(--radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.film button,
+.film img,
+.name,
+.still {
+  transition: none;
+}
+
+.still {
+  display: block;
+  background: var(--black);
+  line-height: 0;
+}
+
+.still img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  background: var(--black);
+}
+
+.name {
+  display: block;
+  font-family: var(--display);
+  font-weight: var(--weight-regular);
+  font-size: var(--type-album);
+  line-height: 0.9;
+  letter-spacing: var(--track-none);
+  text-transform: uppercase;
+  overflow-wrap: break-word;
+}
+
+.film button:hover .name,
+.film button:focus-visible .name {
+  text-decoration: underline;
+  text-underline-offset: 0.08em;
+}
+
+.meta,
+.scene-rate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-tight) var(--space-flag);
+  margin: var(--space-0);
+  font-size: var(--type-meta);
+  line-height: 1.4;
+}
+
+.year,
+.scene-year {
+  font-variant-numeric: tabular-nums;
+}
+
+.flag {
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  font-size: var(--type-flag);
+}
+
+/* Stars are black fill with a pink stroke. Small type floors at 1.5px.
+   The half star is the left half of ★, clipped, with the cut drawn by
+   the same glyph. No transition. */
+.stars {
+  color: inherit;
+  font-family: var(--body);
+  font-size: var(--type-meta);
+  letter-spacing: var(--track-stars);
+  white-space: nowrap;
+}
+
+@supports (-webkit-text-stroke: 0.025em var(--pink)) {
+  .stars {
+    color: var(--black);
+    -webkit-text-fill-color: var(--black);
+    -webkit-text-stroke: 0.025em var(--pink);
+    -webkit-text-stroke: max(0.025em, 1.5px) var(--pink);
+    paint-order: stroke fill;
+  }
+}
+
+.stars .star-half {
+  position: relative;
+  display: inline-block;
+  letter-spacing: var(--track-none);
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+.stars .star-glyph {
+  display: inline-block;
+  width: 0.5em;
+  width: calc-size(fit-content, size * 0.5);
+  letter-spacing: var(--track-none);
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: baseline;
+  clip-path: inset(-0.15em 0 -0.15em -0.15em);
+}
+
+.stars .star-half::after {
+  content: "★";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200%;
+  letter-spacing: var(--track-none);
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--pink);
+  -webkit-text-fill-color: var(--pink);
+  -webkit-text-stroke: max(0.025em, 1.5px) var(--pink);
+  paint-order: stroke fill;
+  pointer-events: none;
+  clip-path: inset(-0.2em calc(50% - max(0.025em, 1.5px)) -0.2em 50%);
+}
+
+/* Weighted. Fives and the newest film take a wide cell. 4.5 does too
+   once there is room. Everything else stays a single cell. No motion. */
+html[data-layout="weighted"] .feed {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  align-items: start;
+}
+
+html[data-layout="weighted"] .film--xl {
+  grid-column: span 2;
+}
+
+html[data-layout="weighted"] .film--xl .name {
+  font-size: var(--type-kicker);
+}
+
+/* Strip. One snapping row on the phone, with the next poster peeking.
+   The scene fades in as a whole. */
+html[data-layout="strip"] .feed {
+  display: flex;
+  gap: var(--space-md);
+  margin-inline: calc(var(--space-page) * -1);
+  padding: var(--space-0) var(--space-page) var(--space-md);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--space-page);
+  scrollbar-width: none;
+}
+
+html[data-layout="strip"] .feed::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-layout="strip"] .film {
+  flex: 0 0 78%;
+  scroll-snap-align: start;
+}
+
+html[data-layout="strip"] .name {
+  font-size: var(--type-kicker);
+}
+
+/* Reflow. A quiet poster-and-title list on the phone. */
+html[data-layout="reflow"] .feed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+html[data-layout="reflow"] .film button {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: var(--space-md);
+  align-items: center;
+}
+
+html[data-layout="reflow"] .name {
+  font-size: var(--type-album);
+}
+
+@media (min-width: 1024px) {
+  body {
+    padding: var(--space-page-desk);
+  }
+
+  .sign {
+    font-size: var(--row-size);
+    line-height: 0.86;
+    letter-spacing: var(--track-none);
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  .feed {
+    margin-top: var(--space-desk-block);
+  }
+
+  html[data-layout="weighted"] .feed {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--space-desk-feed);
+  }
+
+  html[data-layout="weighted"] .film--lg {
+    grid-column: span 2;
+  }
+
+  html[data-layout="weighted"] .film--xl .name {
+    font-size: var(--type-title-desk);
+  }
+
+  html[data-layout="strip"] .feed {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--space-md);
+    margin-inline: var(--space-0);
+    padding: var(--space-0);
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  html[data-layout="strip"] .film {
+    flex: none;
+    scroll-snap-align: none;
+  }
+
+  html[data-layout="strip"] .film:first-child {
+    grid-column: 1 / -1;
+  }
+
+  html[data-layout="strip"] .film:first-child button {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-section);
+    align-items: end;
+  }
+
+  html[data-layout="strip"] .film:first-child .still img {
+    width: auto;
+    max-width: 100%;
+    max-height: 72vh;
+  }
+
+  html[data-layout="strip"] .film:first-child .name {
+    font-size: var(--type-title);
+  }
+
+  html[data-layout="strip"] .film:not(:first-child) .name {
+    font-size: var(--type-meta);
+  }
+
+  html[data-layout="reflow"] .feed {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-desk-feed) var(--space-md);
+    align-items: start;
+  }
+
+  html[data-layout="reflow"] .film button {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-row);
+  }
+
+  html[data-layout="reflow"] .film:nth-child(even) {
+    margin-top: var(--space-players);
+  }
+
+  html[data-layout="reflow"] .name {
+    font-size: var(--type-album);
+  }
+}
+
+/* Scene. Black field, pink type. The panel is the thing you can tap
+   without closing. The black around it, the close button, Esc, and
+   history back all leave. Weighted is instant. Strip fades the whole
+   scene. Reflow scales the whole panel. Text does not wipe in. */
+.scene {
+  --focus: var(--pink);
+  --ink: var(--pink);
+  --field: var(--black);
+  color: var(--pink);
+  color-scheme: dark;
+}
+
+.scene[open] {
+  position: fixed;
+  inset: var(--space-0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: var(--space-0);
+  padding-top: calc(var(--hit-phone) + var(--space-md));
+  padding-right: var(--space-section);
+  padding-bottom: var(--space-section);
+  padding-left: var(--space-section);
+  border: var(--line-none);
+  border-radius: var(--radius);
+  background: var(--black);
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.scene::backdrop {
+  background: var(--black);
+}
+
+.scene-close {
+  position: fixed;
+  top: var(--space-md);
+  right: var(--space-md);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--hit-phone);
+  min-height: var(--hit-phone);
+  margin: var(--space-0);
+  padding: var(--space-tight) var(--space-md);
+  border: var(--line-none);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--pink);
+  font-family: var(--display);
+  font-size: var(--type-meta);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--track-label);
+  line-height: 1;
+  cursor: pointer;
+  transition: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.scene-close:hover,
+.scene-close:focus-visible {
+  background: var(--pink);
+  color: var(--black);
+  outline-color: var(--black);
+}
+
+.scene-panel {
+  min-width: var(--space-0);
+  min-height: var(--space-0);
+  max-height: 100%;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.scene.is-review .scene-panel {
+  align-self: stretch;
+  width: 100%;
+  height: 100%;
+}
+
+.scene.is-still .scene-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  max-width: 100%;
+}
+
+.scene-still {
+  display: flex;
+  justify-content: center;
+  min-width: var(--space-0);
+  margin: var(--space-0);
+  background: var(--black);
+}
+
+.scene-still img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  background: var(--black);
+}
+
+.scene-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: var(--space-0);
+}
+
+.scene-title {
+  margin: var(--space-0);
+  font-family: var(--display);
+  font-weight: var(--weight-regular);
+  font-size: var(--type-title);
+  line-height: 0.9;
+  letter-spacing: var(--track-none);
+  text-transform: uppercase;
+  overflow-wrap: break-word;
+}
+
+.scene-year {
+  margin: var(--space-slot-text);
+  font-size: var(--type-meta);
+}
+
+.scene-review {
+  margin: var(--space-statement);
+  max-width: var(--measure);
+  font-size: var(--type-body);
+  line-height: 1.45;
+}
+
+.scene-source {
+  margin: var(--space-md) var(--space-0) var(--space-0);
+}
+
+.scene-source a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--hit);
+  color: inherit;
+  font-family: var(--display);
+  font-size: var(--type-meta);
+  letter-spacing: var(--track-label);
+  text-decoration: none;
+}
+
+.scene-source a:hover,
+.scene-source a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+.scene .stars {
+  font-size: var(--type-nav);
+}
+
+.scene.is-still .scene-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: var(--space-0);
+  margin: var(--space-clip);
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: var(--line-none);
+}
+
+.scene.is-still .scene-still img {
+  max-height: 74vh;
+}
+
+.scene.is-still .scene-copy {
+  align-items: center;
+  text-align: center;
+}
+
+html[data-layout="weighted"] .scene.is-review .scene-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+html[data-layout="weighted"] .scene.is-review .scene-still img {
+  max-height: 42vh;
+}
+
+html[data-layout="strip"] .scene.is-review .scene-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+html[data-layout="strip"] .scene.is-review .scene-still {
+  flex: 0 0 auto;
+  height: 46vh;
+  overflow: hidden;
+}
+
+html[data-layout="strip"] .scene.is-review .scene-still img {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+}
+
+html[data-layout="strip"] .scene.is-review .scene-title {
+  font-size: var(--type-contact);
+}
+
+html[data-layout="strip"] .scene.is-still {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+html[data-layout="strip"] .scene.is-still .scene-panel,
+html[data-layout="strip"] .scene.is-still .scene-copy,
+html[data-layout="strip"] .scene.is-still .scene-still {
+  align-items: flex-start;
+  text-align: left;
+}
+
+html[data-layout="strip"] .scene.is-still .scene-still img {
+  max-height: 78vh;
+}
+
+html[data-layout="reflow"] .scene.is-review .scene-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-md);
+  width: min(100%, var(--measure));
+  height: auto;
+  margin-inline: auto;
+}
+
+html[data-layout="reflow"] .scene.is-review .scene-still {
+  width: 9.5rem;
+  justify-content: flex-start;
+}
+
+html[data-layout="reflow"] .scene.is-review .scene-still img {
+  width: 100%;
+}
+
+html[data-layout="reflow"] .scene.is-review .scene-title {
+  font-size: var(--type-contact);
+}
+
+html[data-layout="reflow"] .scene.is-still .scene-still img {
+  max-height: 62vh;
+}
+
+html[data-layout="reflow"] .scene.is-still .stars {
+  font-size: var(--type-contact);
+}
+
+@media (min-width: 1024px) {
+  .scene[open] {
+    padding-top: calc(var(--hit) + var(--space-md));
+    padding-right: var(--space-page);
+    padding-bottom: var(--space-page);
+    padding-left: var(--space-page);
+  }
+
+  .scene-close {
+    min-width: var(--hit);
+    min-height: var(--hit);
+  }
+
+  html[data-layout="weighted"] .scene.is-review .scene-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: var(--space-section);
+    align-items: center;
+  }
+
+  html[data-layout="weighted"] .scene.is-review .scene-still img {
+    max-height: 84vh;
+  }
+
+  html[data-layout="weighted"] .scene.is-review .scene-title {
+    font-size: var(--type-title-desk);
+  }
+
+  html[data-layout="strip"] .scene.is-review .scene-panel {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: var(--space-section);
+    align-items: stretch;
+  }
+
+  html[data-layout="strip"] .scene.is-review .scene-still {
+    height: auto;
+    min-height: var(--space-0);
+  }
+
+  html[data-layout="strip"] .scene.is-review .scene-copy {
+    justify-content: center;
+  }
+
+  html[data-layout="strip"] .scene.is-still .scene-still img {
+    max-width: 42vw;
+    max-height: 84vh;
+  }
+
+  html[data-layout="reflow"] .scene.is-review .scene-panel {
+    width: min(100%, 46rem);
+  }
+
+  html[data-layout="reflow"] .scene.is-review .scene-title {
+    font-size: var(--type-title);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-layout="strip"] .scene[open] {
+    animation: scene-fade 120ms linear both;
+  }
+
+  html[data-layout="reflow"] .scene[open] .scene-panel {
+    animation: scene-scale 160ms linear both;
+  }
+}
+
+@keyframes scene-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scene-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene[open],
+  .scene[open] .scene-panel {
+    animation: none !important;
+  }
+}
+
+html.is-locked,
+html.is-locked body {
+  overflow: hidden;
+}

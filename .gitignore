@@ -37,6 +37,9 @@ test/visual/test-results/
 playwright-report/
 blob-report/
 
+# Throwaway poster studies. Diary art is downloaded locally and not committed.
+prototypes/posters/art/
+
 # Work-in-progress / build scratch
 *.tmp
 *.bak
