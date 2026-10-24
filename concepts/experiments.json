@@ -1,0 +1,115 @@
+{
+  "host": "https://media.mattdoes.online",
+  "experiments": [
+    {
+      "slug": "exp-01",
+      "title": "exp 01 placeholder",
+      "date": "2026-10-18",
+      "note": "a kick that leans late, pads held under it.",
+      "bpm": 160,
+      "tags": ["footwork", "ambient"],
+      "file": "unshared/exp-01-placeholder.mp3",
+      "shape": "spike",
+      "seed": 11
+    },
+    {
+      "slug": "exp-02",
+      "title": "exp 02 placeholder",
+      "date": "2026-10-11",
+      "note": "sparse hats and a chord that never resolves.",
+      "bpm": 98,
+      "tags": ["la beats", "ambient"],
+      "file": "unshared/exp-02-placeholder.mp3",
+      "shape": "swell",
+      "seed": 29
+    },
+    {
+      "slug": "exp-03",
+      "title": "exp 03 placeholder",
+      "date": "2026-09-28",
+      "note": "three stabs, then a long pocket of air.",
+      "bpm": 148,
+      "tags": ["footwork", "la beats"],
+      "file": "unshared/exp-03-placeholder.mp3",
+      "shape": "stutter",
+      "seed": 47
+    },
+    {
+      "slug": "exp-04",
+      "title": "exp 04 placeholder",
+      "date": "2026-09-14",
+      "note": "the loop breathes, then a dry snare.",
+      "bpm": 132,
+      "tags": ["ambient", "footwork"],
+      "file": "unshared/exp-04-placeholder.mp3",
+      "shape": "swell",
+      "seed": 63
+    },
+    {
+      "slug": "exp-05",
+      "title": "exp 05 placeholder",
+      "date": "2026-08-30",
+      "note": "almost nothing, a pulse under the noise.",
+      "bpm": 86,
+      "tags": ["ambient"],
+      "file": "unshared/exp-05-placeholder.mp3",
+      "shape": "swell",
+      "seed": 81
+    },
+    {
+      "slug": "exp-06",
+      "title": "exp 06 placeholder",
+      "date": "2026-08-02",
+      "note": "swing on the offbeat, close and dry.",
+      "bpm": 150,
+      "tags": ["la beats"],
+      "file": "unshared/exp-06-placeholder.mp3",
+      "shape": "stutter",
+      "seed": 97
+    },
+    {
+      "slug": "exp-07",
+      "title": "exp 07 placeholder",
+      "date": "2026-07-19",
+      "note": "a chopped note with the pitch pulled down.",
+      "bpm": 140,
+      "tags": ["footwork", "la beats"],
+      "file": "unshared/exp-07-placeholder.mp3",
+      "shape": "spike",
+      "seed": 113
+    },
+    {
+      "slug": "exp-08",
+      "title": "exp 08 placeholder",
+      "date": "2026-06-22",
+      "note": "room tone, then footwork for sixteen bars.",
+      "bpm": 110,
+      "tags": ["ambient", "la beats"],
+      "file": "unshared/exp-08-placeholder.mp3",
+      "shape": "spike",
+      "seed": 131
+    },
+    {
+      "slug": "exp-09",
+      "title": "exp 09 placeholder",
+      "date": "2026-06-01",
+      "note": "hats only, the kick stays implied.",
+      "bpm": 124,
+      "tags": ["footwork"],
+      "file": "unshared/exp-09-placeholder.mp3",
+      "shape": "stutter",
+      "seed": 149
+    },
+    {
+      "slug": "exp-10",
+      "title": "exp 10 placeholder",
+      "date": "2026-05-17",
+      "note": "too fast, then half of it dropped out.",
+      "bpm": 170,
+      "tags": ["footwork", "ambient"],
+      "file": "unshared/exp-10-placeholder.mp3",
+      "shape": "spike",
+      "seed": 167
+    }
+  ]
+}
