@@ -110,15 +110,14 @@ export const siteConfig = {
   // env vars. The listing page also hides the username from its left rail.
   //
   // These settings govern the *build-time* snapshot rendered into the static
-  // HTML. Between deploys the page is kept live by workers/listening, which
-  // has its own stale-while-revalidate thresholds (FRESH_MS / HARD_MS in
-  // workers/listening/src/index.js) — adjust those there, not here.
+  // HTML. Recent plays stay live through workers/listening. The monthly
+  // album chart is the weekly snapshot that worker stores.
   lastfm: {
     username: '',       // read from LASTFM_USERNAME env var at build time
     limit:    25,       // how many recent tracks to render on /listening/
     cacheTtl: 15 * 60,  // seconds — build-time on-disk cache TTL only
     showUser: false,    // do not render 'last.fm/<user>' link on /listening/
-    // The monthly album chart comes from the listening worker
+    // The monthly album chart is that weekly snapshot
     // (GET /api/listening/charts) at build time. The Pages build does not
     // need a Last.fm key for it. A failed fetch hides the grid.
   },

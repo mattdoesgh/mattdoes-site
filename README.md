@@ -6,7 +6,7 @@ Source for [mattdoes.online](https://mattdoes.online). Static HTML from a small 
 
 - **home** (`/`) — the verb list. The letterboxd row also shows the newest film and its stars.
 - **watching** (`/watching/`) — recent Letterboxd watches. Posters are mirrored to `media.mattdoes.online` at build time.
-- **listening** (`/listening/`) — recent plays from the listening worker, baked at build time and refreshed live.
+- **listening** (`/listening/`) — recent plays from the listening worker, baked at build time and refreshed live. The monthly album chart is a weekly snapshot.
 - **unshared** (`/unshared/`) — offline while `unsharedEnabled` is false. The page code stays. A public mailbox is rendered only when the page is published and `unsharedContact.email` is set.
 - **404** — not found.
 
@@ -24,7 +24,7 @@ Workers, same-origin under `/api/`:
 - **`mattdoes-geo`** — still deployed. The page no longer draws a map.
 - **`mattdoes-csp-report`** — collects CSP reports.
 
-`mattdoes-rebuild` has no route. Every six hours it POSTs the Pages deploy hook so the Letterboxd snapshot stays current.
+`mattdoes-rebuild` has no route. Every six hours it POSTs the Pages deploy hook so the Letterboxd snapshot stays current. The listening worker also asks for that rebuild after it refreshes the album chart on Monday at 11:00 UTC, which is 6:00 AM US Central during daylight time and 5:00 AM during standard time.
 
 ## running it
 

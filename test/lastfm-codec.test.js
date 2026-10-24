@@ -171,12 +171,20 @@ test('lastfm: album art keeps the largest real Last.fm cover', () => {
   const small = 'https://lastfm.freetls.fastly.net/i/u/34s/abc.jpg';
   const large = 'https://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg';
   const current = 'https://lastfm-img.freetls.fastly.net/i/u/300x300/abc.jpg';
+  const grey = 'https://lastfm.freetls.fastly.net/i/u/300x300/4128a6eb29f94943c9d206c08e625904.png';
+  const legacy = 'https://lastfm.freetls.fastly.net/i/u/300x300/c6f59c1e5e7240a4c0d427abd71f3dbb.jpg';
+  const mirrored = 'https://media.mattdoes.online/covers/0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef.jpg';
   assert.equal(albumImageUrl(star), '');
+  assert.equal(albumImageUrl(grey), '');
+  assert.equal(albumImageUrl(legacy), '');
   assert.equal(albumImageUrl('http://lastfm.freetls.fastly.net/i/u/300x300/abc.jpg'), '');
   assert.equal(albumImageUrl('https://evil.example/abc.jpg'), '');
   assert.equal(albumImageUrl('https://not-lastfm.freetls.fastly.net/i/u/300x300/abc.jpg'), '');
+  assert.equal(albumImageUrl('https://media.mattdoes.online/posters/abc.jpg'), '');
+  assert.equal(albumImageUrl('https://coverartarchive.org/release/abc/front-250'), '');
   assert.equal(albumImageUrl(large), large);
   assert.equal(albumImageUrl(current), current);
+  assert.equal(albumImageUrl(mirrored), mirrored);
   const albums = decodeTopAlbums({
     topalbums: {
       album: [

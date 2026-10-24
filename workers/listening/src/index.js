@@ -24,11 +24,12 @@
 //     expired entry is recorded as a 504 (edgeWorkerCacheAPI) even when KV
 //     has a snapshot, and must-revalidate stops the edge from serving that
 //     snapshot when a refresh fails.
-//   • CHARTS — GET /api/listening/charts reads a KV entry cached for hours.
-//     A miss calls user.gettopalbums once, for the last month, deep enough
-//     to skip albums with no real cover and still fill the grid. The poller
-//     is not involved. The Last.fm user is the Worker secret, never a
-//     request field.
+//   • CHARTS — GET /api/listening/charts reads the weekly KV snapshot. It does
+//     not refresh on a timer of its own. A miss (empty key) calls
+//     user.gettopalbums once, for the last month, probes covers, and stores
+//     the grid plus a few spares. The Monday cron refreshes that snapshot
+//     and asks the rebuild Worker to redeploy Pages. The poller is not
+//     involved. The Last.fm user is the Worker secret, never a request field.
 //
 // Bootstrap / liveness: a DO alarm is durable once set and self-perpetuates,
 // but nothing starts it on first deploy (or if the chain ever permanently
@@ -39,12 +40,12 @@
 // ever touching the read path.
 //
 // Browser max-age matches how fresh the payload is: seconds for /now, a short
-// minute for /recent, and six hours for /charts. must-revalidate stops a
-// browser from serving a copy past that window. The edge is told separately,
-// via Cloudflare-CDN-Cache-Control, that it may serve the last good response
-// while it revalidates and when that revalidation fails. That header is not
-// sent for warming or unavailable payloads, so an empty fallback is not
-// pinned at the edge.
+// minute for /recent, and a minute for /charts. must-revalidate stops a
+// browser from serving a copy past that window. The charts edge cache is
+// also a minute, with stale-if-error only. stale-while-revalidate would let
+// the Pages build that follows the Monday cron bake the previous chart.
+// That header is not sent for warming or unavailable payloads, so an empty
+// fallback is not pinned at the edge.
 //
 // Env (wrangler secrets):
 //   LASTFM_USERNAME  — Last.fm user to query
@@ -59,16 +60,18 @@
 // Notes on Last.fm API etiquette:
 //   • /now and /recent never call Last.fm. The DO alarm does, at a constant
 //     cadence, one user.getrecenttracks per tick.
-//   • /charts calls Last.fm only when its KV entry is older than
-//     CHARTS_TTL_MS. A short lock collapses a burst into one round.
+//   • /charts calls Last.fm only when the weekly snapshot is missing. A
+//     short lock collapses a burst into one round. The Monday cron refreshes
+//     the snapshot even when it is already present.
 //   • A descriptive User-Agent is sent so Last.fm can identify this client.
 //     Request URLs are not logged: they carry the API key.
 
 import {
   json, errorJson, withCache, corsPreflight, kvGet, kvPut, getClientIp, sha256Hex,
 } from '../../lib/transport.js';
+import { resolveChartAlbums } from '../../../lib/covers.js';
 import {
-  CHART_POOL, LISTENING_PERIODS, TOP_LIMIT, albumsWithCovers, decodeTopAlbums,
+  CHART_POOL, LISTENING_PERIODS, decodeTopAlbums,
   decodeTrack, decodeTracks, lastfmError, recentTracksUrl, topAlbumsUrl,
 } from '../../../lib/lastfm.js';
 
@@ -88,15 +91,19 @@ const RECENT_BROWSER_TTL_S = 60;
 
 const RECENT_LIMIT = 25;
 const USER_AGENT   = 'mattdoes-site/1.0 (+https://mattdoes.online)';
-// Charts move on a scale of months. Six hours matches the site rebuild and
-// keeps a cold Pages build from calling Last.fm again on the next deploy.
-const CHARTS_TTL_MS         = 6 * 60 * 60 * 1000;
-const CHARTS_EDGE_TTL_S     = 6 * 60 * 60;
-const CHARTS_BROWSER_TTL_S  = CHARTS_EDGE_TTL_S;
-// `charts` was the five-name list. `charts:covers` dropped every cover.
-// `charts:img` stored four periods already sliced to 25, so a blank in that
-// window could not be replaced from further down the chart.
-const CHARTS_KEY         = 'charts:month';
+// The page paints the Monday snapshot. A short browser and edge TTL lets the
+// rebuild that follows the cron read the new chart. Seven days of
+// stale-if-error covers a failed refresh. There is no stale-while-revalidate.
+const CHARTS_BROWSER_TTL_S = 60;
+const CHARTS_EDGE_TTL_S = 60;
+const CHARTS_STALE_IF_ERROR_S = 7 * 24 * 60 * 60;
+// Monday 11:00 UTC. That is 6:00 AM US Central during daylight time (CDT,
+// UTC−5, roughly March–November) and 5:00 AM US Central during standard
+// time (CST, UTC−6).
+export const CHARTS_CRON = '0 11 * * 1';
+// `charts:month` was the six-hour cache, sliced to 25. A new key so a deploy
+// does not keep serving that snapshot until the next Monday.
+const CHARTS_KEY         = 'charts:week';
 const CHARTS_LOCK_KEY    = 'charts:lock';
 
 /**
@@ -150,10 +157,10 @@ export default {
    * Read path. Pure KV reader for:
    *   `GET /api/listening/now`     → current scrobble
    *   `GET /api/listening/recent`  → playcount + recent tracks
-   *   `GET /api/listening/charts`  → top albums and covers, cached for hours
-   * `/now` and `/recent` never call Last.fm. `/charts` calls Last.fm only on
-   * a cache miss, then stores the result for CHARTS_TTL_MS. The recent-tracks
-   * poller is not involved.
+   *   `GET /api/listening/charts`  → the weekly top-album snapshot
+   * `/now` and `/recent` never call Last.fm. `/charts` calls Last.fm only
+   * when that snapshot is missing. The Monday cron refreshes it. The
+   * recent-tracks poller is not involved.
    *
    * @param {Request} request
    * @param {Env} env
@@ -213,6 +220,10 @@ export default {
    * @returns {Promise<void>}
    */
   async scheduled(event, env, ctx) {
+    if (event?.cron === CHARTS_CRON) {
+      await refreshWeeklyChart(env);
+      return;
+    }
     if (!env.LISTENING_POLLER) return;
     const id   = env.LISTENING_POLLER.idFromName('singleton');
     const stub = env.LISTENING_POLLER.get(id);
@@ -284,8 +295,8 @@ async function handle(env, kind) {
 /**
  * Top albums for the last month. The Last.fm user is
  * the Worker secret, never a request field, and it is not copied into the
- * payload. A miss fetches Last.fm once and stores the result for hours. A
- * failed refresh keeps the previous payload when there is one.
+ * payload. Any stored snapshot is served, however old. A miss fetches
+ * Last.fm once. The Monday cron is what replaces the snapshot.
  *
  * @param {Env} env
  * @returns {Promise<Response>}
@@ -299,8 +310,7 @@ async function handleCharts(env) {
   }
 
   const cached = await readCache(env, CHARTS_KEY);
-  const fresh = cached && (Date.now() - cached.fetchedAt < CHARTS_TTL_MS) && cached.data?.periods;
-  if (fresh) return json(cached.data);
+  if (cached?.data?.periods) return json(cached.data);
 
   const lock = await kvGet(env.LASTFM_CACHE, CHARTS_LOCK_KEY);
   if (lock) {
@@ -348,8 +358,8 @@ async function fetchOneChart(url, decode) {
 
 /**
  * The monthly chart only. Returns null when the call failed so the caller can
- * keep a stale snapshot instead of caching an empty page. Albums with no real
- * cover are dropped and the next rows fill the grid.
+ * keep a stale snapshot instead of caching an empty page. Dead covers and
+ * placeholder art are dropped and the next rows fill the grid.
  *
  * @param {Env} env
  * @returns {Promise<object|null>}
@@ -360,15 +370,44 @@ async function fetchChartPeriods(env) {
   let any = false;
   const periods = {};
   await Promise.all(LISTENING_PERIODS.map(async ({ id }) => {
-    const albums = await fetchOneChart(
+    const decoded = await fetchOneChart(
       topAlbumsUrl(user, key, id, CHART_POOL),
-      (body) => albumsWithCovers(decodeTopAlbums(body, CHART_POOL), TOP_LIMIT),
+      (body) => decodeTopAlbums(body, CHART_POOL),
     );
     // null is a failed call. An array, including an empty one, is a success.
-    if (albums !== null) any = true;
-    periods[id] = { albums: albums || [] };
+    if (decoded === null) {
+      periods[id] = { albums: [] };
+      return;
+    }
+    any = true;
+    periods[id] = { albums: await resolveChartAlbums(decoded, { key }) };
   }));
   return any ? periods : null;
+}
+
+/**
+ * Monday cron. Replaces the weekly snapshot, then asks the rebuild Worker
+ * to redeploy Pages so the static grid matches. A failed Last.fm round
+ * leaves the previous snapshot in place and throws so the cron retries.
+ * A missing rebuild binding is logged and does not throw: the six-hour
+ * rebuild still publishes the snapshot.
+ *
+ * @param {Env} env
+ * @returns {Promise<void>}
+ */
+async function refreshWeeklyChart(env) {
+  if (!env.LASTFM_API_KEY || !env.LASTFM_USERNAME || !env.LASTFM_CACHE) {
+    throw new Error('charts refresh is not configured');
+  }
+  const periods = await fetchChartPeriods(env);
+  if (!periods) throw new Error('charts refresh failed');
+  await writeCache(env, CHARTS_KEY, { periods });
+  if (!env.REBUILD || typeof env.REBUILD.fetch !== 'function') {
+    console.log(JSON.stringify({ event: 'chart_rebuild_skipped', reason: 'missing_rebuild_binding' }));
+    return;
+  }
+  const res = await env.REBUILD.fetch('https://rebuild.internal/rebuild', { method: 'POST' });
+  if (res.status !== 204) throw new Error('chart rebuild failed');
 }
 
 // ── producer fetch ───────────────────────────────────────────────────────
@@ -519,15 +558,16 @@ function trackToNow(t) {
 //
 // Two-layer caching policy:
 //   • Cache-Control max-age → the browser. /now is seconds, /recent is a
-//     minute, and /charts matches its six-hour window. must-revalidate means
-//     a browser past that age re-asks instead of replaying a stale scrobble.
+//     minute, and /charts is a minute. must-revalidate means a browser past
+//     that age re-asks instead of replaying a stale scrobble.
 //     s-maxage stays in this header for downstream shared caches. Cloudflare
 //     itself follows Cloudflare-CDN-Cache-Control when that header is present,
 //     so must-revalidate here does not forbid the edge from serving stale.
 //   • Cloudflare-CDN-Cache-Control → the edge only, and only on a real
 //     snapshot. max-age is the fresh window (s-maxage would disable stale
-//     serving). stale-while-revalidate and stale-if-error let the edge return
-//     the last good response instead of a 504.
+//     serving). /now and /recent may be served stale while they revalidate
+//     and when that revalidation fails. /charts uses stale-if-error only,
+//     so the rebuild after the Monday cron does not bake the previous chart.
 function toClient(response, kind, serveStale = false) {
   const browserTtlS = kind === 'now' ? NOW_BROWSER_TTL_S : RECENT_BROWSER_TTL_S;
   const wrapped = withCache(response, `public, max-age=${browserTtlS}, s-maxage=${EDGE_TTL_S}, must-revalidate`);
@@ -535,10 +575,16 @@ function toClient(response, kind, serveStale = false) {
 }
 
 function toChartsClient(response) {
-  return withEdgeStale(
-    withCache(response, `public, max-age=${CHARTS_BROWSER_TTL_S}, s-maxage=${CHARTS_EDGE_TTL_S}, must-revalidate`),
-    CHARTS_EDGE_TTL_S,
+  const wrapped = withCache(
+    response,
+    `public, max-age=${CHARTS_BROWSER_TTL_S}, must-revalidate`,
   );
+  const headers = new Headers(wrapped.headers);
+  headers.set(
+    'cloudflare-cdn-cache-control',
+    `public, max-age=${CHARTS_EDGE_TTL_S}, stale-if-error=${CHARTS_STALE_IF_ERROR_S}`,
+  );
+  return new Response(wrapped.body, { status: wrapped.status, headers });
 }
 
 function withEdgeStale(response, edgeTtlS) {

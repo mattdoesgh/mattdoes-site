@@ -582,11 +582,16 @@ body[data-polarity="flip"] .total-label {
   background: var(--black);
 }
 
+.album-tile[hidden] {
+  display: none;
+}
+
 .album-tile img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  color: transparent;
 }
 
 .album-cap {

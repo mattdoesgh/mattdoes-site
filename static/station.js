@@ -89,6 +89,32 @@
       .catch(function () {});
   }
 
+  function dropCover(grid, img) {
+    var tile = img.closest('.album-tile');
+    if (!tile || !tile.parentNode) return;
+    var wasHidden = tile.hasAttribute('hidden');
+    tile.remove();
+    if (wasHidden) return;
+    var next = grid.querySelector('.album-tile[hidden]');
+    if (next) next.removeAttribute('hidden');
+  }
+
+  function armCovers() {
+    var grid = document.querySelector('.album-grid');
+    if (!grid) return;
+    grid.addEventListener('error', function (event) {
+      var img = event.target;
+      if (!img || img.tagName !== 'IMG') return;
+      if (img.complete && img.naturalWidth === 0) dropCover(grid, img);
+    }, true);
+    var imgs = grid.querySelectorAll('img');
+    for (var i = 0; i < imgs.length; i += 1) {
+      if (imgs[i].complete && imgs[i].naturalWidth === 0) dropCover(grid, imgs[i]);
+    }
+  }
+
+  armCovers();
+
   function start() {
     /* frequency-key */
     document.addEventListener('keydown', onKey);

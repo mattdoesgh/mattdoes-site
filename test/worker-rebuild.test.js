@@ -29,6 +29,44 @@ test('rebuild fetch returns 404 and does not call the hook', async () => {
   assert.equal(called, false);
 });
 
+test('rebuild POST /rebuild from the service binding runs the hook', async () => {
+  const calls = [];
+  const original = globalThis.fetch;
+  globalThis.fetch = async (url, init) => {
+    calls.push({ url: String(url), method: init?.method });
+    return new Response(null, { status: 200 });
+  };
+  try {
+    const res = await rebuild.fetch(new Request('https://rebuild.internal/rebuild', { method: 'POST' }), {
+      DEPLOY_HOOK: HOOK,
+    });
+    assert.equal(res.status, 204);
+    assert.equal(res.headers.get('cache-control'), 'no-store');
+  } finally {
+    globalThis.fetch = original;
+  }
+  assert.deepEqual(calls, [{ url: HOOK, method: 'POST' }]);
+});
+
+test('rebuild POST /rebuild with a client IP does not run the hook', async () => {
+  let called = false;
+  const original = globalThis.fetch;
+  globalThis.fetch = async () => {
+    called = true;
+    return new Response(null, { status: 200 });
+  };
+  try {
+    const res = await rebuild.fetch(new Request('https://rebuild.internal/rebuild', {
+      method: 'POST',
+      headers: { 'cf-connecting-ip': '203.0.113.9' },
+    }), { DEPLOY_HOOK: HOOK });
+    assert.equal(res.status, 404);
+  } finally {
+    globalThis.fetch = original;
+  }
+  assert.equal(called, false);
+});
+
 test('rebuild scheduled POSTs the DEPLOY_HOOK secret', async () => {
   const calls = [];
   const original = globalThis.fetch;

@@ -22,7 +22,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CHART_POOL } from '../lib/lastfm.js';
-import listeningWorker, { ListeningPoller, deriveBoth } from '../workers/listening/src/index.js';
+import listeningWorker, { CHARTS_CRON, ListeningPoller, deriveBoth } from '../workers/listening/src/index.js';
 import {
   KVStub, DurableStateStub, makeCtx, installCaches, installFetch,
   workerRequest, jsonResponse,
@@ -482,7 +482,7 @@ test('scheduled: no-ops when the poller binding is absent', async () => {
 // ── charts: cached for hours, fixed periods, no request input ───────────
 const CHARTS = 'https://listening.mattdoes.online/api/listening/charts';
 const CHART_USER = 'djverism-secret';
-const CHARTS_KEY = 'charts:month';
+const CHARTS_KEY = 'charts:week';
 
 function chartEnv(kv = new KVStub()) {
   return {
@@ -493,15 +493,23 @@ function chartEnv(kv = new KVStub()) {
   };
 }
 
+function jpegResponse() {
+  return new Response(Uint8Array.of(0xff, 0xd8, 0xff, 0xd9), {
+    status: 200,
+    headers: { 'content-type': 'image/jpeg' },
+  });
+}
+
 function lastfmChart(url) {
   const parsed = new URL(url);
+  if (parsed.searchParams.get('method') === 'album.getinfo') {
+    return jsonResponse({ error: 6, message: 'Album not found' });
+  }
+  assert.equal(parsed.searchParams.get('method'), 'user.gettopalbums');
   assert.equal(parsed.searchParams.get('period'), '1month');
   assert.equal(parsed.searchParams.get('limit'), String(CHART_POOL));
   assert.doesNotMatch(url, /gettopartists/);
   const star = 'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
-  if (!url.includes('method=user.gettopalbums')) {
-    return jsonResponse({ error: 3, message: `unknown method for ${CHART_USER}` }, 200);
-  }
   const albums = [
     {
       name: 'No Art',
@@ -543,6 +551,16 @@ function lastfmChart(url) {
   });
 }
 
+function chartFetch(url) {
+  const host = new URL(url).hostname;
+  if (host === 'musicbrainz.org') return jsonResponse({ releases: [] });
+  if (host === 'coverartarchive.org' || host === 'archive.org' || host.endsWith('.archive.org')) {
+    return jpegResponse();
+  }
+  if (host.endsWith('freetls.fastly.net')) return jpegResponse();
+  return lastfmChart(url);
+}
+
 const API_CSP = "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 
 function assertApiEnvelope(headers) {
@@ -576,10 +594,14 @@ function seedCharts(kv, fetchedAt, periods) {
 
 test('charts: a cold miss fetches the monthly chart, skips blank covers, and hides the username', async () => {
   const kv = new KVStub();
-  const { status, body, headers, calls } = await fetchCharts(CHARTS, chartEnv(kv), lastfmChart);
+  await kv.put('charts:month', JSON.stringify({
+    data: { periods: { '1month': { albums: [{ name: 'Stale Month', artist: 'Old', playcount: 1, url: '', image: 'https://lastfm.freetls.fastly.net/i/u/300x300/old.jpg' }] } } },
+    fetchedAt: Date.now(),
+  }));
+  const { status, body, headers, calls } = await fetchCharts(CHARTS, chartEnv(kv), chartFetch);
 
   assert.equal(status, 200);
-  assert.equal(calls.length, 1, 'one monthly album chart');
+  assert.equal(calls.filter((url) => url.includes('gettopalbums')).length, 1, 'one monthly album chart');
   assert.ok(calls[0].includes('period=1month'));
   assert.ok(calls[0].includes(`limit=${CHART_POOL}`));
   assert.ok(calls[0].includes(`user=${encodeURIComponent(CHART_USER)}`));
@@ -589,22 +611,24 @@ test('charts: a cold miss fetches the monthly chart, skips blank covers, and hid
   assert.equal('reason' in body, false);
   assert.equal(body.periods.overall, undefined);
   const albums = body.periods['1month'].albums;
-  assert.equal(albums.length, 25);
+  assert.equal(albums.length, 26);
   assert.equal(albums[0].name, 'Cover 1');
   assert.equal(albums[0].url, 'https://www.last.fm/music/Album+Artist/Album');
   assert.equal(albums[0].image, 'https://lastfm.freetls.fastly.net/i/u/300x300/cover1.jpg');
   assert.equal(albums[24].name, 'Cover 25');
-  assert.equal(albums.some((row) => row.name === 'Cover 26'), false);
+  assert.equal(albums[25].name, 'Cover 26');
   assert.equal(albums.some((row) => ['No Art', 'Star', 'Foreign'].includes(row.name)), false);
+  assert.equal(calls.some((url) => url.includes('2a96cbd8b46e442fc41c2b86b821562f')), false);
   assert.equal(body.periods['1month'].artists, undefined);
   assert.equal(JSON.stringify(body).includes(CHART_USER), false);
   assert.equal(JSON.stringify(body).includes('secret-key'), false);
   assertApiEnvelope(headers);
-  assert.equal(headers.get('cache-control'), 'public, max-age=21600, s-maxage=21600, must-revalidate');
+  assert.equal(headers.get('cache-control'), 'public, max-age=60, must-revalidate');
   assert.equal(
     headers.get('cloudflare-cdn-cache-control'),
-    'public, max-age=21600, stale-while-revalidate=86400, stale-if-error=86400',
+    'public, max-age=60, stale-if-error=604800',
   );
+  assert.equal(headers.get('cloudflare-cdn-cache-control').includes('stale-while-revalidate'), false);
 
   const stored = await kv.get(CHARTS_KEY, { type: 'json' });
   assert.equal(stored.data.periods['1month'].albums[0].name, 'Cover 1');
@@ -658,10 +682,10 @@ test('cache: browser max-age matches the freshness of now, recent, and charts', 
     const charts = await hit(CHARTS);
     assert.equal(now.browser, 'public, max-age=15, s-maxage=15, must-revalidate');
     assert.equal(recent.browser, 'public, max-age=60, s-maxage=15, must-revalidate');
-    assert.equal(charts.browser, 'public, max-age=21600, s-maxage=21600, must-revalidate');
+    assert.equal(charts.browser, 'public, max-age=60, must-revalidate');
     assert.equal(now.edge, EDGE_RECENT);
     assert.equal(recent.edge, EDGE_RECENT);
-    assert.equal(charts.edge, 'public, max-age=21600, stale-while-revalidate=86400, stale-if-error=86400');
+    assert.equal(charts.edge, 'public, max-age=60, stale-if-error=604800');
     assert.equal(fetchStub.calls.length, 0);
   } finally {
     caches.restore();
@@ -831,21 +855,73 @@ test('charts: a total Last.fm failure is not cached and carries a reason', async
   assert.equal(JSON.stringify(body).includes(CHART_USER), false);
 });
 
-test('charts: a failed refresh keeps the previous payload', async () => {
+test('charts: an old snapshot is served and does not call Last.fm', async () => {
   const kv = new KVStub();
-  const staleAt = Date.now() - (7 * 60 * 60 * 1000);
+  const staleAt = Date.now() - (8 * 24 * 60 * 60 * 1000);
   const periods = {
     '1month': { albums: [{ name: 'Kept', artist: 'Kept Artist', playcount: 3, url: '', image: 'https://lastfm.freetls.fastly.net/i/u/300x300/kept.jpg' }] },
   };
   await seedCharts(kv, staleAt, periods);
   const { status, body, calls } = await fetchCharts(
-    CHARTS, chartEnv(kv), () => new Response('no', { status: 500 }));
+    CHARTS, chartEnv(kv), () => { throw new Error('a stored chart must not call Last.fm'); });
   assert.equal(status, 200);
   assert.equal('reason' in body, false);
   assert.equal(body.periods['1month'].albums[0].name, 'Kept');
-  assert.equal(calls.length, 1);
+  assert.equal(calls.length, 0);
   const stored = await kv.get(CHARTS_KEY, { type: 'json' });
-  assert.equal(stored.fetchedAt, staleAt, 'a failed refresh must not overwrite the snapshot');
+  assert.equal(stored.fetchedAt, staleAt, 'a read must not refresh the weekly snapshot');
+});
+
+test('scheduled: Monday refreshes the chart and asks the rebuild worker to redeploy', async () => {
+  const kv = new KVStub();
+  const rebuildCalls = [];
+  const env = {
+    ...chartEnv(kv),
+    REBUILD: {
+      fetch: async (url, init) => {
+        rebuildCalls.push({ url: String(url), method: init?.method });
+        return new Response(null, { status: 204 });
+      },
+    },
+  };
+  const fetchStub = installFetch(chartFetch);
+  try {
+    await listeningWorker.scheduled({ cron: CHARTS_CRON }, env, makeCtx());
+  } finally { fetchStub.restore(); }
+  assert.equal(CHARTS_CRON, '0 11 * * 1');
+  assert.equal(rebuildCalls.length, 1);
+  assert.equal(rebuildCalls[0].url, 'https://rebuild.internal/rebuild');
+  assert.equal(rebuildCalls[0].method, 'POST');
+  assert.equal(fetchStub.calls.some((url) => url.includes('getrecenttracks')), false);
+  assert.equal(fetchStub.calls.filter((url) => url.includes('gettopalbums')).length, 1);
+  const stored = await kv.get(CHARTS_KEY, { type: 'json' });
+  assert.equal(stored.data.periods['1month'].albums[0].name, 'Cover 1');
+  assert.equal(stored.data.periods['1month'].albums.some((row) => row.name === 'Cover 26'), true);
+});
+
+test('scheduled: a failed weekly refresh keeps the snapshot and skips the rebuild', async () => {
+  const kv = new KVStub();
+  const staleAt = Date.now() - (3 * 24 * 60 * 60 * 1000);
+  await seedCharts(kv, staleAt, {
+    '1month': { albums: [{ name: 'Kept', artist: 'Kept Artist', playcount: 3, url: '', image: 'https://lastfm.freetls.fastly.net/i/u/300x300/kept.jpg' }] },
+  });
+  let rebuilds = 0;
+  const env = {
+    ...chartEnv(kv),
+    REBUILD: { fetch: async () => { rebuilds += 1; return new Response(null, { status: 204 }); } },
+  };
+  const fetchStub = installFetch(() => new Response('no', { status: 500 }));
+  try {
+    await assert.rejects(
+      () => listeningWorker.scheduled({ cron: CHARTS_CRON }, env, makeCtx()),
+      /charts refresh failed/,
+    );
+  } finally { fetchStub.restore(); }
+  assert.equal(rebuilds, 0);
+  assert.equal(fetchStub.calls.some((url) => url.includes('getrecenttracks')), false);
+  const stored = await kv.get(CHARTS_KEY, { type: 'json' });
+  assert.equal(stored.fetchedAt, staleAt);
+  assert.equal(stored.data.periods['1month'].albums[0].name, 'Kept');
 });
 
 test('charts: a held lock does not start another Last.fm round', async () => {

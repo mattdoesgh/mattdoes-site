@@ -7,7 +7,7 @@
 // (and LISTENING_OFFLINE=1 skips 2 + 3).
 
 import test from 'node:test';
-import assert from 'node:assert/strict';
+import assert, { AssertionError } from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fetchListeningSnapshot } from '../lib/listening.js';
@@ -217,6 +217,24 @@ test('snapshot: period charts come from the worker and a failure keeps the track
   } finally { restore(); restoreEnv(); }
 });
 
+test('snapshot: an assertion while settling covers is not swallowed', async () => {
+  const restoreEnv = cleanEnv();
+  const cacheDir = makeTempDir('mattdoes-cache-');
+  const { restore } = installFetch((url) => {
+    if (url.endsWith('/api/listening/recent')) {
+      return jsonResponse({ playcount: 120022, tracks: [SAMPLE_TRACK] });
+    }
+    if (url.endsWith('/api/listening/charts')) return jsonResponse(workerChartPayload());
+    throw new AssertionError({ message: 'cover assert' });
+  });
+  try {
+    await assert.rejects(
+      () => fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir }),
+      /cover assert/,
+    );
+  } finally { restore(); restoreEnv(); }
+});
+
 test('snapshot: a total chart failure still bakes the recent tracks', async () => {
   const restoreEnv = cleanEnv();
   const cacheDir = makeTempDir('mattdoes-cache-');
@@ -264,12 +282,15 @@ test('snapshot: a fresh cache without charts fetches only the charts endpoint', 
     playcount: 9, tracks: [SAMPLE_TRACK],
   }));
   const { calls, restore } = installFetch((url) => {
-    assert.equal(url.endsWith('/api/listening/charts'), true);
-    return jsonResponse(workerChartPayload());
+    if (url.endsWith('/api/listening/charts')) return jsonResponse(workerChartPayload());
+    if (url.includes('freetls.fastly.net')) throw new Error('cover unavailable');
+    assert.fail(url);
   });
   try {
     const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
-    assert.equal(calls.length, 1);
+    assert.equal(calls.filter((url) => url.endsWith('/api/listening/charts')).length, 1);
+    assert.equal(calls.filter((url) => url.includes('abc.jpg') || url.includes('back.jpg')).length, 2);
+    assert.equal(calls.some((url) => url.includes('evil.example')), false);
     assert.equal(snap.playcount, 9);
     assert.equal(snap.periods['1month'].artists[0].name, 'Artist 1month');
     assert.equal(calls.some((url) => url.includes('gettop')), false);

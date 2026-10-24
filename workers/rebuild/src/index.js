@@ -1,7 +1,9 @@
-// Cron-only rebuild. Every six hours, POST the Pages deploy hook so the
-// static build refetches Letterboxd — the diary RSS and the films-watched
-// count (lib/watches.js). DEPLOY_HOOK is a
-// secret set outside the repo. There is no public route; fetch() is 404.
+// Cron rebuild, plus an internal POST /rebuild for the listening Worker.
+// Every six hours, POST the Pages deploy hook so the static build refetches
+// Letterboxd — the diary RSS and the films-watched count (lib/watches.js).
+// The Monday album-chart cron calls the same hook through the service
+// binding. DEPLOY_HOOK is a secret set outside the repo. There is no public
+// route. A request that carries a client IP is a 404.
 //
 // The hook URL is the secret. It is posted only when it is an https URL on
 // api.cloudflare.com whose path is a Pages or Workers deploy hook. The
@@ -64,16 +66,57 @@ async function postDeployHook(hook) {
   console.log(JSON.stringify({ event: 'rebuild_requested', status: res.status }));
 }
 
+/**
+ * @param {{ DEPLOY_HOOK?: string }} env
+ * @returns {Promise<void>}
+ */
+async function runRebuild(env) {
+  const hook = allowedDeployHook(env.DEPLOY_HOOK);
+  if (!hook) {
+    console.error(JSON.stringify({ event: 'rebuild_skipped', reason: 'missing_deploy_hook' }));
+    throw new Error('DEPLOY_HOOK is not configured');
+  }
+  await postDeployHook(hook);
+}
+
+/**
+ * @param {unknown} request
+ * @returns {boolean}
+ */
+function internalRebuild(request) {
+  if (!request || request.method !== 'POST') return false;
+  if (typeof request.headers?.has === 'function' && request.headers.has('cf-connecting-ip')) return false;
+  try {
+    return new URL(request.url).pathname === '/rebuild';
+  } catch {
+    return false;
+  }
+}
+
 export default {
-  /** Not routed. A direct hit must not reveal the hook or trigger a rebuild. */
-  async fetch() {
-    return new Response(null, {
-      status: 404,
-      headers: {
-        ...securityHeaders(),
-        'cache-control': 'no-store',
-      },
-    });
+  /**
+   * No public route. POST /rebuild from the listening Worker's service
+   * binding runs the hook. A client IP means the request is not that
+   * binding, so it is a 404 and the hook is not called.
+   *
+   * @param {Request} request
+   * @param {{ DEPLOY_HOOK?: string }} env
+   * @returns {Promise<Response>}
+   */
+  async fetch(request, env) {
+    const headers = {
+      ...securityHeaders(),
+      'cache-control': 'no-store',
+    };
+    if (!internalRebuild(request)) {
+      return new Response(null, { status: 404, headers });
+    }
+    try {
+      await runRebuild(env || {});
+    } catch {
+      return new Response(null, { status: 502, headers });
+    }
+    return new Response(null, { status: 204, headers });
   },
 
   /**
@@ -82,11 +125,6 @@ export default {
    * @returns {Promise<void>}
    */
   async scheduled(_controller, env) {
-    const hook = allowedDeployHook(env.DEPLOY_HOOK);
-    if (!hook) {
-      console.error(JSON.stringify({ event: 'rebuild_skipped', reason: 'missing_deploy_hook' }));
-      throw new Error('DEPLOY_HOOK is not configured');
-    }
-    await postDeployHook(hook);
+    await runRebuild(env);
   },
 };
