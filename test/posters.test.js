@@ -1,6 +1,9 @@
+import crypto from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { JSDOM } from 'jsdom';
 import { mirrorPosters, posterPublicUrl } from '../lib/posters.js';
+import { renderWatch } from '../site/render.js';
 
 const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xd9]);
 
@@ -164,14 +167,146 @@ test('a failed fetch or upload falls back without throwing', async () => {
   assert.equal(second.poster, '');
 });
 
-test('missing credentials skip the network', async () => {
+function page(watches) {
+  return new JSDOM(renderWatch({
+    siteUrl: 'https://mattdoes.online',
+    assets: { 'station.css': 'station.abc12345.css', 'station.js': 'station.abc12345.js' },
+    tracks: [],
+    playcount: 0,
+    builtAt: '2026-10-20T00:00:00.000Z',
+    filmCount: 89,
+    watches,
+  })).window.document;
+}
+
+test('offline builds do not fetch posters when credentials are missing', async () => {
   let called = false;
   const [watch] = await mirrorPosters(
     [{ title: 'Film', posterSource: 'https://a.ltrbxd.com/x.jpg' }],
-    { fetch: async () => { called = true; return imageResponse(); }, token: '', accountId: '', warn() {} },
+    {
+      fetch: async () => { called = true; return imageResponse(); },
+      token: '',
+      accountId: '',
+      offline: true,
+      warn() {},
+    },
   );
   assert.equal(called, false);
   assert.equal(watch.poster, '');
+  assert.equal(watch.posterFull, '');
+});
+
+test('missing credentials omit a poster that is not already public', async () => {
+  const calls = [];
+  const fetchImpl = async (url, init = {}) => {
+    const method = init.method || 'GET';
+    calls.push({ url: String(url), method });
+    if (String(url).includes('ltrbxd.com')) return imageResponse();
+    return { ok: false, status: 404, headers: { get: () => null }, arrayBuffer: async () => new ArrayBuffer(0), json: async () => ({}) };
+  };
+  const [watch] = await mirrorPosters(
+    [{ title: 'Film', posterSource: 'https://a.ltrbxd.com/x.jpg' }],
+    { fetch: fetchImpl, token: '', accountId: '', warn() {} },
+  );
+  assert.equal(calls.some((call) => call.method === 'PUT'), false);
+  assert.equal(calls.some((call) => call.url.includes('api.cloudflare.com')), false);
+  assert.equal(watch.poster, '');
+  assert.equal(watch.posterFull, '');
+  assert.equal(page([watch]).querySelector('img'), null);
+});
+
+test('real-shaped entries with a public poster render an image', async () => {
+  const hash = crypto.createHash('sha256').update(JPEG).digest('hex');
+  const poster = `https://media.mattdoes.online/posters/${hash}.jpg`;
+  const calls = [];
+  const fetchImpl = async (url, init = {}) => {
+    const method = init.method || 'GET';
+    calls.push({ url: String(url), method });
+    if (String(url).includes('a.ltrbxd.com')) return imageResponse();
+    if (method === 'HEAD' && String(url) === poster) {
+      return { ok: true, status: 200, headers: { get: () => 'image/jpeg' }, arrayBuffer: async () => new ArrayBuffer(0), json: async () => ({}) };
+    }
+    return { ok: false, status: 404, headers: { get: () => null }, arrayBuffer: async () => new ArrayBuffer(0), json: async () => ({}) };
+  };
+  // The same fields parseLetterboxdRss emits. Preview builds have no API token.
+  const [watch] = await mirrorPosters(
+    [{
+      title: 'You Can See Everything',
+      year: '2026',
+      rating: 5,
+      stars: '★★★★★',
+      watchedDate: '2026-10-20',
+      rewatch: true,
+      link: 'https://letterboxd.com/mattdoes/film/you-can-see-everything/1/',
+      review: '',
+      posterSource: 'https://a.ltrbxd.com/resized/film-poster/1/6/2/9/4/4/3/1629443-you-can-see-everything-0-600-0-900-crop.jpg?v=84f6724d74',
+    }],
+    { fetch: fetchImpl, token: '', accountId: '', warn() {} },
+  );
+  assert.equal(calls.some((call) => call.method === 'PUT'), false);
+  assert.equal(watch.poster, poster);
+  assert.equal(watch.posterFull, poster);
+  const doc = page([watch]);
+  const imgs = [...doc.querySelectorAll('img')];
+  assert.ok(imgs.length >= 1);
+  assert.equal(imgs[0].getAttribute('src'), poster);
+  assert.equal(imgs[0].closest('.film-open')?.getAttribute('data-full'), poster);
+  assert.equal(doc.querySelector('#scene-img'), null);
+  assert.doesNotMatch(doc.body.innerHTML, /ltrbxd\.com/);
+});
+
+test('a preview without the token prefers public grid and scene files', async () => {
+  const sharp = (await import('sharp')).default;
+  const raw = Buffer.alloc(80 * 120 * 3);
+  for (let i = 0; i < raw.length; i += 1) raw[i] = (i * 17) % 256;
+  const jpeg = await sharp(raw, { raw: { width: 80, height: 120, channels: 3 } }).jpeg().toBuffer();
+  let puts = 0;
+  const fetchImpl = async (url, init = {}) => {
+    const method = init.method || 'GET';
+    if (String(url).includes('a.ltrbxd.com')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: (name) => (name === 'content-type' ? 'image/jpeg' : null) },
+        arrayBuffer: async () => jpeg.buffer.slice(jpeg.byteOffset, jpeg.byteOffset + jpeg.byteLength),
+        json: async () => ({}),
+      };
+    }
+    if (method === 'PUT') {
+      puts += 1;
+      return jsonResponse({}, 500);
+    }
+    if (method === 'HEAD' && String(url).startsWith('https://media.mattdoes.online/posters/')) {
+      return { ok: true, status: 200, headers: { get: () => 'image/jpeg' }, arrayBuffer: async () => new ArrayBuffer(0), json: async () => ({}) };
+    }
+    return { ok: false, status: 404, headers: { get: () => null }, arrayBuffer: async () => new ArrayBuffer(0), json: async () => ({}) };
+  };
+  const [watch] = await mirrorPosters(
+    [{
+      title: 'Outside',
+      year: '2024',
+      rating: 4,
+      stars: '★★★★',
+      rewatch: false,
+      link: 'https://letterboxd.com/mattdoes/film/outside/',
+      review: 'The humans are the real monsters.',
+      posterSource: 'https://a.ltrbxd.com/resized/outside.jpg',
+    }],
+    { fetch: fetchImpl, token: '', accountId: '', warn() {} },
+  );
+  assert.equal(puts, 0);
+  assert.match(watch.poster, /^https:\/\/media\.mattdoes\.online\/posters\/[a-f0-9]{64}\.jpg$/);
+  assert.match(watch.posterFull, /^https:\/\/media\.mattdoes\.online\/posters\/[a-f0-9]{64}\.jpg$/);
+  assert.notEqual(watch.poster, watch.posterFull);
+  assert.equal(watch.posterWidth, 80);
+  assert.equal(watch.posterFullWidth, 80);
+  const doc = page([watch]);
+  const img = doc.querySelector('.film-open img');
+  assert.equal(img?.getAttribute('src'), watch.poster);
+  assert.equal(img.closest('.film-open')?.getAttribute('data-full'), watch.posterFull);
+  assert.notEqual(img.getAttribute('src'), img.closest('.film-open')?.getAttribute('data-full'));
+  assert.equal(doc.querySelector('#scene-img'), null);
+  assert.equal([...doc.querySelectorAll('img')].some((node) => node.getAttribute('src') === watch.posterFull), false);
 });
 
 test('VISUAL_FIXTURE keeps a media-host poster and ignores everything else', async () => {
