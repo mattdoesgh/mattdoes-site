@@ -455,7 +455,7 @@ audio {
 
 .player-still .wave {
   width: 100%;
-  height: 70%;
+  height: 100%;
 }
 
 .player-copy {
@@ -734,7 +734,7 @@ body[data-concept="index"] main {
   }
 
   .player-still .wave {
-    height: 62%;
+    height: 78%;
   }
 
   .player-copy {
@@ -748,11 +748,11 @@ body[data-concept="index"] main {
   .one {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
-    grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+    grid-template-rows: minmax(0, 1fr) auto auto auto auto;
     grid-template-areas:
-      "title title title"
       "prev play next"
       "wave wave wave"
+      "title title title"
       "note note note"
       "meta meta meta";
     align-items: center;

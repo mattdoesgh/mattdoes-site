@@ -266,13 +266,13 @@ function renderOne() {
     const prev = (index - 1 + count) % count;
     const next = (index + 1) % count;
     stage.innerHTML = `<article class="one" aria-labelledby="one-title">
-      <h2 id="one-title" class="one-title">${esc(exp.title)}</h2>
-      <p class="note one-note">${esc(exp.note)}</p>
-      <p class="meta one-meta">${metaHTML(exp)}</p>
       <div class="one-play">
         ${playWord(exp)}
         ${audioTag(exp)}
       </div>
+      <h2 id="one-title" class="one-title">${esc(exp.title)}</h2>
+      <p class="note one-note">${esc(exp.note)}</p>
+      <p class="meta one-meta">${metaHTML(exp)}</p>
       <div class="one-nav">
         <button type="button" class="step step-prev" data-step="-1" aria-label="previous, ${esc(experiments[prev].title)}">prev</button>
         <button type="button" class="step step-next" data-step="1" aria-label="next, ${esc(experiments[next].title)}">next</button>
