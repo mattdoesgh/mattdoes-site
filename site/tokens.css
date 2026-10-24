@@ -1,0 +1,137 @@
+/* Station tokens. This file is the only place a raw color, font stack,
+   or font size is written. Pages use var(--token).
+   Field, ink, focus, and rule swap when a verb page flips.
+   The build keeps field, ink, signal, focus, rule, the font stacks, and
+   --row-size live, and inlines every other token. */
+
+:root {
+  --black: #000000;
+  --white: #ffffff;
+  --pink: #f7c8d8;
+
+  --field: var(--black);
+  --ink: var(--white);
+  --signal: var(--pink);
+  --focus: var(--pink);
+  --rule: rgba(247, 200, 216, 0.28);
+
+  color-scheme: dark;
+
+  --display: "Anton", "Arial Narrow", "Helvetica Condensed", Impact, sans-serif;
+  --body: system-ui, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+
+  --weight-regular: 400;
+
+  --track-none: 0;
+  --track-stars: 0.06em;
+  --track-label: 0.08em;
+  --track-kicker: 0.1em;
+
+  --type-body: 1.125rem;
+  --type-time: 0.8125rem;
+  --type-meta: 0.95rem;
+  --type-flag: 0.85rem;
+  --type-lede: 1.2rem;
+  --type-preview: 1.15rem;
+  --type-kicker: 1.5rem;
+  --type-sign: clamp(4rem, 16vw, 8.5rem);
+  --type-verb: clamp(2.4rem, 8vw, 4.6rem);
+  --type-prize: clamp(1.6rem, 4vw, 2.4rem);
+  --type-verb-phone: clamp(3.25rem, calc((100vw - 3rem) / 4.5), 14rem);
+  --type-contact-heading: clamp(1.8rem, 4vw, 2.4rem);
+  --type-contact: clamp(1.7rem, 5vw, 2.8rem);
+  --type-total: clamp(3.5rem, 12vw, 6.5rem);
+  --type-total-label: clamp(1.5rem, 3.4vw, 2.25rem);
+  --type-album: clamp(1.05rem, 2.8vw, 1.65rem);
+  --type-album-by: 0.72em;
+  --type-title: clamp(2rem, 6vw, 3.3rem);
+  --type-nav: clamp(1.5rem, 4vw, 2.2rem);
+  --row-size: clamp(4.5rem, calc((100vw - 5.6rem) / 8.55), 14rem);
+  --type-verb-desk: calc(var(--row-size) * 0.7125);
+  --type-prefix: 1.8em;
+  --type-preview-desk: clamp(2.35rem, calc(var(--row-size) * 0.46), 5.6rem);
+  --type-stars-desk: 0.82em;
+  --type-redaction: clamp(2rem, 3vw, 3.5rem);
+  --type-lede-desk: clamp(2.6rem, calc(var(--row-size) * 0.62), 7rem);
+  --type-outlink: clamp(2.4rem, calc(var(--row-size) * 0.5), 6rem);
+  --type-title-desk: clamp(1.65rem, 1.7vw, 2.45rem);
+
+  --radius: 0;
+  --line-none: 0;
+  --line-rule: 1px solid var(--rule);
+  --line-strong: 2px solid currentColor;
+  --line-thick: 3px;
+  --outline-none: none;
+  --outline-focus: 3px solid var(--focus);
+  --outline-black: 3px solid var(--black);
+  --outline-contrast: 3px solid currentColor;
+  --outline-offset: 3px;
+  --hit: 44px;
+  --hit-phone: 48px;
+  --icon: 1.35rem;
+  --measure: 40rem;
+
+  --space-0: 0;
+  --space-clip: -1px;
+  --space-prefix: 0.24em;
+  --space-tight: 0.2rem;
+  --space-phone-row: 0.12rem;
+  --space-outlink-desk: 0.15rem;
+  --space-cap: 0.3rem;
+  --space-row: 0.35rem;
+  --space-heading: 0 0 0.4rem;
+  --space-total-gap: 0.45rem;
+  --space-home-footer: 0.5rem;
+  --space-outlinks: 0.5rem 0 0;
+  --space-statement: 0.55rem 0 0;
+  --space-flag: 0.6rem;
+  --space-md: 0.75rem;
+  --space-track: 0.75rem 0;
+  --space-skip: 0.55rem 0.8rem;
+  --space-lede: 0.8rem 0 0;
+  --space-verb-pad: 0 0.02em;
+  --space-verb-pad-desk: 0.03em 0.02em 0.05em;
+  --space-slot-text: 0.35rem 0 0;
+  --space-redaction-text: 0.4rem 0 0;
+  --space-verb-row: 0.85rem 0.15rem 1rem;
+  --space-home-link: 0 0 0.6rem;
+  --space-1: 1rem;
+  --space-tracks: 1rem 0 0;
+  --space-incident: 1.2rem 0 1.35rem;
+  --space-feed: 1.25rem 0 0;
+  --space-status: 0 0 1.25rem;
+  --space-nav: 0 0 1rem;
+  --space-total: 1.4rem 0 0;
+  --space-section: 1.5rem;
+  --space-players: 2rem;
+  --space-footer: 2.5rem;
+  --space-kicker: 0 0 clamp(1.35rem, 3vh, 2rem);
+  --space-page: clamp(1rem, 3vw, 2.75rem);
+  --space-page-desk: clamp(1rem, 2.4vh, 2rem) clamp(1.25rem, 2vw, 2.4rem);
+  --space-phone-main: clamp(2rem, 5vh, 3rem);
+  --space-phone-verbs: clamp(2rem, 4.8vh, 3.15rem);
+  --space-desk-main: clamp(0.8rem, 2vh, 1.6rem);
+  --space-desk-verbs: clamp(0.6rem, 1.6vh, 1.4rem);
+  --space-desk-block: clamp(1.6rem, 3vh, 2.6rem);
+  --space-desk-feed: clamp(1.4rem, 2vw, 2.4rem);
+  --space-desk-tracks: clamp(1.2rem, 2vw, 2rem) clamp(1.4rem, 2.4vw, 2.6rem);
+  --space-footer-desk: clamp(2rem, 5vh, 4rem);
+  --space-status-gap: 0.4rem 1.5rem;
+  --space-verb-gap: 0.35rem 1.25rem;
+  --space-socials: 0.1rem 0.85rem;
+  --space-track-row: 0.2rem 0.75rem;
+  --space-outlinks-gap: 0.75rem 1.5rem;
+  --space-nav-gap: 0.4rem 1.4rem;
+  --space-nav-gap-desk: 0.5rem 1.8rem;
+  --space-incident-grid: 1rem 1.5rem;
+  --space-incident-desk: 0.55rem;
+}
+
+body[data-polarity="flip"] {
+  --field: var(--pink);
+  --ink: var(--black);
+  --focus: var(--black);
+  --rule: rgba(0, 0, 0, 0.18);
+  color-scheme: light;
+}

@@ -31,6 +31,12 @@ Thumbs.db
 # Claude scratch / local notes
 .claude/
 
+# Visual regression build output and Playwright reports
+test/visual/.dist/
+test/visual/test-results/
+playwright-report/
+blob-report/
+
 # Work-in-progress / build scratch
 *.tmp
 *.bak

@@ -11,6 +11,8 @@
     "lint": "html-validate \"dist/**/*.html\"",
     "audit": "npm audit --audit-level=moderate",
     "check:assets": "node scripts/check-asset-budget.js",
+    "check:tokens": "node scripts/check-design-tokens.js",
+    "test:visual": "playwright test -c playwright.config.js",
     "scan:secrets": "npx --yes gitleaks detect --source . --verbose",
     "pretest": "NODE_ENV=production LISTENING_OFFLINE=1 LETTERBOXD_OFFLINE=1 SITE_URL=https://mattdoes.online node build.js",
     "test": "node --test \"test/**/*.test.js\"",
@@ -26,11 +28,14 @@
   },
   "devDependencies": {
     "axe-core": "^4.14.0",
-    "typescript": "^5.9.3",
     "culori": "^4.0.2",
     "html-validate": "^11.16.2",
     "jsdom": "^29.1.1",
     "lightningcss": "^1.33.0",
-    "terser": "^5.51.2"
+    "pixelmatch": "^8.0.0",
+    "playwright": "^1.64.1",
+    "pngjs": "^7.0.0",
+    "terser": "^5.51.2",
+    "typescript": "^5.9.3"
   }
 }

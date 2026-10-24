@@ -91,3 +91,26 @@ test('missing credentials skip the network', async () => {
   assert.equal(called, false);
   assert.equal(watch.poster, '');
 });
+
+test('VISUAL_FIXTURE keeps a media-host poster and ignores everything else', async () => {
+  const prev = process.env.VISUAL_FIXTURE;
+  process.env.VISUAL_FIXTURE = '1';
+  try {
+    const watches = await mirrorPosters([
+      {
+        title: 'Kept',
+        poster: 'https://media.mattdoes.online/posters/kept.jpg',
+        posterWidth: 300,
+        posterHeight: 450,
+      },
+      { title: 'Foreign', poster: 'https://evil.example/x.jpg', posterWidth: 10, posterHeight: 10 },
+    ], { warn() {} });
+    assert.equal(watches[0].poster, 'https://media.mattdoes.online/posters/kept.jpg');
+    assert.equal(watches[0].posterWidth, 300);
+    assert.equal(watches[1].poster, '');
+    assert.equal(watches[1].posterWidth, 0);
+  } finally {
+    if (prev == null) delete process.env.VISUAL_FIXTURE;
+    else process.env.VISUAL_FIXTURE = prev;
+  }
+});

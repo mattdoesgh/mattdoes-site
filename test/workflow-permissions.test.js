@@ -18,7 +18,7 @@ test('build workflow is contents-read and pins every action to a commit', () => 
   assert.doesNotMatch(yml, /uses:\s+\S+@v\d/);
 
   const uses = [...yml.matchAll(/uses:\s+(\S+)/g)].map(m => m[1]);
-  assert.equal(uses.length, 7);
+  assert.equal(uses.length, 10);
   for (const use of uses) {
     const match = use.match(/^([^@]+)@([0-9a-f]{40})$/);
     assert.ok(match, `action must be a full commit SHA: ${use}`);

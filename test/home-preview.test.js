@@ -76,10 +76,14 @@ test('a whole rating is only full stars', () => {
 test('the home movie link has no underline and stars use the pink stroke', () => {
   const css = fs.readFileSync(path.join(REPO_ROOT, 'static', 'station.css'), 'utf8');
   assert.match(css, /\.preview a,\s*\.preview a:hover,\s*\.preview a:focus,\s*\.preview a:focus-visible,\s*\.preview a:active \{\s*text-decoration:\s*none;/);
-  assert.match(css, /\.preview a:focus-visible \{\s*outline:\s*3px solid var\(--focus\);\s*outline-offset:\s*3px;/);
+  assert.match(css, /\.preview a:focus-visible \{\s*outline:\s*var\(--outline-focus\);\s*outline-offset:\s*var\(--outline-offset\);/);
   assert.doesNotMatch(css, /\.preview a[^{]*\{[^}]*padding/);
-  const support = css.slice(css.indexOf('@supports (-webkit-text-stroke: 0.025em #f7c8d8)'));
-  assert.match(support, /\.stars\s*\{[^}]*-webkit-text-stroke:\s*max\(0\.025em,\s*1\.5px\) #f7c8d8;/);
+  const tokens = fs.readFileSync(path.join(REPO_ROOT, 'site', 'tokens.css'), 'utf8');
+  assert.match(tokens, /--outline-focus:\s*3px solid var\(--focus\);/);
+  assert.match(tokens, /--outline-offset:\s*3px;/);
+  assert.match(tokens, /--pink:\s*#f7c8d8;/);
+  const support = css.slice(css.indexOf('@supports (-webkit-text-stroke: 0.025em var(--pink))'));
+  assert.match(support, /\.stars\s*\{[^}]*-webkit-text-stroke:\s*max\(0\.025em,\s*1\.5px\) var\(--pink\);/);
   assert.doesNotMatch(support, /\.mark\b/);
   assert.doesNotMatch(css, /body\[data-polarity="flip"\] \.stars\s*\{[^}]*background/);
   assert.doesNotMatch(css, /\.stars[^{]*\{[^}]*box-shadow/);
@@ -87,8 +91,8 @@ test('the home movie link has no underline and stars use the pink stroke', () =>
   assert.match(css, /\.stars \.star-glyph\s*\{[^}]*width:\s*calc-size\(fit-content,\s*size \* 0\.5\);/);
   assert.match(css, /\.stars \.star-glyph\s*\{[^}]*clip-path:\s*inset\(-0\.15em 0 -0\.15em -0\.15em\);/);
   assert.match(css, /\.stars \.star-half::after\s*\{[^}]*content:\s*"★";/);
-  assert.match(css, /\.stars \.star-half::after\s*\{[^}]*color:\s*#f7c8d8;/);
-  assert.match(css, /\.stars \.star-half::after\s*\{[^}]*-webkit-text-stroke:\s*max\(0\.025em,\s*1\.5px\) #f7c8d8;/);
+  assert.match(css, /\.stars \.star-half::after\s*\{[^}]*color:\s*var\(--pink\);/);
+  assert.match(css, /\.stars \.star-half::after\s*\{[^}]*-webkit-text-stroke:\s*max\(0\.025em,\s*1\.5px\) var\(--pink\);/);
   assert.match(css, /\.stars \.star-half::after\s*\{[^}]*clip-path:\s*inset\(-0\.2em calc\(50% - max\(0\.025em,\s*1\.5px\)\) -0\.2em 50%\);/);
   assert.doesNotMatch(css, /\.stars \.star-half::after\s*\{[^}]*clip-path:\s*inset\(-0\.2em 50% -0\.2em calc\(50% - max\(0\.025em,\s*1\.5px\)\)\);/);
   assert.doesNotMatch(css, /\.stars[^{]*\{[^}]*transition/);
