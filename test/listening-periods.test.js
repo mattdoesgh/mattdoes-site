@@ -134,36 +134,43 @@ test('a short monthly chart ends on the last real cover', () => {
 
 test('listening type matches the watching titles', () => {
   const css = fs.readFileSync(path.join(REPO_ROOT, 'static', 'station.css'), 'utf8');
+  const tokens = fs.readFileSync(path.join(REPO_ROOT, 'site', 'tokens.css'), 'utf8');
   const heading = css.slice(
     css.indexOf('.incident h2,\n.recent-label,\n.tracks .what {'),
-    css.indexOf('.incident h2 {\n  margin: 0;'),
+    css.indexOf('.incident h2 {\n  margin: var(--space-0);'),
   );
   assert.match(heading, /font-family:\s*var\(--display\)/);
-  assert.match(heading, /font-weight:\s*400/);
+  assert.match(heading, /font-weight:\s*var\(--weight-regular\)/);
   assert.match(heading, /text-transform:\s*uppercase/);
-  assert.match(heading, /font-size:\s*clamp\(2rem, 6vw, 3\.3rem\)/);
+  assert.match(heading, /font-size:\s*var\(--type-title\)/);
   assert.match(heading, /line-height:\s*0\.88/);
-  assert.match(heading, /letter-spacing:\s*0/);
+  assert.match(heading, /letter-spacing:\s*var\(--track-none\)/);
+  assert.match(tokens, /--weight-regular:\s*400;/);
+  assert.match(tokens, /--track-none:\s*0;/);
+  assert.match(tokens, /--type-title:\s*clamp\(2rem, 6vw, 3\.3rem\);/);
+  assert.match(tokens, /--type-title-desk:\s*clamp\(1\.65rem, 1\.7vw, 2\.45rem\);/);
+  assert.match(tokens, /--type-body:\s*1\.125rem;/);
   const desktop = css.slice(css.indexOf('@media (min-width: 1024px)'));
-  assert.match(desktop, /\.incident h2,\s*\.recent-label,\s*\.tracks \.what \{[^}]*font-size:\s*clamp\(1\.65rem, 1\.7vw, 2\.45rem\)/);
-  assert.match(desktop, /\.album-cap \{[^}]*font-size:\s*clamp\(1\.65rem, 1\.7vw, 2\.45rem\)/);
+  assert.match(desktop, /\.incident h2,\s*\.recent-label,\s*\.tracks \.what \{[^}]*font-size:\s*var\(--type-title-desk\)/);
+  assert.match(desktop, /\.album-cap \{[^}]*font-size:\s*var\(--type-title-desk\)/);
   const totalBlock = css.slice(css.indexOf('.total {'), css.indexOf('.total-num {'));
   assert.match(totalBlock, /display:\s*flex/);
   assert.match(totalBlock, /flex-wrap:\s*nowrap/);
   assert.match(totalBlock, /align-items:\s*baseline/);
   const total = css.slice(css.indexOf('.total-num {'), css.indexOf('body[data-polarity="flip"] .total-num'));
   assert.match(total, /font-family:\s*var\(--display\)/);
-  assert.match(total, /font-weight:\s*400/);
-  assert.match(total, /letter-spacing:\s*0/);
+  assert.match(total, /font-weight:\s*var\(--weight-regular\)/);
+  assert.match(total, /letter-spacing:\s*var\(--track-none\)/);
   assert.match(total, /white-space:\s*nowrap/);
   assert.doesNotMatch(total, /display:\s*block/);
   const totalLabel = css.slice(css.indexOf('.total-label {'), css.indexOf('body[data-polarity="flip"] .total-label'));
   assert.match(totalLabel, /font-family:\s*var\(--body\)/);
-  assert.match(totalLabel, /font-weight:\s*400/);
-  assert.match(totalLabel, /letter-spacing:\s*0/);
+  assert.match(totalLabel, /font-weight:\s*var\(--weight-regular\)/);
+  assert.match(totalLabel, /letter-spacing:\s*var\(--track-none\)/);
   assert.match(totalLabel, /white-space:\s*nowrap/);
-  assert.match(totalLabel, /color:\s*#f7c8d8/);
+  assert.match(totalLabel, /color:\s*var\(--pink\)/);
   assert.doesNotMatch(totalLabel, /display:\s*block/);
+  assert.match(tokens, /--pink:\s*#f7c8d8;/);
   const wave = css.slice(css.indexOf('.wave {'), css.indexOf('.recent-label {'));
   assert.match(wave, /display:\s*inline-flex/);
   assert.match(wave, /align-items:\s*baseline/);
@@ -173,19 +180,19 @@ test('listening type matches the watching titles', () => {
   assert.match(css, /\.redaction-hint,\s*\.total-spoken \{/);
   const cap = css.slice(css.indexOf('.album-cap {'), css.indexOf('.album-by {'));
   assert.match(cap, /font-family:\s*var\(--display\)/);
-  assert.match(cap, /font-weight:\s*400/);
+  assert.match(cap, /font-weight:\s*var\(--weight-regular\)/);
   assert.match(cap, /text-transform:\s*uppercase/);
-  assert.match(cap, /letter-spacing:\s*0/);
+  assert.match(cap, /letter-spacing:\s*var\(--track-none\)/);
   const byAt = css.indexOf('.album-by {');
   const by = css.slice(byAt, css.indexOf('@media (hover: hover)', byAt));
   assert.match(by, /font-family:\s*var\(--body\)/);
   assert.match(by, /text-transform:\s*none/);
-  assert.match(by, /letter-spacing:\s*0/);
+  assert.match(by, /letter-spacing:\s*var\(--track-none\)/);
   const meta = css.slice(css.indexOf('.tracks .by,\n.tracks .album {'), css.indexOf('.tracks .album::before'));
   assert.match(meta, /font-family:\s*var\(--body\)/);
-  assert.match(meta, /font-size:\s*1\.125rem/);
-  assert.match(meta, /font-weight:\s*400/);
-  assert.match(meta, /letter-spacing:\s*0/);
+  assert.match(meta, /font-size:\s*var\(--type-body\)/);
+  assert.match(meta, /font-weight:\s*var\(--weight-regular\)/);
+  assert.match(meta, /letter-spacing:\s*var\(--track-none\)/);
   assert.match(meta, /text-transform:\s*none/);
   assert.doesNotMatch(css, /\.period-switch|\.period-label|\.is-plain|\.source \{/);
   assert.doesNotMatch(css, /\.album-tile[^{]*\{[^}]*transition/);

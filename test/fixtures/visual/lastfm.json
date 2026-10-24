@@ -1,0 +1,72 @@
+{
+  "fetchedAt": "2026-10-24T00:00:00.000Z",
+  "playcount": 120022,
+  "tracks": [
+    {
+      "track": "Fixture Track",
+      "artist": "Fixture Artist",
+      "album": "Fixture Album",
+      "link": "https://www.last.fm/music/Fixture+Artist/_/Fixture+Track",
+      "date": "2026-10-18T16:18:28.000Z",
+      "nowPlaying": false
+    },
+    {
+      "track": "Second Fixture",
+      "artist": "Second Artist",
+      "album": "Second Album",
+      "link": "https://www.last.fm/music/Second+Artist/_/Second+Fixture",
+      "date": "2026-10-18T15:00:00.000Z",
+      "nowPlaying": false
+    },
+    {
+      "track": "Third Fixture",
+      "artist": "Third Artist",
+      "album": "Third Album",
+      "link": "https://www.last.fm/music/Third+Artist/_/Third+Fixture",
+      "date": "2026-10-17T12:00:00.000Z",
+      "nowPlaying": false
+    }
+  ],
+  "periods": {
+    "1month": {
+      "artists": [],
+      "albums": [
+        {
+          "name": "Cover One",
+          "artist": "Cover Artist",
+          "playcount": 40,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+One",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/visual01.jpg"
+        },
+        {
+          "name": "Cover Two",
+          "artist": "Cover Artist",
+          "playcount": 30,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+Two",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/visual02.jpg"
+        },
+        {
+          "name": "Cover Three",
+          "artist": "Cover Artist",
+          "playcount": 20,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+Three",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/visual03.jpg"
+        },
+        {
+          "name": "Cover Four",
+          "artist": "Cover Artist",
+          "playcount": 10,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+Four",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/visual04.jpg"
+        },
+        {
+          "name": "Cover Five",
+          "artist": "Cover Artist",
+          "playcount": 8,
+          "url": "https://www.last.fm/music/Cover+Artist/Cover+Five",
+          "image": "https://lastfm.freetls.fastly.net/i/u/300x300/visual05.jpg"
+        }
+      ]
+    }
+  }
+}

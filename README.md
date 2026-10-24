@@ -40,11 +40,13 @@ npm test
 npm run typecheck
 npm run lint             # html-validate against dist/**/*.html
 npm run audit            # npm audit --audit-level=moderate
+npm run check:tokens     # colors, font families, and font sizes stay in site/tokens.css
+npm run test:visual      # screenshot baselines of the main pages at 1280 and 390
 npm run optimize-media   # .webp variants from content/attachments, if that directory exists
 npm run sync-media       # push those files to R2 (needs a CF token; uses the wrangler pin in workers/)
 ```
 
-CI (`.github/workflows/build.yml`) audits, typechecks `site/`, builds, lints HTML, and runs tests. Cloudflare Pages deploys from a successful GitHub push on its own.
+CI (`.github/workflows/build.yml`) audits, typechecks `site/`, builds, lints HTML, checks design tokens, runs tests, and compares screenshot baselines. Cloudflare Pages deploys from a successful GitHub push on its own. Style lives in `site/tokens.css` and `STYLE.md`.
 
 ## workers
 
