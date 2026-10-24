@@ -41,7 +41,10 @@ test('the monthly cover grid skips blank art and other periods', () => {
   assert.equal(main.querySelectorAll('.album-grid').length, 1);
 
   const tiles = [...charts.querySelectorAll('.album-tile')];
-  assert.equal(tiles.length, 25);
+  assert.equal(tiles.length, 26);
+  assert.equal(tiles.filter((tile) => !tile.hasAttribute('hidden')).length, 25);
+  assert.equal(tiles[25].hasAttribute('hidden'), true);
+  assert.equal(tiles[25].querySelector('.album-name')?.textContent, 'Cover 26');
   assert.equal(tiles.every((tile) => tile.querySelector('img')), true);
   assert.equal(charts.querySelector('.is-plain'), null);
 
@@ -66,7 +69,9 @@ test('the monthly cover grid skips blank art and other periods', () => {
   assert.equal(tiles[24].querySelector('.album-name')?.textContent, 'Cover 25');
 
   assert.doesNotMatch(main.textContent, /Plain Album|Star Album|Foreign Album|Http Album/);
-  assert.doesNotMatch(main.textContent, /Overall Album|Year Album|Season Album|Cover 26/);
+  assert.doesNotMatch(main.textContent, /Overall Album|Year Album|Season Album/);
+  const visible = tiles.filter((tile) => !tile.hasAttribute('hidden')).map((tile) => tile.textContent).join('\n');
+  assert.doesNotMatch(visible, /Cover 26/);
   assert.match(main.textContent, /Fixture Track/);
   assert.equal(main.querySelector('.recent-label')?.textContent, 'recent');
   assert.equal(main.querySelector('ol#tracks')?.tagName, 'OL');

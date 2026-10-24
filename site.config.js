@@ -110,17 +110,21 @@ export const siteConfig = {
   // env vars. The listing page also hides the username from its left rail.
   //
   // These settings govern the *build-time* snapshot rendered into the static
-  // HTML. Between deploys the page is kept live by workers/listening, which
-  // has its own stale-while-revalidate thresholds (FRESH_MS / HARD_MS in
-  // workers/listening/src/index.js) — adjust those there, not here.
+  // HTML. Recent plays stay live through workers/listening. The monthly
+  // album chart is the weekly snapshot that worker stores.
   lastfm: {
     username: '',       // read from LASTFM_USERNAME env var at build time
     limit:    25,       // how many recent tracks to render on /listening/
     cacheTtl: 15 * 60,  // seconds — build-time on-disk cache TTL only
     showUser: false,    // do not render 'last.fm/<user>' link on /listening/
-    // The monthly album chart comes from the listening worker
-    // (GET /api/listening/charts) at build time. The Pages build does not
-    // need a Last.fm key for it. A failed fetch hides the grid.
+    // The monthly album chart is that weekly snapshot
+    // (GET /api/listening/charts) at build time. When fewer than 25 covers
+    // survive, the build asks Last.fm for a deeper monthly chart so the
+    // next album with real art fills the grid. That needs LASTFM_API_KEY
+    // and LASTFM_USERNAME. A failed fetch keeps the short chart.
+    // Progressive JPEGs are re-encoded in this build and stored on the
+    // media host. Preview builds have no R2 token; they reuse a copy
+    // already at media.mattdoes.online/covers/<sha>.jpg, or drop the tile.
   },
 
   // Letterboxd for /watching/. The diary RSS is a recent window (limit),

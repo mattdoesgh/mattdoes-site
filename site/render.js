@@ -4,7 +4,7 @@ import { verbs, verbCatalog, socials, verbPath, verbHeading, unsharedPlayer, uns
 import { socialIcon } from './social-icons.js';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 import { formatScrobbleCount } from '../lib/format.js';
-import { LISTENING_PERIODS, albumImageUrl, albumsWithCovers, musicUrl } from '../lib/lastfm.js';
+import { CHART_SPARES, LISTENING_PERIODS, TOP_LIMIT, albumImageUrl, albumsWithCovers, musicUrl } from '../lib/lastfm.js';
 
 const SPOTIFY = 'https://open.spotify.com/artist/617fKVTXkDafXJshlNUzF3';
 // Catalog id only. The platform slug is omitted until the project name is settled.
@@ -513,9 +513,10 @@ function albumLabel(name, artist) {
  * One cover tile. Albums with no real art are omitted. Play counts are not printed.
  *
  * @param {object} row
+ * @param {boolean} [spare]  past the visible grid; the client reveals it if a tile fails
  * @returns {string}
  */
-function albumTile(row) {
+function albumTile(row, spare = false) {
   const name = String(row?.name || '').trim();
   if (!name) return '';
   const image = albumImageUrl(row?.image);
@@ -528,8 +529,9 @@ function albumTile(row) {
   }</span>`;
   const img = `<img src="${esc(image)}" alt="${esc(label)}" width="300" height="300" loading="lazy" decoding="async">`;
   const title = ` title="${esc(label)}"`;
-  if (href) return `<a class="album-tile" href="${esc(href)}"${relFor(href)}${title}>${img}${cap}</a>`;
-  return `<div class="album-tile"${title}>${img}${cap}</div>`;
+  const hidden = spare ? ' hidden' : '';
+  if (href) return `<a class="album-tile"${hidden} href="${esc(href)}"${relFor(href)}${title}>${img}${cap}</a>`;
+  return `<div class="album-tile"${hidden}${title}>${img}${cap}</div>`;
 }
 
 /**
@@ -545,7 +547,9 @@ function albumGrid(periods) {
   const id = LISTENING_PERIODS[0]?.id;
   if (!id) return '';
   const rows = Array.isArray(periods[id]?.albums) ? periods[id].albums : [];
-  const tiles = albumsWithCovers(rows).map(albumTile).filter(Boolean);
+  const tiles = albumsWithCovers(rows, TOP_LIMIT + CHART_SPARES)
+    .map((row, index) => albumTile(row, index >= TOP_LIMIT))
+    .filter(Boolean);
   if (!tiles.length) return '';
   return `<div class="album-charts"><div class="album-grid">${tiles.join('')}</div></div>`;
 }

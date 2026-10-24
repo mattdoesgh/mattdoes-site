@@ -37,6 +37,9 @@ test('deployed bindings stay declared', () => {
   assert.match(listening, /binding\s*=\s*"LASTFM_CACHE"/);
   assert.match(listening, /name\s*=\s*"LISTEN_RL"/);
   assert.match(listening, /name\s*=\s*"LISTENING_POLLER"/);
+  assert.match(listening, /binding\s*=\s*"REBUILD"/);
+  assert.match(listening, /service\s*=\s*"mattdoes-rebuild"/);
+  assert.match(listening, /crons\s*=\s*\[\s*"\* \* \* \* \*"\s*,\s*"0 11 \* \* 1"\s*\]/);
 });
 
 test('a worker that reads the query string uses a wildcard route', () => {

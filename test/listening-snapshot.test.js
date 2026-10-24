@@ -7,7 +7,7 @@
 // (and LISTENING_OFFLINE=1 skips 2 + 3).
 
 import test from 'node:test';
-import assert from 'node:assert/strict';
+import assert, { AssertionError } from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fetchListeningSnapshot } from '../lib/listening.js';
@@ -178,8 +178,6 @@ function workerChartPayload() {
 
 test('snapshot: period charts come from the worker and a failure keeps the tracks', async () => {
   const restoreEnv = cleanEnv();
-  process.env.LASTFM_API_KEY = 'secret-key';
-  process.env.LASTFM_USERNAME = 'djverism';
   const cacheDir = makeTempDir('mattdoes-cache-');
   const { calls, restore } = installFetch((url) => {
     if (url.endsWith('/api/listening/recent')) {
@@ -208,12 +206,30 @@ test('snapshot: period charts come from the worker and a failure keeps the track
     assert.equal(calls.filter((url) => url.endsWith('/api/listening/recent')).length, 1);
     assert.equal(calls.filter((url) => url.endsWith('/api/listening/charts')).length, 1);
     assert.equal(calls.some((url) => url.includes('audioscrobbler') || url.includes('gettop')), false,
-      'the build does not call Last.fm chart methods, even when a key is set');
+      'a short chart is not deepened when this build has no Last.fm credentials');
     const cached = JSON.parse(fs.readFileSync(path.join(cacheDir, 'lastfm.json'), 'utf8'));
     assert.equal(cached.periods['1month'].artists[0].name, 'Artist 1month');
     assert.equal(cached.periods.overall, undefined);
     assert.equal(JSON.stringify(cached).includes('djverism'), false);
     assert.equal(JSON.stringify(cached).includes('secret-key'), false);
+  } finally { restore(); restoreEnv(); }
+});
+
+test('snapshot: an assertion while settling covers is not swallowed', async () => {
+  const restoreEnv = cleanEnv();
+  const cacheDir = makeTempDir('mattdoes-cache-');
+  const { restore } = installFetch((url) => {
+    if (url.endsWith('/api/listening/recent')) {
+      return jsonResponse({ playcount: 120022, tracks: [SAMPLE_TRACK] });
+    }
+    if (url.endsWith('/api/listening/charts')) return jsonResponse(workerChartPayload());
+    throw new AssertionError({ message: 'cover assert' });
+  });
+  try {
+    await assert.rejects(
+      () => fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir }),
+      /cover assert/,
+    );
   } finally { restore(); restoreEnv(); }
 });
 
@@ -264,12 +280,15 @@ test('snapshot: a fresh cache without charts fetches only the charts endpoint', 
     playcount: 9, tracks: [SAMPLE_TRACK],
   }));
   const { calls, restore } = installFetch((url) => {
-    assert.equal(url.endsWith('/api/listening/charts'), true);
-    return jsonResponse(workerChartPayload());
+    if (url.endsWith('/api/listening/charts')) return jsonResponse(workerChartPayload());
+    if (url.includes('freetls.fastly.net')) throw new Error('cover unavailable');
+    assert.fail(url);
   });
   try {
     const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
-    assert.equal(calls.length, 1);
+    assert.equal(calls.filter((url) => url.endsWith('/api/listening/charts')).length, 1);
+    assert.equal(calls.filter((url) => url.includes('abc.jpg') || url.includes('back.jpg')).length, 2);
+    assert.equal(calls.some((url) => url.includes('evil.example')), false);
     assert.equal(snap.playcount, 9);
     assert.equal(snap.periods['1month'].artists[0].name, 'Artist 1month');
     assert.equal(calls.some((url) => url.includes('gettop')), false);
