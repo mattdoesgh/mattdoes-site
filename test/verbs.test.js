@@ -108,7 +108,9 @@ test('the home prefix is clipped shut until hover', () => {
   assert.match(css, /font-size:\s*var\(--type-verb-desk\)/);
   assert.match(tokens, /--type-verb-desk:\s*calc\(var\(--row-size\) \* 0\.7125\);/);
   assert.doesNotMatch(css, /\.verb-prefix[^{]*\{[^}]*transition/);
-  assert.doesNotMatch(css, /@keyframes[\s\S]*verb-prefix|verb-prefix[\s\S]*@keyframes/);
+  assert.doesNotMatch(css, /\.verb-prefix[^{]*\{[^}]*animation/);
+  const frames = [...css.matchAll(/@keyframes\s+([a-z0-9-]+)/g)].map((match) => match[1]);
+  assert.deepEqual(frames, ['wave-travel']);
 });
 
 test('the wordmark is solid type and the stars keep the pink stroke', () => {

@@ -131,6 +131,46 @@ test('a film scene opens and closes without motion', async ({ page }) => {
   await page.keyboard.press('Escape');
 });
 
+test('count words travel unless motion is reduced', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop', 'one window is enough');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/listening/');
+  await page.evaluate(() => document.fonts.ready);
+  const moving = await page.locator('.wave span').nth(2).evaluate((el) => {
+    const style = getComputedStyle(el);
+    return {
+      name: style.animationName,
+      duration: Number.parseFloat(style.animationDuration),
+      timing: style.animationTimingFunction,
+    };
+  });
+  expect(moving.name).toBe('wave-travel');
+  expect(moving.duration).toBeGreaterThanOrEqual(2);
+  expect(moving.duration).toBeLessThanOrEqual(3);
+  expect(moving.timing).toBe('linear');
+  const number = await page.locator('.total-num').evaluate((el) => getComputedStyle(el).animationName);
+  expect(number).toBe('none');
+  const heading = await page.locator('h1').evaluate((el) => getComputedStyle(el).animationName);
+  expect(heading).toBe('none');
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.reload();
+  await page.evaluate(() => document.fonts.ready);
+  const still = await page.locator('.wave span').nth(2).evaluate((el) => {
+    const style = getComputedStyle(el);
+    return { name: style.animationName, transform: style.transform };
+  });
+  expect(still.name).toBe('none');
+  expect(still.transform).not.toBe('none');
+
+  await page.goto('/watching/');
+  await page.evaluate(() => document.fonts.ready);
+  const films = await page.locator('.wave').evaluate((el) => el.textContent);
+  expect(films).toBe('films');
+  const filmsStill = await page.locator('.wave span').first().evaluate((el) => getComputedStyle(el).animationName);
+  expect(filmsStill).toBe('none');
+});
+
 test('phone shows the kicker and desktop hides it', async ({ page }, info) => {
   await page.goto('/');
   await page.evaluate(() => document.fonts.ready);

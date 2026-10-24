@@ -554,17 +554,22 @@ function albumGrid(periods) {
   return `<div class="album-charts"><div class="album-grid">${tiles.join('')}</div></div>`;
 }
 
+/** The only words that take the wave. Anything else stays plain. */
+const WAVE_WORDS = new Set(['scrobbles', 'films']);
+
 /**
- * The word beside a count. Both totals use this. Letters are the static sine
- * in `.wave`. The spoken copy stays in the accessibility tree; the painted
- * letters are hidden from it.
+ * The word beside a count. Letters ride `.wave` only for scrobbles and films.
+ * The spoken copy stays in the accessibility tree; the painted letters are
+ * hidden from it.
  *
  * @param {string} word
  * @returns {string}
  */
 function waveLabel(word) {
+  const spoken = `<span class="total-spoken">${esc(word)}</span>`;
+  if (!WAVE_WORDS.has(word)) return `<span class="total-label">${spoken}</span>`;
   const letters = [...word].map((ch) => `<span>${esc(ch)}</span>`).join('');
-  return `<span class="total-label"><span class="total-spoken">${esc(word)}</span><span class="wave" aria-hidden="true">${letters}</span></span>`;
+  return `<span class="total-label">${spoken}<span class="wave" aria-hidden="true">${letters}</span></span>`;
 }
 
 /**
