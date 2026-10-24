@@ -118,8 +118,10 @@ export const siteConfig = {
     cacheTtl: 15 * 60,  // seconds — build-time on-disk cache TTL only
     showUser: false,    // do not render 'last.fm/<user>' link on /listening/
     // The monthly album chart is that weekly snapshot
-    // (GET /api/listening/charts) at build time. The Pages build does not
-    // need a Last.fm key for it. A failed fetch hides the grid.
+    // (GET /api/listening/charts) at build time. When fewer than 25 covers
+    // survive, the build asks Last.fm for a deeper monthly chart so the
+    // next album with real art fills the grid. That needs LASTFM_API_KEY
+    // and LASTFM_USERNAME. A failed fetch keeps the short chart.
   },
 
   // Letterboxd for /watching/. The diary RSS is a recent window (limit),

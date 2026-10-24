@@ -178,8 +178,6 @@ function workerChartPayload() {
 
 test('snapshot: period charts come from the worker and a failure keeps the tracks', async () => {
   const restoreEnv = cleanEnv();
-  process.env.LASTFM_API_KEY = 'secret-key';
-  process.env.LASTFM_USERNAME = 'djverism';
   const cacheDir = makeTempDir('mattdoes-cache-');
   const { calls, restore } = installFetch((url) => {
     if (url.endsWith('/api/listening/recent')) {
@@ -208,7 +206,7 @@ test('snapshot: period charts come from the worker and a failure keeps the track
     assert.equal(calls.filter((url) => url.endsWith('/api/listening/recent')).length, 1);
     assert.equal(calls.filter((url) => url.endsWith('/api/listening/charts')).length, 1);
     assert.equal(calls.some((url) => url.includes('audioscrobbler') || url.includes('gettop')), false,
-      'the build does not call Last.fm chart methods, even when a key is set');
+      'a short chart is not deepened when this build has no Last.fm credentials');
     const cached = JSON.parse(fs.readFileSync(path.join(cacheDir, 'lastfm.json'), 'utf8'));
     assert.equal(cached.periods['1month'].artists[0].name, 'Artist 1month');
     assert.equal(cached.periods.overall, undefined);

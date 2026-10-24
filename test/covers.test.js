@@ -4,6 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { resolveChartAlbums, sourceCoverUrl } from '../lib/covers.js';
+import { CHART_CANDIDATES, CHART_POOL } from '../lib/lastfm.js';
 
 const STAR = 'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
 const GREY = 'https://lastfm.freetls.fastly.net/i/u/300x300/4128a6eb29f94943c9d206c08e625904.png';
@@ -162,4 +163,19 @@ test('fallback lookups stop once the grid is full and respect the lookup budget'
   });
   assert.equal(infoCalls.filter((url) => url.includes('album.getinfo')).length, 6);
   assert.equal(infoCalls.filter((url) => url.includes('musicbrainz.org')).length, 4);
+});
+
+test('the worker stores a deep pool past the visible grid', async () => {
+  assert.ok(CHART_POOL >= 40 && CHART_POOL <= 50);
+  assert.ok(CHART_CANDIDATES >= 40);
+  assert.ok(CHART_CANDIDATES <= CHART_POOL);
+  const albums = Array.from({ length: CHART_CANDIDATES }, (_, i) => (
+    row(`Cover ${i + 1}`, `https://lastfm.freetls.fastly.net/i/u/300x300/c${i + 1}.jpg`)
+  ));
+  const kept = await resolveChartAlbums(albums, {
+    fetch: async () => jpeg(),
+  });
+  assert.equal(kept.length, CHART_CANDIDATES);
+  assert.equal(kept[0].name, 'Cover 1');
+  assert.equal(kept[CHART_CANDIDATES - 1].name, `Cover ${CHART_CANDIDATES}`);
 });

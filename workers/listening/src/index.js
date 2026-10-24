@@ -358,8 +358,10 @@ async function fetchOneChart(url, decode) {
 
 /**
  * The monthly chart only. Returns null when the call failed so the caller can
- * keep a stale snapshot instead of caching an empty page. Dead covers and
- * placeholder art are dropped and the next rows fill the grid.
+ * keep a stale snapshot instead of caching an empty page. The request asks
+ * for a deep pool. Dead covers and placeholder art are dropped and the next
+ * rows fill the grid. The stored list is wider than 25 so a blank file the
+ * build drops still has a replacement.
  *
  * @param {Env} env
  * @returns {Promise<object|null>}
