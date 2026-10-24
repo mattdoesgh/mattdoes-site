@@ -122,6 +122,9 @@ export const siteConfig = {
     // survive, the build asks Last.fm for a deeper monthly chart so the
     // next album with real art fills the grid. That needs LASTFM_API_KEY
     // and LASTFM_USERNAME. A failed fetch keeps the short chart.
+    // Progressive JPEGs are re-encoded in this build and stored on the
+    // media host. Preview builds have no R2 token; they reuse a copy
+    // already at media.mattdoes.online/covers/<sha>.jpg, or drop the tile.
   },
 
   // Letterboxd for /watching/. The diary RSS is a recent window (limit),

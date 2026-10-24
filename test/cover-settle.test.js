@@ -3,7 +3,8 @@
 import test from 'node:test';
 import assert, { AssertionError } from 'node:assert/strict';
 import sharp from 'sharp';
-import { settleChartCovers } from '../lib/cover-settle.js';
+import { publicCoverUrl } from '../lib/cover-mirror.js';
+import { isProgressiveJpeg, settleChartCovers } from '../lib/cover-settle.js';
 
 const LAST = 'https://lastfm.freetls.fastly.net/i/u/300x300/real.jpg';
 const NEXT = 'https://lastfm-img.freetls.fastly.net/i/u/300x300/next.jpg';
@@ -18,7 +19,7 @@ async function solid(r, g, b) {
   }).jpeg({ progressive: true }).toBuffer();
 }
 
-async function marked() {
+async function paint(progressive) {
   const raw = Buffer.alloc(300 * 300 * 3, 245);
   for (let y = 40; y < 220; y += 1) {
     for (let x = 30; x < 190; x += 1) {
@@ -29,8 +30,12 @@ async function marked() {
     }
   }
   return sharp(raw, { raw: { width: 300, height: 300, channels: 3 } })
-    .jpeg({ progressive: true, quality: 80 })
+    .jpeg({ progressive, quality: 80 })
     .toBuffer();
+}
+
+function marked(progressive = true) {
+  return paint(progressive);
 }
 
 function isProgressive(bytes) {
@@ -41,19 +46,23 @@ function isProgressive(bytes) {
   return false;
 }
 
+function mediaMiss(url, bodyFor) {
+  const value = String(url);
+  if (value.startsWith('https://media.mattdoes.online/')) return new Response(null, { status: 404 });
+  return new Response(bodyFor(value), { status: 200, headers: { 'content-type': 'image/jpeg' } });
+}
+
 test('a blank cover is dropped and the next album fills the slot', async () => {
   const blank = await solid(12, 12, 12);
-  const real = await marked();
+  const real = await marked(false);
+  assert.equal(isProgressiveJpeg(real), false);
   const settled = await settleChartCovers(periods([
     { name: 'Blank', artist: 'A', playcount: 2, url: '', image: LAST },
     { name: 'Next', artist: 'B', playcount: 1, url: '', image: NEXT },
   ]), {
     token: '',
     accountId: '',
-    fetch: async (url) => {
-      const body = String(url) === LAST ? blank : real;
-      return new Response(body, { status: 200, headers: { 'content-type': 'image/jpeg' } });
-    },
+    fetch: async (url) => mediaMiss(url, (value) => (value === LAST ? blank : real)),
   });
   assert.deepEqual(settled['1month'].albums.map((row) => row.name), ['Next']);
   assert.equal(settled['1month'].albums[0].image, NEXT);
@@ -91,7 +100,7 @@ test('an assertion while fetching a cover is not swallowed', async () => {
 
 test('a real cover is re-encoded and mirrored', async () => {
   const real = await marked();
-  assert.equal(isProgressive(real), true);
+  assert.equal(isProgressiveJpeg(real), true);
   let uploaded;
   const settled = await settleChartCovers(periods([
     { name: 'Real', artist: 'A', playcount: 1, url: '', image: LAST },
@@ -110,15 +119,14 @@ test('a real cover is re-encoded and mirrored', async () => {
       return Response.json({ result: [] });
     },
   });
+  assert.equal(isProgressiveJpeg(uploaded), false);
   assert.equal(isProgressive(uploaded), false);
-  assert.match(
-    settled['1month'].albums[0].image,
-    /^https:\/\/media\.mattdoes\.online\/covers\/[a-f0-9]{64}\.jpg$/,
-  );
+  assert.equal(settled['1month'].albums[0].image, publicCoverUrl(uploaded));
 });
 
 test('a cover-art URL is not painted when it cannot be mirrored', async () => {
-  const real = await marked();
+  const progressive = await marked(true);
+  const baseline = await marked(false);
   const caa = 'https://coverartarchive.org/release/12345678-1234-1234-1234-123456789abc/front-250';
   const settled = await settleChartCovers(periods([
     { name: 'Archive', artist: 'A', playcount: 1, url: '', image: caa },
@@ -126,7 +134,50 @@ test('a cover-art URL is not painted when it cannot be mirrored', async () => {
   ]), {
     token: '',
     accountId: '',
-    fetch: async () => new Response(real, { status: 200, headers: { 'content-type': 'image/jpeg' } }),
+    fetch: async (url) => mediaMiss(url, (value) => (value === NEXT ? baseline : progressive)),
   });
   assert.deepEqual(settled['1month'].albums.map((row) => row.name), ['Next']);
+  assert.equal(settled['1month'].albums[0].image, NEXT);
+});
+
+test('a preview reuses a baseline cover already on the media host', async () => {
+  const real = await marked(true);
+  let head = '';
+  const settled = await settleChartCovers(periods([
+    { name: 'Lonesome', artist: 'Gustav Kemps', playcount: 1, url: '', image: LAST },
+  ]), {
+    token: '',
+    accountId: '',
+    fetch: async (url, init) => {
+      const value = String(url);
+      if (value === LAST) {
+        return new Response(real, { status: 200, headers: { 'content-type': 'image/jpeg' } });
+      }
+      if (value.startsWith('https://media.mattdoes.online/covers/') && init?.method === 'HEAD') {
+        head = value;
+        return new Response(null, { status: 200 });
+      }
+      return new Response(null, { status: 404 });
+    },
+  });
+  assert.match(head, /^https:\/\/media\.mattdoes\.online\/covers\/[a-f0-9]{64}\.jpg$/);
+  assert.equal(settled['1month'].albums[0].image, head);
+  assert.equal(settled['1month'].albums[0].image.includes('freetls.fastly.net'), false);
+});
+
+test('a progressive JPEG with no baseline copy is replaced by the next album', async () => {
+  const progressive = await marked(true);
+  const baseline = await marked(false);
+  const settled = await settleChartCovers(periods([
+    { name: 'Lonesome', artist: 'Gustav Kemps', playcount: 2, url: '', image: LAST },
+    { name: 'Next', artist: 'B', playcount: 1, url: '', image: NEXT },
+  ]), {
+    token: '',
+    accountId: '',
+    fetch: async (url) => mediaMiss(url, (value) => (value === LAST ? progressive : baseline)),
+  });
+  assert.deepEqual(settled['1month'].albums.map((row) => row.name), ['Next']);
+  assert.equal(settled['1month'].albums[0].image, NEXT);
+  assert.equal(isProgressiveJpeg(progressive), true);
+  assert.equal(isProgressiveJpeg(baseline), false);
 });
