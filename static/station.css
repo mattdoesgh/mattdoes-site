@@ -518,6 +518,18 @@ body[data-polarity="flip"] .total-num {
   color: var(--black);
 }
 
+/* Hollow digits: pink fill (the page) and a black ring. The ring is paint
+   only. Browsers without a stroke keep the solid black number. */
+@supports (-webkit-text-stroke: var(--stroke-total) var(--black)) {
+  body[data-polarity="flip"] .total-num {
+    color: var(--pink);
+    -webkit-text-fill-color: var(--pink);
+    -webkit-text-stroke: var(--stroke-total) var(--black);
+    -webkit-text-stroke: max(var(--stroke-total), 1.5px) var(--black);
+    paint-order: stroke fill;
+  }
+}
+
 .total-label {
   position: relative;
   color: var(--pink);
@@ -534,13 +546,19 @@ body[data-polarity="flip"] .total-label {
   color: var(--black);
 }
 
-/* One static sine, sampled at nine positions (the length of "scrobbles").
-   A shorter word uses the same offsets, so it rides that crest.
-   translateY is paint-only, so the word stays on the number's baseline.
-   The letters do not move. Listening and watching share this class. */
+/* The count words only. A travelling sine in translateY. The nth-child
+   offsets are the same sine, held still when motion is reduced.
+   One wavelength across nine letters; a shorter word rides the crest. */
 .wave {
   display: inline-flex;
   align-items: baseline;
+}
+
+.wave span {
+  animation-name: wave-travel;
+  animation-duration: var(--wave-period);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 
 .wave span:nth-child(2),
@@ -559,6 +577,35 @@ body[data-polarity="flip"] .total-label {
 
 .wave span:nth-child(7) {
   transform: translateY(0.28em);
+}
+
+.wave span:nth-child(2) { animation-delay: calc(var(--wave-period) * -0.125); }
+.wave span:nth-child(3) { animation-delay: calc(var(--wave-period) * -0.25); }
+.wave span:nth-child(4) { animation-delay: calc(var(--wave-period) * -0.375); }
+.wave span:nth-child(5) { animation-delay: calc(var(--wave-period) * -0.5); }
+.wave span:nth-child(6) { animation-delay: calc(var(--wave-period) * -0.625); }
+.wave span:nth-child(7) { animation-delay: calc(var(--wave-period) * -0.75); }
+.wave span:nth-child(8) { animation-delay: calc(var(--wave-period) * -0.875); }
+.wave span:nth-child(9) { animation-delay: calc(var(--wave-period) * -1); }
+
+@keyframes wave-travel {
+  0%,
+  100% { transform: translateY(0); }
+  6.25% { transform: translateY(-0.107em); }
+  12.5% { transform: translateY(-0.198em); }
+  18.75% { transform: translateY(-0.259em); }
+  25% { transform: translateY(-0.28em); }
+  31.25% { transform: translateY(-0.259em); }
+  37.5% { transform: translateY(-0.198em); }
+  43.75% { transform: translateY(-0.107em); }
+  50% { transform: translateY(0); }
+  56.25% { transform: translateY(0.107em); }
+  62.5% { transform: translateY(0.198em); }
+  68.75% { transform: translateY(0.259em); }
+  75% { transform: translateY(0.28em); }
+  81.25% { transform: translateY(0.259em); }
+  87.5% { transform: translateY(0.198em); }
+  93.75% { transform: translateY(0.107em); }
 }
 
 .recent-label {
@@ -1080,6 +1127,10 @@ html.is-locked body {
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+
+  .wave span {
+    animation: none;
   }
 }
 
