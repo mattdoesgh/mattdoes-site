@@ -17,7 +17,7 @@ Home is pink on black. A verb page flips to black type on a pink field (`--field
 - `--mono` — ui-monospace, then Cascadia Mono, Segoe UI Mono, Menlo, Consolas, monospace
 - `--weight-regular` — 400
 - Sizes are the `--type-*` scale in `site/tokens.css`. `--row-size` is the desktop row.
-- Tracking is `--track-none` (0), `--track-stars` (0.06em), `--track-label` (0.08em), `--track-kicker` (0.1em).
+- Tracking is `--track-none` (0), `--track-stars` (0.06em), `--track-label` (0.08em). Kickers and flags use `--track-label`.
 
 ## Space and edges
 

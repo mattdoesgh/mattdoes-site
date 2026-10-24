@@ -392,6 +392,20 @@ body[data-polarity="flip"] .sign {
   }
 }
 
+/* Hover windows under the desktop breakpoint. The preview stays pink and
+   the row rules stay off, the same as the phone and the wide layout. */
+@media (hover: hover) and (max-width: 1023px) {
+  .verb-row {
+    border-top: var(--line-none);
+  }
+
+  .preview,
+  .preview a,
+  .preview .stars {
+    color: var(--pink);
+  }
+}
+
 .verb:hover,
 .verb:focus-visible {
   background: var(--pink);
@@ -710,7 +724,7 @@ body[data-polarity="flip"] .total-label {
 .evidence .kicker {
   margin: var(--space-0);
   font-family: var(--display);
-  letter-spacing: var(--track-kicker);
+  letter-spacing: var(--track-label);
   text-transform: uppercase;
   font-size: var(--type-meta);
 }

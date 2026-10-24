@@ -99,6 +99,27 @@ test('the home movie link has no underline and stars use the pink stroke', () =>
   assert.doesNotMatch(css, /\.star-half[^{]*\{[^}]*transition/);
 });
 
+test('a hover window under 1024 keeps a pink preview and no row rule', () => {
+  const css = fs.readFileSync(path.join(REPO_ROOT, 'static', 'station.css'), 'utf8');
+  const start = css.indexOf('@media (hover: hover) and (max-width: 1023px)');
+  const query = css.slice(start, css.indexOf('@media', start + 10));
+  assert.match(query, /\.verb-row \{[^}]*border-top:\s*var\(--line-none\)/);
+  assert.match(query, /\.preview,\s*\.preview a,\s*\.preview \.stars \{[^}]*color:\s*var\(--pink\)/);
+});
+
+test('kickers and flags share the label tracking', () => {
+  const css = fs.readFileSync(path.join(REPO_ROOT, 'static', 'station.css'), 'utf8');
+  const tokens = fs.readFileSync(path.join(REPO_ROOT, 'site', 'tokens.css'), 'utf8');
+  for (const selector of ['.slot .kicker', '.flag', '.evidence .kicker']) {
+    const at = css.indexOf(`${selector} {`);
+    const block = css.slice(at, css.indexOf('}', at));
+    assert.match(block, /letter-spacing:\s*var\(--track-label\)/, selector);
+  }
+  assert.match(tokens, /--track-label:\s*0\.08em;/);
+  assert.doesNotMatch(css, /--track-kicker/);
+  assert.doesNotMatch(tokens, /--track-kicker/);
+});
+
 test('an unrated latest watch is just the title', () => {
   const html = home([
     {

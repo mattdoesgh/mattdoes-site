@@ -36,11 +36,10 @@ const PIN = `
 
 /**
  * @param {import('playwright').Page} page
- * @param {{ pinFonts?: boolean }} [opts]
+ * @param {{ pinFonts?: boolean, phone?: boolean }} [opts]
  */
-export async function prepare(page, { pinFonts = true } = {}) {
-  const viewport = page.viewportSize();
-  if (viewport && viewport.width < 1024) {
+export async function prepare(page, { pinFonts = true, phone = false } = {}) {
+  if (phone) {
     const client = await page.context().newCDPSession(page);
     await client.send('Emulation.setEmulatedMedia', {
       features: [
