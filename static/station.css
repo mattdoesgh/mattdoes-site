@@ -534,8 +534,10 @@ body[data-polarity="flip"] .total-label {
   color: var(--black);
 }
 
-/* One static sine across the nine letters. translateY is paint-only, so the
-   word stays on the number's baseline. No animation. */
+/* One static sine, sampled at nine positions (the length of "scrobbles").
+   A shorter word uses the same offsets, so it rides that crest.
+   translateY is paint-only, so the word stays on the number's baseline.
+   The letters do not move. Listening and watching share this class. */
 .wave {
   display: inline-flex;
   align-items: baseline;

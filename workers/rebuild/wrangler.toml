@@ -6,7 +6,8 @@ workers_dev = false
 # Cron only — no routes. Workers-on-Routes would steal a path from Pages,
 # and this Worker has nothing to serve. fetch() returns 404 if it is ever
 # reached. Every six hours the scheduled handler POSTs the Pages deploy
-# hook so the static build refetches Letterboxd (lib/watches.js).
+# hook so the static build refetches Letterboxd: the diary RSS and the
+# films-watched count (lib/watches.js).
 [triggers]
 crons = ["0 */6 * * *"]
 

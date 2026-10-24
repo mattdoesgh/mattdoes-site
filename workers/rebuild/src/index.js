@@ -1,5 +1,6 @@
 // Cron-only rebuild. Every six hours, POST the Pages deploy hook so the
-// static build refetches Letterboxd (lib/watches.js). DEPLOY_HOOK is a
+// static build refetches Letterboxd — the diary RSS and the films-watched
+// count (lib/watches.js). DEPLOY_HOOK is a
 // secret set outside the repo. There is no public route; fetch() is 404.
 //
 // The hook URL is the secret. It is posted only when it is an https URL on
