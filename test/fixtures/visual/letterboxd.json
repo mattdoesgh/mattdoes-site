@@ -13,7 +13,10 @@
       "review": "",
       "poster": "https://media.mattdoes.online/posters/visual-heat.jpg",
       "posterWidth": 300,
-      "posterHeight": 450
+      "posterHeight": 450,
+      "posterFull": "https://media.mattdoes.online/posters/visual-heat-full.jpg",
+      "posterFullWidth": 960,
+      "posterFullHeight": 1440
     },
     {
       "title": "The Insider",
@@ -26,7 +29,10 @@
       "review": "A long sit.",
       "poster": "https://media.mattdoes.online/posters/visual-insider.jpg",
       "posterWidth": 300,
-      "posterHeight": 450
+      "posterHeight": 450,
+      "posterFull": "https://media.mattdoes.online/posters/visual-insider-full.jpg",
+      "posterFullWidth": 960,
+      "posterFullHeight": 1440
     },
     {
       "title": "Yi Yi",
@@ -39,7 +45,10 @@
       "review": "",
       "poster": "https://media.mattdoes.online/posters/visual-yiyi.jpg",
       "posterWidth": 300,
-      "posterHeight": 450
+      "posterHeight": 450,
+      "posterFull": "https://media.mattdoes.online/posters/visual-yiyi-full.jpg",
+      "posterFullWidth": 960,
+      "posterFullHeight": 1440
     }
   ]
 }

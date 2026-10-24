@@ -136,8 +136,8 @@ test('listening type matches the watching titles', () => {
   const css = fs.readFileSync(path.join(REPO_ROOT, 'static', 'station.css'), 'utf8');
   const tokens = fs.readFileSync(path.join(REPO_ROOT, 'site', 'tokens.css'), 'utf8');
   const heading = css.slice(
-    css.indexOf('.incident h2,\n.recent-label,\n.tracks .what {'),
-    css.indexOf('.incident h2 {\n  margin: var(--space-0);'),
+    css.indexOf('.film .name,\n.recent-label,\n.tracks .what,\n.scene-title {'),
+    css.indexOf('.film .name {\n  margin: var(--space-0);'),
   );
   assert.match(heading, /font-family:\s*var\(--display\)/);
   assert.match(heading, /font-weight:\s*var\(--weight-regular\)/);
@@ -151,7 +151,7 @@ test('listening type matches the watching titles', () => {
   assert.match(tokens, /--type-title-desk:\s*clamp\(1\.65rem, 1\.7vw, 2\.45rem\);/);
   assert.match(tokens, /--type-body:\s*1\.125rem;/);
   const desktop = css.slice(css.indexOf('@media (min-width: 1024px)'));
-  assert.match(desktop, /\.incident h2,\s*\.recent-label,\s*\.tracks \.what \{[^}]*font-size:\s*var\(--type-title-desk\)/);
+  assert.match(desktop, /\.film \.name,\s*\.recent-label,\s*\.tracks \.what,\s*\.scene-title \{[^}]*font-size:\s*var\(--type-title-desk\)/);
   assert.match(desktop, /\.album-cap \{[^}]*font-size:\s*var\(--type-title-desk\)/);
   const totalBlock = css.slice(css.indexOf('.total {'), css.indexOf('.total-num {'));
   assert.match(totalBlock, /display:\s*flex/);
@@ -177,7 +177,7 @@ test('listening type matches the watching titles', () => {
   assert.match(wave, /nth-child\(3\)\s*\{[^}]*translateY\(-0\.28em\)/);
   assert.match(wave, /nth-child\(7\)\s*\{[^}]*translateY\(0\.28em\)/);
   assert.doesNotMatch(wave, /animation|transition|@keyframes/);
-  assert.match(css, /\.redaction-hint,\s*\.total-spoken \{/);
+  assert.match(css, /\.redaction-hint,\s*\.total-spoken,\s*\.scene\.is-still \.scene-title \{/);
   const cap = css.slice(css.indexOf('.album-cap {'), css.indexOf('.album-by {'));
   assert.match(cap, /font-family:\s*var\(--display\)/);
   assert.match(cap, /font-weight:\s*var\(--weight-regular\)/);
