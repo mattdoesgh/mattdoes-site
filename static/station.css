@@ -526,6 +526,8 @@ body[data-polarity="flip"] .total-num {
 }
 
 .total-label {
+  position: relative;
+  color: #f7c8d8;
   font-family: var(--body);
   font-weight: 400;
   font-size: clamp(1.5rem, 3.4vw, 2.25rem);
@@ -533,6 +535,35 @@ body[data-polarity="flip"] .total-num {
   letter-spacing: 0;
   text-transform: none;
   white-space: nowrap;
+}
+
+body[data-polarity="flip"] .total-label {
+  color: #000000;
+}
+
+/* One static sine across the nine letters. translateY is paint-only, so the
+   word stays on the number's baseline. No animation. */
+.wave {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.wave span:nth-child(2),
+.wave span:nth-child(4) {
+  transform: translateY(-0.2em);
+}
+
+.wave span:nth-child(3) {
+  transform: translateY(-0.28em);
+}
+
+.wave span:nth-child(6),
+.wave span:nth-child(8) {
+  transform: translateY(0.2em);
+}
+
+.wave span:nth-child(7) {
+  transform: translateY(0.28em);
 }
 
 .recent-label {
@@ -759,7 +790,8 @@ body[data-polarity="flip"] .redaction-bar {
   background: #000000;
 }
 
-.redaction-hint {
+.redaction-hint,
+.total-spoken {
   position: absolute;
   width: 1px;
   height: 1px;
