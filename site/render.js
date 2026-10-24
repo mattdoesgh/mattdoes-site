@@ -96,6 +96,26 @@ function httpsHref(link) {
 }
 
 /**
+ * https on letterboxd.com only. The scene link is not a general web link.
+ *
+ * @param {unknown} link
+ * @returns {string}
+ */
+function letterboxdHref(link) {
+  const href = httpsHref(link);
+  if (!href) return '';
+  try {
+    const url = new URL(href);
+    if (url.protocol !== 'https:' || url.username || url.password) return '';
+    const host = url.hostname.toLowerCase();
+    if (host !== 'letterboxd.com' && host !== 'www.letterboxd.com') return '';
+    return url.toString();
+  } catch {
+    return '';
+  }
+}
+
+/**
  * @param {string} href
  * @param {string} text
  * @returns {string}
@@ -347,34 +367,85 @@ function servedPoster(url) {
  * @param {number} index
  * @returns {string}
  */
+/**
+ * Positive intrinsic size, or '' so a missing measurement is omitted.
+ *
+ * @param {string} name
+ * @param {unknown} value
+ * @returns {string}
+ */
+function dimAttr(name, value) {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n <= 0) return '';
+  return ` ${name}="${Math.round(n)}"`;
+}
+
+/**
+ * One film in the strip. The review stays off the card. The wide poster
+ * is a data attribute until the scene opens.
+ *
+ * @param {object} watch
+ * @param {number} index
+ * @returns {string}
+ */
 function film(watch, index) {
   const href = httpsHref(watch.link);
   const title = esc(watch.title || 'Untitled');
-  const heading = href ? `<a href="${esc(href)}"${relFor(href)}>${title}</a>` : title;
-  const year = watch.year ? `<p class="meta">${esc(watch.year)}</p>` : '';
   const stars = starsMarkup(watch.stars, watch.rating);
-  const rating = stars
-    ? `<p class="meta">${stars}${watch.rewatch ? ' <span class="flag">rewatch</span>' : ''}</p>`
-    : (watch.rewatch ? '<p class="meta"><span class="flag">rewatch</span></p>' : '');
-  const review = watch.review ? `<p class="statement">${esc(watch.review)}</p>` : '';
+  const flag = watch.rewatch ? '<span class="flag">rewatch</span>' : '';
+  const rating = (stars || flag) ? `<span class="meta">${stars}${flag ? ` ${flag}` : ''}</span>` : '';
   const poster = servedPoster(watch.poster);
-  const dims = watch.posterWidth && watch.posterHeight
-    ? ` width="${Number(watch.posterWidth)}" height="${Number(watch.posterHeight)}"`
-    : '';
+  const full = servedPoster(watch.posterFull) || poster;
+  const dims = `${dimAttr('width', watch.posterWidth)}${dimAttr('height', watch.posterHeight)}`;
   const loading = index === 0 ? 'eager' : 'lazy';
   const priority = index === 0 ? ' fetchpriority="high"' : '';
   const still = poster
-    ? `<figure class="evidence"><img src="${esc(poster)}" alt="${esc(`Poster for ${watch.title || 'this film'}`)}"${dims} loading="${loading}"${priority}></figure>`
+    ? `<img src="${esc(poster)}" alt=""${dims} loading="${loading}" decoding="async"${priority}>`
     : '';
-  return `<li class="incident">
-        <div>
-          <h2>${heading}</h2>
-          ${year}
-          ${rating}
-        </div>
-        ${review}
-        ${still}
+  const review = watch.review ? ` data-review="${esc(String(watch.review).replace(/\s+/g, ' ').trim())}"` : '';
+  const year = watch.year ? ` data-year="${esc(watch.year)}"` : '';
+  const rewatch = watch.rewatch ? ' data-rewatch="1"' : '';
+  const fullAttr = full
+    ? ` data-full="${esc(full)}"${dimAttr('data-full-width', watch.posterFullWidth || watch.posterWidth)}${dimAttr('data-full-height', watch.posterFullHeight || watch.posterHeight)}`
+    : '';
+  const attrs = `class="film-open" data-scene="${index}" aria-haspopup="dialog" aria-controls="scene" aria-expanded="false"${review}${year}${rewatch}${fullAttr}`;
+  const inner = `${still}<span class="copy"><span class="name">${title}</span>${rating}</span>`;
+  const control = href
+    ? `<a ${attrs} href="${esc(href)}"${relFor(href)}>${inner}</a>`
+    : `<button type="button" ${attrs}>${inner}</button>`;
+  return `<li class="film">
+        ${control}
       </li>`;
+}
+
+/**
+ * The closed scene. Rendered only when there is a film, and after the
+ * feed so the count line's sibling stays the strip. The wide image is
+ * not in the tree until the scene opens.
+ *
+ * @param {object[]} watches
+ * @returns {string}
+ */
+function scene(watches) {
+  if (!watches.length) return '';
+  const title = esc(watches[0].title || 'Untitled');
+  const href = letterboxdHref(watches[0].link);
+  const source = href
+    ? `<p class="scene-source" hidden><a id="scene-link" href="${esc(href)}" rel="noopener noreferrer">letterboxd</a></p>`
+    : '<p class="scene-source" hidden></p>';
+  return `<dialog id="scene" class="scene" hidden aria-modal="true" aria-labelledby="scene-title">
+      <div class="scene-panel">
+        <button type="button" class="scene-close">close</button>
+        <figure class="scene-still"></figure>
+        <div class="scene-copy">
+          <h2 id="scene-title" class="scene-title">${title}</h2>
+          <p id="scene-year" class="scene-year" hidden></p>
+          <p id="scene-rate" class="scene-rate" hidden></p>
+          <p id="scene-review" class="statement" hidden></p>
+          ${source}
+        </div>
+      </div>
+    </dialog>`;
 }
 
 /**
@@ -406,7 +477,8 @@ export function renderWatch(ctx) {
     robots: '',
     main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
       ${count}
-      ${feed}`,
+      ${feed}
+      ${scene(watches)}`,
   });
 }
 

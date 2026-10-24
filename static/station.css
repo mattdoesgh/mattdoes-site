@@ -140,7 +140,7 @@ body[data-polarity="flip"] .sign {
 }
 
 .lede,
-.incident p,
+.statement,
 .contact p,
 .slot p {
   max-width: var(--measure);
@@ -656,21 +656,60 @@ body[data-polarity="flip"] .total-label {
 }
 
 .feed {
-  margin: var(--space-feed);
-  padding: var(--space-0);
-  list-style: none;
-}
-
-.incident {
-  display: grid;
+  display: flex;
   gap: var(--space-md);
-  padding: var(--space-incident);
-  border-top: var(--line-rule);
+  margin: var(--space-feed);
+  margin-inline: calc(var(--space-page) * -1);
+  padding: var(--space-0) var(--space-page) var(--space-md);
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--space-page);
+  scrollbar-width: none;
 }
 
-.incident h2,
+.feed::-webkit-scrollbar {
+  display: none;
+}
+
+.film {
+  flex: 0 0 78%;
+  min-width: var(--space-0);
+  scroll-snap-align: start;
+}
+
+.film-open {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-md);
+  width: 100%;
+  margin: var(--space-0);
+  padding: var(--space-0);
+  border: var(--line-none);
+  border-radius: var(--radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.film-open img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  background: var(--black);
+}
+
+.film .name,
 .recent-label,
-.tracks .what {
+.tracks .what,
+.scene-title {
   font-family: var(--display);
   font-weight: var(--weight-regular);
   text-transform: uppercase;
@@ -680,18 +719,18 @@ body[data-polarity="flip"] .total-label {
   overflow-wrap: anywhere;
 }
 
-.incident h2 {
+.film .name {
   margin: var(--space-0);
+  font-size: var(--type-kicker);
 }
 
-.incident h2 a,
 .tracks a {
   color: inherit;
   text-decoration: none;
 }
 
-.incident h2 a:hover,
-.incident h2 a:focus-visible,
+.film-open:hover .name,
+.film-open:focus-visible .name,
 .tracks a:hover,
 .tracks a:focus-visible {
   text-decoration: underline;
@@ -713,43 +752,157 @@ body[data-polarity="flip"] .total-label {
   margin: var(--space-statement);
 }
 
-.evidence {
-  border: var(--line-strong);
-  min-height: 8.5rem;
-  padding: var(--space-md);
+/* Scene. Black field, pink type. Open and close are instant.
+   The padding is the tap-outside target. The wide poster is added on open. */
+.scene {
+  --focus: var(--pink);
+  --field: var(--black);
+  --ink: var(--pink);
+  margin: var(--space-0);
+  border: var(--line-none);
+  background: var(--black);
+  color: var(--pink);
+}
+
+.scene[open] {
+  position: fixed;
+  inset: var(--space-0);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: var(--space-md);
-}
-
-.evidence .kicker {
-  margin: var(--space-0);
-  font-family: var(--display);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
-  font-size: var(--type-meta);
-}
-
-.evidence p {
-  margin: var(--space-0);
-}
-
-.evidence img {
-  display: block;
   width: 100%;
-  height: auto;
-  max-height: 16rem;
-  object-fit: contain;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  padding: calc(var(--hit-phone) + var(--space-md)) var(--space-section) var(--space-section);
+  overflow: hidden;
+}
+
+.scene::backdrop {
   background: var(--black);
 }
 
-@media (min-width: 860px) {
-  .incident {
-    grid-template-columns: 9.5rem minmax(0, 1fr) 12.5rem;
-    gap: var(--space-incident-grid);
-    align-items: start;
-  }
+.scene-close {
+  position: fixed;
+  top: var(--space-md);
+  right: var(--space-md);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--hit-phone);
+  min-height: var(--hit-phone);
+  margin: var(--space-0);
+  padding: var(--space-tight) var(--space-md);
+  border: var(--line-none);
+  border-radius: var(--radius);
+  background: transparent;
+  color: inherit;
+  font-family: var(--display);
+  font-size: var(--type-meta);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--track-label);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.scene-close:hover,
+.scene-close:focus-visible {
+  background: var(--pink);
+  color: var(--black);
+  outline-color: var(--black);
+}
+
+.scene-panel,
+.scene-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-width: var(--space-0);
+  max-height: 100%;
+}
+
+.scene-panel {
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.scene.is-review .scene-panel {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.scene-still {
+  margin: var(--space-0);
+  background: var(--black);
+}
+
+.scene-still img {
+  display: block;
+  background: var(--black);
+}
+
+.scene.is-review .scene-still {
+  flex: 0 0 auto;
+  height: 46vh;
+  overflow: hidden;
+}
+
+.scene.is-review .scene-still img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scene.is-review .scene-title {
+  font-size: var(--type-contact);
+}
+
+.scene.is-still[open] {
+  align-items: flex-start;
+}
+
+.scene.is-still .scene-still img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 78vh;
+}
+
+.scene.is-still .scene-year,
+.scene.is-still .statement {
+  display: none;
+}
+
+.scene-title {
+  margin: var(--space-0);
+}
+
+.scene-year,
+.scene-rate {
+  margin: var(--space-slot-text);
+  font-size: var(--type-meta);
+}
+
+.scene .stars {
+  font-size: var(--type-nav);
+}
+
+.scene-source {
+  margin: var(--space-md) var(--space-0) var(--space-0);
+}
+
+.scene-source a {
+  color: inherit;
+  font-family: var(--display);
+  font-size: var(--type-meta);
+  letter-spacing: var(--track-label);
+  text-decoration: none;
+}
+
+.scene-source a:hover,
+.scene-source a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
 }
 
 .redaction {
@@ -786,7 +939,8 @@ body[data-polarity="flip"] .redaction-bar {
 }
 
 .redaction-hint,
-.total-spoken {
+.total-spoken,
+.scene.is-still .scene-title {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -906,6 +1060,11 @@ body[data-polarity="flip"] .socials a:focus-visible {
   outline-color: var(--pink);
 }
 
+html.is-locked,
+html.is-locked body {
+  overflow: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -921,10 +1080,16 @@ body[data-polarity="flip"] .socials a:focus-visible {
 
 @media (prefers-contrast: more) {
   .verb,
-  .incident,
   .tracks li,
   .site-footer {
     border-top-width: var(--line-thick);
+  }
+
+  .film-open,
+  .film-open:hover,
+  .film-open:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
   }
 
   .redaction-bar {
@@ -1117,27 +1282,85 @@ body[data-polarity="flip"] .socials a:focus-visible {
 
   .feed {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(16.5rem, 1fr));
-    gap: var(--space-desk-feed);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--space-md);
     margin-top: var(--space-desk-block);
+    margin-inline: var(--space-0);
+    padding: var(--space-0);
+    overflow: visible;
+    scroll-snap-type: none;
     width: 100%;
   }
 
-  .incident {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-incident-desk);
-    min-width: 0;
-    padding: var(--space-0);
-    border-top: var(--line-none);
+  .film {
+    flex: none;
+    scroll-snap-align: none;
   }
 
-  .incident h2,
+  .film:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .film:first-child .film-open {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-section);
+    align-items: end;
+  }
+
+  .film:first-child .film-open img {
+    width: auto;
+    max-width: 100%;
+    max-height: 72vh;
+    height: auto;
+    aspect-ratio: auto;
+  }
+
+  .film .name,
   .recent-label,
-  .tracks .what {
+  .tracks .what,
+  .scene-title {
     font-size: var(--type-title-desk);
     overflow-wrap: break-word;
+  }
+
+  .film:first-child .name {
+    font-size: var(--type-title);
+  }
+
+  .film:not(:first-child) .name {
+    font-size: var(--type-meta);
+  }
+
+  .scene[open] {
+    padding: calc(var(--hit) + var(--space-md)) var(--space-page) var(--space-page);
+  }
+
+  .scene-close {
+    min-width: var(--hit);
+    min-height: var(--hit);
+  }
+
+  .scene.is-review .scene-panel {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: var(--space-section);
+    align-items: stretch;
+    height: 100%;
+  }
+
+  .scene.is-review .scene-still {
+    height: auto;
+    min-height: var(--space-0);
+  }
+
+  .scene.is-review .scene-copy {
+    justify-content: center;
+  }
+
+  .scene.is-still .scene-still img {
+    max-width: 42vw;
+    max-height: 84vh;
   }
 
   .album-grid {
@@ -1148,25 +1371,8 @@ body[data-polarity="flip"] .socials a:focus-visible {
     font-size: var(--type-title-desk);
   }
 
-  .incident p,
   .statement {
     max-width: 36ch;
-  }
-
-  .evidence {
-    order: -1;
-    min-height: 0;
-    padding: var(--space-0);
-    border: var(--line-none);
-  }
-
-  .evidence img {
-    width: 100%;
-    height: auto;
-    max-height: none;
-    aspect-ratio: 2 / 3;
-    object-fit: cover;
-    background: var(--black);
   }
 
   .tracks {

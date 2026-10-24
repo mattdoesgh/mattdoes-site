@@ -14,7 +14,7 @@ Source for [mattdoes.online](https://mattdoes.online). Static HTML from a small 
 
 ## how it's built
 
-`site/verbs.ts` lists the verbs. The slug is the URL and the label is separate. `build.js` fetches listening data and the Letterboxd RSS, mirrors posters when `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are set, and writes `dist/`. A failed poster fetch or upload omits that poster and does not fail the build.
+`site/verbs.ts` lists the verbs. The slug is the URL and the label is separate. `build.js` fetches listening data and the Letterboxd RSS, uploads posters when `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are set, reuses a poster already on the media host when they are not, and writes `dist/`. A failed poster fetch or upload omits that poster and does not fail the build.
 
 `scripts/pages-prebuild.sh` does not clone anything. The Cloudflare Pages build command stays `bash scripts/pages-prebuild.sh && npm run build`.
 
