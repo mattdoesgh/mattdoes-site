@@ -77,6 +77,8 @@
   --hit: 44px;
   --hit-phone: 48px;
   --hit-setting: 32px;
+  /* Spare tap padding on a poster row: the 32px target minus the 9px type and the row gap. */
+  --hit-pad: calc(var(--hit-setting) - var(--type-setting) - var(--space-phone-row));
   --icon: 1.35rem;
   --measure: 40rem;
 

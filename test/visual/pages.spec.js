@@ -283,29 +283,30 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
   expect(Math.abs((places.controls.y + places.controls.h) - (places.head.y + places.head.h))).toBeLessThan(2);
   expect(places.axis.y).toBeGreaterThanOrEqual(places.posters.y + places.posters.h - 1);
   expect(Math.abs((places.axis.x + places.axis.w) - (places.posters.x + places.posters.w))).toBeLessThan(2);
-  expect(places.posters.h).toBeLessThan(22);
-  expect(places.axis.h).toBeLessThan(22);
-  const hit = await posters.evaluate((el) => Number.parseFloat(getComputedStyle(el, '::before').height));
-  expect(hit).toBeGreaterThanOrEqual(32);
   const hits = await page.evaluate(() => {
-    const edge = (el) => {
-      const box = el.getBoundingClientRect();
-      const style = getComputedStyle(el, '::before');
-      const height = Number.parseFloat(style.height);
-      const top = style.top === 'auto' ? box.bottom - height : box.top + Number.parseFloat(style.top);
-      return { top, bottom: top + height };
-    };
-    const upper = edge(document.querySelector('[data-posters-toggle]'));
-    const lower = edge(document.querySelector('[data-axis-toggle]'));
+    const box = (el) => el.getBoundingClientRect();
+    const upper = box(document.querySelector('[data-posters-toggle]'));
+    const lower = box(document.querySelector('[data-axis-toggle]'));
+    const track = box(document.querySelector('.poster-track'));
     return {
+      upperTop: upper.top,
       upperBottom: upper.bottom,
+      upperH: upper.height,
       lowerTop: lower.top,
       lowerBottom: lower.bottom,
+      lowerH: lower.height,
+      trackH: track.height,
       feedTop: document.querySelector('#feed').getBoundingClientRect().top,
+      numRight: document.querySelector('.total-num').getBoundingClientRect().right,
+      upperLeft: upper.left,
     };
   });
+  expect(hits.upperH).toBeGreaterThanOrEqual(32);
+  expect(hits.lowerH).toBeGreaterThanOrEqual(32);
+  expect(hits.trackH).toBeLessThan(22);
   expect(hits.upperBottom).toBeLessThanOrEqual(hits.lowerTop + 0.5);
   expect(hits.lowerBottom).toBeLessThanOrEqual(hits.feedTop + 0.5);
+  expect(hits.upperLeft).toBeGreaterThan(hits.numRight);
   const settingType = await posters.evaluate((el) => getComputedStyle(el).fontFamily);
   expect(settingType.toLowerCase()).not.toContain('anton');
 
@@ -417,6 +418,99 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
   await expect(page.locator('#feed')).toBeVisible();
   const restored = await page.locator('#feed').evaluate((el) => getComputedStyle(el).flexDirection);
   expect(restored).toBe('column');
+});
+
+test('posters off keeps the header and comes back', async ({ page }, info) => {
+  const width = info.project.use.viewport.width;
+  await page.goto('/watching/');
+  await page.evaluate(() => document.fonts.ready);
+  const before = await page.evaluate(() => {
+    const r = (sel) => document.querySelector(sel).getBoundingClientRect();
+    const head = r('.watch-head');
+    const num = r('.total-num');
+    const controls = r('.poster-controls');
+    return { headY: head.y, headH: head.height, numH: num.height, controlsH: controls.height, controlsB: controls.bottom, headB: head.bottom };
+  });
+
+  await page.evaluate(() => {
+    localStorage.setItem('mattdoes-posters', 'off');
+    localStorage.setItem('mattdoes-poster-axis', 'sideways');
+    localStorage.setItem('mattdoes-posters-junk', '1');
+  });
+  await page.reload();
+  await page.evaluate(() => document.fonts.ready);
+  await expect(page.locator('[data-posters-toggle]')).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('[data-posters-toggle]')).toHaveAttribute('aria-label', 'posters off');
+  await expect(page.locator('#feed')).toBeHidden();
+  await expect(page.locator('h1')).toBeVisible();
+  await expect(page.locator('.total-num')).toBeVisible();
+  await expect(page.locator('.poster-controls')).toBeVisible();
+
+  const off = await page.evaluate(() => {
+    const r = (sel) => document.querySelector(sel).getBoundingClientRect();
+    const head = r('.watch-head');
+    const num = r('.total-num');
+    const word = r('.total-label');
+    const controls = r('.poster-controls');
+    const upper = r('[data-posters-toggle]');
+    const lower = r('[data-axis-toggle]');
+    const footer = r('.site-footer');
+    const h1 = r('h1');
+    const at = (x, y) => {
+      const el = document.elementFromPoint(x, y);
+      return el ? (el.getAttribute('aria-label') || el.className || el.tagName) : 'none';
+    };
+    return {
+      attr: document.documentElement.getAttribute('data-posters'),
+      axis: document.documentElement.getAttribute('data-poster-axis'),
+      junk: localStorage.getItem('mattdoes-poster-axis'),
+      feed: getComputedStyle(document.querySelector('#feed')).display,
+      headY: head.y,
+      headH: head.height,
+      numH: num.height,
+      controlsH: controls.height,
+      controlsB: controls.bottom,
+      headB: head.bottom,
+      upperBottom: upper.bottom,
+      lowerTop: lower.top,
+      lowerBottom: lower.bottom,
+      footerTop: footer.top,
+      h1Bottom: h1.bottom,
+      numRight: num.right,
+      upperLeft: upper.left,
+      coversWord: controls.x < word.right - 1 && controls.bottom > word.y && controls.y < word.bottom,
+      countHit: at(num.x + num.width / 2, num.y + num.height / 2),
+      footerHit: at(footer.x + 24, footer.y + footer.height / 2),
+      textAdjust: getComputedStyle(document.documentElement).webkitTextSizeAdjust || getComputedStyle(document.documentElement).textSizeAdjust,
+    };
+  });
+  expect(off.attr).toBe('off');
+  expect(off.axis).toBeNull();
+  expect(off.junk).toBeNull();
+  expect(off.feed).toBe('none');
+  expect(Math.abs(off.headY - before.headY)).toBeLessThan(2);
+  expect(Math.abs(off.headH - before.headH)).toBeLessThan(2);
+  expect(off.controlsH).toBeLessThanOrEqual(off.numH / 2 + 1);
+  expect(Math.abs(off.controlsB - off.headB)).toBeLessThan(2);
+  expect(off.coversWord).toBe(false);
+  expect(off.upperBottom).toBeLessThanOrEqual(off.lowerTop + 0.5);
+  expect(off.lowerBottom).toBeLessThan(off.footerTop);
+  expect(off.upperLeft).toBeGreaterThan(off.numRight);
+  expect(off.h1Bottom).toBeLessThan(off.headY + 1);
+  expect(String(off.countHit).toLowerCase()).not.toContain('poster');
+  expect(String(off.footerHit).toLowerCase()).not.toContain('poster');
+  expect(off.textAdjust).toBe('100%');
+  await expect(page).toHaveScreenshot(`watching-off-${width}.png`, { fullPage: true });
+
+  await page.locator('[data-posters-toggle]').click();
+  await expect(page.locator('#feed')).toBeVisible();
+  await expect(page.locator('[data-posters-toggle]')).toHaveAttribute('aria-pressed', 'true');
+  await page.evaluate(() => {
+    const active = document.activeElement;
+    if (active && active.blur) active.blur();
+    window.scrollTo(0, 0);
+  });
+  await expect(page).toHaveScreenshot(`watching-${width}.png`, { fullPage: true });
 });
 
 test('the home listen line is one clipped row', async ({ page }) => {

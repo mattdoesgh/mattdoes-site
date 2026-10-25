@@ -68,7 +68,12 @@ test('watching renders posters on and across, and other pages do not', () => {
   assert.match(css, /\.poster-controls\s*\{[^}]*flex-direction:\s*column/);
   assert.match(css, /\.poster-switch\s*\{[^}]*font-family:\s*var\(--body\)/);
   assert.match(css, /\.poster-switch\s*\{[^}]*font-size:\s*var\(--type-setting\)/);
-  assert.match(css, /\.poster-switch::before\s*\{[^}]*height:\s*var\(--hit-setting\)/);
+  const tokens = fs.readFileSync(path.join(REPO_ROOT, 'site', 'tokens.css'), 'utf8');
+  assert.match(tokens, /--hit-pad:\s*calc\(var\(--hit-setting\) - var\(--type-setting\) - var\(--space-phone-row\)\)/);
+  assert.match(css, /\.poster-switch:first-child\s*\{[^}]*padding-top:\s*var\(--hit-pad\)/);
+  assert.match(css, /\.poster-switch:last-child\s*\{[^}]*margin-bottom:\s*calc\(var\(--hit-pad\) \* -1\)/);
+  assert.doesNotMatch(css, /\.poster-switch::before/);
+  assert.match(css, /text-size-adjust:\s*100%/);
   assert.match(css, /\.poster-controls\s*\{[^}]*gap:\s*var\(--space-phone-row\)/);
   assert.match(css, /\.poster-track\s*\{[^}]*border:\s*var\(--line-hair\)/);
   assert.match(css, /\.watch-head\s*\{[^}]*align-items:\s*flex-end/);
@@ -140,6 +145,10 @@ test('the toggles change state, persist, and restore aria-pressed', async () => 
   assert.equal(junk.window.document.documentElement.hasAttribute('data-poster-axis'), false);
   assert.equal(junk.window.document.querySelector('[data-posters-toggle]').getAttribute('aria-pressed'), 'true');
   assert.equal(junk.window.document.querySelector('[data-axis-toggle]').getAttribute('aria-pressed'), 'false');
+  assert.equal(junk.window.localStorage.getItem('mattdoes-posters'), null);
+  assert.equal(junk.window.localStorage.getItem('mattdoes-poster-axis'), null);
+  assert.equal(junk.window.document.querySelector('.watch-head'), junk.window.document.querySelector('.poster-controls').parentElement);
+  assert.equal(junk.window.document.querySelector('#feed').id, 'feed');
 });
 
 test('a stored choice is on the document before the buttons are parsed', async () => {
@@ -180,6 +189,9 @@ test('the strip hides when posters are off and stacks in the page when down', ()
   assert.match(css, /html\[data-poster-axis="down"\] \.film \.copy\s*\{[^}]*flex-direction:\s*column/);
   const off = css.slice(css.indexOf('html[data-posters="off"] .feed'));
   assert.match(off, /display:\s*none/);
+  assert.match(off, /overflow:\s*hidden/);
+  assert.match(off, /scroll-snap-type:\s*none/);
+  assert.doesNotMatch(off, /watch-head|poster-controls|poster-switch/);
   assert.ok(css.indexOf('html[data-posters="off"] .feed') > css.indexOf('html[data-poster-axis="down"] .feed'));
 
   const sheet = css.replace(/@import[^;]+;/, '');

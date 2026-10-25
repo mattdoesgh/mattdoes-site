@@ -19,6 +19,10 @@
 
 html {
   scroll-behavior: smooth;
+  /* iOS enlarges type when a page has little text. Posters off removes the
+     strip, and that boost is what collides the count with the settings. */
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -615,22 +619,20 @@ body[data-polarity="flip"] .total-label {
   -webkit-appearance: none;
 }
 
-/* The drawn row stays small. The hit area grows away from the other row. */
-.poster-switch::before {
-  content: "";
-  position: absolute;
-  left: var(--space-0);
-  right: var(--space-0);
-  height: var(--hit-setting);
+/* Padding grows the tap target. The negative margin gives it back, so the
+   drawn row stays the text plus the 1px outline. The spare tap area grows
+   away from the other row. An absolute pseudo on the button is what iOS
+   stretches over the page once the strip is hidden. */
+.poster-controls .poster-switch:first-child {
+  align-items: flex-end;
+  padding-top: var(--hit-pad);
+  margin-top: calc(var(--hit-pad) * -1);
 }
 
-.poster-controls .poster-switch:first-child::before {
-  top: auto;
-  bottom: var(--space-0);
-}
-
-.poster-controls .poster-switch:last-child::before {
-  top: var(--space-0);
+.poster-controls .poster-switch:last-child {
+  align-items: flex-start;
+  padding-bottom: var(--hit-pad);
+  margin-bottom: calc(var(--hit-pad) * -1);
 }
 
 .poster-key {
@@ -1685,4 +1687,6 @@ html[data-poster-axis="down"] .film:not(:first-child) .name {
 
 html[data-posters="off"] .feed {
   display: none;
+  overflow: hidden;
+  scroll-snap-type: none;
 }
