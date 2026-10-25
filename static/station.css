@@ -676,9 +676,17 @@ html[data-poster-axis="down"] .axis-across {
 }
 
 html[data-posters="off"] .poster-off,
-html[data-poster-axis="down"] .axis-down {
+html[data-poster-axis="down"] .axis-down,
+html[data-posters="off"] .axis-down {
   background: var(--ink);
   color: var(--field);
+}
+
+/* Across is not a choice while the list is up. The word stays focusable. */
+html[data-posters="off"] .axis-across {
+  background: transparent;
+  color: inherit;
+  opacity: 0.35;
 }
 
 .poster-switch:hover .poster-key,
@@ -859,7 +867,7 @@ html[data-poster-axis="down"] .axis-down {
   list-style: none;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
+  scroll-snap-type: x proximity;
   scroll-padding-inline: var(--space-page);
   scrollbar-width: none;
 }
@@ -947,8 +955,8 @@ html[data-poster-axis="down"] .axis-down {
   margin: var(--space-statement);
 }
 
-/* Scene. Black field, pink type. Open and close are instant.
-   The padding is the tap-outside target. The wide poster is added on open. */
+/* Scene. Black field, pink type. The padding is the tap-outside target.
+   The wide poster is added on open. A short fade runs only when motion is ok. */
 .scene {
   --focus: var(--pink);
   --field: var(--black);
@@ -1135,6 +1143,7 @@ body[data-polarity="flip"] .redaction-bar {
 
 .redaction-hint,
 .total-spoken,
+.layout-live,
 .scene.is-still .scene-title {
   position: absolute;
   width: 1px;
@@ -1627,7 +1636,8 @@ html.is-locked body {
 
 /* Down puts every poster in the page, title then stars under the image.
    The phone scroller and the desktop hero both stand down. Spacing is the
-   same between cards. No motion: the change is instant.
+   same between cards. The layout change is instant; a short opacity settle
+   is separate and only runs when motion is allowed.
    Posters off wins when both choices are set, so this block stays above it. */
 html[data-poster-axis="down"] .feed {
   display: flex;
@@ -1685,8 +1695,162 @@ html[data-poster-axis="down"] .film:not(:first-child) .name {
   font-size: var(--type-kicker);
 }
 
+/* Posters off is one text row per film: title, stars, rewatch. No image. */
 html[data-posters="off"] .feed {
-  display: none;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-md);
+  margin-inline: var(--space-0);
+  padding: var(--space-0);
+  overflow: visible;
   scroll-snap-type: none;
+  width: 100%;
+}
+
+html[data-posters="off"] .film,
+html[data-posters="off"] .film:first-child {
+  flex: 0 0 auto;
+  width: 100%;
+  scroll-snap-align: none;
+  grid-column: auto;
+}
+
+html[data-posters="off"] .film .film-open,
+html[data-posters="off"] .film:first-child .film-open {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+html[data-posters="off"] .film .copy {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-md);
+  width: 100%;
+  min-width: var(--space-0);
+}
+
+html[data-posters="off"] .film .name,
+html[data-posters="off"] .film:first-child .name,
+html[data-posters="off"] .film:not(:first-child) .name {
+  flex: 1 1 auto;
+  min-width: var(--space-0);
+  font-size: var(--type-list);
+}
+
+html[data-posters="off"] .film .meta {
+  flex: 0 0 auto;
+  margin: var(--space-0);
+}
+
+html[data-posters="off"] .film-open img,
+html[data-posters="off"] .film:first-child .film-open img {
+  display: none;
+}
+
+html.is-holding {
+  scroll-behavior: auto;
+}
+
+.pull-hint {
+  position: fixed;
+  z-index: 3;
+  left: var(--space-0);
+  right: var(--space-0);
+  bottom: var(--space-0);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-md);
+  margin: var(--space-0);
+  padding: var(--space-md) var(--space-page);
+  pointer-events: none;
+  opacity: 0;
+  font-family: var(--body);
+  font-size: var(--type-flag);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+
+.pull-hint-bar {
+  display: block;
+  width: 4.5rem;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+html[data-pull="1"] .pull-hint { opacity: 0.35; }
+html[data-pull="2"] .pull-hint { opacity: 0.45; }
+html[data-pull="3"] .pull-hint { opacity: 0.55; }
+html[data-pull="4"] .pull-hint { opacity: 0.65; }
+html[data-pull="5"] .pull-hint { opacity: 0.75; }
+html[data-pull="6"] .pull-hint { opacity: 0.85; }
+html[data-pull="7"] .pull-hint,
+html[data-pull="8"] .pull-hint { opacity: 1; }
+
+html[data-pull="1"] .pull-hint-bar { transform: scaleX(0.125); }
+html[data-pull="2"] .pull-hint-bar { transform: scaleX(0.25); }
+html[data-pull="3"] .pull-hint-bar { transform: scaleX(0.375); }
+html[data-pull="4"] .pull-hint-bar { transform: scaleX(0.5); }
+html[data-pull="5"] .pull-hint-bar { transform: scaleX(0.625); }
+html[data-pull="6"] .pull-hint-bar { transform: scaleX(0.75); }
+html[data-pull="7"] .pull-hint-bar { transform: scaleX(0.875); }
+html[data-pull="8"] .pull-hint-bar { transform: scaleX(1); }
+
+html[data-posters="off"] .pull-hint,
+html[data-poster-axis="down"] .pull-hint {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .feed {
+    transition: opacity var(--motion) var(--ease);
+  }
+
+  html.is-settling .feed {
+    opacity: 0.72;
+  }
+
+  .film-open img {
+    opacity: 0;
+    transition: opacity var(--motion) var(--ease);
+  }
+
+  .film-open img.is-in {
+    opacity: 1;
+  }
+
+  .scene[open] {
+    animation: scene-in var(--motion) var(--ease);
+  }
+
+  .pull-hint,
+  .pull-hint-bar {
+    transition: opacity var(--motion) var(--ease), transform var(--motion) var(--ease);
+  }
+}
+
+@keyframes scene-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pull-hint {
+    display: none;
+  }
 }

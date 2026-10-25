@@ -110,7 +110,7 @@ test('the home prefix is clipped shut until hover', () => {
   assert.doesNotMatch(css, /\.verb-prefix[^{]*\{[^}]*transition/);
   assert.doesNotMatch(css, /\.verb-prefix[^{]*\{[^}]*animation/);
   const frames = [...css.matchAll(/@keyframes\s+([a-z0-9-]+)/g)].map((match) => match[1]);
-  assert.deepEqual(frames, ['wave-travel']);
+  assert.deepEqual(frames, ['wave-travel', 'scene-in']);
 });
 
 test('the wordmark is solid type and the stars keep the pink stroke', () => {

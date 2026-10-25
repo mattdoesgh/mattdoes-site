@@ -40,6 +40,11 @@
   --type-lede: clamp(1.2rem, 1.075rem + 0.51vw, 1.536rem);
   --type-preview: clamp(1.15rem, 1.03rem + 0.49vw, 1.472rem);
   --type-kicker: clamp(1.5rem, 1.344rem + 0.64vw, 1.92rem);
+  /* Posters-off rows. Smaller than the poster kicker, still Anton. */
+  --type-list: clamp(1.15rem, 0.9rem + 1.1vw, 1.85rem);
+  /* One ease for opacity and transform. Reduced motion turns it off. */
+  --motion: 240ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   /* min(4rem, 28vw) keeps a one-word title inside a narrow window when
      text zoom doubles rem. At a 16px root this is the old 16vw curve. */
   --type-sign: clamp(min(4rem, 28vw), 16vw, 8.5rem);

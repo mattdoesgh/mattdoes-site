@@ -39,3 +39,26 @@ for (const url of paths) {
     expect(serious, summary).toEqual([]);
   });
 }
+
+test('axe watching with posters off', async ({ page }) => {
+  await page.goto('/watching/');
+  await page.evaluate(() => {
+    localStorage.setItem('mattdoes-posters', 'off');
+  });
+  await page.reload();
+  await page.evaluate(() => document.fonts.ready);
+  const results = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+    .analyze();
+  const serious = results.violations.filter((violation) => (
+    violation.impact === 'serious' || violation.impact === 'critical'
+  ));
+  const summary = serious.map((violation) => {
+    const nodes = violation.nodes.slice(0, 4).map((node) => {
+      const target = node.target.join(' ');
+      return `${target} — ${node.failureSummary?.split('\n')[0] || ''}`;
+    }).join('\n    ');
+    return `${violation.impact} ${violation.id}: ${violation.help}\n    ${nodes}`;
+  }).join('\n');
+  expect(serious, summary).toEqual([]);
+});
