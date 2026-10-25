@@ -27,9 +27,12 @@ test('pages preview is requested only for a non-production Pages branch', () => 
   }), false);
   assert.equal(pagesPreviewRequested({
     CF_PAGES: '1',
-    CF_PAGES_BRANCH: 'cursor/unshared-experiments-concepts',
-    CF_PAGES_PRODUCTION_BRANCH: '',
+    CF_PAGES_BRANCH: 'main',
   }), false);
+  assert.equal(pagesPreviewRequested({
+    CF_PAGES: '1',
+    CF_PAGES_BRANCH: 'cursor/unshared-experiments-concepts',
+  }), true);
   assert.equal(pagesPreviewRequested({
     CF_PAGES: '1',
     CF_PAGES_BRANCH: 'cursor/unshared-experiments-concepts',
@@ -54,7 +57,6 @@ test('preview copy retargets the stylesheet and marks the path noindex', () => {
   const env = {
     CF_PAGES: '1',
     CF_PAGES_BRANCH: 'cursor/unshared-experiments-concepts',
-    CF_PAGES_PRODUCTION_BRANCH: 'main',
   };
   assert.equal(copyConceptsForPreview(dir, env, REPO_ROOT), true);
   const css = fs.readFileSync(path.join(dir, 'concepts', 'unshared.css'), 'utf8');

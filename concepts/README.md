@@ -30,7 +30,7 @@ Tap play. Drag across the dots to move the harmony. Drag down to open the room. 
 
 ## Preview
 
-A Cloudflare Pages preview build copies this folder into the output and retargets the stylesheet at `tokens.css` and `/fonts/Anton-latin.woff2`. The copy runs only when `CF_PAGES` is `1` and the branch is not the production branch. A missing branch name does not copy. Production, CI, and a local `npm run build` leave `dist/` without `/concepts/`. The preview response adds `X-Robots-Tag: noindex`. The page already sends a robots meta tag.
+A Cloudflare Pages preview build copies this folder into the output and retargets the stylesheet at `tokens.css` and `/fonts/Anton-latin.woff2`. Pages sets `CF_PAGES` and `CF_PAGES_BRANCH`. The copy runs when that branch is not `main`. A missing branch name does not copy, and a build on `main` does not copy. CI and a local `npm run build` leave `dist/` without `/concepts/`. The preview response adds `X-Robots-Tag: noindex`. The page already sends a robots meta tag.
 
 ## Mobile Safari
 
