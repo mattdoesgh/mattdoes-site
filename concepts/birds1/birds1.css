@@ -102,6 +102,8 @@ main {
 }
 
 .home {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   min-height: var(--hit);
@@ -116,6 +118,12 @@ main {
   text-decoration: none;
   background: transparent;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* The shared focus token resolves on the root, so it stays pink on this
+   pink page. The link uses black so the ring stays visible. */
+.home:focus-visible {
+  outline-color: var(--black);
 }
 
 .sign,
