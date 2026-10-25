@@ -39,11 +39,13 @@ test('listening is a real page without JavaScript', () => {
   assert.equal(doc.querySelector('iframe'), null);
 });
 
-test('the home page does not link to the offline unshared page', () => {
+test('the home page does not link to unshared', () => {
   const home = new JSDOM(readDist(distDir, 'index.html')).window.document;
   assert.equal(home.querySelector('a[href="/unshared/"]'), null);
+  assert.equal(home.querySelector('a[href="/unshared/birds1/"]'), null);
   assert.equal(home.querySelector('details.redaction'), null);
-  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), false);
+  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), true);
+  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'birds1', 'index.html')), true);
 });
 
 test('journal, making, and blog are not generated', () => {

@@ -1,14 +1,12 @@
 // Pages from site/verbs.ts. String HTML, no React.
 
-import { verbs, verbCatalog, socials, verbPath, verbHeading, unsharedPlayer, unsharedContact, unsharedEnabled, SECRET_PATHS } from './verbs.ts';
+import { verbs, verbCatalog, socials, verbPath, verbHeading } from './verbs.ts';
+import { renderHubDocument } from '../concepts/hub.js';
 import { socialIcon } from './social-icons.js';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 import { formatScrobbleCount } from '../lib/format.js';
 import { CHART_SPARES, LISTENING_PERIODS, TOP_LIMIT, albumImageUrl, albumsWithCovers, musicUrl } from '../lib/lastfm.js';
 
-const SPOTIFY = 'https://open.spotify.com/artist/617fKVTXkDafXJshlNUzF3';
-// Catalog id only. The platform slug is omitted until the project name is settled.
-const APPLE = 'https://music.apple.com/us/artist/1676956374';
 const LUCIA_MAIL = 'mailto:luciadoes@mail.grokbot.com';
 
 /**
@@ -116,15 +114,6 @@ function letterboxdHref(link) {
 }
 
 /**
- * @param {string} href
- * @param {string} text
- * @returns {string}
- */
-function link(href, text) {
-  return `<a href="${esc(href)}"${relFor(href)}>${esc(text)}</a>`;
-}
-
-/**
  * https URL on bandcamp.com only. Anything else is not a player.
  *
  * @param {unknown} url
@@ -174,18 +163,6 @@ export function contactBlock(email) {
 }
 
 /**
- * The same outlink as Apple Music and Spotify. Visible text is "email".
- *
- * @param {unknown} email
- * @returns {string}
- */
-function emailOutlink(email) {
-  const address = contactAddress(email);
-  if (!address) return '';
-  return `<li><a href="${esc(`mailto:${address}`)}" aria-label="email unshared">email</a></li>`;
-}
-
-/**
  * The player slot. Empty when no Bandcamp URL is configured.
  *
  * @param {unknown} url
@@ -200,25 +177,6 @@ export function bandcampSlot(url) {
           <iframe title="Bandcamp" src="${esc(src)}" loading="lazy" referrerpolicy="no-referrer"></iframe>
         </div>
       </section>`;
-}
-
-/**
- * A plain bar. The summary has no visible words. The next step is the link inside.
- *
- * @param {string} href
- * @param {string} name accessible name, also the opened link text
- * @returns {string}
- */
-function bar(href, name) {
-  return `<details class="redaction">
-        <summary>
-          <span class="redaction-bar" aria-hidden="true"></span>
-          <span class="redaction-hint">${esc(name)}</span>
-        </summary>
-        <div class="redaction-body">
-          <p>${link(href, name)}</p>
-        </div>
-      </details>`;
 }
 
 /**
@@ -344,8 +302,7 @@ export function renderHome(ctx) {
         <ol class="verbs">
         ${items}
         </ol>
-      </nav>
-      ${unsharedEnabled ? bar('/unshared/', 'unshared') : ''}`,
+      </nav>`,
   });
 }
 
@@ -611,32 +568,9 @@ export function renderListen(ctx) {
   });
 }
 
-/**
- * @param {object} ctx
- * @returns {string}
- */
+/** The published hub. It has no socials, mailbox, or player. */
 export function renderUnshared(ctx) {
-  const verb = verbByRenderer('unshared');
-  const heading = verbHeading(verb.label);
-  return shell({
-    ...ctx,
-    path: verbPath(verb.slug),
-    title: `${heading} · mattdoes.online`,
-    description: 'Fun is unshared.',
-    polarity: 'flip',
-    current: verb.slug,
-    showVerbNav: true,
-    robots: '',
-    main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
-      <p class="lede">Fun is unshared</p>
-      ${bandcampSlot(unsharedPlayer.bandcamp)}
-      <ul class="outlinks">
-        ${emailOutlink(unsharedContact.email)}
-        <li>${link(APPLE, 'Apple Music')}</li>
-        <li>${link(SPOTIFY, 'Spotify')}</li>
-      </ul>
-      ${SECRET_PATHS.includes('/frequency/') ? bar('/frequency/', 'frequency') : ''}`,
-  });
+  return renderHubDocument(ctx && ctx.siteUrl);
 }
 
 /**

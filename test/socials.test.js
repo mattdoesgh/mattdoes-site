@@ -54,8 +54,16 @@ test('every built page footer has the social hrefs and names', () => {
   const files = listDistHtml(distDir);
   assert.ok(files.length >= 4);
   for (const file of files) {
-    const rel = path.relative(distDir, file);
-    const doc = new JSDOM(fs.readFileSync(file, 'utf8')).window.document;
+    const rel = path.relative(distDir, file).split(path.sep).join('/');
+    const html = fs.readFileSync(file, 'utf8');
+    const doc = new JSDOM(html).window.document;
+    if (rel.startsWith('unshared/')) {
+      assert.equal(doc.querySelector('footer.site-footer'), null, rel);
+      assert.equal(doc.querySelector('.outlinks'), null, rel);
+      assert.equal(html.includes('mailto:'), false, rel);
+      assert.doesNotMatch(html, /music\.apple\.com|spotify\.com|bandcamp\.com/i, rel);
+      continue;
+    }
     const footer = doc.querySelector('footer.site-footer');
     assert.ok(footer, rel);
     const links = [...footer.querySelectorAll('nav.socials a')];

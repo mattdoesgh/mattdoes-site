@@ -15,6 +15,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { emit } from './lib/emit/index.js';
+import { unsharedEnabled } from './site/verbs.ts';
 import { fetchListeningSnapshot } from './lib/listening.js';
 import { fetchFilmCount, fetchWatches } from './lib/watches.js';
 import { mirrorPosters } from './lib/posters.js';
@@ -51,3 +52,4 @@ const { distSize } = await emit({
 console.log(`✓ built in ${((Date.now() - t0) / 1000).toFixed(2)}s`);
 console.log(`  ${watches.length} recent watches · ${lastfmTracks.length} listening rows`);
 console.log(`  dist: ${distSize}  ·  ${DIST_DIR}`);
+if (unsharedEnabled) console.log('  unshared: published');

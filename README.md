@@ -7,7 +7,7 @@ Source for [mattdoes.online](https://mattdoes.online). Static HTML from a small 
 - **home** (`/`) — the verb list. The letterboxd row also shows the newest film and its stars.
 - **watching** (`/watching/`) — recent Letterboxd watches. Posters are mirrored to `media.mattdoes.online` at build time.
 - **listening** (`/listening/`) — recent plays from the listening worker, baked at build time and refreshed live. The monthly album chart is a weekly snapshot of a deep Last.fm pool, so a dropped cover is replaced and the grid stays 25. A build that still sees a short snapshot asks Last.fm for that same pool. Progressive cover JPEGs are re-encoded with sharp and stored on the media host. A progressive file with no baseline copy to serve is omitted.
-- **unshared** (`/unshared/`) — offline while `unsharedEnabled` is false. The page code stays. A public mailbox is rendered only when the page is published and `unsharedContact.email` is set.
+- **unshared** (`/unshared/`) — a hub and `/unshared/birds1/`. Both are in the sitemap. The home menu does not link here. Unshared has no socials or mailbox. The birds1 heading is `birds1`.
 - **404** — not found.
 
 `/frequency/` is a noindex page and is not in the menu or the sitemap. This site does not keep legacy redirects.

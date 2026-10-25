@@ -5,6 +5,7 @@ const pages = [
   ['home', '/'],
   ['watching', '/watching/'],
   ['listening', '/listening/'],
+  ['unshared', '/unshared/'],
 ];
 
 test.beforeEach(async ({ page }, info) => {
@@ -19,6 +20,23 @@ for (const [name, url] of pages) {
     await expect(page).toHaveScreenshot(`${name}-${width}.png`, { fullPage: true });
   });
 }
+
+test('birds1', async ({ page }, info) => {
+  await page.addInitScript(() => {
+    let seed = 1;
+    Math.random = () => {
+      seed = (seed * 16807) % 2147483647;
+      return (seed - 1) / 2147483646;
+    };
+    window.setInterval = () => 0;
+  });
+  const width = info.project.use.viewport.width;
+  await page.goto('/unshared/birds1/');
+  await page.evaluate(() => document.fonts.ready);
+  await expect(page.locator('h1')).toHaveText('birds1');
+  await expect(page.locator('#field')).toHaveAttribute('data-motion', 'reduce');
+  await expect(page).toHaveScreenshot(`birds1-${width}.png`, { fullPage: true });
+});
 
 test('footer', async ({ page }, info) => {
   const width = info.project.use.viewport.width;

@@ -20,7 +20,10 @@ test('no Bandcamp markup is emitted when the optional URL is unset', () => {
   assert.equal(bandcampSlot(''), '');
   assert.equal(bandcampSlot('https://example.com/bandcamp'), '');
 
-  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), false);
+  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), true);
+  const built = fs.readFileSync(path.join(distDir, 'unshared', 'index.html'), 'utf8');
+  assert.equal(built.includes('bandcamp'), false);
+  assert.equal(built.includes('<iframe'), false);
 
   const routes = parseHeadersFile(readDist(distDir, '_headers'));
   for (const name of ['content-security-policy', 'content-security-policy-report-only']) {
@@ -38,31 +41,34 @@ function walkFiles(dir) {
   return files;
 }
 
-test('the unshared contact mailto stays in source and out of the build', () => {
-  const address = 'luciadoes+unshared@mail.grokbot.com';
-  assert.equal(unsharedEnabled, false);
-  assert.equal(unsharedContact.email, address);
+test('unshared has no contact mailto and the hub is the built page', () => {
+  assert.equal(unsharedEnabled, true);
+  assert.equal(unsharedContact.email, undefined);
   assert.equal(contactBlock('not-an-email'), '');
-  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), false);
 
-  const html = renderUnshared({
-    siteUrl: 'https://mattdoes.online',
-    assets: { 'station.css': 'station.css', 'station.js': 'station.js' },
-  });
+  const html = renderUnshared({ siteUrl: 'https://mattdoes.online' });
   const doc = new JSDOM(html).window.document;
-  const links = [...doc.querySelectorAll('.outlinks a')];
-  const link = links.find((anchor) => anchor.textContent === 'email');
-  assert.equal(doc.querySelector('p.lede')?.textContent, 'Fun is unshared');
-  assert.equal(link?.getAttribute('href'), `mailto:${address}`);
-  assert.equal(link?.textContent, 'email');
-  assert.equal(link?.getAttribute('aria-label'), 'email unshared');
+  assert.equal(doc.querySelector('h1')?.textContent, 'matt does unshared');
+  assert.equal(doc.querySelector('.outlinks'), null);
+  assert.equal(doc.querySelector('p.lede'), null);
+  assert.equal(html.includes('mailto:'), false);
+  assert.equal(html.includes('Fun is unshared'), false);
+
+  const birds = fs.readFileSync(path.join(distDir, 'unshared', 'birds1', 'index.html'), 'utf8');
+  const birdsDoc = new JSDOM(birds).window.document;
+  assert.equal(birdsDoc.querySelector('h1')?.textContent, 'birds1');
+  assert.equal(birdsDoc.querySelector('title')?.textContent, 'birds1 · mattdoes.online');
+  assert.equal(birdsDoc.querySelector('meta[property="og:title"]')?.getAttribute('content'), 'birds1 · mattdoes.online');
 
   for (const file of walkFiles(distDir)) {
     const text = fs.readFileSync(file, 'utf8');
     const rel = path.relative(distDir, file);
     assert.equal(text.includes('unshared@mattdoes.online'), false, rel);
     assert.equal(text.includes('luciadoes+unshared@'), false, rel);
-    assert.equal(text.includes('/unshared/'), false, rel);
+  }
+  for (const rel of ['index.html', 'watching/index.html', 'listening/index.html', '404.html', 'unshared/index.html', 'unshared/birds1/index.html']) {
+    const text = fs.readFileSync(path.join(distDir, rel), 'utf8');
+    assert.doesNotMatch(text, /music\.apple\.com|open\.spotify\.com|bandcamp\.com|mailto:/i, rel);
   }
 });
 

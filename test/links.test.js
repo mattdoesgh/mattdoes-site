@@ -72,7 +72,8 @@ test('sitemap locs are pages that were built', () => {
   const sitemap = fs.readFileSync(path.join(distDir, 'sitemap.xml'), 'utf8');
   const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
   assert.ok(locs.length >= 3);
-  assert.equal(locs.some((loc) => loc.includes('/unshared/')), false);
+  assert.ok(locs.includes('https://mattdoes.online/unshared/'));
+  assert.ok(locs.includes('https://mattdoes.online/unshared/birds1/'));
   for (const loc of locs) {
     const url = new URL(loc);
     assert.equal(fs.existsSync(fileForPath(url.pathname)), true, loc);
