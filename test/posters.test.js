@@ -249,7 +249,8 @@ test('real-shaped entries with a public poster render an image', async () => {
   const doc = page([watch]);
   const imgs = [...doc.querySelectorAll('img')];
   assert.ok(imgs.length >= 1);
-  assert.equal(imgs[0].getAttribute('src'), poster);
+  assert.equal(imgs[0].hasAttribute('src'), false);
+  assert.equal(imgs[0].getAttribute('data-src'), poster);
   assert.equal(imgs[0].closest('.film-open')?.getAttribute('data-full'), poster);
   assert.equal(doc.querySelector('#scene-img'), null);
   assert.doesNotMatch(doc.body.innerHTML, /ltrbxd\.com/);
@@ -302,10 +303,12 @@ test('a preview without the token prefers public grid and scene files', async ()
   assert.equal(watch.posterFullWidth, 80);
   const doc = page([watch]);
   const img = doc.querySelector('.film-open img');
-  assert.equal(img?.getAttribute('src'), watch.poster);
+  assert.equal(img?.hasAttribute('src'), false);
+  assert.equal(img?.getAttribute('data-src'), watch.poster);
   assert.equal(img.closest('.film-open')?.getAttribute('data-full'), watch.posterFull);
-  assert.notEqual(img.getAttribute('src'), img.closest('.film-open')?.getAttribute('data-full'));
+  assert.notEqual(img.getAttribute('data-src'), img.closest('.film-open')?.getAttribute('data-full'));
   assert.equal(doc.querySelector('#scene-img'), null);
+  assert.equal([...doc.querySelectorAll('img')].some((node) => node.getAttribute('data-src') === watch.posterFull), false);
   assert.equal([...doc.querySelectorAll('img')].some((node) => node.getAttribute('src') === watch.posterFull), false);
 });
 

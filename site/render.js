@@ -381,7 +381,7 @@ function film(watch, index) {
   const loading = index === 0 ? 'eager' : 'lazy';
   const priority = index === 0 ? ' fetchpriority="high"' : '';
   const still = poster
-    ? `<img src="${esc(poster)}" alt=""${dims} loading="${loading}" decoding="async"${priority}>`
+    ? `<img data-src="${esc(poster)}" alt=""${dims} loading="${loading}" decoding="async"${priority}>`
     : '';
   const review = watch.review ? ` data-review="${esc(String(watch.review).replace(/\s+/g, ' ').trim())}"` : '';
   const year = watch.year ? ` data-year="${esc(watch.year)}"` : '';
@@ -478,6 +478,17 @@ function watchHead(count) {
       </div>`;
 }
 
+/**
+ * The live region speaks a layout change. The pull hint is visual only.
+ * Both sit after the scene so the feed's next sibling stays the dialog.
+ *
+ * @returns {string}
+ */
+function watchStatus() {
+  return `<p class="layout-live" aria-live="polite"></p>
+      <p class="pull-hint" aria-hidden="true"><span class="pull-hint-label">pull for down</span><span class="pull-hint-bar"></span></p>`;
+}
+
 export function renderWatch(ctx) {
   const watches = Array.isArray(ctx.watches) ? ctx.watches : [];
   const verb = verbByRenderer('watch');
@@ -499,7 +510,8 @@ export function renderWatch(ctx) {
     main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
       ${watchHead(count)}
       ${feed}
-      ${scene(watches)}`,
+      ${scene(watches)}
+      ${watchStatus()}`,
   });
 }
 

@@ -321,9 +321,42 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
   const onFill = await page.locator('.poster-on').evaluate((el) => getComputedStyle(el).backgroundColor);
   expect(offFill).toBe('rgb(0, 0, 0)');
   expect(onFill).not.toBe(offFill);
-  await expect(feed).toBeHidden();
+  await expect(feed).toBeVisible();
+  await expect(axis).toHaveAttribute('aria-disabled', 'true');
+  await expect(axis).toHaveAttribute('aria-pressed', 'true');
+  await expect(axis).toHaveAttribute('aria-label', 'layout down');
+  const listed = await feed.evaluate((el) => {
+    const style = getComputedStyle(el);
+    const img = el.querySelector('img');
+    const name = el.querySelector('.name').getBoundingClientRect();
+    const meta = el.querySelector('.meta').getBoundingClientRect();
+    return {
+      display: style.display,
+      dir: style.flexDirection,
+      img: img ? getComputedStyle(img).display : 'missing',
+      nameTop: name.top,
+      metaTop: meta.top,
+    };
+  });
+  expect(listed.display).toBe('flex');
+  expect(listed.dir).toBe('column');
+  expect(listed.img).toBe('none');
+  expect(Math.abs(listed.nameTop - listed.metaTop)).toBeLessThan(24);
+  const acrossOpacity = await page.locator('.axis-across').evaluate((el) => getComputedStyle(el).opacity);
+  expect(Number(acrossOpacity)).toBeLessThan(0.5);
   const postersOffWidth = await posters.evaluate((el) => el.getBoundingClientRect().width);
   expect(Math.abs(postersOffWidth - postersWidth)).toBeLessThan(1);
+
+  await axis.click({ force: true });
+  await expect(page.locator('html')).not.toHaveAttribute('data-poster-axis', /.+/);
+  const keptAxis = await page.evaluate(() => localStorage.getItem('mattdoes-poster-axis'));
+  expect(keptAxis).toBe('across');
+
+  await posters.click();
+  await expect(axis).not.toHaveAttribute('aria-disabled');
+  await expect(axis).toHaveAttribute('aria-pressed', 'false');
+  await expect(axis).toHaveAttribute('aria-label', 'layout across');
+  await expect(feed).toBeVisible();
 
   await axis.click();
   await expect(axis).toHaveAttribute('aria-pressed', 'true');
@@ -337,8 +370,6 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
   const axisDownWidth = await axis.evaluate((el) => el.getBoundingClientRect().width);
   expect(Math.abs(axisDownWidth - axisWidth)).toBeLessThan(1);
   await expect(page.locator('html')).toHaveAttribute('data-poster-axis', 'down');
-
-  await posters.click();
   await expect(posters).toHaveAttribute('aria-pressed', 'true');
   await expect(feed).toBeVisible();
   const stacked = await feed.evaluate((el) => {
@@ -441,7 +472,11 @@ test('posters off keeps the header and comes back', async ({ page }, info) => {
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator('[data-posters-toggle]')).toHaveAttribute('aria-pressed', 'false');
   await expect(page.locator('[data-posters-toggle]')).toHaveAttribute('aria-label', 'posters off');
-  await expect(page.locator('#feed')).toBeHidden();
+  await expect(page.locator('[data-axis-toggle]')).toHaveAttribute('aria-disabled', 'true');
+  await expect(page.locator('[data-axis-toggle]')).toHaveAttribute('aria-label', 'layout down');
+  await expect(page.locator('#feed')).toBeVisible();
+  await expect(page.locator('.film .name', { hasText: 'The Insider' })).toBeVisible();
+  await expect(page.locator('.film', { hasText: 'The Insider' }).locator('.flag')).toHaveText('rewatch');
   await expect(page.locator('h1')).toBeVisible();
   await expect(page.locator('.total-num')).toBeVisible();
   await expect(page.locator('.poster-controls')).toBeVisible();
@@ -465,6 +500,8 @@ test('posters off keeps the header and comes back', async ({ page }, info) => {
       axis: document.documentElement.getAttribute('data-poster-axis'),
       junk: localStorage.getItem('mattdoes-poster-axis'),
       feed: getComputedStyle(document.querySelector('#feed')).display,
+      img: getComputedStyle(document.querySelector('.film-open img')).display,
+      src: document.querySelector('.film-open img').getAttribute('src'),
       headY: head.y,
       headH: head.height,
       numH: num.height,
@@ -487,7 +524,9 @@ test('posters off keeps the header and comes back', async ({ page }, info) => {
   expect(off.attr).toBe('off');
   expect(off.axis).toBeNull();
   expect(off.junk).toBeNull();
-  expect(off.feed).toBe('none');
+  expect(off.feed).toBe('flex');
+  expect(off.img).toBe('none');
+  expect(off.src).toBeNull();
   expect(Math.abs(off.headY - before.headY)).toBeLessThan(2);
   expect(Math.abs(off.headH - before.headH)).toBeLessThan(2);
   expect(off.controlsH).toBeLessThanOrEqual(off.numH / 2 + 1);
@@ -505,6 +544,9 @@ test('posters off keeps the header and comes back', async ({ page }, info) => {
   await page.locator('[data-posters-toggle]').click();
   await expect(page.locator('#feed')).toBeVisible();
   await expect(page.locator('[data-posters-toggle]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-axis-toggle]')).toHaveAttribute('aria-label', 'layout across');
+  await expect(page.locator('.film-open img').first()).toHaveAttribute('src', /posters\/visual-/);
+  await page.locator('.film-open img').evaluateAll((imgs) => Promise.all(imgs.map((img) => (img.decode ? img.decode() : img.complete).catch?.() || Promise.resolve())));
   await page.evaluate(() => {
     const active = document.activeElement;
     if (active && active.blur) active.blur();
