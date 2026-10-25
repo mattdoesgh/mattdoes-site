@@ -11,66 +11,15 @@
     <a class="skip-link" href="#main">Skip to content</a>
     <main id="main">
       <h1 class="sign">matt does unshared</h1>
-
-      <section class="demo" id="ambient">
-        <h2>ambient</h2>
-        <p class="line">detuned oscillators, a slow filter move, and a generated reverb.</p>
-        <canvas class="viz" id="ambient-viz" width="640" height="180" aria-hidden="true"></canvas>
-        <button type="button" class="play" data-demo="ambient" aria-pressed="false" aria-label="play ambient">
+      <div class="stage">
+        <canvas class="field" id="field" tabindex="0" aria-label="Generative field. Drag to move the harmony and the size of the room."></canvas>
+      </div>
+      <div class="bar">
+        <button type="button" class="play" id="play" aria-pressed="false" aria-label="play">
           <span class="play-label" aria-hidden="true"><span class="label-play">play</span><span class="label-stop">stop</span></span>
         </button>
-        <div class="controls">
-          <label class="slider"><span>detune</span><input type="range" min="0" max="40" step="0.1" value="8" data-param="detune"></label>
-          <label class="slider"><span>cutoff</span><input type="range" min="0" max="1" step="0.001" value="0.28" data-param="cutoff"></label>
-          <label class="slider"><span>size</span><input type="range" min="0" max="1" step="0.001" value="0.55" data-param="size"></label>
-          <label class="slider"><span>decay</span><input type="range" min="0" max="1" step="0.001" value="0.62" data-param="decay"></label>
-          <label class="slider"><span>lfo</span><input type="range" min="0" max="1" step="0.001" value="0.18" data-param="lfo"></label>
-        </div>
-      </section>
-
-      <section class="demo" id="speakers">
-        <h2>speakers</h2>
-        <p class="line">one loop, heard through four speakers.</p>
-        <canvas class="viz" id="speaker-viz" width="640" height="180" aria-hidden="true"></canvas>
-        <button type="button" class="play" data-demo="speakers" aria-pressed="false" aria-label="play speakers">
-          <span class="play-label" aria-hidden="true"><span class="label-play">play</span><span class="label-stop">stop</span></span>
-        </button>
-        <div class="choices" role="group" aria-label="speaker">
-          <button type="button" class="choice" data-speaker="phone" aria-pressed="true">phone</button>
-          <button type="button" class="choice" data-speaker="laptop" aria-pressed="false">laptop</button>
-          <button type="button" class="choice" data-speaker="earbuds" aria-pressed="false">earbuds</button>
-          <button type="button" class="choice" data-speaker="club" aria-pressed="false">club</button>
-        </div>
-      </section>
-
-      <section class="demo" id="timing">
-        <h2>timing</h2>
-        <p class="line">straight 160, then swing, jitter, and velocity.</p>
-        <div class="choices" role="group" aria-label="voice">
-          <button type="button" class="choice" data-voice="kick" aria-pressed="true">kick</button>
-          <button type="button" class="choice" data-voice="hat" aria-pressed="false">hat</button>
-          <button type="button" class="choice" data-voice="bass" aria-pressed="false">bass</button>
-        </div>
-        <div class="grid-well" id="step-grid"></div>
-        <button type="button" class="play" data-demo="timing" aria-pressed="false" aria-label="play timing">
-          <span class="play-label" aria-hidden="true"><span class="label-play">play</span><span class="label-stop">stop</span></span>
-        </button>
-        <div class="controls">
-          <label class="slider"><span>machine to human</span><input type="range" id="human" min="0" max="1" step="0.01" value="0"></label>
-        </div>
-        <button type="button" class="choice flourish" id="flourish" aria-pressed="false" aria-label="flourish, three plus three plus two">flourish</button>
-      </section>
-
-      <section class="demo" id="filter">
-        <h2>filter</h2>
-        <p class="line">drag. x is cutoff, y is resonance.</p>
-        <canvas class="viz pad" id="filter-pad" width="640" height="280" tabindex="0" aria-label="filter. horizontal is cutoff, vertical is resonance."></canvas>
-        <button type="button" class="play" data-demo="filter" aria-pressed="false" aria-label="play filter">
-          <span class="play-label" aria-hidden="true"><span class="label-play">play</span><span class="label-stop">stop</span></span>
-        </button>
-      </section>
-
-      <label class="slider volume"><span>volume</span><input type="range" id="volume" min="0" max="100" step="1" value="35"></label>
+        <label class="slider"><span>volume</span><input type="range" id="volume" min="0" max="100" step="1" value="35"></label>
+      </div>
     </main>
     <script type="module" src="/concepts/unshared.js"></script>
   </body>

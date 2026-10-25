@@ -15,6 +15,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { emit } from './lib/emit/index.js';
+import { copyConceptsForPreview } from './lib/preview-concepts.js';
 import { fetchListeningSnapshot } from './lib/listening.js';
 import { fetchFilmCount, fetchWatches } from './lib/watches.js';
 import { mirrorPosters } from './lib/posters.js';
@@ -48,6 +49,9 @@ const { distSize } = await emit({
   filmCount,
 });
 
+const concepts = copyConceptsForPreview(DIST_DIR);
+
 console.log(`✓ built in ${((Date.now() - t0) / 1000).toFixed(2)}s`);
 console.log(`  ${watches.length} recent watches · ${lastfmTracks.length} listening rows`);
 console.log(`  dist: ${distSize}  ·  ${DIST_DIR}`);
+if (concepts) console.log('  concepts: copied for this preview build');
