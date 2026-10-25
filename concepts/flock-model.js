@@ -3,7 +3,7 @@
 // scheduled after stop, or against an older play, is refused.
 
 export const BIRD_COUNT = 32;
-export const DOTS_PER_BIRD = 5;
+export const DOTS_PER_BIRD = 9;
 export const VOICE_COUNT = 7;
 export const PARTICLE_COUNT = BIRD_COUNT * DOTS_PER_BIRD;
 export const GUIDE_COUNT = 4;
@@ -203,6 +203,65 @@ export function windAt(x, y, z, time) {
  * @param {number} alpha
  * @returns {{ x: number, y: number, z: number }}
  */
+/**
+ * Seconds until an idle flock should solo a bird on its own.
+ * The span is 20 to 40 seconds.
+ *
+ * @param {() => number} [random]
+ * @returns {number}
+ */
+export function idleSoloDelay(random = Math.random) {
+  return 20 + random() * 20;
+}
+
+/**
+ * Stable links between a bird's dots. The same offsets always produce
+ * the same pairs, so the constellation does not flicker.
+ *
+ * @param {{ ox: number, oy: number, oz: number }[]} dots
+ * @returns {number[]}
+ */
+export function constellationEdges(dots) {
+  const edges = [];
+  const seen = new Set();
+  const link = (a, b) => {
+    if (a === b) return;
+    const key = a < b ? a * 32 + b : b * 32 + a;
+    if (seen.has(key)) return;
+    seen.add(key);
+    edges.push(a, b);
+  };
+  for (let i = 0; i < dots.length; i += 1) {
+    let best = -1;
+    let bestD = Infinity;
+    let second = -1;
+    let secondD = Infinity;
+    for (let j = 0; j < dots.length; j += 1) {
+      if (i === j) continue;
+      const d = Math.hypot(
+        dots[i].ox - dots[j].ox,
+        dots[i].oy - dots[j].oy,
+        dots[i].oz - dots[j].oz,
+      );
+      if (d < bestD || (d === bestD && j < best)) {
+        second = best;
+        secondD = bestD;
+        best = j;
+        bestD = d;
+      } else if (d < secondD || (d === secondD && (second < 0 || j < second))) {
+        second = j;
+        secondD = d;
+      }
+    }
+    if (best >= 0) link(i, best);
+    if (second >= 0) link(i, second);
+  }
+  if (edges.length < dots.length) {
+    for (let i = 0; i < dots.length; i += 1) link(i, (i + 1) % dots.length);
+  }
+  return edges;
+}
+
 export function renderPoint(bird, alpha) {
   const t = Math.min(1, Math.max(0, alpha));
   return {
@@ -253,7 +312,10 @@ export function createFlock(random = Math.random) {
       phase: random() * Math.PI * 2,
       wall: 0,
       gust: 0,
+      lean: Math.cos(i * 2.399 + random() * 0.35),
+      side: 0,
       dots,
+      edges: constellationEdges(dots),
     });
   }
   return birds;
@@ -307,11 +369,22 @@ export function stepFlock(birds, dt, finger, frozen, time = 0) {
   else if (finger && fingerDist < 2.15) mode = 'gather';
   const sample = windAt(0, 0, 0, time);
   if (frozen) {
+    let held = null;
+    for (let i = 0; i < n; i += 1) {
+      if (birds[i].solo) {
+        held = birds[i];
+        break;
+      }
+    }
+    const eased = Math.min(Math.max(dt, 0), 1);
     for (let i = 0; i < n; i += 1) {
       const b = birds[i];
       b.px = b.x;
       b.py = b.y;
       b.pz = b.z;
+      const drift = Math.sin(time * 0.07 + b.phase) * 0.22;
+      const aim = held && held !== b ? clamp((b.lean || 0) + drift, -1, 1) : 0;
+      b.side = (b.side || 0) + (aim - (b.side || 0)) * Math.min(1, eased * 0.45);
     }
     return { cohesion, spread, mode, gust: sample.gust };
   }
@@ -320,6 +393,13 @@ export function stepFlock(birds, dt, finger, frozen, time = 0) {
   const ay = new Float64Array(n);
   const az = new Float64Array(n);
   const step = Math.min(Math.max(dt, 0), 0.05);
+  let solo = null;
+  for (let i = 0; i < n; i += 1) {
+    if (birds[i].solo) {
+      solo = birds[i];
+      break;
+    }
+  }
 
   for (let i = 0; i < n; i += 1) {
     const b = birds[i];
@@ -366,6 +446,12 @@ export function stepFlock(birds, dt, finger, frozen, time = 0) {
         kz += o.z;
         nk += 1;
       }
+      if (b.side * o.side > 0.05 && dist < 1.15 && dist > 0.18) {
+        const kin = Math.min(Math.abs(b.side), Math.abs(o.side)) * 0.09;
+        ax[i] += (o.x - b.x) * kin;
+        ay[i] += (o.y - b.y) * kin;
+        az[i] += (o.z - b.z) * kin;
+      }
     }
     b.near = nk;
     if (ns) {
@@ -394,6 +480,37 @@ export function stepFlock(birds, dt, finger, frozen, time = 0) {
     ax[i] += Math.cos(b.phase) * wander;
     ay[i] += Math.sin(b.phase * 0.8) * wander * 0.5;
     az[i] += Math.sin(b.phase * 1.2) * wander;
+    const drift = Math.sin(time * 0.07 + b.phase) * 0.22;
+    const aim = solo && !b.solo ? clamp((b.lean || 0) + drift, -1, 1) : 0;
+    b.side = (b.side || 0) + (aim - (b.side || 0)) * Math.min(1, step * 0.45);
+    if (solo && solo !== b) {
+      const dx = solo.x - b.x;
+      const dy = solo.y - b.y;
+      const dz = solo.z - b.z;
+      const dist = Math.hypot(dx, dy, dz) || 0.0001;
+      const ux = dx / dist;
+      const uy = dy / dist;
+      const uz = dz / dist;
+      const tx = -uz;
+      const tz = ux;
+      if (b.side > 0) {
+        const flank = 0.38;
+        ax[i] += (solo.x + tx * flank - b.x) * 0.62 * b.side;
+        ay[i] += (solo.y - b.y) * 0.62 * b.side;
+        az[i] += (solo.z + tz * flank - b.z) * 0.62 * b.side;
+        ax[i] += (solo.vx - b.vx) * 0.28 * b.side;
+        ay[i] += (solo.vy - b.vy) * 0.28 * b.side;
+        az[i] += (solo.vz - b.vz) * 0.28 * b.side;
+      } else if (b.side < 0) {
+        const oppose = -b.side;
+        const shell = 1.2;
+        ax[i] -= ux * (shell - dist) * 0.9 * oppose;
+        ay[i] -= uy * (shell - dist) * 0.9 * oppose;
+        az[i] -= uz * (shell - dist) * 0.9 * oppose;
+        ax[i] += tx * 0.62 * oppose;
+        az[i] += tz * 0.62 * oppose;
+      }
+    }
     const wall = cubeClearance(b.x, b.y, b.z);
     b.wall = b.solo ? 0 : wall.brush;
     if (b.solo) {

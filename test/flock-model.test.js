@@ -13,9 +13,11 @@ import {
   PARTICLE_COUNT,
   PICK_RADIUS,
   VOICE_COUNT,
+  constellationEdges,
   createFlock,
   createVoiceBook,
   cubeClearance,
+  idleSoloDelay,
   outsideCube,
   pickNearest,
   renderPoint,
@@ -230,6 +232,99 @@ test('the flock stays inside the cube unless a bird is highlighted', () => {
   assert.equal(outsideCube(solo.x, solo.y, solo.z), false);
   assert.equal(solo.loose, false);
   for (const bird of birds) {
+    if (bird === solo) continue;
+    assert.equal(outsideCube(bird.x, bird.y, bird.z), false);
+  }
+});
+
+test('a bird keeps a stable constellation', () => {
+  let seed = 2;
+  const birds = createFlock(() => {
+    seed = (seed * 17 + 5) % 997;
+    return seed / 997;
+  });
+  const edges = birds[4].edges.slice();
+  assert.ok(edges.length >= DOTS_PER_BIRD);
+  const seen = new Set();
+  for (let i = 0; i < edges.length; i += 2) {
+    assert.ok(edges[i] >= 0 && edges[i] < DOTS_PER_BIRD);
+    assert.ok(edges[i + 1] >= 0 && edges[i + 1] < DOTS_PER_BIRD);
+    seen.add(edges[i]);
+    seen.add(edges[i + 1]);
+  }
+  assert.equal(seen.size, DOTS_PER_BIRD);
+  assert.deepEqual(constellationEdges(birds[4].dots), edges);
+  stepFlock(birds, FIXED_DT, null, false, 1);
+  assert.deepEqual(birds[4].edges, edges);
+});
+
+test('idle solo waits between twenty and forty seconds', () => {
+  assert.equal(idleSoloDelay(() => 0), 20);
+  assert.equal(idleSoloDelay(() => 1), 40);
+  assert.equal(idleSoloDelay(() => 0.5), 30);
+});
+
+test('factions ease in and supporters stay nearer than opposers', () => {
+  const birds = createFlock(() => 0.5);
+  birds[1].solo = true;
+  birds[0].lean = 1;
+  birds[0].side = 0;
+  stepFlock(birds, FIXED_DT, null, false, 0);
+  assert.ok(birds[0].side > 0 && birds[0].side < 0.05, `side jumped (${birds[0].side})`);
+  for (let step = 0; step < 500; step += 1) stepFlock(birds, FIXED_DT, null, false, step * FIXED_DT);
+  assert.ok(birds[0].side > 0.55, `side never gathered (${birds[0].side})`);
+
+  const flock = createFlock(() => 0.35);
+  const solo = flock[0];
+  solo.solo = true;
+  solo.x = 0;
+  solo.y = 0;
+  solo.z = 0;
+  solo.vx = 0;
+  solo.vy = 0;
+  solo.vz = 0;
+  for (let i = 1; i < flock.length; i += 1) {
+    const support = i % 2 === 0;
+    flock[i].lean = support ? 1 : -1;
+    flock[i].side = support ? 1 : -1;
+    const angle = i * 0.9;
+    flock[i].x = Math.cos(angle) * 0.85;
+    flock[i].y = ((i % 5) - 2) * 0.12;
+    flock[i].z = Math.sin(angle) * 0.85;
+    flock[i].vx = 0;
+    flock[i].vy = 0;
+    flock[i].vz = 0;
+  }
+  for (let step = 0; step < 240; step += 1) {
+    stepFlock(flock, FIXED_DT, null, false, 2 + step * FIXED_DT);
+    solo.x = 0;
+    solo.y = 0;
+    solo.z = 0;
+    solo.px = 0;
+    solo.py = 0;
+    solo.pz = 0;
+    solo.vx = 0;
+    solo.vy = 0;
+    solo.vz = 0;
+  }
+  let withD = 0;
+  let againstD = 0;
+  let withN = 0;
+  let againstN = 0;
+  for (let i = 1; i < flock.length; i += 1) {
+    const dist = Math.hypot(flock[i].x - solo.x, flock[i].y - solo.y, flock[i].z - solo.z);
+    if (flock[i].lean > 0) {
+      withD += dist;
+      withN += 1;
+    } else {
+      againstD += dist;
+      againstN += 1;
+    }
+  }
+  withD /= withN;
+  againstD /= againstN;
+  assert.ok(withD < againstD, `supporters should sit closer (${withD} vs ${againstD})`);
+  for (const bird of flock) {
     if (bird === solo) continue;
     assert.equal(outsideCube(bird.x, bird.y, bird.z), false);
   }
