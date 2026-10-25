@@ -10,15 +10,15 @@ Adding a row is one object in `unsharedEntries`, plus a folder `concepts/<slug>/
 
 ## Ambient
 
-`/unshared/ambient/` is a flock inside a dotted hexagonal prism. Thirty-two birds, five dots each, one hundred and sixty particles. Seven of the birds are voices. Each voice is a Web Audio panner at the bird, and the listener sits on the camera, so turning the view pans the flock around you. The picture is canvas 2D with a manual perspective. There are no audio files and no libraries.
+`/unshared/ambient/` is a flock inside a cube, caught in a curl-noise wind. Thirty-two birds, five stable dots each, one hundred and sixty particles. Seven of the birds are voices. Each voice is a Web Audio panner at the bird, and the listener sits on the camera, so turning the view pans the flock around you. The picture is canvas 2D with a manual perspective. Motion is a fixed 60Hz step, drawn between steps, so the dots do not blink or jump. There are no audio files and no libraries.
 
-The birds keep their distance, follow a few leaders, and wander, so the flock spreads through the prism and breaks into shifting groups. The prism is drawn in the same pink dots. A bird that nears a wall is steered back in. The wall also opens the filter and lets a soft high pluck through.
+The boundary is the twelve edges of a cube, thin pink lines. Birds stay inside it. A tap selects one bird: its dots brighten, its voice comes forward, and the wind can carry it out through the wall. A tap on empty space lets it go, and it steers back inside. Faint pink motes ride the same wind.
 
-Nothing is audible until play. One finger, or a mouse drag, turns the camera and places the pointer in the flock. Close to a bird, the pointer scatters them into sparse high plucks. Farther away it gathers them into consonant swells. The wheel, a trackpad pinch, or a two-finger pinch zooms. Zooming in is louder, drier, and brighter. Zooming out is distant and washed in the room. A tap on a bird, or on its group, makes that voice louder and more present. A tap on empty space lets it go. A voiced bird's dots brighten while its note is sounding. The canvas does not scroll or zoom the page. A dry pair near 55 Hz sits under it. The volume slider starts at 35, and a compressor sits in front of the speakers.
+Nothing is audible until play. The wind is filtered noise, louder when the gust rises. Each bird is a pair of oscillators in FM, with a short noise grain when the air is rough. Pitch shifts with how fast the bird approaches the listener. Leaving the cube makes that bird brighter, less stable, and drier. One finger, or a mouse drag past a small slack, turns the camera and places the pointer in the flock. A shorter touch selects a bird and does not turn the view. Close to a bird, the pointer scatters the flock. Farther away it gathers them. The wheel, a trackpad pinch, or a two-finger pinch zooms. Zooming in is louder, drier, and brighter. Zooming out is distant and washed in the room. The canvas does not scroll or zoom the page. A dry pair near 55 Hz sits under it. The volume slider starts at 35, and a compressor sits in front of the speakers.
 
-Play is a toggle. Stop ramps the master to silence in about 50ms, drops every oscillator in that play, and disconnects the delay. The next play starts clean. Leaving the page or hiding the tab runs the same stop. Reduced motion holds the flock still and still plays. A hidden tab stops drawing.
+Play is a toggle. Stop ramps the master to silence in about 50ms, drops every oscillator and noise source in that play, and disconnects the delay. The next play starts clean. Leaving the page or hiding the tab runs the same stop. Reduced motion holds the flock still and still plays. A hidden tab stops drawing.
 
-The seven loop lengths follow the unequal loops of Eno's `2/1`. The two chords are the Hauschildt habit of a chord, then a sequence that is not a clock. The room is the Biosphere habit of a dark delay and a generated impulse, with no wind, water, or voice.
+The note choices still follow the unequal loops of Eno's `2/1` and the Hauschildt habit of a chord, then a sequence that is not a clock. The room is the Biosphere habit of a dark delay and a generated impulse. The wind, the grains, and the FM are generated in the audio context. Nothing is read from a sound file.
 
 ## Preview
 
@@ -30,4 +30,4 @@ The context stays suspended until the play tap, and `resume()` runs inside that 
 
 ## Bundle
 
-`concepts/ambient/ambient.js` is 23,687 bytes, 6,977 bytes gzipped. `concepts/flock-model.js` is 9,803 bytes, 3,155 bytes gzipped. The page loads both. Seven voices. One hundred and sixty particles.
+`concepts/ambient/ambient.js` is 33,378 bytes, 9,562 bytes gzipped. `concepts/flock-model.js` is 13,536 bytes, 4,124 bytes gzipped. The page loads both. Seven voices. One hundred and sixty particles.

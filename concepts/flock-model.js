@@ -1,28 +1,25 @@
-// Boids inside a hexagonal prism. No DOM, so the stop rule and the
-// spread of the flock can be tested in node. A voice scheduled after
-// stop, or against an older play, is refused.
+// Boids in a cube, pushed by a curl-noise wind. No DOM, so the stop
+// rule, the picking, and the cube can be tested in node. A voice
+// scheduled after stop, or against an older play, is refused.
 
 export const BIRD_COUNT = 32;
 export const DOTS_PER_BIRD = 5;
 export const VOICE_COUNT = 7;
 export const PARTICLE_COUNT = BIRD_COUNT * DOTS_PER_BIRD;
 export const GUIDE_COUNT = 4;
-
-// Center-to-flat of the prism, and half its height. Corners sit further out.
-export const HEX_R = 2.05;
-export const HEX_H = 1.42;
+export const CUBE = 1.72;
+export const FIXED_DT = 1 / 60;
 export const ZOOM_MIN = 2.65;
 export const ZOOM_MAX = 8.4;
+export const PICK_RADIUS = 72;
 
-const SEP_R = 0.92;
-const ALIGN_R = 1.48;
-const COHERE_R = 0.56;
-const MAX_SPEED = 0.52;
-const MIN_SPEED = 0.1;
-const WALL_MARGIN = 0.72;
-const FLOOR_MARGIN = 0.48;
-
-const HEX_COS = Math.cos(Math.PI / 6);
+const SEP_R = 0.78;
+const ALIGN_R = 1.35;
+const COHERE_R = 0.5;
+const MAX_SPEED = 0.78;
+const MIN_SPEED = 0.12;
+const WALL = 0.38;
+const OUTER = 2.9;
 
 /**
  * @returns {{
@@ -69,8 +66,6 @@ export function createVoiceBook() {
 }
 
 /**
- * The scheduler asks this before it creates another oscillator.
- *
  * @param {ReturnType<typeof createVoiceBook>} book
  * @param {number} gen
  * @returns {boolean}
@@ -80,62 +75,140 @@ export function shouldSchedule(book, gen) {
 }
 
 /**
- * Flat-topped hex, inradius HEX_R. Vertices are further from the center
- * than the flats, so the drawn corners and the steer agree.
+ * Nearest projected point inside the radius. -1 is empty space.
+ * Points may be null when they sit behind the camera.
  *
+ * @param {({ x: number, y: number } | null)[]} points
+ * @param {number} x
  * @param {number} y
- * @returns {{ x: number, y: number, z: number }[]}
+ * @param {number} [radius]
+ * @returns {number}
  */
-export function hexRing(y) {
-  const reach = HEX_R / HEX_COS;
-  const ring = [];
-  for (let i = 0; i < 6; i += 1) {
-    const angle = Math.PI / 6 + (Math.PI / 3) * i;
-    ring.push({ x: Math.cos(angle) * reach, y, z: Math.sin(angle) * reach });
+export function pickNearest(points, x, y, radius = PICK_RADIUS) {
+  let best = -1;
+  let bestD = Infinity;
+  for (let i = 0; i < points.length; i += 1) {
+    const p = points[i];
+    if (!p) continue;
+    const reach = Math.max(radius, p.r || 0);
+    const dist = Math.hypot(p.x - x, p.y - y);
+    if (dist <= reach && dist < bestD) {
+      bestD = dist;
+      best = i;
+    }
   }
-  return ring;
+  return best;
 }
 
 /**
- * Clearance to the nearest wall. Positive is inside. The normal points out.
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @returns {boolean}
+ */
+export function outsideCube(x, y, z) {
+  return Math.abs(x) > CUBE || Math.abs(y) > CUBE || Math.abs(z) > CUBE;
+}
+
+/**
+ * Clearance to the nearest face. Positive is inside. The normal points out.
  *
  * @param {number} x
  * @param {number} y
  * @param {number} z
- * @returns {{ clearance: number, yClear: number, nx: number, ny: number, nz: number, brush: number }}
+ * @returns {{ clearance: number, nx: number, ny: number, nz: number, brush: number }}
  */
-export function prismClearance(x, y, z) {
-  const normals = [
-    [1, 0],
-    [0.5, Math.sqrt(3) / 2],
-    [-0.5, Math.sqrt(3) / 2],
+export function cubeClearance(x, y, z) {
+  const faces = [
+    { clearance: CUBE - Math.abs(x), nx: x >= 0 ? 1 : -1, ny: 0, nz: 0 },
+    { clearance: CUBE - Math.abs(y), nx: 0, ny: y >= 0 ? 1 : -1, nz: 0 },
+    { clearance: CUBE - Math.abs(z), nx: 0, ny: 0, nz: z >= 0 ? 1 : -1 },
   ];
-  let clearance = Infinity;
-  let nx = 1;
-  let nz = 0;
-  for (let i = 0; i < normals.length; i += 1) {
-    const a = normals[i][0];
-    const b = normals[i][1];
-    const proj = x * a + z * b;
-    const gap = HEX_R - Math.abs(proj);
-    if (gap < clearance) {
-      clearance = gap;
-      const sign = proj >= 0 ? 1 : -1;
-      nx = a * sign;
-      nz = b * sign;
+  let nearest = faces[0];
+  for (let i = 1; i < faces.length; i += 1) {
+    if (faces[i].clearance < nearest.clearance) nearest = faces[i];
+  }
+  return {
+    ...nearest,
+    brush: Math.min(1, Math.max(0, (WALL - nearest.clearance) / WALL)),
+  };
+}
+
+function hash(ix, iy, iz) {
+  let n = Math.imul(ix, 374761393) + Math.imul(iy, 668265263) + Math.imul(iz, 1274126177);
+  n = Math.imul(n ^ (n >>> 13), 1274126177);
+  return ((n ^ (n >>> 16)) >>> 0) / 4294967295;
+}
+
+function fade(t) {
+  return t * t * (3 - 2 * t);
+}
+
+function noise3(x, y, z) {
+  const ix = Math.floor(x);
+  const iy = Math.floor(y);
+  const iz = Math.floor(z);
+  const fx = x - ix;
+  const fy = y - iy;
+  const fz = z - iz;
+  const ux = fade(fx);
+  const uy = fade(fy);
+  const uz = fade(fz);
+  let acc = 0;
+  for (let dx = 0; dx < 2; dx += 1) {
+    for (let dy = 0; dy < 2; dy += 1) {
+      for (let dz = 0; dz < 2; dz += 1) {
+        const w = (dx ? ux : 1 - ux) * (dy ? uy : 1 - uy) * (dz ? uz : 1 - uz);
+        acc += w * hash(ix + dx, iy + dy, iz + dz);
+      }
     }
   }
-  const yClear = HEX_H - Math.abs(y);
-  const ny = y >= 0 ? 1 : -1;
-  const sideBrush = Math.max(0, (WALL_MARGIN - clearance) / WALL_MARGIN);
-  const floorBrush = Math.max(0, (FLOOR_MARGIN - yClear) / FLOOR_MARGIN);
+  return acc * 2 - 1;
+}
+
+/**
+ * Divergence-free wind. Gust is 0..1 and drives the noise bed.
+ *
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @param {number} time
+ * @returns {{ x: number, y: number, z: number, gust: number }}
+ */
+export function windAt(x, y, z, time) {
+  const s = 0.72;
+  const e = 0.22;
+  const ny = (a, b, c) => noise3(a * s + 3.1, b * s + time * 0.23, c * s);
+  const nz = (a, b, c) => noise3(a * s + 1.7, b * s + 8.2, c * s + time * 0.19);
+  const nx = (a, b, c) => noise3(a * s + time * 0.21, b * s + 2.4, c * s + 5.5);
+  const vx = (nz(x, y + e, z) - nz(x, y - e, z) - (ny(x, y, z + e) - ny(x, y, z - e))) / (2 * e);
+  const vy = (nx(x, y, z + e) - nx(x, y, z - e) - (nz(x + e, y, z) - nz(x - e, y, z))) / (2 * e);
+  const vz = (ny(x + e, y, z) - ny(x - e, y, z) - (nx(x, y + e, z) - nx(x, y - e, z))) / (2 * e);
+  const g = 0.75 + 0.7 * Math.sin(time * 0.41);
+  const gx = Math.cos(time * 0.29) * g;
+  const gy = Math.sin(time * 0.23) * g * 0.55;
+  const gz = Math.sin(time * 0.33) * g;
   return {
-    clearance,
-    yClear,
-    nx,
-    ny,
-    nz,
-    brush: Math.min(1, Math.max(sideBrush, floorBrush)),
+    x: vx * 1.35 + gx,
+    y: vy * 1.35 + gy,
+    z: vz * 1.35 + gz,
+    gust: Math.min(1, Math.hypot(gx, gy, gz) / 1.35),
+  };
+}
+
+/**
+ * Where to draw a bird between the last two physics steps.
+ *
+ * @param {{ px: number, py: number, pz: number, x: number, y: number, z: number }} bird
+ * @param {number} alpha
+ * @returns {{ x: number, y: number, z: number }}
+ */
+export function renderPoint(bird, alpha) {
+  const t = Math.min(1, Math.max(0, alpha));
+  return {
+    x: bird.px + (bird.x - bird.px) * t,
+    y: bird.py + (bird.y - bird.py) * t,
+    z: bird.pz + (bird.z - bird.pz) * t,
   };
 }
 
@@ -155,23 +228,31 @@ export function createFlock(random = Math.random) {
       });
     }
     const angle = random() * Math.PI * 2;
-    const radius = Math.sqrt(random()) * HEX_R * 0.78;
-    const speed = 0.16 + random() * 0.2;
+    const radius = Math.sqrt(random()) * CUBE * 0.62;
+    const speed = 0.18 + random() * 0.22;
     const heading = random() * Math.PI * 2;
+    const x = Math.cos(angle) * radius;
+    const y = (random() - 0.5) * CUBE * 0.9;
+    const z = Math.sin(angle) * radius;
     birds.push({
-      x: Math.cos(angle) * radius,
-      y: (random() - 0.5) * HEX_H * 1.15,
-      z: Math.sin(angle) * radius,
+      x,
+      y,
+      z,
+      px: x,
+      py: y,
+      pz: z,
       vx: Math.cos(heading) * speed,
-      vy: (random() - 0.5) * speed * 0.45,
+      vy: (random() - 0.5) * speed * 0.4,
       vz: Math.sin(heading) * speed,
       turn: 0,
       near: 0,
       lead: i < VOICE_COUNT,
       guide: i % 8 === 0,
+      solo: false,
+      loose: false,
       phase: random() * Math.PI * 2,
       wall: 0,
-      pulse: 0,
+      gust: 0,
       dots,
     });
   }
@@ -183,17 +264,18 @@ function clamp(n, a, b) {
 }
 
 /**
- * One flock step. Frozen flocks keep their places and still report cohesion.
+ * One flock step. Frozen flocks keep their places. A solo bird may leave
+ * the cube. Everyone else is held at the faces, without a bounce.
  * A finger inside the inner radius is a predator. Farther out it attracts.
- * Walls of the prism push inward. They do not reflect velocity.
  *
  * @param {object[]} birds
  * @param {number} dt
  * @param {{ x: number, y: number, z: number } | null} finger
  * @param {boolean} frozen
- * @returns {{ cohesion: number, spread: number, mode: string }}
+ * @param {number} [time]
+ * @returns {{ cohesion: number, spread: number, mode: string, gust: number }}
  */
-export function stepFlock(birds, dt, finger, frozen) {
+export function stepFlock(birds, dt, finger, frozen, time = 0) {
   const n = birds.length;
   let cx = 0;
   let cy = 0;
@@ -212,7 +294,7 @@ export function stepFlock(birds, dt, finger, frozen) {
     spread += Math.hypot(b.x - cx, b.y - cy, b.z - cz);
   }
   spread /= n;
-  const cohesion = 1 - Math.min(1, spread / 1.35);
+  const cohesion = 1 - Math.min(1, spread / 1.2);
   let fingerDist = Infinity;
   if (finger) {
     for (let i = 0; i < n; i += 1) {
@@ -223,7 +305,16 @@ export function stepFlock(birds, dt, finger, frozen) {
   let mode = 'drift';
   if (finger && fingerDist < 0.62) mode = 'scatter';
   else if (finger && fingerDist < 2.15) mode = 'gather';
-  if (frozen) return { cohesion, spread, mode };
+  const sample = windAt(0, 0, 0, time);
+  if (frozen) {
+    for (let i = 0; i < n; i += 1) {
+      const b = birds[i];
+      b.px = b.x;
+      b.py = b.y;
+      b.pz = b.z;
+    }
+    return { cohesion, spread, mode, gust: sample.gust };
+  }
 
   const ax = new Float64Array(n);
   const ay = new Float64Array(n);
@@ -232,6 +323,10 @@ export function stepFlock(birds, dt, finger, frozen) {
 
   for (let i = 0; i < n; i += 1) {
     const b = birds[i];
+    b.px = b.x;
+    b.py = b.y;
+    b.pz = b.z;
+    if (b.solo) b.loose = true;
     let sx = 0;
     let sy = 0;
     let sz = 0;
@@ -259,13 +354,13 @@ export function stepFlock(birds, dt, finger, frozen) {
         ns += 1;
       }
       if (dist < ALIGN_R) {
-        const w = o.guide ? 2.5 : 1;
+        const w = o.guide ? 2.2 : 1;
         vx += o.vx * w;
         vy += o.vy * w;
         vz += o.vz * w;
         alignW += w;
       }
-      if (dist < COHERE_R) {
+      if (dist < COHERE_R && !b.guide) {
         kx += o.x;
         ky += o.y;
         kz += o.z;
@@ -274,38 +369,59 @@ export function stepFlock(birds, dt, finger, frozen) {
     }
     b.near = nk;
     if (ns) {
-      ax[i] += sx * 2.7;
-      ay[i] += sy * 2.7;
-      az[i] += sz * 2.7;
+      ax[i] += sx * 2.4;
+      ay[i] += sy * 2.4;
+      az[i] += sz * 2.4;
     }
     if (alignW) {
-      ax[i] += (vx / alignW - b.vx) * 0.38;
-      ay[i] += (vy / alignW - b.vy) * 0.38;
-      az[i] += (vz / alignW - b.vz) * 0.38;
+      ax[i] += (vx / alignW - b.vx) * 0.28;
+      ay[i] += (vy / alignW - b.vy) * 0.28;
+      az[i] += (vz / alignW - b.vz) * 0.28;
     }
-    if (nk && !b.guide) {
-      ax[i] += (kx / nk - b.x) * 0.07;
-      ay[i] += (ky / nk - b.y) * 0.07;
-      az[i] += (kz / nk - b.z) * 0.07;
+    if (nk) {
+      ax[i] += (kx / nk - b.x) * 0.05;
+      ay[i] += (ky / nk - b.y) * 0.05;
+      az[i] += (kz / nk - b.z) * 0.05;
     }
-    b.phase += step * (b.guide ? 1.8 : 0.95);
-    const wander = b.guide ? 0.62 : 0.3;
+    const wind = windAt(b.x, b.y, b.z, time);
+    b.gust = wind.gust;
+    const blow = b.solo ? 2.15 : 1.25;
+    ax[i] += wind.x * blow;
+    ay[i] += wind.y * blow;
+    az[i] += wind.z * blow;
+    b.phase += step * (b.guide ? 2.1 : 1.25);
+    const wander = b.guide ? 0.45 : 0.22;
     ax[i] += Math.cos(b.phase) * wander;
-    ay[i] += Math.sin(b.phase * 0.73) * wander * 0.42;
-    az[i] += Math.sin(b.phase * 1.17) * wander;
-    const wall = prismClearance(b.x, b.y, b.z);
-    b.wall = wall.brush;
-    if (wall.clearance < WALL_MARGIN) {
-      const depth = (WALL_MARGIN - wall.clearance) / WALL_MARGIN;
-      const push = depth * depth * 4.4;
+    ay[i] += Math.sin(b.phase * 0.8) * wander * 0.5;
+    az[i] += Math.sin(b.phase * 1.2) * wander;
+    const wall = cubeClearance(b.x, b.y, b.z);
+    b.wall = b.solo ? 0 : wall.brush;
+    if (b.solo) {
+      if (wall.clearance > 0 && wall.clearance < 0.55) {
+        const punch = (0.55 - wall.clearance) * 3.4;
+        ax[i] += wall.nx * punch;
+        ay[i] += wall.ny * punch;
+        az[i] += wall.nz * punch;
+      }
+      const reach = Math.hypot(b.x, b.y, b.z);
+      if (reach > OUTER) {
+        const pull = (reach - OUTER) * 1.6;
+        ax[i] -= (b.x / reach) * pull;
+        ay[i] -= (b.y / reach) * pull;
+        az[i] -= (b.z / reach) * pull;
+      }
+    } else if (b.loose && outsideCube(b.x, b.y, b.z)) {
+      ax[i] -= b.x * 2.4;
+      ay[i] -= b.y * 2.4;
+      az[i] -= b.z * 2.4;
+    } else if (wall.clearance < WALL) {
+      const depth = (WALL - wall.clearance) / WALL;
+      const push = depth * depth * 5.5;
       ax[i] -= wall.nx * push;
+      ay[i] -= wall.ny * push;
       az[i] -= wall.nz * push;
     }
-    if (wall.yClear < FLOOR_MARGIN) {
-      const depth = (FLOOR_MARGIN - wall.yClear) / FLOOR_MARGIN;
-      ay[i] -= wall.ny * depth * depth * 3.6;
-    }
-    if (finger) {
+    if (finger && !b.solo) {
       const dx = b.x - finger.x;
       const dy = b.y - finger.y;
       const dz = b.z - finger.z;
@@ -316,7 +432,7 @@ export function stepFlock(birds, dt, finger, frozen) {
         ay[i] += (dy / dist) * push;
         az[i] += (dz / dist) * push;
       } else if (dist < 2.15) {
-        const pull = 0.34 * (1 - dist / 2.15);
+        const pull = 0.3 * (1 - dist / 2.15);
         ax[i] -= (dx / dist) * pull;
         ay[i] -= (dy / dist) * pull;
         az[i] -= (dz / dist) * pull;
@@ -324,17 +440,19 @@ export function stepFlock(birds, dt, finger, frozen) {
     }
   }
 
-  const reach = HEX_R / HEX_COS;
+  let gust = 0;
   for (let i = 0; i < n; i += 1) {
     const b = birds[i];
+    gust += b.gust;
     const ox = b.vx;
     const oy = b.vy;
     const oz = b.vz;
-    b.vx = clamp(b.vx + ax[i] * step, -MAX_SPEED, MAX_SPEED);
-    b.vy = clamp(b.vy + ay[i] * step, -MAX_SPEED, MAX_SPEED);
-    b.vz = clamp(b.vz + az[i] * step, -MAX_SPEED, MAX_SPEED);
+    const cap = b.solo ? 1.15 : MAX_SPEED;
+    b.vx = clamp(b.vx + ax[i] * step, -cap, cap);
+    b.vy = clamp(b.vy + ay[i] * step, -cap, cap);
+    b.vz = clamp(b.vz + az[i] * step, -cap, cap);
     const speed = Math.hypot(b.vx, b.vy, b.vz) || 0.0001;
-    const capped = Math.min(MAX_SPEED, Math.max(MIN_SPEED, speed));
+    const capped = Math.min(cap, Math.max(MIN_SPEED, speed));
     b.vx = (b.vx / speed) * capped;
     b.vy = (b.vy / speed) * capped;
     b.vz = (b.vz / speed) * capped;
@@ -344,14 +462,16 @@ export function stepFlock(birds, dt, finger, frozen) {
     b.x += b.vx * step;
     b.y += b.vy * step;
     b.z += b.vz * step;
-    const radial = Math.hypot(b.x, b.z);
-    if (radial > reach * 1.04) {
-      const scale = (reach * 1.01) / radial;
-      b.x *= scale;
-      b.z *= scale;
+    if (!b.solo && !b.loose) {
+      if (b.x > CUBE) { b.x = CUBE; if (b.vx > 0) b.vx = 0; }
+      if (b.x < -CUBE) { b.x = -CUBE; if (b.vx < 0) b.vx = 0; }
+      if (b.y > CUBE) { b.y = CUBE; if (b.vy > 0) b.vy = 0; }
+      if (b.y < -CUBE) { b.y = -CUBE; if (b.vy < 0) b.vy = 0; }
+      if (b.z > CUBE) { b.z = CUBE; if (b.vz > 0) b.vz = 0; }
+      if (b.z < -CUBE) { b.z = -CUBE; if (b.vz < 0) b.vz = 0; }
+    } else if (!b.solo && b.loose && !outsideCube(b.x, b.y, b.z)) {
+      b.loose = false;
     }
-    if (b.y > HEX_H * 1.04) b.y = HEX_H * 1.04;
-    if (b.y < -HEX_H * 1.04) b.y = -HEX_H * 1.04;
   }
-  return { cohesion, spread, mode };
+  return { cohesion, spread, mode, gust: gust / n };
 }
