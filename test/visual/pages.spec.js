@@ -279,13 +279,33 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
     && places.controls.y < places.word.y + places.word.h
     && places.controls.y + places.controls.h > places.word.y;
   expect(coversCount).toBe(false);
-  expect(places.controls.y).toBeLessThan(places.num.y + places.num.h);
+  expect(places.controls.h).toBeLessThanOrEqual(places.num.h / 2 + 1);
+  expect(Math.abs((places.controls.y + places.controls.h) - (places.head.y + places.head.h))).toBeLessThan(2);
   expect(places.axis.y).toBeGreaterThanOrEqual(places.posters.y + places.posters.h - 1);
   expect(Math.abs((places.axis.x + places.axis.w) - (places.posters.x + places.posters.w))).toBeLessThan(2);
-  expect(places.posters.h).toBeGreaterThanOrEqual(32);
-  expect(places.axis.h).toBeGreaterThanOrEqual(32);
-  expect(places.posters.h).toBeLessThan(40);
-  expect(places.axis.h).toBeLessThan(40);
+  expect(places.posters.h).toBeLessThan(22);
+  expect(places.axis.h).toBeLessThan(22);
+  const hit = await posters.evaluate((el) => Number.parseFloat(getComputedStyle(el, '::before').height));
+  expect(hit).toBeGreaterThanOrEqual(32);
+  const hits = await page.evaluate(() => {
+    const edge = (el) => {
+      const box = el.getBoundingClientRect();
+      const style = getComputedStyle(el, '::before');
+      const height = Number.parseFloat(style.height);
+      const top = style.top === 'auto' ? box.bottom - height : box.top + Number.parseFloat(style.top);
+      return { top, bottom: top + height };
+    };
+    const upper = edge(document.querySelector('[data-posters-toggle]'));
+    const lower = edge(document.querySelector('[data-axis-toggle]'));
+    return {
+      upperBottom: upper.bottom,
+      lowerTop: lower.top,
+      lowerBottom: lower.bottom,
+      feedTop: document.querySelector('#feed').getBoundingClientRect().top,
+    };
+  });
+  expect(hits.upperBottom).toBeLessThanOrEqual(hits.lowerTop + 0.5);
+  expect(hits.lowerBottom).toBeLessThanOrEqual(hits.feedTop + 0.5);
   const settingType = await posters.evaluate((el) => getComputedStyle(el).fontFamily);
   expect(settingType.toLowerCase()).not.toContain('anton');
 

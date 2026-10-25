@@ -569,7 +569,7 @@ body[data-polarity="flip"] .total-label {
 .watch-head {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-end;
   column-gap: var(--space-md);
   row-gap: var(--space-tight);
   margin: var(--space-total);
@@ -591,11 +591,12 @@ body[data-polarity="flip"] .total-label {
 }
 
 .poster-switch {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-tight);
-  min-height: var(--hit-setting);
+  gap: var(--space-phone-row);
+  min-height: var(--space-0);
   margin: var(--space-0);
   padding: var(--space-0);
   border: var(--line-none);
@@ -614,6 +615,24 @@ body[data-polarity="flip"] .total-label {
   -webkit-appearance: none;
 }
 
+/* The drawn row stays small. The hit area grows away from the other row. */
+.poster-switch::before {
+  content: "";
+  position: absolute;
+  left: var(--space-0);
+  right: var(--space-0);
+  height: var(--hit-setting);
+}
+
+.poster-controls .poster-switch:first-child::before {
+  top: auto;
+  bottom: var(--space-0);
+}
+
+.poster-controls .poster-switch:last-child::before {
+  top: var(--space-0);
+}
+
 .poster-key {
   flex: 0 0 auto;
 }
@@ -622,8 +641,8 @@ body[data-polarity="flip"] .total-label {
   display: flex;
   align-items: stretch;
   flex: 0 0 auto;
-  min-height: var(--hit-setting);
-  border: var(--line-strong);
+  min-height: var(--space-0);
+  border: var(--line-hair);
   background: transparent;
 }
 
@@ -632,14 +651,14 @@ body[data-polarity="flip"] .total-label {
   align-items: center;
   justify-content: center;
   flex: 1 0 auto;
-  min-width: 4.75em;
-  padding: var(--space-0) var(--space-tight);
+  min-width: 3.6em;
+  padding: var(--space-0) var(--space-phone-row);
   background: transparent;
   color: inherit;
 }
 
 .poster-seg + .poster-seg {
-  border-left: var(--line-strong);
+  border-left: var(--line-hair);
 }
 
 .poster-on,
@@ -831,6 +850,8 @@ html[data-poster-axis="down"] .axis-down {
   display: flex;
   gap: var(--space-md);
   margin: var(--space-feed);
+  /* The lower setting's hit target hangs below the row. This keeps it off the poster. */
+  margin-top: var(--space-section);
   margin-inline: calc(var(--space-page) * -1);
   padding: var(--space-0) var(--space-page) var(--space-md);
   list-style: none;
