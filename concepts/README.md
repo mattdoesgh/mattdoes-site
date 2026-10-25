@@ -1,39 +1,35 @@
-# Unshared experiments, three concepts
+# Unshared, synthesized
 
-Static mockups. They are not in the build, the verb registry, or the sitemap. `/unshared/` stays offline while `unsharedEnabled` is false.
+A playable concept for `/unshared/`. It is not in the build, the verb registry, or the sitemap. `/unshared/` stays offline while `unsharedEnabled` is false.
 
-Open `/concepts/`, then `log`, `tape`, or `one`. The pages use `site/tokens.css` and the Anton file already on the site. Playback is a silent dummy. Each `<audio>` carries `data-src` for the file on `media.mattdoes.online`, and does not request it.
+Open `/concepts/`. Every sound is made in the browser with the Web Audio API. There are no audio files and no libraries. Nothing plays until the visitor taps play. One demo plays at a time. The volume slider defaults low, and a compressor sits in front of the speakers.
 
-The entries in `experiments.json` are placeholders. Titles, notes, and tags are fake.
+`concepts/unshared.js` is 23,650 bytes, 6,318 bytes gzipped.
 
-## Log
+## Ambient
 
-A reverse-chronological notebook. Each try is a big Anton line, the note and the date beside it, and a small pink waveform you can play in the list.
+Detuned oscillators, a slow filter move, and a reverb impulse generated in memory. Drag detune, cutoff, size, decay, and the LFO and the drone changes. The pink line is the waveform.
 
-On a phone the player is a full-width bar under the title, a thumb target instead of a desktop chip. The playing title takes the same hollow stroke as the count numbers.
+## Speakers
 
-## Tape
+One sub-heavy footwork loop, switched between a phone speaker, a laptop, earbuds, and a club PA. Each one is an EQ curve, a highpass, a little distortion, and sometimes a short generated room. The pink line is that frequency response, and it swaps the moment the speaker does.
 
-Square black sketches, flush, like the album grid. A phone shows the name on the tile. A desktop shows it on hover, the way a cover does.
+## Timing
 
-Tap a square and the page becomes the watching scene: full-screen black, the waveform on one side, the note on the other, close in the corner. The swap is instant.
+A footwork grid at 160. The slider runs from a straight machine to swing, micro-timing, and velocity, which is the human feel. Flourish drops a 3+3+2 into every other bar and leaves the grid alone.
 
-## One
+## Filter
 
-One experiment fills the screen. The page name stays alone at the top. A hollow play word and a pink waveform sit in the middle, and the name, note, and tags sit under that.
-
-Arrow keys or a sideways swipe move to the next try. Nothing slides. Prev and next are fixed hit areas.
+Drag the black pad. Horizontal is cutoff, vertical is resonance. The pad draws the curve before any sound. Play is what starts it.
 
 ## Recommendation
 
-Build the log. These are tries, not releases, and the log is the view where the title, the date, the note, and play are all visible without a second tap. The phone layout is its own design, and the desktop layout is a line, which is how this site already sets type.
+Ship timing and speakers first. Timing is the organic idea, and the hats and the click still read on a phone speaker. Speakers is why the same loop can vanish in a pocket and come back on a sub. Ambient is the one that needs headphones and a few seconds of listening; ship it next. The filter pad is the optional fourth, a touch toy for the same palette.
 
-Keep the tape for later, if a sketch grows a cover and should open like a film. One-at-a-time is the player the log already has, stretched over the rest of the list.
+## Mobile Safari
 
-## Adding an experiment
+The context stays suspended until the play tap, and `resume()` runs inside that tap. On Safari 16.4 and newer the page sets `navigator.audioSession.type` to `playback`, so the iPhone silent switch does not mute Web Audio. Older iOS stays quiet while the ringer switch is on. Sending the tab to the background suspends the context; the next play tap resumes it. The on-page slider is separate from the hardware volume. The generated reverb stays a few seconds long so a phone is not asked for a huge buffer.
 
-1. Put the mp3 at `content/attachments/unshared/<name>.mp3`.
-2. Run `npm run sync-media`. That uploads into the existing `mattdoes-media` bucket with the wrangler version pinned in `workers/`. The public URL is `https://media.mattdoes.online/unshared/<name>.mp3`. The sync deletes a bucket object when its source file is gone, so the mp3 stays in `content/attachments`. No new host.
-3. Add an object to `concepts/experiments.json`. `file` is the key from step 2. `date` is `YYYY-MM-DD` (newest sorts first). `shape` is `spike`, `stutter`, or `swell`. `bpm` and `tags` are the line under the note. `seed` is any integer and only changes the drawn waveform.
+## Staying out of the build
 
-A real page would read that same list from the unshared renderer. These mock routes would not ship with it.
+`concepts/` is not copied into `dist/`. A real `/unshared/` would take this page into the unshared renderer and would still not ship stored audio.

@@ -1,0 +1,413 @@
+/* Concept mock for /unshared/. Sound is synthesized in the page.
+   Colors, type, and font stacks come from site/tokens.css.
+   Phone rules are the base. Desktop starts at 1024. */
+
+@import "../site/tokens.css";
+
+@font-face {
+  font-family: "Anton";
+  font-style: normal;
+  font-weight: var(--weight-regular);
+  font-display: swap;
+  src: url("../static/fonts/Anton-latin.woff2") format("woff2");
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  margin: var(--space-0);
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: var(--space-page);
+  background: var(--field);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--type-body);
+  line-height: 1.45;
+}
+
+:focus {
+  outline: var(--outline-none);
+}
+
+:focus-visible {
+  outline: var(--outline-focus);
+  outline-offset: var(--outline-offset);
+}
+
+::selection {
+  background: var(--pink);
+  color: var(--black);
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: var(--line-none);
+  border-radius: var(--radius);
+  padding: var(--space-0);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  cursor: pointer;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-1);
+  top: var(--space-0);
+  transform: translateY(-120%);
+  background: var(--pink);
+  color: var(--black);
+  padding: var(--space-skip);
+  z-index: 2;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  transform: none;
+  outline: var(--outline-black);
+  outline-offset: var(--outline-offset);
+}
+
+.sign,
+.demo h2,
+.play,
+.choice {
+  font-family: var(--display);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--track-none);
+  line-height: 0.9;
+}
+
+.sign {
+  margin: var(--space-0);
+  font-size: var(--type-sign);
+  overflow-wrap: break-word;
+}
+
+.demo {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-md);
+  margin-top: var(--space-section);
+  min-width: var(--space-0);
+}
+
+.demo h2 {
+  margin: var(--space-0);
+  font-size: var(--type-title);
+}
+
+.line {
+  margin: var(--space-0);
+  max-width: var(--measure);
+  font-size: var(--type-body);
+}
+
+.viz {
+  display: block;
+  width: 100%;
+  height: 9rem;
+  background: var(--black);
+}
+
+.pad {
+  height: 14rem;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.play,
+.choice {
+  min-height: var(--hit-phone);
+  padding: var(--space-tight) var(--space-md);
+  font-size: var(--type-nav);
+  letter-spacing: var(--track-label);
+  line-height: 1;
+  background: transparent;
+  color: var(--black);
+}
+
+.play {
+  align-self: flex-start;
+  min-width: 6.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-label {
+  display: grid;
+}
+
+.play-label > span {
+  grid-area: 1 / 1;
+  justify-self: center;
+  white-space: nowrap;
+}
+
+.label-stop {
+  visibility: hidden;
+}
+
+.play[aria-pressed="true"] .label-play {
+  visibility: hidden;
+}
+
+.play[aria-pressed="true"] .label-stop {
+  visibility: visible;
+}
+
+.play[aria-pressed="true"],
+.choice[aria-pressed="true"] {
+  background: var(--black);
+  color: var(--pink);
+}
+
+.play[aria-pressed="true"]:focus-visible,
+.choice[aria-pressed="true"]:focus-visible {
+  outline-color: var(--pink);
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-tight);
+}
+
+#timing .choices {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.choice {
+  min-width: var(--space-0);
+}
+
+.flourish {
+  align-self: flex-start;
+  min-width: 8rem;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.slider {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-tight);
+  min-width: var(--space-0);
+}
+
+.slider span {
+  font-family: var(--body);
+  font-size: var(--type-meta);
+  letter-spacing: var(--track-none);
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: var(--hit-phone);
+  margin: var(--space-0);
+  background: transparent;
+  accent-color: var(--black);
+  cursor: pointer;
+  touch-action: pan-y;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: var(--line-thick);
+  background: var(--black);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: calc(var(--hit-phone) * 0.62);
+  height: calc(var(--hit-phone) * 0.62);
+  margin-top: calc((var(--line-thick) - var(--hit-phone) * 0.62) / 2);
+  background: var(--black);
+  border: var(--line-none);
+  border-radius: var(--radius);
+}
+
+input[type="range"]::-moz-range-track {
+  height: var(--line-thick);
+  background: var(--black);
+  border: var(--line-none);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: calc(var(--hit-phone) * 0.62);
+  height: calc(var(--hit-phone) * 0.62);
+  background: var(--black);
+  border: var(--line-none);
+  border-radius: var(--radius);
+}
+
+.volume {
+  margin-top: var(--space-section);
+}
+
+.grid-well {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-tight);
+  padding: var(--space-md);
+  background: var(--black);
+}
+
+.step {
+  aspect-ratio: 1;
+  min-height: var(--hit-phone);
+  min-width: var(--space-0);
+  border-width: var(--line-thick);
+  border-style: solid;
+  border-color: var(--pink);
+  background: transparent;
+  color: var(--pink);
+}
+
+.step.is-on {
+  background: var(--pink);
+}
+
+.step.is-now {
+  outline: var(--outline-contrast);
+  outline-offset: var(--outline-offset);
+  outline-color: var(--pink);
+}
+
+@media (min-width: 1024px) {
+  body {
+    padding: var(--space-page-desk);
+  }
+
+  .sign {
+    font-size: var(--row-size);
+    line-height: 0.86;
+    white-space: nowrap;
+  }
+
+  .demo {
+    display: grid;
+    grid-template-columns: minmax(16rem, 0.85fr) minmax(0, 1.15fr);
+    grid-template-areas:
+      "name viz"
+      "line viz"
+      "play viz"
+      "controls controls";
+    column-gap: var(--space-section);
+    row-gap: var(--space-md);
+    align-items: center;
+    margin-top: var(--space-desk-block);
+  }
+
+  .demo h2 {
+    grid-area: name;
+    font-size: var(--type-contact);
+  }
+
+  .line {
+    grid-area: line;
+  }
+
+  .viz {
+    grid-area: viz;
+    height: 12rem;
+  }
+
+  .pad {
+    height: 16rem;
+  }
+
+  .play {
+    grid-area: play;
+    justify-self: start;
+    min-height: var(--hit);
+    min-width: 6.5rem;
+  }
+
+  .controls,
+  .choices,
+  .grid-well,
+  .flourish,
+  .volume {
+    grid-column: 1 / -1;
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md) var(--space-section);
+  }
+
+  .choices {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  #timing .choices {
+    grid-template-columns: repeat(3, minmax(0, 9rem));
+    justify-content: start;
+  }
+
+  .grid-well {
+    grid-template-columns: repeat(8, minmax(var(--hit), 4.5rem));
+    justify-content: start;
+    max-width: 42rem;
+  }
+
+  .play,
+  .choice,
+  input[type="range"] {
+    min-height: var(--hit);
+  }
+
+  input[type="range"] {
+    height: var(--hit);
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    width: calc(var(--hit) * 0.62);
+    height: calc(var(--hit) * 0.62);
+    margin-top: calc((var(--line-thick) - var(--hit) * 0.62) / 2);
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: calc(var(--hit) * 0.62);
+    height: calc(var(--hit) * 0.62);
+  }
+
+  #timing .grid-well {
+    grid-area: viz;
+    align-self: center;
+    max-width: none;
+  }
+
+  .step {
+    min-height: var(--hit);
+  }
+
+  .volume {
+    margin-top: var(--space-desk-block);
+    max-width: var(--measure);
+  }
+}
