@@ -1,7 +1,7 @@
 // /api/listening/* — Last.fm listening state, producer/reader split.
 //
 // Routes (read path):
-//   GET /api/listening/now      → current scrobble (or { nowPlaying: false })
+//   GET /api/listening/now      → current scrobble, or { nowPlaying: false, last? }
 //   GET /api/listening/recent   → playcount + 25 most recent tracks
 //   GET /api/listening/charts   → top albums for the last month, covers only
 //
@@ -39,11 +39,12 @@
 // monitoring" resilience posture: detect-and-re-arm a dropped poller without
 // ever touching the read path.
 //
-// Browser max-age matches how fresh the payload is: seconds for /now, a short
-// minute for /recent, and a minute for /charts. must-revalidate stops a
-// browser from serving a copy past that window. The charts edge cache is
-// also a minute, with stale-if-error only. stale-while-revalidate would let
-// the Pages build that follows the Monday cron bake the previous chart.
+// Browser max-age matches how fresh the payload is: 30s for /now (the home
+// line polls about once a minute), a short minute for /recent, and a minute
+// for /charts. must-revalidate stops a browser from serving a copy past that
+// window. The charts edge cache is also a minute, with stale-if-error only.
+// stale-while-revalidate would let the Pages build that follows the Monday
+// cron bake the previous chart.
 // That header is not sent for warming or unavailable payloads, so an empty
 // fallback is not pinned at the edge.
 //
@@ -77,16 +78,20 @@ import {
 
 // Poller cadence (milliseconds). ~25s keeps now-playing sub-minute.
 const POLL_INTERVAL_MS = 25 * 1000;
-const EDGE_TTL_S       = 15;          // edge freshness; must be ≪ POLL_INTERVAL_MS / 1000
-// How long the edge may keep the last good response after EDGE_TTL_S: while a
-// refresh is in flight, and when the refresh fails. Browsers do not see this.
+const EDGE_TTL_S       = 15;          // /recent edge freshness; must be ≪ POLL_INTERVAL_MS / 1000
+// How long the edge may keep the last good response after the fresh window:
+// while a refresh is in flight, and when the refresh fails. Browsers do not
+// see this.
 const STALE_SERVE_S   = 24 * 60 * 60;
 // Last.fm calls. The poller and the charts miss path share one deadline so a
 // hung upstream cannot pin a Durable Object alarm or a charts request.
 const UPSTREAM_TIMEOUT_MS = 8000;
-// Browser freshness. /now is the live scrobble, so it expires with the edge
-// window. /recent is the same snapshot shown as a list, and a minute is enough.
-const NOW_BROWSER_TTL_S    = 15;
+// /now is the live scrobble the home line reads. 30s is the short edge of the
+// 30–60s window: fresh enough to follow a song, long enough that a minute of
+// visitors share one snapshot. The poller is still the only Last.fm caller.
+// /recent is the same snapshot shown as a list, and a minute is enough.
+const NOW_BROWSER_TTL_S    = 30;
+const NOW_EDGE_TTL_S       = 30;
 const RECENT_BROWSER_TTL_S = 60;
 
 const RECENT_LIMIT = 25;
@@ -529,6 +534,9 @@ function emptyPayload(kind, reason) {
  * @param {object} body  parsed JSON response (already checked for
  *   {@link lastfmError} by the caller)
  * @returns {{ now: object, recent: { playcount: number, tracks: object[] } }}
+ *   `now` is `{ nowPlaying: true, artist, track, album, link }` while a
+ *   track is current, or `{ nowPlaying: false, last? }` with the newest
+ *   finished scrobble when nothing is playing.
  */
 export function deriveBoth(body) {
   // recent: full {playcount, tracks}, capped at RECENT_LIMIT.
@@ -539,9 +547,25 @@ export function deriveBoth(body) {
   // refresh produced.
   const raw = body?.recenttracks?.track || [];
   const t   = Array.isArray(raw) ? raw[0] : raw;
-  const now = (t && t['@attr']?.nowplaying) ? trackToNow(t) : { nowPlaying: false };
+  const now = (t && t['@attr']?.nowplaying) ? trackToNow(t) : finishedNow(recent);
 
   return { now, recent };
+}
+
+/**
+ * Nothing is playing. Attach the newest finished scrobble so the home line
+ * can say "last listened" without a second Last.fm call. No `last` when the
+ * response had no usable track. No `reason`: this is a real snapshot.
+ *
+ * @param {{ tracks: object[] }} recent
+ * @returns {object}
+ */
+function finishedNow(recent) {
+  const now = { nowPlaying: false };
+  const last = recent.tracks.find((row) => row && row.artist && row.track && !row.nowPlaying);
+  if (!last) return now;
+  now.last = { artist: last.artist, track: last.track, album: last.album, link: last.link };
+  return now;
 }
 
 /**
@@ -559,7 +583,7 @@ function trackToNow(t) {
 // workers/lib/transport.js; only this Worker's caching POLICY lives here.
 //
 // Two-layer caching policy:
-//   • Cache-Control max-age → the browser. /now is seconds, /recent is a
+//   • Cache-Control max-age → the browser. /now is 30s, /recent is a
 //     minute, and /charts is a minute. must-revalidate means a browser past
 //     that age re-asks instead of replaying a stale scrobble.
 //     s-maxage stays in this header for downstream shared caches. Cloudflare
@@ -572,8 +596,9 @@ function trackToNow(t) {
 //     so the rebuild after the Monday cron does not bake the previous chart.
 function toClient(response, kind, serveStale = false) {
   const browserTtlS = kind === 'now' ? NOW_BROWSER_TTL_S : RECENT_BROWSER_TTL_S;
-  const wrapped = withCache(response, `public, max-age=${browserTtlS}, s-maxage=${EDGE_TTL_S}, must-revalidate`);
-  return serveStale ? withEdgeStale(wrapped, EDGE_TTL_S) : wrapped;
+  const edgeTtlS = kind === 'now' ? NOW_EDGE_TTL_S : EDGE_TTL_S;
+  const wrapped = withCache(response, `public, max-age=${browserTtlS}, s-maxage=${edgeTtlS}, must-revalidate`);
+  return serveStale ? withEdgeStale(wrapped, edgeTtlS) : wrapped;
 }
 
 function toChartsClient(response) {
