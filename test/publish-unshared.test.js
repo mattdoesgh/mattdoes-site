@@ -92,9 +92,9 @@ test('every unshared entry resolves to a built page', () => {
   }
 
   const label = doc.querySelector('.verb-label')?.textContent;
-  const prefix = doc.querySelector('.verb-prefix')?.textContent;
+  assert.equal(doc.querySelector('.verb-prefix'), null);
   assert.equal(label, 'birds1');
-  assert.equal(prefix, `${unsharedPrefix} `);
+  assert.equal(doc.querySelector('a.verb')?.textContent, 'birds1');
   assert.equal(rowHrefs[0], '/unshared/birds1/');
   assert.equal(renderUnshared({ siteUrl: 'https://mattdoes.online' }), hub);
 

@@ -1,7 +1,5 @@
 /* Unshared hub. Phone rules are the base. Desktop starts at 1024.
-   At rest the row is the label. Hover and focus open "unshared does"
-   at the same size as the label, wide enough for the whole word.
-   A phone with no hover shows the kicker and keeps the prefix clipped.
+   The row is the label. A phone with no hover shows the kicker above it.
    The page is pink, so a tap turns the row black with pink type. */
 
 @import "../../site/tokens.css";
@@ -124,24 +122,6 @@ main {
   -webkit-tap-highlight-color: transparent;
 }
 
-.verb-prefix {
-  display: block;
-  flex: 0 0 auto;
-  align-self: center;
-  width: 0;
-  height: 0.9em;
-  margin-right: var(--space-0);
-  min-width: 0;
-  overflow: clip;
-  white-space: nowrap;
-}
-
-.verb-prefix > span {
-  display: block;
-  width: max-content;
-  white-space: nowrap;
-}
-
 .verb-label {
   flex: 0 0 auto;
   white-space: nowrap;
@@ -157,14 +137,6 @@ main {
   background: var(--black);
   color: var(--pink);
   outline-color: var(--pink);
-}
-
-@media (hover: hover) {
-  .verb:hover .verb-prefix,
-  .verb:focus-visible .verb-prefix {
-    width: max-content;
-    margin-right: var(--space-prefix);
-  }
 }
 
 @media (hover: none) and (max-width: 1023px) {

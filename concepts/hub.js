@@ -1,4 +1,4 @@
-// The Unshared hub. One registry row becomes one "unshared does X" link.
+// The Unshared hub. One registry row becomes one label link.
 
 import { siteConfig } from '../site.config.js';
 import { esc } from '../lib/safe-url.js';
@@ -14,8 +14,7 @@ export function renderHubDocument(siteUrl = siteConfig.url) {
   const rows = unsharedEntries.map((entry) => {
     const href = esc(unsharedHref(entry));
     const label = esc(entry.label);
-    const prefix = esc(`${unsharedPrefix} `);
-    return `<li class="verb-row"><a class="verb" href="${href}"><span class="verb-prefix"><span>${prefix}</span></span><span class="verb-label">${label}</span></a></li>`;
+    return `<li class="verb-row"><a class="verb" href="${href}"><span class="verb-label">${label}</span></a></li>`;
   }).join('\n          ');
   return `<!DOCTYPE html>
 <html lang="en">
