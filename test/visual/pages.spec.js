@@ -230,6 +230,152 @@ test('count words travel unless motion is reduced', async ({ page }, info) => {
   expect(filmsStill).toBe('none');
 });
 
+test('poster toggles persist and turn the strip', async ({ page }, info) => {
+  await page.goto('/watching/');
+  await page.evaluate(() => document.fonts.ready);
+  const posters = page.locator('[data-posters-toggle]');
+  const axis = page.locator('[data-axis-toggle]');
+  const feed = page.locator('#feed');
+  await expect(posters).toHaveAttribute('aria-pressed', 'true');
+  await expect(axis).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('.poster-on')).toBeVisible();
+  await expect(page.locator('.poster-off')).toBeHidden();
+  await expect(page.locator('.axis-across')).toBeVisible();
+  await expect(page.locator('.axis-down')).toBeHidden();
+
+  const width = info.project.use.viewport.width;
+  const before = await feed.evaluate((el) => ({
+    display: getComputedStyle(el).display,
+    dir: getComputedStyle(el).flexDirection,
+  }));
+  expect(before.display).toBe(width >= 1024 ? 'grid' : 'flex');
+  if (width < 1024) expect(before.dir).toBe('row');
+
+  const head = page.locator('.watch-head');
+  const places = await page.evaluate(() => {
+    const box = (sel) => {
+      const r = document.querySelector(sel).getBoundingClientRect();
+      return { x: r.x, y: r.y, w: r.width, h: r.height };
+    };
+    return {
+      head: box('.watch-head'),
+      num: box('.total-num'),
+      word: box('.total-label'),
+      controls: box('.poster-controls'),
+      posters: box('[data-posters-toggle]'),
+      axis: box('[data-axis-toggle]'),
+    };
+  });
+  expect(places.word.x).toBeGreaterThan(places.num.x + places.num.w - 1);
+  expect(Math.abs((places.num.y + places.num.h) - (places.word.y + places.word.h))).toBeLessThan(8);
+  expect(Math.abs((places.controls.x + places.controls.w) - (places.head.x + places.head.w))).toBeLessThan(2);
+  const coversCount = places.controls.x < places.word.x + places.word.w - 1
+    && places.controls.y < places.word.y + places.word.h
+    && places.controls.y + places.controls.h > places.word.y;
+  expect(coversCount).toBe(false);
+  expect(places.posters.h).toBeGreaterThanOrEqual(44);
+  expect(places.axis.h).toBeGreaterThanOrEqual(44);
+
+  const postersWidth = places.posters.w;
+  const axisWidth = places.axis.w;
+  await posters.click();
+  await expect(posters).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('.poster-on')).toBeHidden();
+  await expect(page.locator('.poster-off')).toBeVisible();
+  await expect(feed).toBeHidden();
+  const postersOffWidth = await posters.evaluate((el) => el.getBoundingClientRect().width);
+  expect(Math.abs(postersOffWidth - postersWidth)).toBeLessThan(1);
+
+  await axis.click();
+  await expect(axis).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.axis-down')).toBeVisible();
+  await expect(page.locator('.axis-across')).toBeHidden();
+  const axisDownWidth = await axis.evaluate((el) => el.getBoundingClientRect().width);
+  expect(Math.abs(axisDownWidth - axisWidth)).toBeLessThan(1);
+  await expect(page.locator('html')).toHaveAttribute('data-poster-axis', 'down');
+
+  await posters.click();
+  await expect(posters).toHaveAttribute('aria-pressed', 'true');
+  await expect(feed).toBeVisible();
+  const stacked = await feed.evaluate((el) => {
+    const style = getComputedStyle(el);
+    const films = [...el.querySelectorAll('.film')].slice(0, 3);
+    const feedBox = el.getBoundingClientRect();
+    return {
+      display: style.display,
+      dir: style.flexDirection,
+      overflowY: style.overflowY,
+      maxHeight: style.maxHeight,
+      transition: style.transitionDuration,
+      animation: style.animationName,
+      feedBottom: feedBox.bottom,
+      cards: films.map((film) => {
+        const img = film.querySelector('img').getBoundingClientRect();
+        const name = film.querySelector('.name').getBoundingClientRect();
+        const meta = film.querySelector('.meta')?.getBoundingClientRect() || null;
+        const box = film.getBoundingClientRect();
+        return {
+          imgBottom: img.bottom,
+          imgLeft: img.left,
+          imgRight: img.right,
+          nameTop: name.top,
+          nameBottom: name.bottom,
+          metaTop: meta ? meta.top : null,
+          metaLeft: meta ? meta.left : null,
+          boxTop: box.top,
+          boxBottom: box.bottom,
+        };
+      }),
+    };
+  });
+  expect(stacked.display).toBe('flex');
+  expect(stacked.dir).toBe('column');
+  expect(stacked.overflowY).toBe('visible');
+  expect(stacked.maxHeight).toBe('none');
+  expect(stacked.transition).toBe('0s');
+  expect(stacked.animation).toBe('none');
+  expect(stacked.cards.length).toBe(3);
+  for (const card of stacked.cards) {
+    expect(card.nameTop).toBeGreaterThanOrEqual(card.imgBottom - 1);
+    expect(card.boxBottom).toBeLessThanOrEqual(stacked.feedBottom + 1);
+    expect(card.nameBottom).toBeLessThanOrEqual(stacked.feedBottom + 1);
+    expect(card.metaTop).not.toBeNull();
+    expect(card.metaTop).toBeGreaterThanOrEqual(card.nameBottom - 1);
+    expect(card.metaLeft).toBeGreaterThanOrEqual(card.imgLeft - 1);
+    expect(card.metaLeft).toBeLessThan(card.imgRight);
+  }
+  const gaps = [
+    stacked.cards[1].boxTop - stacked.cards[0].boxBottom,
+    stacked.cards[2].boxTop - stacked.cards[1].boxBottom,
+  ];
+  expect(Math.abs(gaps[0] - gaps[1])).toBeLessThan(2);
+  expect(gaps[0]).toBeGreaterThan(8);
+
+  await axis.focus();
+  await page.keyboard.press('Shift+Tab');
+  await expect(posters).toBeFocused();
+  const outline = await posters.evaluate((el) => ({
+    style: getComputedStyle(el).outlineStyle,
+    width: getComputedStyle(el).outlineWidth,
+  }));
+  expect(outline.style).toBe('solid');
+  expect(Number.parseFloat(outline.width)).toBeGreaterThanOrEqual(2);
+
+  const stored = await page.evaluate(() => ({
+    posters: localStorage.getItem('mattdoes-posters'),
+    axis: localStorage.getItem('mattdoes-poster-axis'),
+  }));
+  expect(stored).toEqual({ posters: 'on', axis: 'down' });
+
+  await page.reload();
+  await page.evaluate(() => document.fonts.ready);
+  await expect(page.locator('[data-posters-toggle]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-axis-toggle]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#feed')).toBeVisible();
+  const restored = await page.locator('#feed').evaluate((el) => getComputedStyle(el).flexDirection);
+  expect(restored).toBe('column');
+});
+
 test('the home listen line is one clipped row', async ({ page }) => {
   await page.goto('/');
   await page.evaluate(() => document.fonts.ready);

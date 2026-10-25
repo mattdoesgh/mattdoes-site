@@ -209,6 +209,7 @@ function shell({
   polarity,
   robots,
   main,
+  blocking = '',
 }) {
   const css = assets['station.css'];
   const js = assets['station.js'];
@@ -229,7 +230,7 @@ function shell({
     <meta property="og:description" content="${esc(description)}">
     <meta property="og:url" content="${esc(canonical)}">
     <meta property="og:type" content="website">${robotsMeta}
-    <link rel="stylesheet" href="/${esc(css)}">
+    <link rel="stylesheet" href="/${esc(css)}">${blocking}
   </head>
   <body data-root="/"${polarityAttr}>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -400,7 +401,7 @@ function film(watch, index) {
 
 /**
  * The closed scene. Rendered only when there is a film, and after the
- * feed so the count line's sibling stays the strip. The wide image is
+ * feed so the watch head's sibling stays the strip. The wide image is
  * not in the tree until the scene opens.
  *
  * @param {object[]} watches
@@ -438,11 +439,50 @@ function verbByRenderer(renderer) {
   return verb;
 }
 
+/**
+ * Parser-blocking prefs. Omitted when the asset map has no file, so a
+ * partial render in a unit test still builds. The hashed file is external:
+ * the CSP does not allow an inline script.
+ *
+ * @param {Record<string, string>} assets
+ * @returns {string}
+ */
+function posterPrefsTag(assets) {
+  const src = assets && assets['poster-prefs.js'];
+  if (!src) return '';
+  return `\n    <script src="/${esc(src)}"></script>`;
+}
+
+/**
+ * Posters on or off, and the strip's direction. The longer label is an
+ * invisible sizer so the hit area does not jump. Defaults match the
+ * server HTML: posters on, across.
+ *
+ * @returns {string}
+ */
+function posterControls() {
+  return `<span class="poster-controls" role="group" aria-label="poster strip"><button type="button" class="poster-switch" data-posters-toggle aria-pressed="true" aria-controls="feed"><span class="poster-sizer" aria-hidden="true">posters off</span><span class="poster-on">posters on</span><span class="poster-off">posters off</span></button><button type="button" class="poster-switch poster-axis" data-axis-toggle aria-pressed="false" aria-controls="feed"><span class="poster-sizer" aria-hidden="true">across</span><span class="axis-across">across</span><span class="axis-down">down</span></button></span>`;
+}
+
+/**
+ * Count on the left, controls on the right. The count line stays a
+ * `.total` so it keeps the films wave. A missing count leaves the controls.
+ *
+ * @param {string} count
+ * @returns {string}
+ */
+function watchHead(count) {
+  const line = count ? `\n        ${count}` : '';
+  return `<div class="watch-head">${line}
+        ${posterControls()}
+      </div>`;
+}
+
 export function renderWatch(ctx) {
   const watches = Array.isArray(ctx.watches) ? ctx.watches : [];
   const verb = verbByRenderer('watch');
   const heading = verbHeading(verb.label);
-  const feed = `<ol class="feed">
+  const feed = `<ol class="feed" id="feed">
         ${watches.map(film).join('\n        ')}
       </ol>`;
   const count = countLine(ctx.filmCount, 'films');
@@ -455,8 +495,9 @@ export function renderWatch(ctx) {
     current: verb.slug,
     showVerbNav: true,
     robots: '',
+    blocking: posterPrefsTag(ctx.assets),
     main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
-      ${count}
+      ${watchHead(count)}
       ${feed}
       ${scene(watches)}`,
   });

@@ -82,20 +82,22 @@ test('parseFilmCount reads the Watched tooltip and rejects a bad total', () => {
 test('watching renders the shared wave and hides a missing count', () => {
   const shown = new JSDOM(renderWatch({ ...pageCtx, filmCount: 1234 })).window.document;
   const main = shown.querySelector('main');
-  assert.equal(main.querySelector('h1')?.nextElementSibling?.className, 'total');
+  assert.equal(main.querySelector('h1')?.nextElementSibling?.className, 'watch-head');
   assert.equal(main.querySelector('.total-num')?.textContent, '1,234');
   assert.equal(main.querySelector('.total-spoken')?.textContent, 'films');
   assert.equal(main.querySelector('.wave')?.getAttribute('aria-hidden'), 'true');
   assert.equal(main.querySelector('.wave')?.textContent, 'films');
   assert.equal(main.querySelectorAll('.wave span').length, 5);
-  assert.equal(main.querySelector('.total')?.nextElementSibling?.className, 'feed');
+  assert.equal(main.querySelector('.watch-head')?.nextElementSibling?.className, 'feed');
+  assert.equal(main.querySelector('.total')?.nextElementSibling?.className, 'poster-controls');
   assert.equal([...main.querySelectorAll('h2')].length, 0);
   assert.doesNotMatch(main.textContent, /Letterboxd/);
 
   for (const filmCount of [undefined, null, 0, -3, Number.NaN, 'nope']) {
     const hidden = new JSDOM(renderWatch({ ...pageCtx, filmCount })).window.document;
     assert.equal(hidden.querySelector('.total'), null, String(filmCount));
-    assert.equal(hidden.querySelector('h1')?.nextElementSibling?.className, 'feed');
+    assert.equal(hidden.querySelector('h1')?.nextElementSibling?.className, 'watch-head');
+    assert.equal(hidden.querySelector('.watch-head')?.nextElementSibling?.className, 'feed');
   }
 
   const home = new JSDOM(renderHome({ ...pageCtx, filmCount: 1234, watches: [] })).window.document;
