@@ -53,9 +53,10 @@ test('a narrow hover window keeps the pink preview and no row rule', async ({ pa
   await page.evaluate(() => document.fonts.ready);
   const hover = await page.evaluate(() => window.matchMedia('(hover: hover)').matches);
   expect(hover).toBe(true);
-  const previewColor = await page.locator('.preview').evaluate((el) => getComputedStyle(el).color);
-  const linkColor = await page.locator('.preview a').evaluate((el) => getComputedStyle(el).color);
-  const starColor = await page.locator('.preview .stars').evaluate((el) => getComputedStyle(el).color);
+  const film = page.locator('.verb-row', { has: page.locator('a[href="/watching/"]') });
+  const previewColor = await film.locator('.preview').evaluate((el) => getComputedStyle(el).color);
+  const linkColor = await film.locator('.preview a').evaluate((el) => getComputedStyle(el).color);
+  const starColor = await film.locator('.preview .stars').evaluate((el) => getComputedStyle(el).color);
   const border = await page.locator('.verb-row').first().evaluate((el) => getComputedStyle(el).borderTopWidth);
   const kicker = await page.locator('.verb-kicker').evaluate((el) => getComputedStyle(el).display);
   expect(previewColor).toBe('rgb(247, 200, 216)');
@@ -63,6 +64,10 @@ test('a narrow hover window keeps the pink preview and no row rule', async ({ pa
   expect(starColor).toBe('rgb(247, 200, 216)');
   expect(border).toBe('0px');
   expect(kicker).toBe('none');
+  const listen = page.locator('.listen-line');
+  await expect(listen).toHaveText(/last listened\s+Fixture Track — Fixture Artist/);
+  const listenColor = await listen.evaluate((el) => getComputedStyle(el).color);
+  expect(listenColor).toBe('rgb(247, 200, 216)');
   await expect(page).toHaveScreenshot('home-800.png', { fullPage: true });
 });
 
@@ -187,6 +192,29 @@ test('count words travel unless motion is reduced', async ({ page }, info) => {
   expect(films).toBe('films');
   const filmsStill = await page.locator('.wave span').first().evaluate((el) => getComputedStyle(el).animationName);
   expect(filmsStill).toBe('none');
+});
+
+test('the home listen line is one clipped row', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(() => document.fonts.ready);
+  const line = page.locator('.listen-line');
+  await expect(line).toHaveText(/last listened\s+Fixture Track — Fixture Artist/);
+  const box = await line.evaluate((el) => {
+    const style = getComputedStyle(el);
+    const lineHeight = Number.parseFloat(style.lineHeight);
+    const height = el.getBoundingClientRect().height;
+    return {
+      whiteSpace: style.whiteSpace,
+      overflow: style.overflowX,
+      ellipsis: style.textOverflow,
+      oneLine: height <= lineHeight * 1.6,
+    };
+  });
+  expect(box.whiteSpace).toBe('nowrap');
+  expect(box.overflow).toBe('hidden');
+  expect(box.ellipsis).toBe('ellipsis');
+  expect(box.oneLine).toBe(true);
+  await expect(page.locator('.wave')).toHaveCount(0);
 });
 
 test('phone shows the kicker and desktop hides it', async ({ page }, info) => {
