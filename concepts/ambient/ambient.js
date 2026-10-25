@@ -9,9 +9,7 @@ import {
   VOICE_COUNT,
   ZOOM_MAX,
   ZOOM_MIN,
-  ISO_FORWARD,
-  ISO_RIGHT,
-  ISO_UP,
+  PITCH_MAX,
   createFlock,
   createVoiceBook,
   idleSoloDelay,
@@ -22,7 +20,9 @@ import {
   renderPoint,
   shouldSchedule,
   stepFlock,
+  viewBasis,
   windAt,
+  writeLattice,
 } from '../flock-model.js';
 
 const reduceQuery = matchMedia('(prefers-reduced-motion: reduce)');
@@ -45,14 +45,27 @@ const opposeWeight = [2, 2, 4, 4];
 const bases = [130.81, 196, 261.63, 174.61, 311.13, 349.23, 415.3];
 const tightChord = [130.81, 196, 261.63, 311.13, 392];
 const openChord = [174.61, 207.65, 261.63, 277.18, 349.23, 415.3];
-const TAP_SLOP = 28;
+const TAP_SLOP = 6;
 const TAP_MS = 600;
+const YAW_GAIN = 0.0045;
+const PITCH_GAIN = 0.0035;
+const INERTIA_CAP = 1.1;
+const INERTIA_TAU = 0.42;
 const MOTE_COUNT = 8;
 const PUFF = 0.82;
 const BANDS = 8;
 const TRAIL = 18;
 
-const view = { zoom: 1, finger: null, focus: null, auto: false };
+const view = {
+  zoom: 1,
+  yaw: 0,
+  pitch: 0,
+  yawVel: 0,
+  pitchVel: 0,
+  finger: null,
+  focus: null,
+  auto: false,
+};
 let autoAt = 0;
 let holdUntil = 0;
 const audio = { ctx: null, master: null, on: false };
@@ -73,6 +86,14 @@ function makeBands(cap) {
 }
 const dotBands = makeBands(520);
 const lineBands = makeBands(800);
+const LATTICE_LEVELS = [0.08, 0.16, 0.24, 0.32, 0.4];
+const latticeBands = LATTICE_LEVELS.map(() => ({
+  n: 0,
+  x: new Float32Array(900),
+  y: new Float32Array(900),
+  x2: new Float32Array(900),
+  y2: new Float32Array(900),
+}));
 const soloLine = {
   n: 0,
   x: new Float32Array(48),
@@ -148,17 +169,6 @@ function flushBands(g, lineWidth) {
     dots.n = 0;
   }
 }
-const cubeCorners = [-1, 1].flatMap((z) => [-1, 1].flatMap((y) => [-1, 1].map((x) => ({
-  x: x * CUBE,
-  y: y * CUBE,
-  z: z * CUBE,
-}))));
-const cubeEdges = [
-  [0, 1], [1, 3], [3, 2], [2, 0],
-  [4, 5], [5, 7], [7, 6], [6, 4],
-  [0, 4], [1, 5], [2, 6], [3, 7],
-];
-
 let graph = null;
 let clock = 0;
 let raf = 0;
@@ -341,16 +351,17 @@ function silence() {
 }
 
 function look() {
+  const basis = viewBasis(view.yaw, view.pitch);
   const dist = 5.4 - view.zoom * 1.15;
   return {
     eye: {
-      x: -ISO_FORWARD.x * dist,
-      y: -ISO_FORWARD.y * dist,
-      z: -ISO_FORWARD.z * dist,
+      x: -basis.forward.x * dist,
+      y: -basis.forward.y * dist,
+      z: -basis.forward.z * dist,
     },
-    forward: ISO_FORWARD,
-    right: ISO_RIGHT,
-    up: ISO_UP,
+    forward: basis.forward,
+    right: basis.right,
+    up: basis.up,
   };
 }
 
@@ -901,13 +912,52 @@ function simulate(frameDt) {
   alpha = accumulator / FIXED_DT;
 }
 
-function strokeEdge(g, a, b, cam, w, h, pa, pb) {
-  if (!projectXYZ(a.x, a.y, a.z, cam, w, h, pa)) return;
-  const x1 = pa.x;
-  const y1 = pa.y;
-  if (!projectXYZ(b.x, b.y, b.z, cam, w, h, pb)) return;
-  g.moveTo(x1, y1);
-  g.lineTo(pb.x, pb.y);
+function latticeBand(alpha) {
+  let band = 0;
+  let best = Infinity;
+  for (let i = 0; i < LATTICE_LEVELS.length; i += 1) {
+    const dist = Math.abs(LATTICE_LEVELS[i] - alpha);
+    if (dist < best) {
+      best = dist;
+      band = i;
+    }
+  }
+  return band;
+}
+
+function drawLattice(g, cam, w, h, lineWidth) {
+  const lattice = writeLattice(w, h, view.zoom, view.yaw, view.pitch);
+  const pa = { x: 0, y: 0, f: 0, z: 0 };
+  const pb = { x: 0, y: 0, f: 0, z: 0 };
+  for (let i = 0; i < latticeBands.length; i += 1) latticeBands[i].n = 0;
+  for (let i = 0; i < lattice.n; i += 1) {
+    projectXYZ(lattice.x[i], lattice.y[i], lattice.z[i], cam, w, h, pa);
+    const x1 = pa.x;
+    const y1 = pa.y;
+    projectXYZ(lattice.x2[i], lattice.y2[i], lattice.z2[i], cam, w, h, pb);
+    const bag = latticeBands[latticeBand(lattice.a[i])];
+    const n = bag.n;
+    if (n >= bag.x.length) continue;
+    bag.x[n] = x1;
+    bag.y[n] = y1;
+    bag.x2[n] = pb.x;
+    bag.y2[n] = pb.y;
+    bag.n = n + 1;
+  }
+  g.lineJoin = 'round';
+  g.lineCap = 'round';
+  g.lineWidth = lineWidth;
+  for (let i = 0; i < latticeBands.length; i += 1) {
+    const bag = latticeBands[i];
+    if (!bag.n) continue;
+    g.globalAlpha = LATTICE_LEVELS[i];
+    g.beginPath();
+    for (let k = 0; k < bag.n; k += 1) {
+      g.moveTo(bag.x[k], bag.y[k]);
+      g.lineTo(bag.x2[k], bag.y2[k]);
+    }
+    g.stroke();
+  }
 }
 
 function draw() {
@@ -922,15 +972,7 @@ function draw() {
   g.fillStyle = black;
   g.fillRect(0, 0, w, h);
   g.strokeStyle = pink;
-  g.lineWidth = Math.max(1, (w / cssW) * 1.15);
-  g.lineJoin = 'round';
-  g.globalAlpha = 0.8;
-  g.beginPath();
-  for (let i = 0; i < cubeEdges.length; i += 1) {
-    const edge = cubeEdges[i];
-    strokeEdge(g, cubeCorners[edge[0]], cubeCorners[edge[1]], cam, w, h, pa, pb);
-  }
-  g.stroke();
+  drawLattice(g, cam, w, h, Math.max(1, (w / cssW) * 1.15));
   g.fillStyle = pink;
   g.strokeStyle = pink;
   g.lineWidth = Math.max(1, w / cssW);
@@ -1053,7 +1095,31 @@ function draw() {
   canvas.dataset.with = String(withN);
   canvas.dataset.against = String(againstN);
   canvas.dataset.auto = view.auto ? '1' : '';
+  canvas.dataset.yaw = view.yaw.toFixed(3);
+  canvas.dataset.pitch = view.pitch.toFixed(3);
+  canvas.dataset.zoom = view.zoom.toFixed(3);
   markSolo();
+}
+
+function coast(dt) {
+  if (reduce || pointers.size > 0) return;
+  if (!view.yawVel && !view.pitchVel) return;
+  view.yaw += view.yawVel * dt;
+  const next = view.pitch + view.pitchVel * dt;
+  if (next > PITCH_MAX) {
+    view.pitch = PITCH_MAX;
+    view.pitchVel = 0;
+  } else if (next < -PITCH_MAX) {
+    view.pitch = -PITCH_MAX;
+    view.pitchVel = 0;
+  } else {
+    view.pitch = next;
+  }
+  const damp = Math.exp(-dt / INERTIA_TAU);
+  view.yawVel *= damp;
+  view.pitchVel *= damp;
+  if (Math.abs(view.yawVel) < 0.02) view.yawVel = 0;
+  if (Math.abs(view.pitchVel) < 0.02) view.pitchVel = 0;
 }
 
 function frame(now) {
@@ -1061,6 +1127,7 @@ function frame(now) {
   if (hidden) return;
   const dt = Math.min(0.05, (now - (lastNow || now)) / 1000 || 0.016);
   lastNow = now;
+  coast(dt);
   simulate(dt);
   if (audio.on) syncSpace();
   draw();
@@ -1166,6 +1233,10 @@ function endPointer(event) {
     const tap = !pinching && !prev.dragged && moved <= TAP_SLOP && performance.now() - prev.t < TAP_MS;
     pinching = false;
     pinchDist = 0;
+    if (tap || reduce || performance.now() - (prev.moveT || prev.t) > 90) {
+      view.yawVel = 0;
+      view.pitchVel = 0;
+    }
     if (tap) pickBird(at.x, at.y);
     else if (reduce) paint();
   } else if (pointers.size === 1) {
@@ -1192,6 +1263,8 @@ field.addEventListener('pointerdown', (event) => {
   if (pointers.size >= 2) {
     pinching = true;
     view.finger = null;
+    view.yawVel = 0;
+    view.pitchVel = 0;
     for (const item of pointers.values()) item.dragged = true;
     pinchDist = pinchSpan();
   }
@@ -1199,11 +1272,18 @@ field.addEventListener('pointerdown', (event) => {
 field.addEventListener('pointermove', (event) => {
   const prev = pointers.get(event.pointerId);
   if (!prev) return;
+  const dx = event.clientX - prev.x;
+  const dy = event.clientY - prev.y;
+  const now = performance.now();
+  const dt = (now - (prev.moveT || prev.t)) / 1000;
   prev.x = event.clientX;
   prev.y = event.clientY;
+  prev.moveT = now;
   if (pointers.size >= 2 || pinching) {
     pinching = true;
     prev.dragged = true;
+    view.yawVel = 0;
+    view.pitchVel = 0;
     const span = pinchSpan();
     if (pinchDist > 8 && span > 8) setZoom(view.zoom * (span / pinchDist));
     pinchDist = span || pinchDist;
@@ -1211,7 +1291,15 @@ field.addEventListener('pointermove', (event) => {
     return;
   }
   if (Math.hypot(event.clientX - prev.ox, event.clientY - prev.oy) > TAP_SLOP) prev.dragged = true;
-  if (prev.dragged) point(event);
+  if (prev.dragged) {
+    view.yaw += dx * YAW_GAIN;
+    const nextPitch = view.pitch - dy * PITCH_GAIN;
+    if (nextPitch > PITCH_MAX || nextPitch < -PITCH_MAX) view.pitchVel = 0;
+    else if (dt > 0.004) view.pitchVel = clamp((nextPitch - view.pitch) / dt, -INERTIA_CAP, INERTIA_CAP);
+    view.pitch = clamp(nextPitch, -PITCH_MAX, PITCH_MAX);
+    if (dt > 0.004) view.yawVel = clamp((dx * YAW_GAIN) / dt, -INERTIA_CAP, INERTIA_CAP);
+    point(event);
+  }
 });
 field.addEventListener('pointerup', endPointer);
 field.addEventListener('pointercancel', endPointer);
@@ -1255,6 +1343,10 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('pagehide', hide);
 reduceQuery.addEventListener('change', () => {
   reduce = reduceQuery.matches;
+  if (reduce) {
+    view.yawVel = 0;
+    view.pitchVel = 0;
+  }
   paint();
 });
 addEventListener('resize', paint);

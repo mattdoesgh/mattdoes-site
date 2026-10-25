@@ -26,7 +26,13 @@ import {
   renderPoint,
   shouldSchedule,
   stepFlock,
+  PITCH_MAX,
+  ISO_FORWARD,
+  ISO_RIGHT,
+  ISO_UP,
+  viewBasis,
   windAt,
+  writeLattice,
 } from '../concepts/flock-model.js';
 
 test('stop clears the book and refuses every later voice', () => {
@@ -380,6 +386,129 @@ test('the corner-on cube is a regular hexagon that fills the frame', () => {
   }
   const zoomed = isoScale(390, 700, 1.1);
   assert.ok(zoomed > isoScale(390, 700, 1));
+});
+
+function axisDot(a, b) {
+  return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+test('pitch and yaw leave the view without roll', () => {
+  const home = viewBasis(0, 0);
+  assert.ok(Math.abs(home.right.x - ISO_RIGHT.x) < 1e-9);
+  assert.ok(Math.abs(home.right.y - ISO_RIGHT.y) < 1e-9);
+  assert.ok(Math.abs(home.right.z - ISO_RIGHT.z) < 1e-9);
+  assert.ok(Math.abs(home.up.x - ISO_UP.x) < 1e-9);
+  assert.ok(Math.abs(home.up.y - ISO_UP.y) < 1e-9);
+  assert.ok(Math.abs(home.up.z - ISO_UP.z) < 1e-9);
+  assert.ok(Math.abs(home.forward.x - ISO_FORWARD.x) < 1e-9);
+  assert.ok(Math.abs(home.forward.y - ISO_FORWARD.y) < 1e-9);
+  assert.ok(Math.abs(home.forward.z - ISO_FORWARD.z) < 1e-9);
+  for (const [yaw, pitch] of [[0.4, 0.2], [-1.2, 0.5], [2, -0.8], [0.7, 2]]) {
+    const basis = viewBasis(yaw, pitch);
+    for (const axis of [basis.right, basis.up, basis.forward]) {
+      assert.ok(Math.abs(Math.hypot(axis.x, axis.y, axis.z) - 1) < 1e-9);
+    }
+    assert.ok(Math.abs(axisDot(basis.right, ISO_UP)) < 1e-9);
+    assert.ok(Math.abs(axisDot(basis.right, basis.forward)) < 1e-9);
+    assert.ok(Math.abs(axisDot(basis.up, basis.forward)) < 1e-9);
+    assert.ok(Math.abs(axisDot(basis.up, basis.right)) < 1e-9);
+    const up = {
+      x: basis.forward.y * basis.right.z - basis.forward.z * basis.right.y,
+      y: basis.forward.z * basis.right.x - basis.forward.x * basis.right.z,
+      z: basis.forward.x * basis.right.y - basis.forward.y * basis.right.x,
+    };
+    assert.ok(Math.abs(up.x - basis.up.x) < 1e-9);
+    assert.ok(Math.abs(up.y - basis.up.y) < 1e-9);
+    assert.ok(Math.abs(up.z - basis.up.z) < 1e-9);
+  }
+  const high = viewBasis(0, 2);
+  const low = viewBasis(0, -2);
+  assert.ok(Math.abs(axisDot(high.forward, ISO_UP) - Math.sin(PITCH_MAX)) < 1e-9);
+  assert.ok(Math.abs(axisDot(low.forward, ISO_UP) + Math.sin(PITCH_MAX)) < 1e-9);
+  assert.ok(Math.abs(axisDot(viewBasis(0.7, 2).forward, ISO_UP) - Math.sin(PITCH_MAX)) < 1e-9);
+});
+
+function edgeKey(x, y, z, x2, y2, z2) {
+  const q = (v) => Math.round(v * 1000);
+  const a = `${q(x)},${q(y)},${q(z)}`;
+  const b = `${q(x2)},${q(y2)},${q(z2)}`;
+  return a < b ? `${a}|${b}` : `${b}|${a}`;
+}
+
+function isCenterCorner(x, y, z) {
+  return Math.abs(Math.abs(x) - CUBE) < 1e-4
+    && Math.abs(Math.abs(y) - CUBE) < 1e-4
+    && Math.abs(Math.abs(z) - CUBE) < 1e-4;
+}
+
+function latticeReaches(width, height, zoom, yaw, pitch) {
+  const lattice = writeLattice(width, height, zoom, yaw, pitch);
+  const basis = viewBasis(yaw, pitch);
+  const scale = isoScale(width, height, zoom);
+  const hit = { left: false, right: false, top: false, bottom: false };
+  const cross = (x1, y1, x2, y2, edge, horizontal) => {
+    const span = horizontal ? x2 - x1 : y2 - y1;
+    if (Math.abs(span) < 1e-6) return false;
+    const t = (edge - (horizontal ? x1 : y1)) / span;
+    if (t < -1e-4 || t > 1 + 1e-4) return false;
+    const other = horizontal ? y1 + t * (y2 - y1) : x1 + t * (x2 - x1);
+    const limit = horizontal ? height : width;
+    return other >= -1 && other <= limit + 1;
+  };
+  for (let i = 0; i < lattice.n; i += 1) {
+    const sx = (x, y, z) => width * 0.5 + (x * basis.right.x + y * basis.right.y + z * basis.right.z) * scale;
+    const sy = (x, y, z) => height * 0.5 - (x * basis.up.x + y * basis.up.y + z * basis.up.z) * scale;
+    const x1 = sx(lattice.x[i], lattice.y[i], lattice.z[i]);
+    const y1 = sy(lattice.x[i], lattice.y[i], lattice.z[i]);
+    const x2 = sx(lattice.x2[i], lattice.y2[i], lattice.z2[i]);
+    const y2 = sy(lattice.x2[i], lattice.y2[i], lattice.z2[i]);
+    if (cross(x1, y1, x2, y2, 0, true)) hit.left = true;
+    if (cross(x1, y1, x2, y2, width, true)) hit.right = true;
+    if (cross(x1, y1, x2, y2, 0, false)) hit.top = true;
+    if (cross(x1, y1, x2, y2, height, false)) hit.bottom = true;
+  }
+  return { ...hit, n: lattice.n };
+}
+
+test('the cube repeats as a fading lattice of shared edges', () => {
+  const lattice = writeLattice(390, 844, 1, 0, 0);
+  const seen = new Set();
+  let center = 0;
+  let neighbor = 0;
+  let neighborAlpha = 1;
+  for (let i = 0; i < lattice.n; i += 1) {
+    const key = edgeKey(
+      lattice.x[i], lattice.y[i], lattice.z[i],
+      lattice.x2[i], lattice.y2[i], lattice.z2[i],
+    );
+    assert.equal(seen.has(key), false);
+    seen.add(key);
+    const onCenter = isCenterCorner(lattice.x[i], lattice.y[i], lattice.z[i])
+      && isCenterCorner(lattice.x2[i], lattice.y2[i], lattice.z2[i]);
+    if (onCenter) {
+      center += 1;
+      assert.ok(Math.abs(lattice.a[i] - 0.4) < 1e-6);
+    } else {
+      assert.ok(lattice.a[i] < 0.25, `a neighbour should be fainter (${lattice.a[i]})`);
+    }
+    const reach = [lattice.x[i], lattice.y[i], lattice.z[i], lattice.x2[i], lattice.y2[i], lattice.z2[i]];
+    if (reach.some((value) => Math.abs(Math.abs(value) - CUBE * 3) < 1e-4)) {
+      neighbor += 1;
+      neighborAlpha = Math.min(neighborAlpha, lattice.a[i]);
+    }
+  }
+  assert.equal(center, 12);
+  assert.ok(neighbor > 0);
+  assert.ok(neighborAlpha < 0.2 && neighborAlpha > 0.02);
+  assert.ok(lattice.n > 12 && lattice.n < 900, `lattice should stay light (${lattice.n})`);
+  for (const [width, height] of [[390, 844], [1440, 900]]) {
+    for (const zoom of [0.88, 1, 1.22]) {
+      for (const [yaw, pitch] of [[0, 0], [0.55, 0.42]]) {
+        const hit = latticeReaches(width, height, zoom, yaw, pitch);
+        assert.ok(hit.left && hit.right && hit.top && hit.bottom, `lattice should meet the frame (${width}x${height} z${zoom} ${yaw},${pitch})`);
+      }
+    }
+  }
 });
 
 test('birds settle with room between them', () => {

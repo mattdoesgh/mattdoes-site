@@ -12,6 +12,8 @@ export const FIXED_DT = 1 / 60;
 export const ZOOM_MIN = 0.88;
 export const ZOOM_MAX = 1.22;
 export const PICK_RADIUS = 72;
+/** Pitch stays short of the pole so the view cannot roll over. */
+export const PITCH_MAX = (85 * Math.PI) / 180;
 
 const SEP_R = 1.22;
 const ALIGN_R = 1.35;
@@ -255,6 +257,172 @@ export function isoScale(width, height, zoom = 1) {
   const halfH = (CUBE * 4) / Math.sqrt(6);
   const fit = Math.min((width * 0.46) / halfW, (height * 0.46) / halfH);
   return fit * zoom;
+}
+
+function dot3(a, b) {
+  return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+function cross3(a, b) {
+  return {
+    x: a.y * b.z - a.z * b.y,
+    y: a.z * b.x - a.x * b.z,
+    z: a.x * b.y - a.y * b.x,
+  };
+}
+
+function scale3(v, s) {
+  return { x: v.x * s, y: v.y * s, z: v.z * s };
+}
+
+function add3(a, b) {
+  return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z };
+}
+
+function norm3(v) {
+  const m = Math.hypot(v.x, v.y, v.z) || 1;
+  return scale3(v, 1 / m);
+}
+
+function rot3(v, axis, ang) {
+  const c = Math.cos(ang);
+  const s = Math.sin(ang);
+  const along = dot3(v, axis);
+  return add3(add3(scale3(v, c), scale3(cross3(axis, v), s)), scale3(axis, along * (1 - c)));
+}
+
+/**
+ * Pitch then yaw from the corner-on pose. Yaw turns about the original
+ * screen-up. Pitch turns about the yawed screen-right. Up is rebuilt from
+ * those two, so the view does not roll. Pitch is clamped to ±85°.
+ *
+ * @param {number} yaw
+ * @param {number} pitch
+ * @returns {{ right: { x: number, y: number, z: number }, up: { x: number, y: number, z: number }, forward: { x: number, y: number, z: number } }}
+ */
+export function viewBasis(yaw, pitch) {
+  const clamped = Math.max(-PITCH_MAX, Math.min(PITCH_MAX, pitch));
+  const right = norm3(rot3(ISO_RIGHT, ISO_UP, yaw));
+  const spun = rot3(ISO_FORWARD, ISO_UP, yaw);
+  const forward = norm3(rot3(spun, right, -clamped));
+  const up = norm3(cross3(forward, right));
+  return { right, up, forward };
+}
+
+const LATTICE_CAP = 1600;
+const latticeBuf = {
+  n: 0,
+  x: new Float32Array(LATTICE_CAP),
+  y: new Float32Array(LATTICE_CAP),
+  z: new Float32Array(LATTICE_CAP),
+  x2: new Float32Array(LATTICE_CAP),
+  y2: new Float32Array(LATTICE_CAP),
+  z2: new Float32Array(LATTICE_CAP),
+  a: new Float32Array(LATTICE_CAP),
+};
+
+function latticeVertex(i) {
+  return (2 * i - 1) * CUBE;
+}
+
+/**
+ * Visible edges of a cubic lattice the same size as the flock's cube.
+ * The buffer is reused. Shared edges are written once. The center cube's
+ * twelve edges are the brightest. Farther blocks fade.
+ *
+ * @param {number} width
+ * @param {number} height
+ * @param {number} zoom
+ * @param {number} yaw
+ * @param {number} pitch
+ * @returns {typeof latticeBuf}
+ */
+export function writeLattice(width, height, zoom, yaw, pitch) {
+  const basis = viewBasis(yaw, pitch);
+  const scale = isoScale(width, height, zoom);
+  const step = CUBE * 2;
+  const reach = Math.hypot(width, height) / (2 * Math.max(scale, 1e-6)) + step;
+  const n = Math.min(3, Math.max(1, Math.ceil(reach / step)));
+  const lo = -n;
+  const hi = n + 1;
+  const margin = step * scale;
+  const { right, up, forward } = basis;
+  let count = 0;
+
+  const project = (x, y, z) => {
+    const sx = x * right.x + y * right.y + z * right.z;
+    const sy = x * up.x + y * up.y + z * up.z;
+    return {
+      x: width * 0.5 + sx * scale,
+      y: height * 0.5 - sy * scale,
+    };
+  };
+
+  const push = (ix, iy, iz, jx, jy, jz) => {
+    if (count >= LATTICE_CAP) return;
+    const x1 = latticeVertex(ix);
+    const y1 = latticeVertex(iy);
+    const z1 = latticeVertex(iz);
+    const x2 = latticeVertex(jx);
+    const y2 = latticeVertex(jy);
+    const z2 = latticeVertex(jz);
+    const mx = (x1 + x2) * 0.5;
+    const my = (y1 + y2) * 0.5;
+    const mz = (z1 + z2) * 0.5;
+    const center = ix >= 0 && ix <= 1 && iy >= 0 && iy <= 1 && iz >= 0 && iz <= 1
+      && jx >= 0 && jx <= 1 && jy >= 0 && jy <= 1 && jz >= 0 && jz <= 1;
+    let alpha = 0.4;
+    if (!center) {
+      const dist = Math.hypot(mx, my, mz) / step;
+      const depth = mx * forward.x + my * forward.y + mz * forward.z;
+      const fog = Math.exp(-0.14 * Math.max(0, depth - 0.6));
+      alpha = 0.22 * Math.exp(-0.42 * Math.max(0, dist - 0.45)) * fog;
+      if (alpha < 0.09) return;
+    }
+    const a = project(x1, y1, z1);
+    const b = project(x2, y2, z2);
+    let aSide = 0;
+    let bSide = 0;
+    if (a.x < -margin) aSide |= 1;
+    else if (a.x > width + margin) aSide |= 2;
+    if (a.y < -margin) aSide |= 4;
+    else if (a.y > height + margin) aSide |= 8;
+    if (b.x < -margin) bSide |= 1;
+    else if (b.x > width + margin) bSide |= 2;
+    if (b.y < -margin) bSide |= 4;
+    else if (b.y > height + margin) bSide |= 8;
+    if (aSide && (aSide & bSide)) return;
+    const px = (a.x + b.x) * 0.5;
+    const py = (a.y + b.y) * 0.5;
+    if (px < -margin || px > width + margin || py < -margin || py > height + margin) return;
+    latticeBuf.x[count] = x1;
+    latticeBuf.y[count] = y1;
+    latticeBuf.z[count] = z1;
+    latticeBuf.x2[count] = x2;
+    latticeBuf.y2[count] = y2;
+    latticeBuf.z2[count] = z2;
+    latticeBuf.a[count] = alpha;
+    count += 1;
+  };
+
+  for (let iy = lo; iy <= hi; iy += 1) {
+    for (let iz = lo; iz <= hi; iz += 1) {
+      for (let ix = lo; ix < hi; ix += 1) push(ix, iy, iz, ix + 1, iy, iz);
+    }
+  }
+  for (let ix = lo; ix <= hi; ix += 1) {
+    for (let iz = lo; iz <= hi; iz += 1) {
+      for (let iy = lo; iy < hi; iy += 1) push(ix, iy, iz, ix, iy + 1, iz);
+    }
+  }
+  for (let ix = lo; ix <= hi; ix += 1) {
+    for (let iy = lo; iy <= hi; iy += 1) {
+      for (let iz = lo; iz < hi; iz += 1) push(ix, iy, iz, ix, iy, iz + 1);
+    }
+  }
+
+  latticeBuf.n = count;
+  return latticeBuf;
 }
 
 /**
