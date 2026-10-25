@@ -59,7 +59,7 @@ main {
 
 .skip-link {
   position: absolute;
-  left: 1rem;
+  left: var(--space-1);
   top: 0;
   transform: translateY(-120%);
   background: var(--pink);
@@ -518,7 +518,7 @@ body[data-polarity="flip"] .verb-nav a {
 
 .total {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: baseline;
   gap: var(--space-total-gap);
   margin: var(--space-total);
@@ -580,8 +580,8 @@ body[data-polarity="flip"] .total-label {
 }
 
 .watch-head .total {
-  flex: 1 0 auto;
-  min-width: max-content;
+  flex: 1 1 auto;
+  min-width: var(--space-0);
   margin: var(--space-0);
 }
 
@@ -853,7 +853,7 @@ html[data-poster-axis="down"] .axis-down {
   gap: var(--space-md);
   margin: var(--space-feed);
   /* The lower setting's hit target hangs below the row. This keeps it off the poster. */
-  margin-top: var(--space-section);
+  margin-top: calc(var(--hit-pad) + var(--space-row));
   margin-inline: calc(var(--space-page) * -1);
   padding: var(--space-0) var(--space-page) var(--space-md);
   list-style: none;
@@ -1490,7 +1490,7 @@ html.is-locked body {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: var(--space-md);
-    margin-top: var(--space-desk-block);
+    margin-top: max(var(--space-desk-block), calc(var(--hit-pad) + var(--space-row)));
     margin-inline: var(--space-0);
     padding: var(--space-0);
     overflow: visible;

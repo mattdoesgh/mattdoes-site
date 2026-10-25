@@ -126,8 +126,10 @@ jobs:
       - name: Run regression test suite
         run: npm test
 
-  # Screenshot baselines of the main pages. Fixture watches and scrobbles
-  # stand in for Letterboxd and Last.fm so a live feed cannot move the pixels.
+  # Screenshot baselines of the main pages, plus axe on every page in
+  # Chromium. Fixture watches and scrobbles stand in for Letterboxd and
+  # Last.fm so a live feed cannot move the pixels. Same job as the
+  # screenshots, so the accessibility check does not add a runner.
   visual:
     name: visual regression
     runs-on: ubuntu-latest
@@ -149,7 +151,7 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Compare screenshots
+      - name: Compare screenshots and run axe
         run: npm run test:visual
 
       - name: Upload visual diffs

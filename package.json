@@ -27,6 +27,7 @@
     "node": ">=20"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.1",
     "axe-core": "^4.14.0",
     "culori": "^4.0.2",
     "html-validate": "^11.16.2",

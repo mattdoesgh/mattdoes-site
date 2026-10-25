@@ -154,13 +154,13 @@ test('listening type matches the watching titles', () => {
   assert.match(tokens, /--track-none:\s*0;/);
   assert.match(tokens, /--type-title:\s*clamp\(2rem, 6vw, 3\.3rem\);/);
   assert.match(tokens, /--type-title-desk:\s*clamp\(1\.65rem, 1\.7vw, 2\.45rem\);/);
-  assert.match(tokens, /--type-body:\s*1\.125rem;/);
+  assert.match(tokens, /--type-body:\s*clamp\(1\.125rem,/);
   const desktop = css.slice(css.indexOf('@media (min-width: 1024px)'));
   assert.match(desktop, /\.film \.name,\s*\.recent-label,\s*\.tracks \.what,\s*\.scene-title \{[^}]*font-size:\s*var\(--type-title-desk\)/);
   assert.match(desktop, /\.album-cap \{[^}]*font-size:\s*var\(--type-title-desk\)/);
   const totalBlock = css.slice(css.indexOf('.total {'), css.indexOf('.total-num {'));
   assert.match(totalBlock, /display:\s*flex/);
-  assert.match(totalBlock, /flex-wrap:\s*nowrap/);
+  assert.match(totalBlock, /flex-wrap:\s*wrap/);
   assert.match(totalBlock, /align-items:\s*baseline/);
   const total = css.slice(css.indexOf('.total-num {'), css.indexOf('body[data-polarity="flip"] .total-num'));
   assert.match(total, /font-family:\s*var\(--display\)/);

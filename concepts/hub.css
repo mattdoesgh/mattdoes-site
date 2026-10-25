@@ -17,6 +17,13 @@
   box-sizing: border-box;
 }
 
+html {
+  /* iOS enlarges type on short pages. 100% keeps the fluid scale, and
+     the viewport meta still allows a real pinch and browser zoom. */
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   display: flex;
   flex-direction: column;
