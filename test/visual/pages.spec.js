@@ -21,6 +21,19 @@ for (const [name, url] of pages) {
   });
 }
 
+test('the unshared row is birds1', async ({ page }) => {
+  await page.goto('/unshared/');
+  await page.evaluate(() => document.fonts.ready);
+  await expect(page.locator('h1')).toHaveText('matt does unshared');
+  const row = page.locator('a.verb');
+  await expect(row).toHaveText('birds1');
+  await expect(row).toHaveAttribute('href', '/unshared/birds1/');
+  await expect(page.locator('.verb-prefix, .verb-kicker')).toHaveCount(0);
+  await expect(page.locator('body')).not.toContainText('unshared does');
+  const box = await row.boundingBox();
+  expect(box.height).toBeGreaterThanOrEqual(44);
+});
+
 test('birds1', async ({ page }, info) => {
   await page.addInitScript(() => {
     let seed = 1;
