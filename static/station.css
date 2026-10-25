@@ -546,6 +546,90 @@ body[data-polarity="flip"] .total-label {
   color: var(--black);
 }
 
+/* Films count on the left. Poster controls take the right of that row.
+   The count itself does not wrap. If the controls do not fit beside it,
+   they drop to the next line and stay on the right. Listening keeps .total. */
+.watch-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--space-md);
+  row-gap: var(--space-0);
+  margin: var(--space-total);
+}
+
+.watch-head .total {
+  flex: 1 0 auto;
+  min-width: max-content;
+  margin: var(--space-0);
+}
+
+.poster-controls {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: baseline;
+  gap: var(--space-row);
+  margin-left: auto;
+}
+
+.poster-switch {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  min-height: var(--hit-phone);
+  margin: var(--space-0);
+  padding: var(--space-0) var(--space-tight);
+  border: var(--line-none);
+  border-radius: var(--radius);
+  background: transparent;
+  color: inherit;
+  font-family: var(--display);
+  font-size: var(--type-total-label);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--track-none);
+  line-height: 1;
+  text-transform: none;
+  text-decoration: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.poster-switch > span {
+  grid-area: 1 / 1;
+}
+
+.poster-sizer {
+  visibility: hidden;
+}
+
+.poster-off,
+.axis-down {
+  display: none;
+}
+
+html[data-posters="off"] .poster-on {
+  display: none;
+}
+
+html[data-posters="off"] .poster-off {
+  display: block;
+}
+
+html[data-poster-axis="down"] .axis-across {
+  display: none;
+}
+
+html[data-poster-axis="down"] .axis-down {
+  display: block;
+}
+
+.poster-switch:hover,
+.poster-switch:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.08em;
+}
+
 /* The count words only. A travelling sine in translateY. The nth-child
    offsets are the same sine, held still when motion is reduced.
    One wavelength across nine letters; a shorter word rides the crest. */
@@ -1473,4 +1557,60 @@ html.is-locked body {
   .verb-nav {
     gap: var(--space-nav-gap-desk);
   }
+
+  .poster-switch {
+    min-height: var(--hit);
+  }
+}
+
+/* Down stacks the strip. The phone scroller changes axis. Desktop leaves
+   the grid and uses the same column. No motion: the change is instant.
+   Posters off wins when both choices are set, so this block stays above it. */
+html[data-poster-axis="down"] .feed {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-inline: var(--space-0);
+  padding-inline: var(--space-0);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-x: auto;
+  overscroll-behavior-y: contain;
+  scroll-snap-type: y mandatory;
+  scroll-padding-inline: var(--space-0);
+  scroll-padding-block: var(--space-page);
+  max-height: 70vh;
+}
+
+html[data-poster-axis="down"] .film {
+  flex: 0 0 auto;
+  width: min(78%, 18rem);
+  scroll-snap-align: start;
+}
+
+html[data-poster-axis="down"] .film:first-child {
+  grid-column: auto;
+}
+
+html[data-poster-axis="down"] .film:first-child .film-open {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-md);
+}
+
+html[data-poster-axis="down"] .film:first-child .film-open img {
+  width: 100%;
+  max-width: 100%;
+  max-height: none;
+  height: auto;
+  aspect-ratio: 2 / 3;
+}
+
+html[data-poster-axis="down"] .film .name {
+  font-size: var(--type-kicker);
+}
+
+html[data-posters="off"] .feed {
+  display: none;
 }
