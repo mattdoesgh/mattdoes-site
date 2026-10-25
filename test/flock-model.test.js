@@ -18,6 +18,9 @@ import {
   createVoiceBook,
   cubeClearance,
   idleSoloDelay,
+  isoProject,
+  isoScale,
+  markovIndex,
   outsideCube,
   pickNearest,
   renderPoint,
@@ -258,10 +261,10 @@ test('a bird keeps a stable constellation', () => {
   assert.deepEqual(birds[4].edges, edges);
 });
 
-test('idle solo waits between twenty and forty seconds', () => {
-  assert.equal(idleSoloDelay(() => 0), 20);
-  assert.equal(idleSoloDelay(() => 1), 40);
-  assert.equal(idleSoloDelay(() => 0.5), 30);
+test('idle solo waits between fifty and ninety seconds', () => {
+  assert.equal(idleSoloDelay(() => 0), 50);
+  assert.equal(idleSoloDelay(() => 1), 90);
+  assert.equal(idleSoloDelay(() => 0.5), 70);
 });
 
 test('factions ease in and supporters stay nearer than opposers', () => {
@@ -328,4 +331,108 @@ test('factions ease in and supporters stay nearer than opposers', () => {
     if (bird === solo) continue;
     assert.equal(outsideCube(bird.x, bird.y, bird.z), false);
   }
+});
+
+test('the corner-on cube is a regular hexagon that fills the frame', () => {
+  const s = CUBE;
+  const near = isoProject(-s, -s, -s);
+  const far = isoProject(s, s, s);
+  assert.ok(Math.hypot(near.x, near.y) < 1e-9);
+  assert.ok(Math.hypot(far.x, far.y) < 1e-9);
+  const outer = [];
+  for (const x of [-1, 1]) {
+    for (const y of [-1, 1]) {
+      for (const z of [-1, 1]) {
+        if (x === y && y === z) continue;
+        outer.push(isoProject(x * s, y * s, z * s));
+      }
+    }
+  }
+  assert.equal(outer.length, 6);
+  const radius = Math.hypot(outer[0].x, outer[0].y);
+  const angles = outer.map((p) => {
+    assert.ok(Math.abs(Math.hypot(p.x, p.y) - radius) < 1e-6);
+    return Math.atan2(p.y, p.x);
+  }).sort((a, b) => a - b);
+  for (let i = 0; i < angles.length; i += 1) {
+    let turn = angles[(i + 1) % angles.length] - angles[i];
+    if (turn <= 0) turn += Math.PI * 2;
+    assert.ok(Math.abs(turn - Math.PI / 3) < 1e-6);
+  }
+  const spokes = [
+    isoProject(-s, -s, s),
+    isoProject(-s, s, -s),
+    isoProject(s, -s, -s),
+  ].map((p) => Math.atan2(p.y, p.x)).sort((a, b) => a - b);
+  for (let i = 0; i < spokes.length; i += 1) {
+    let turn = spokes[(i + 1) % spokes.length] - spokes[i];
+    if (turn <= 0) turn += Math.PI * 2;
+    assert.ok(Math.abs(turn - (Math.PI * 2) / 3) < 1e-6);
+  }
+  const halfW = radius * Math.cos(Math.PI / 6);
+  const halfH = radius;
+  for (const [width, height] of [[390, 700], [1400, 620]]) {
+    const scale = isoScale(width, height, 1);
+    assert.ok(scale * halfW <= width * 0.47);
+    assert.ok(scale * halfH <= height * 0.47);
+    const used = Math.max((scale * halfW * 2) / width, (scale * halfH * 2) / height);
+    assert.ok(used > 0.9, `hexagon should fill the frame (${used})`);
+  }
+  const zoomed = isoScale(390, 700, 1.1);
+  assert.ok(zoomed > isoScale(390, 700, 1));
+});
+
+test('birds settle with room between them', () => {
+  const birds = createFlock(() => 0.2);
+  for (let i = 0; i < birds.length; i += 1) {
+    const angle = (i / birds.length) * Math.PI * 2;
+    birds[i].x = Math.cos(angle) * 0.35;
+    birds[i].y = ((i % 5) - 2) * 0.15;
+    birds[i].z = Math.sin(angle) * 0.35;
+    birds[i].vx = 0;
+    birds[i].vy = 0;
+    birds[i].vz = 0;
+    birds[i].solo = false;
+    birds[i].loose = false;
+  }
+  for (let step = 0; step < 1200; step += 1) stepFlock(birds, FIXED_DT, null, false, step * FIXED_DT);
+  let near = 0;
+  for (let i = 0; i < birds.length; i += 1) {
+    let best = Infinity;
+    for (let j = 0; j < birds.length; j += 1) {
+      if (i === j) continue;
+      const dist = Math.hypot(
+        birds[i].x - birds[j].x,
+        birds[i].y - birds[j].y,
+        birds[i].z - birds[j].z,
+      );
+      if (dist < best) best = dist;
+    }
+    near += best;
+    assert.equal(outsideCube(birds[i].x, birds[i].y, birds[i].z), false);
+  }
+  near /= birds.length;
+  assert.ok(near > 0.7, `birds still crowd (${near})`);
+});
+
+test('supporters take smaller markov steps than opposers', () => {
+  let n = 0;
+  const seq = () => {
+    n += 1;
+    return ((n * 17) % 97) / 97;
+  };
+  const span = 8;
+  let calm = 0;
+  let sour = 0;
+  let a = 0;
+  let b = 0;
+  for (let i = 0; i < 60; i += 1) {
+    const next = markovIndex(a, [0, 1, -1, 2], [6, 3, 3, 1], span, seq);
+    calm += Math.min(Math.abs(next - a), span - Math.abs(next - a));
+    a = next;
+    const leap = markovIndex(b, [2, -2, 3, -3], [2, 2, 4, 4], span, seq);
+    sour += Math.min(Math.abs(leap - b), span - Math.abs(leap - b));
+    b = leap;
+  }
+  assert.ok(calm < sour, `supporters should step less (${calm} vs ${sour})`);
 });

@@ -9,15 +9,15 @@ export const PARTICLE_COUNT = BIRD_COUNT * DOTS_PER_BIRD;
 export const GUIDE_COUNT = 4;
 export const CUBE = 1.72;
 export const FIXED_DT = 1 / 60;
-export const ZOOM_MIN = 2.65;
-export const ZOOM_MAX = 8.4;
+export const ZOOM_MIN = 0.88;
+export const ZOOM_MAX = 1.22;
 export const PICK_RADIUS = 72;
 
-const SEP_R = 0.78;
+const SEP_R = 1.22;
 const ALIGN_R = 1.35;
-const COHERE_R = 0.5;
-const MAX_SPEED = 0.78;
-const MIN_SPEED = 0.12;
+const COHERE_R = 0.42;
+const MAX_SPEED = 0.26;
+const MIN_SPEED = 0.035;
 const WALL = 0.38;
 const OUTER = 2.9;
 
@@ -176,23 +176,25 @@ function noise3(x, y, z) {
  * @returns {{ x: number, y: number, z: number, gust: number }}
  */
 export function windAt(x, y, z, time) {
-  const s = 0.72;
-  const e = 0.22;
-  const ny = (a, b, c) => noise3(a * s + 3.1, b * s + time * 0.23, c * s);
-  const nz = (a, b, c) => noise3(a * s + 1.7, b * s + 8.2, c * s + time * 0.19);
-  const nx = (a, b, c) => noise3(a * s + time * 0.21, b * s + 2.4, c * s + 5.5);
+  const s = 0.55;
+  const e = 0.28;
+  const drift = time * 0.055;
+  const ny = (a, b, c) => noise3(a * s + 3.1, b * s + drift, c * s);
+  const nz = (a, b, c) => noise3(a * s + 1.7, b * s + 8.2, c * s + drift * 0.8);
+  const nx = (a, b, c) => noise3(a * s + drift * 0.9, b * s + 2.4, c * s + 5.5);
   const vx = (nz(x, y + e, z) - nz(x, y - e, z) - (ny(x, y, z + e) - ny(x, y, z - e))) / (2 * e);
   const vy = (nx(x, y, z + e) - nx(x, y, z - e) - (nz(x + e, y, z) - nz(x - e, y, z))) / (2 * e);
   const vz = (ny(x + e, y, z) - ny(x - e, y, z) - (nx(x, y + e, z) - nx(x, y - e, z))) / (2 * e);
-  const g = 0.75 + 0.7 * Math.sin(time * 0.41);
-  const gx = Math.cos(time * 0.29) * g;
-  const gy = Math.sin(time * 0.23) * g * 0.55;
-  const gz = Math.sin(time * 0.33) * g;
+  const pulse = Math.sin(time * 0.045);
+  const g = pulse > 0.72 ? (pulse - 0.72) * 1.4 : 0;
+  const gx = Math.cos(time * 0.04) * g * 0.4;
+  const gy = Math.sin(time * 0.03) * g * 0.22;
+  const gz = Math.sin(time * 0.05) * g * 0.4;
   return {
-    x: vx * 1.35 + gx,
-    y: vy * 1.35 + gy,
-    z: vz * 1.35 + gz,
-    gust: Math.min(1, Math.hypot(gx, gy, gz) / 1.35),
+    x: vx * 0.4 + gx,
+    y: vy * 0.4 + gy,
+    z: vz * 0.4 + gz,
+    gust: Math.min(1, g),
   };
 }
 
@@ -205,13 +207,81 @@ export function windAt(x, y, z, time) {
  */
 /**
  * Seconds until an idle flock should solo a bird on its own.
- * The span is 20 to 40 seconds.
+ * The span is 50 to 90 seconds.
  *
  * @param {() => number} [random]
  * @returns {number}
  */
 export function idleSoloDelay(random = Math.random) {
-  return 20 + random() * 20;
+  return 50 + random() * 40;
+}
+
+const ISO_S = 1 / Math.sqrt(3);
+
+/** Screen right, up, and forward for a corner-on view down (1, 1, 1). */
+export const ISO_RIGHT = { x: 1 / Math.SQRT2, y: 0, z: -1 / Math.SQRT2 };
+export const ISO_UP = { x: -1 / Math.sqrt(6), y: 2 / Math.sqrt(6), z: -1 / Math.sqrt(6) };
+export const ISO_FORWARD = { x: ISO_S, y: ISO_S, z: ISO_S };
+
+/**
+ * Orthographic projection along the cube's body diagonal.
+ * The near and far corners land on the origin. The other six
+ * corners are a regular hexagon.
+ *
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @returns {{ x: number, y: number, z: number }}
+ */
+export function isoProject(x, y, z) {
+  return {
+    x: x * ISO_RIGHT.x + y * ISO_RIGHT.y + z * ISO_RIGHT.z,
+    y: x * ISO_UP.x + y * ISO_UP.y + z * ISO_UP.z,
+    z: x * ISO_FORWARD.x + y * ISO_FORWARD.y + z * ISO_FORWARD.z,
+  };
+}
+
+/**
+ * Pixels per world unit so the hexagon fills the frame and stays centered.
+ * Zoom scales that fit without turning the cube.
+ *
+ * @param {number} width
+ * @param {number} height
+ * @param {number} [zoom]
+ * @returns {number}
+ */
+export function isoScale(width, height, zoom = 1) {
+  const halfW = CUBE * Math.SQRT2;
+  const halfH = (CUBE * 4) / Math.sqrt(6);
+  const fit = Math.min((width * 0.46) / halfW, (height * 0.46) / halfH);
+  return fit * zoom;
+}
+
+/**
+ * One step of a weighted walk. `steps` and `weights` are the same length.
+ * The result stays inside `0 .. span - 1`.
+ *
+ * @param {number} index
+ * @param {number[]} steps
+ * @param {number[]} weights
+ * @param {number} span
+ * @param {() => number} [random]
+ * @returns {number}
+ */
+export function markovIndex(index, steps, weights, span, random = Math.random) {
+  let total = 0;
+  for (let i = 0; i < weights.length; i += 1) total += weights[i];
+  let pick = random() * (total || 1);
+  let step = steps[steps.length - 1] || 0;
+  for (let i = 0; i < steps.length; i += 1) {
+    pick -= weights[i] || 0;
+    if (pick < 0) {
+      step = steps[i];
+      break;
+    }
+  }
+  const n = span > 0 ? span : 1;
+  return ((index + step) % n + n) % n;
 }
 
 /**
@@ -280,18 +350,19 @@ export function createFlock(random = Math.random) {
   for (let i = 0; i < BIRD_COUNT; i += 1) {
     const dots = [];
     for (let d = 0; d < DOTS_PER_BIRD; d += 1) {
+      const air = 1.7;
       dots.push({
-        ox: random() - 0.5,
-        oy: random() - 0.5,
-        oz: random() - 0.5,
+        ox: (random() - 0.5) * air,
+        oy: (random() - 0.5) * air,
+        oz: (random() - 0.5) * air,
       });
     }
     const angle = random() * Math.PI * 2;
-    const radius = Math.sqrt(random()) * CUBE * 0.62;
-    const speed = 0.18 + random() * 0.22;
+    const radius = Math.sqrt(random()) * CUBE * 0.94;
+    const speed = 0.04 + random() * 0.07;
     const heading = random() * Math.PI * 2;
     const x = Math.cos(angle) * radius;
-    const y = (random() - 0.5) * CUBE * 0.9;
+    const y = (random() - 0.5) * CUBE * 1.7;
     const z = Math.sin(angle) * radius;
     birds.push({
       x,
@@ -384,7 +455,7 @@ export function stepFlock(birds, dt, finger, frozen, time = 0) {
       b.pz = b.z;
       const drift = Math.sin(time * 0.07 + b.phase) * 0.22;
       const aim = held && held !== b ? clamp((b.lean || 0) + drift, -1, 1) : 0;
-      b.side = (b.side || 0) + (aim - (b.side || 0)) * Math.min(1, eased * 0.45);
+      b.side = (b.side || 0) + (aim - (b.side || 0)) * Math.min(1, eased * 0.16);
     }
     return { cohesion, spread, mode, gust: sample.gust };
   }
@@ -465,24 +536,24 @@ export function stepFlock(birds, dt, finger, frozen, time = 0) {
       az[i] += (vz / alignW - b.vz) * 0.28;
     }
     if (nk) {
-      ax[i] += (kx / nk - b.x) * 0.05;
-      ay[i] += (ky / nk - b.y) * 0.05;
-      az[i] += (kz / nk - b.z) * 0.05;
+      ax[i] += (kx / nk - b.x) * 0.02;
+      ay[i] += (ky / nk - b.y) * 0.02;
+      az[i] += (kz / nk - b.z) * 0.02;
     }
     const wind = windAt(b.x, b.y, b.z, time);
     b.gust = wind.gust;
-    const blow = b.solo ? 2.15 : 1.25;
+    const blow = b.solo ? 0.85 : 0.32;
     ax[i] += wind.x * blow;
     ay[i] += wind.y * blow;
     az[i] += wind.z * blow;
     b.phase += step * (b.guide ? 2.1 : 1.25);
-    const wander = b.guide ? 0.45 : 0.22;
+    const wander = b.guide ? 0.1 : 0.045;
     ax[i] += Math.cos(b.phase) * wander;
     ay[i] += Math.sin(b.phase * 0.8) * wander * 0.5;
     az[i] += Math.sin(b.phase * 1.2) * wander;
     const drift = Math.sin(time * 0.07 + b.phase) * 0.22;
     const aim = solo && !b.solo ? clamp((b.lean || 0) + drift, -1, 1) : 0;
-    b.side = (b.side || 0) + (aim - (b.side || 0)) * Math.min(1, step * 0.45);
+    b.side = (b.side || 0) + (aim - (b.side || 0)) * Math.min(1, step * 0.16);
     if (solo && solo !== b) {
       const dx = solo.x - b.x;
       const dy = solo.y - b.y;
@@ -564,7 +635,7 @@ export function stepFlock(birds, dt, finger, frozen, time = 0) {
     const ox = b.vx;
     const oy = b.vy;
     const oz = b.vz;
-    const cap = b.solo ? 1.15 : MAX_SPEED;
+    const cap = b.solo ? 0.48 : MAX_SPEED;
     b.vx = clamp(b.vx + ax[i] * step, -cap, cap);
     b.vy = clamp(b.vy + ay[i] * step, -cap, cap);
     b.vz = clamp(b.vz + az[i] * step, -cap, cap);

@@ -9,9 +9,14 @@ import {
   VOICE_COUNT,
   ZOOM_MAX,
   ZOOM_MIN,
+  ISO_FORWARD,
+  ISO_RIGHT,
+  ISO_UP,
   createFlock,
   createVoiceBook,
   idleSoloDelay,
+  isoScale,
+  markovIndex,
   outsideCube,
   pickNearest,
   renderPoint,
@@ -24,27 +29,30 @@ const reduceQuery = matchMedia('(prefers-reduced-motion: reduce)');
 let reduce = reduceQuery.matches;
 const book = createVoiceBook();
 const birds = createFlock();
-// Unequal loops from Eno's 2/1. A tone stays under a third of its loop.
-// The rest is silence, more than twice the tone. Faction intervals only
-// choose the pitch inside that window.
-const periods = [21, 17, 25, 18, 31, 19.6, 22];
-const TONE_SHARE = 0.28;
+// The 2/1 loop ratios, stretched so the swells and the silences are longer.
+// A tone stays under a fifth of its loop. Faction intervals only choose pitch.
+const periods = [32.55, 26.35, 38.75, 27.9, 48.05, 30.38, 34.1];
+const TONE_SHARE = 0.18;
+const LOOKAHEAD = 0.45;
 const ratios = [1, 2, 1.5, 0.5, 3, 1, 2];
 const supportSteps = [1, 1.25, 1.5, 2];
 const opposeSteps = [1.066, 1.122, 1.414, 1.498];
 const neutralSteps = [1, 1.5, 2];
-const arpAt = [0.16, 0.37, 0.58];
+const supportWalk = [0, 1, -1, 2];
+const supportWeight = [6, 3, 3, 1];
+const opposeWalk = [2, -2, 3, -3];
+const opposeWeight = [2, 2, 4, 4];
 const bases = [130.81, 196, 261.63, 174.61, 311.13, 349.23, 415.3];
 const tightChord = [130.81, 196, 261.63, 311.13, 392];
 const openChord = [174.61, 207.65, 261.63, 277.18, 349.23, 415.3];
 const TAP_SLOP = 28;
 const TAP_MS = 600;
-const MOTE_COUNT = 18;
-const PUFF = 0.34;
-const BANDS = 16;
+const MOTE_COUNT = 8;
+const PUFF = 0.82;
+const BANDS = 8;
 const TRAIL = 18;
 
-const view = { yaw: 0.4, pitch: 0.22, dist: 3.85, finger: null, focus: null, auto: false };
+const view = { zoom: 1, finger: null, focus: null, auto: false };
 let autoAt = 0;
 let holdUntil = 0;
 const audio = { ctx: null, master: null, on: false };
@@ -231,8 +239,8 @@ function impulse(ctx, seconds) {
     const data = buffer.getChannelData(c);
     let prev = 0;
     for (let i = 0; i < len; i += 1) {
-      prev = prev * 0.86 + (Math.random() * 2 - 1) * 0.14;
-      data[i] = prev * (1 - i / len) ** 1.6;
+      prev = prev * 0.93 + (Math.random() * 2 - 1) * 0.07;
+      data[i] = prev * (1 - i / len) ** 2.4;
     }
   }
   return buffer;
@@ -294,7 +302,7 @@ function finishRetire(bag) {
       try { node.disconnect(); } catch { /* gone */ }
     }
   }
-  for (const node of [g.fb, g.delay, g.wet, g.verb, g.send, g.subGain, g.noiseGain, g.band, g.lfoGain, g.noiseDry]) {
+  for (const node of [g.fb, g.delay, g.wet, g.verb, g.send, g.subGain, g.noiseGain, g.band, g.lfoGain, g.noiseDry, ...(g.drifts || [])]) {
     if (!node) continue;
     try { node.disconnect(); } catch { /* gone */ }
   }
@@ -333,55 +341,36 @@ function silence() {
 }
 
 function look() {
-  const cp = Math.cos(view.pitch);
-  const sp = Math.sin(view.pitch);
-  const sy = Math.sin(view.yaw);
-  const cy = Math.cos(view.yaw);
-  const dist = view.dist;
-  const eye = { x: sy * cp * dist, y: sp * dist * 0.85, z: cy * cp * dist };
-  const fl = Math.hypot(eye.x, eye.y, eye.z) || 1;
-  const forward = { x: -eye.x / fl, y: -eye.y / fl, z: -eye.z / fl };
-  const rx = -forward.z;
-  const rz = forward.x;
-  const rl = Math.hypot(rx, rz) || 1;
-  const right = { x: rx / rl, y: 0, z: rz / rl };
-  const up = {
-    x: right.y * forward.z - right.z * forward.y,
-    y: right.z * forward.x - right.x * forward.z,
-    z: right.x * forward.y - right.y * forward.x,
+  const dist = 5.4 - view.zoom * 1.15;
+  return {
+    eye: {
+      x: -ISO_FORWARD.x * dist,
+      y: -ISO_FORWARD.y * dist,
+      z: -ISO_FORWARD.z * dist,
+    },
+    forward: ISO_FORWARD,
+    right: ISO_RIGHT,
+    up: ISO_UP,
   };
-  return { eye, forward, right, up };
 }
 
 function projectXYZ(x, y, z, cam, w, h, out) {
-  const dx = x - cam.eye.x;
-  const dy = y - cam.eye.y;
-  const dz = z - cam.eye.z;
-  const cx = dx * cam.right.x + dy * cam.right.y + dz * cam.right.z;
-  const cy = dx * cam.up.x + dy * cam.up.y + dz * cam.up.z;
-  const cz = dx * cam.forward.x + dy * cam.forward.y + dz * cam.forward.z;
-  if (cz < 0.15) return null;
-  const basis = Math.max(Math.min(w, h), w * 0.58);
-  const f = (basis * 0.86) / cz;
-  out.x = w * 0.5 + cx * f;
-  out.y = h * 0.5 - cy * f;
-  out.f = f;
-  out.z = cz;
+  const sx = x * cam.right.x + y * cam.right.y + z * cam.right.z;
+  const sy = x * cam.up.x + y * cam.up.y + z * cam.up.z;
+  const sz = x * cam.forward.x + y * cam.forward.y + z * cam.forward.z;
+  const scale = isoScale(w, h, view.zoom);
+  out.x = w * 0.5 + sx * scale;
+  out.y = h * 0.5 - sy * scale;
+  out.f = scale;
+  out.z = 4.2 + sz;
   return out;
-}
-
-function camDepth(x, y, z, cam) {
-  const dx = x - cam.eye.x;
-  const dy = y - cam.eye.y;
-  const dz = z - cam.eye.z;
-  return dx * cam.forward.x + dy * cam.forward.y + dz * cam.forward.z;
 }
 
 function glide(param, value, t) {
   param.cancelScheduledValues(t);
   const current = Number.isFinite(param.value) ? param.value : value;
   param.setValueAtTime(current, t);
-  param.setTargetAtTime(value, t, 0.08);
+  param.setTargetAtTime(value, t, 0.32);
 }
 
 function placeListener(ctx, cam, t) {
@@ -398,7 +387,7 @@ function placeListener(ctx, cam, t) {
 }
 
 function closeness() {
-  return clamp((ZOOM_MAX - view.dist) / (ZOOM_MAX - ZOOM_MIN), 0, 1);
+  return clamp((view.zoom - ZOOM_MIN) / (ZOOM_MAX - ZOOM_MIN), 0, 1);
 }
 
 function voicedBird(voice) {
@@ -477,10 +466,10 @@ function syncSpace() {
     if (outside) soloOutside = true;
     const ducked = view.focus != null && !hot;
     const bright = clamp(
-      260 + speed * 380 + close * 520 + gustLevel * 420
-      + (mood === 'scatter' ? 280 : 0) + (outside ? 740 : 0),
-      180,
-      2600,
+      160 + speed * 90 + close * 140 + gustLevel * 80
+      + (mood === 'scatter' ? 60 : 0) + (outside ? 180 : 0),
+      120,
+      980,
     );
     glide(voice.filter.frequency, bright, t);
     voice.filter.Q.value = outside ? 0.9 : 0.35 + close * 0.35;
@@ -490,9 +479,9 @@ function syncSpace() {
     const dry = (0.18 + close * 0.85) * (hot ? 2.15 : ducked ? 0.22 : 1);
     glide(voice.dry.gain, dry, t);
     const room = clamp(
-      0.55 - close * 0.22 + (mood === 'gather' ? 0.06 : 0) + (outside ? 0.08 : 0),
-      0.18,
-      0.82,
+      0.78 - close * 0.16 + (mood === 'gather' ? 0.04 : 0) + (outside ? 0.04 : 0),
+      0.46,
+      0.92,
     );
     glide(voice.send.gain, room, t);
     const level = (hot ? 0.05 : ducked ? 0.018 : 0.028) * (0.75 + close * 0.25);
@@ -501,22 +490,22 @@ function syncSpace() {
     glide(voice.level.gain, outside ? factionLevel * 1.15 : factionLevel, t);
     const dop = doppler(bird, cam);
     const freq = voice.base * dop * (outside ? 1.12 : 1);
-    const index = outside ? 0.42 : 0.06 + gustLevel * 0.1 + (hot ? 0.08 : 0) + close * 0.05;
+    const index = outside ? 0.1 : 0.015 + gustLevel * 0.02 + (hot ? 0.015 : 0);
     const ratio = !hot && side < -0.25 ? opposeSteps[i % opposeSteps.length] : voice.ratio;
     glide(voice.carrier.frequency, freq, t);
-    glide(voice.mod.frequency, Math.max(36, freq * ratio), t);
-    glide(voice.fm.gain, index * 48, t);
+    glide(voice.mod.frequency, Math.max(28, freq * ratio * 0.5), t);
+    glide(voice.fm.gain, index * 14, t);
   }
-  glide(graph.delay.delayTime, clamp(0.48 + (1 - close) * 0.55, 0.36, 1.15), t);
-  glide(graph.fb.gain, clamp(0.16 + (1 - close) * 0.1 + gustLevel * 0.04, 0.1, 0.32), t);
-  glide(graph.wet.gain, clamp(0.72 - close * 0.22 + (mood === 'gather' ? 0.04 : 0), 0.4, 0.86), t);
-  const wind = 0.004 + gustLevel * 0.028 + (soloOutside ? 0.012 : 0);
+  glide(graph.delay.delayTime, clamp(0.95 + (1 - close) * 0.55, 0.8, 1.7), t);
+  glide(graph.fb.gain, clamp(0.24 + (1 - close) * 0.08, 0.18, 0.36), t);
+  glide(graph.wet.gain, clamp(0.84 - close * 0.12, 0.62, 0.92), t);
+  const wind = 0.0015 + gustLevel * 0.01 + (soloOutside ? 0.004 : 0);
   glide(graph.noiseGain.gain, wind, t);
   glide(graph.noiseDry.gain, wind * (0.22 + close * 0.35), t);
   glide(graph.band.frequency, clamp(120 + gustLevel * 640 + (soloOutside ? 280 : 0), 80, 1600), t);
   glide(graph.band.Q, 0.35 + gustLevel * 0.4, t);
-  glide(graph.lfo.frequency, 0.04 + gustLevel * 0.18, t);
-  glide(graph.lfoGain.gain, 40 + gustLevel * 160, t);
+  glide(graph.lfo.frequency, 0.012 + gustLevel * 0.015, t);
+  glide(graph.lfoGain.gain, 12 + gustLevel * 22, t);
   markSolo();
 }
 
@@ -584,16 +573,16 @@ function start() {
   send.type = 'highpass';
   send.frequency.value = 140;
   const delay = ctx.createDelay(2.4);
-  delay.delayTime.value = 0.72;
+  delay.delayTime.value = 1.15;
   const damp = ctx.createBiquadFilter();
   damp.type = 'lowpass';
-  damp.frequency.value = 1600;
+  damp.frequency.value = 720;
   const fb = ctx.createGain();
-  fb.gain.value = 0.16;
+  fb.gain.value = 0.24;
   const wet = ctx.createGain();
-  wet.gain.value = 0.5;
+  wet.gain.value = 0.7;
   const verb = ctx.createConvolver();
-  verb.buffer = impulse(ctx, 4.8);
+  verb.buffer = impulse(ctx, 8.6);
   delay.connect(damp);
   damp.connect(fb);
   fb.connect(delay);
@@ -631,7 +620,7 @@ function start() {
     mod.type = 'sine';
     carrier.frequency.value = bases[i];
     mod.frequency.value = bases[i] * ratios[i];
-    fm.gain.value = 8;
+    fm.gain.value = 2;
     mod.connect(fm);
     fm.connect(carrier.frequency);
     carrier.connect(level);
@@ -659,7 +648,8 @@ function start() {
       bird: i,
       base: bases[i],
       ratio: ratios[i],
-      next: t0 + periods[i] * (0.36 + ((i * 0.17) % 0.4)),
+      next: t0 + periods[i] * (0.42 + ((i * 0.13) % 0.36)),
+      degree: i % openChord.length,
       armed: false,
     });
   }
@@ -679,8 +669,8 @@ function start() {
   const lfo = ctx.createOscillator();
   const lfoGain = ctx.createGain();
   lfo.type = 'sine';
-  lfo.frequency.value = 0.2;
-  lfoGain.gain.value = 80;
+  lfo.frequency.value = 0.015;
+  lfoGain.gain.value = 16;
   lfo.connect(lfoGain);
   lfoGain.connect(band.frequency);
   wind.connect(band);
@@ -701,7 +691,7 @@ function start() {
   sub.frequency.value = 55;
   sub2.frequency.value = 55.35;
   subGain.gain.setValueAtTime(0.0001, t0);
-  subGain.gain.exponentialRampToValueAtTime(0.07, t0 + 2.2);
+  subGain.gain.exponentialRampToValueAtTime(0.05, t0 + 6.5);
   sub.connect(subGain);
   sub2.connect(subGain);
   subGain.connect(audio.master);
@@ -709,6 +699,25 @@ function start() {
   sub2.start(t0);
   book.track({ node: sub, start: t0 }, gen);
   book.track({ node: sub2, start: t0 }, gen);
+
+  const drifts = [];
+  const driftTo = [
+    [damp.frequency, 1 / periods[0], 70],
+    [delay.delayTime, 1 / periods[2], 0.045],
+    [wet.gain, 1 / periods[4], 0.02],
+  ];
+  for (let i = 0; i < driftTo.length; i += 1) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = driftTo[i][1];
+    gain.gain.value = driftTo[i][2];
+    osc.connect(gain);
+    gain.connect(driftTo[i][0]);
+    osc.start(t0);
+    book.track({ node: osc, start: t0 }, gen);
+    drifts.push(gain);
+  }
 
   graph = {
     voices,
@@ -725,6 +734,7 @@ function start() {
     band,
     lfo,
     lfoGain,
+    drifts,
     impulseTimer: 0,
   };
   applyFocus(view.focus);
@@ -738,61 +748,59 @@ function start() {
     }
     for (let i = 0; i < VOICE_COUNT; i += 1) {
       const voice = graph.voices[i];
-      if (voice.next > now) continue;
+      if (voice.next > now + LOOKAHEAD) continue;
+      const when = Math.max(voice.next, now + 0.03);
       const bird = voicedBird(voice);
       const hot = isHot(bird);
       const outside = hot && outsideCube(bird.x, bird.y, bird.z);
-      const height = clamp((bird.y + CUBE) / (CUBE * 2), 0, 1);
       const local = bird.near >= 2 || mood === 'gather';
       const pool = local ? tightChord : openChord;
       const period = periods[i];
       const toneLen = period * TONE_SHARE;
       const side = bird.side || 0;
-      const slot = Math.abs(Math.round((bird.lean || 0) * 3));
       const steps = hot || view.focus == null
         ? null
         : side < -0.2 ? opposeSteps : side > 0.2 ? supportSteps : neutralSteps;
-      const chord = pool[Math.min(pool.length - 1, Math.round(height * (pool.length - 1)))];
-      let freq = steps ? root * steps[slot % steps.length] : chord;
-      if (outside) freq *= 1.5;
-      voice.base = clamp(freq, 55, 880);
-      voice.ratio = steps === opposeSteps ? opposeSteps[i % opposeSteps.length] : ratios[i];
-      voice.next = now + period;
+      const walk = steps === opposeSteps ? opposeWalk : supportWalk;
+      const weight = steps === opposeSteps ? opposeWeight : supportWeight;
+      const span = steps ? steps.length : pool.length;
+      voice.degree = markovIndex(voice.degree || 0, walk, weight, span);
+      let freq = steps ? root * steps[voice.degree] : pool[voice.degree];
+      if (outside) freq *= 1.25;
+      voice.base = clamp(freq, 55, 660);
+      voice.ratio = steps === opposeSteps ? opposeSteps[voice.degree % opposeSteps.length] : ratios[i];
+      voice.next = when + period;
       tone(
         voice,
-        now + 0.03,
+        when,
         voice.base,
-        hot ? 0.042 : 0.02,
-        toneLen * 0.34,
-        toneLen * 0.58,
+        hot ? 0.028 : 0.012,
+        toneLen * 0.42,
+        toneLen * 0.5,
         'sine',
         gen,
       );
-      for (let s = 0; s < arpAt.length; s += 1) {
-        const degree = (Math.round(height * (pool.length - 1)) + s * 2 + i) % pool.length;
-        const interval = steps ? steps[(slot + s) % steps.length] : 1;
-        let note = steps ? root * interval : pool[degree];
-        if (outside) note *= 1.5;
-        tone(
-          voice,
-          now + toneLen * arpAt[s],
-          clamp(note, 110, 880),
-          hot ? 0.011 : 0.005,
-          0.05,
-          0.48,
-          'triangle',
-          gen,
-        );
-      }
+      const echo = markovIndex(voice.degree, walk, weight, span);
+      const echoNote = steps ? root * steps[echo] : pool[echo];
+      tone(
+        voice,
+        when + toneLen * 0.55,
+        clamp(outside ? echoNote * 1.25 : echoNote, 110, 660),
+        hot ? 0.006 : 0.003,
+        0.08,
+        0.7,
+        'triangle',
+        gen,
+      );
       const brush = bird.wall > 0.78 && !bird.armed;
       if (bird.wall > 0.78) bird.armed = true;
       if (bird.wall < 0.3) bird.armed = false;
-      if (brush || (gustLevel > 0.86 && Math.random() < 0.18)) {
-        grain(voice, now + 0.04, clamp(voice.base * 2, 180, 1400), outside ? 0.02 : 0.01, 0.65 + Math.random() * 0.4, gen);
+      if (brush || (gustLevel > 0.93 && Math.random() < 0.05)) {
+        grain(voice, when + 0.08, clamp(voice.base * 2, 140, 900), 0.006, 0.55 + Math.random() * 0.2, gen);
       }
     }
     if (reduce) syncSpace();
-  }, 40);
+  }, 100);
 
   audio.on = true;
   syncSpace();
@@ -832,7 +840,7 @@ function show() {
 }
 
 function fit(canvas) {
-  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const dpr = Math.min(devicePixelRatio || 1, 1.5);
   const rect = canvas.getBoundingClientRect();
   const w = Math.max(1, Math.round(rect.width * dpr));
   const h = Math.max(1, Math.round(rect.height * dpr));
@@ -851,9 +859,9 @@ function stepMotes(dt, time) {
     mote.px = mote.x;
     mote.py = mote.y;
     mote.pz = mote.z;
-    mote.x += wind.x * dt * 0.45;
-    mote.y += wind.y * dt * 0.45;
-    mote.z += wind.z * dt * 0.45;
+    mote.x += wind.x * dt * 0.16;
+    mote.y += wind.y * dt * 0.16;
+    mote.z += wind.z * dt * 0.16;
     let wrapped = false;
     if (mote.x > bound) { mote.x = -bound; wrapped = true; }
     if (mote.x < -bound) { mote.x = bound; wrapped = true; }
@@ -894,28 +902,10 @@ function simulate(frameDt) {
 }
 
 function strokeEdge(g, a, b, cam, w, h, pa, pb) {
-  let ax = a.x;
-  let ay = a.y;
-  let az = a.z;
-  let bx = b.x;
-  let by = b.y;
-  let bz = b.z;
-  const za = camDepth(ax, ay, az, cam);
-  const zb = camDepth(bx, by, bz, cam);
-  const near = 0.2;
-  if (za < near && zb < near) return;
-  if (za < near || zb < near) {
-    const t = (near - za) / ((zb - za) || 0.0001);
-    const mx = ax + (bx - ax) * t;
-    const my = ay + (by - ay) * t;
-    const mz = az + (bz - az) * t;
-    if (za < near) { ax = mx; ay = my; az = mz; }
-    else { bx = mx; by = my; bz = mz; }
-  }
-  if (!projectXYZ(ax, ay, az, cam, w, h, pa)) return;
+  if (!projectXYZ(a.x, a.y, a.z, cam, w, h, pa)) return;
   const x1 = pa.x;
   const y1 = pa.y;
-  if (!projectXYZ(bx, by, bz, cam, w, h, pb)) return;
+  if (!projectXYZ(b.x, b.y, b.z, cam, w, h, pb)) return;
   g.moveTo(x1, y1);
   g.lineTo(pb.x, pb.y);
 }
@@ -1000,12 +990,12 @@ function draw() {
       const along = (t + 1) / bird.trail.length;
       pushDot(along * (outside ? 0.72 : 0.45), pa.x, pa.y, clamp(pa.f * 0.012 * along, 0.8, 4.5));
     }
-    const puff = (hot ? 0.5 : side > 0.25 ? 0.38 : side < -0.25 ? 0.28 : 0.34) * (outside ? 1.22 : 1);
+    const puff = (hot ? 1.05 : side > 0.25 ? 0.92 : side < -0.25 ? 0.74 : 0.86) * (outside ? 1.12 : 1);
     const ink = hot ? 1 : side > 0.25 ? 0.94 : side < -0.25 ? 0.5 : 0.82;
     for (let k = 0; k < bird.dots.length; k += 1) dotAt[k] = null;
     for (let k = 0; k < bird.dots.length; k += 1) {
       const dot = bird.dots[k];
-      const wob = reduce ? 0 : Math.sin(shown * 1.15 + index * 0.71 + k * 1.27) * 0.004;
+      const wob = reduce ? 0 : Math.sin(shown * 0.32 + index * 0.71 + k * 1.27) * 0.004;
       if (!projectXYZ(
         pos.x + dot.ox * puff + wob,
         pos.y + dot.oy * puff,
@@ -1017,7 +1007,7 @@ function draw() {
       )) continue;
       const fade = 0.55 + 0.45 * clamp(4.4 / pa.z, 0.28, 1);
       const radius = clamp(
-        pa.f * (0.02 + 0.016 * fade) * (hot ? 1.65 : side < -0.25 ? 0.82 : 1),
+        pa.f * (0.01 + 0.006 * fade) * (hot ? 1.55 : side < -0.25 ? 0.85 : 1),
         hot ? 2.2 : 1.45,
         hot ? 15 : 7.5,
       );
@@ -1071,7 +1061,6 @@ function frame(now) {
   if (hidden) return;
   const dt = Math.min(0.05, (now - (lastNow || now)) / 1000 || 0.016);
   lastNow = now;
-  if (!reduce && pointers.size === 0 && !pinching) view.yaw += dt * 0.11;
   simulate(dt);
   if (audio.on) syncSpace();
   draw();
@@ -1098,20 +1087,18 @@ function paint() {
   raf = requestAnimationFrame(frame);
 }
 
-function point(event, dx, dy) {
+function point(event) {
   const canvas = $('#field');
   const rect = canvas.getBoundingClientRect();
-  const nx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-  const ny = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
   const cam = look();
-  const span = 1.55;
+  const scale = isoScale(rect.width, rect.height, view.zoom);
+  const ix = (event.clientX - rect.left - rect.width * 0.5) / scale;
+  const iy = -(event.clientY - rect.top - rect.height * 0.5) / scale;
   view.finger = {
-    x: cam.right.x * nx * span + cam.up.x * ny * span * 0.75,
-    y: cam.right.y * nx * span + cam.up.y * ny * span * 0.75,
-    z: cam.right.z * nx * span + cam.up.z * ny * span * 0.75,
+    x: cam.right.x * ix + cam.up.x * iy,
+    y: cam.right.y * ix + cam.up.y * iy,
+    z: cam.right.z * ix + cam.up.z * iy,
   };
-  view.yaw += dx * 0.0042;
-  view.pitch = clamp(view.pitch - dy * 0.0028, -0.5, 0.85);
   noteActivity();
   if (audio.on) syncSpace();
   if (reduce) paint();
@@ -1157,7 +1144,7 @@ function pinchSpan() {
 }
 
 function setZoom(next) {
-  view.dist = clamp(next, ZOOM_MIN, ZOOM_MAX);
+  view.zoom = clamp(next, ZOOM_MIN, ZOOM_MAX);
   noteActivity();
   if (audio.on) syncSpace();
   if (reduce) paint();
@@ -1212,21 +1199,19 @@ field.addEventListener('pointerdown', (event) => {
 field.addEventListener('pointermove', (event) => {
   const prev = pointers.get(event.pointerId);
   if (!prev) return;
-  const dx = event.clientX - prev.x;
-  const dy = event.clientY - prev.y;
   prev.x = event.clientX;
   prev.y = event.clientY;
   if (pointers.size >= 2 || pinching) {
     pinching = true;
     prev.dragged = true;
     const span = pinchSpan();
-    if (pinchDist > 8 && span > 8) setZoom(view.dist * (pinchDist / span));
+    if (pinchDist > 8 && span > 8) setZoom(view.zoom * (span / pinchDist));
     pinchDist = span || pinchDist;
     view.finger = null;
     return;
   }
   if (Math.hypot(event.clientX - prev.ox, event.clientY - prev.oy) > TAP_SLOP) prev.dragged = true;
-  if (prev.dragged) point(event, dx, dy);
+  if (prev.dragged) point(event);
 });
 field.addEventListener('pointerup', endPointer);
 field.addEventListener('pointercancel', endPointer);
@@ -1234,30 +1219,25 @@ field.addEventListener('wheel', (event) => {
   event.preventDefault();
   const line = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 140 : 1;
   const gain = event.ctrlKey ? 0.01 : 0.0015;
-  setZoom(view.dist * Math.exp(event.deltaY * line * gain));
+  setZoom(view.zoom * Math.exp(-event.deltaY * line * gain));
 }, { passive: false });
 field.addEventListener('gesturestart', (event) => {
   event.preventDefault();
-  gestureZoom = view.dist;
+  gestureZoom = view.zoom;
   pinching = true;
 });
 field.addEventListener('gesturechange', (event) => {
   event.preventDefault();
   const scale = event.scale || 1;
-  setZoom(gestureZoom / scale);
+  setZoom(gestureZoom * scale);
 });
 field.addEventListener('gestureend', (event) => {
   event.preventDefault();
   pinching = pointers.size >= 2;
 });
 field.addEventListener('keydown', (event) => {
-  const step = event.shiftKey ? 0.08 : 0.04;
-  if (event.key === 'ArrowRight') view.yaw += step;
-  else if (event.key === 'ArrowLeft') view.yaw -= step;
-  else if (event.key === 'ArrowUp') view.pitch = clamp(view.pitch + step, -0.5, 0.85);
-  else if (event.key === 'ArrowDown') view.pitch = clamp(view.pitch - step, -0.5, 0.85);
-  else if (event.key === '+' || event.key === '=') setZoom(view.dist * 0.92);
-  else if (event.key === '-' || event.key === '_') setZoom(view.dist * 1.08);
+  if (event.key === '+' || event.key === '=') setZoom(view.zoom * 1.04);
+  else if (event.key === '-' || event.key === '_') setZoom(view.zoom * 0.96);
   else return;
   event.preventDefault();
   paint();
