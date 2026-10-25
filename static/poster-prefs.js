@@ -8,18 +8,32 @@
   var state = { posters: 'on', axis: 'across' };
   var clicks = false;
 
-  function read() {
-    var posters = 'on';
-    var axis = 'across';
+  function stored(key, allowed) {
     try {
-      if (window.localStorage.getItem(POSTERS) === 'off') posters = 'off';
-      if (window.localStorage.getItem(AXIS) === 'down') axis = 'down';
+      var value = window.localStorage.getItem(key);
+      if (value === null || allowed.indexOf(value) !== -1) return value;
+      window.localStorage.removeItem(key);
     } catch (err) { /* storage blocked; keep the defaults */ }
+    return null;
+  }
+
+  function read() {
+    var posters = stored(POSTERS, ['on', 'off']) === 'off' ? 'off' : 'on';
+    var axis = stored(AXIS, ['across', 'down']) === 'down' ? 'down' : 'across';
     state.posters = posters;
     state.axis = axis;
   }
 
+  function write() {
+    try {
+      window.localStorage.setItem(POSTERS, state.posters === 'off' ? 'off' : 'on');
+      window.localStorage.setItem(AXIS, state.axis === 'down' ? 'down' : 'across');
+    } catch (err) { /* the choice still applies for this view */ }
+  }
+
   function apply() {
+    var feed = document.getElementById('feed');
+    if (feed && state.posters === 'off') feed.scrollLeft = 0;
     var root = document.documentElement;
     if (state.posters === 'off') root.setAttribute('data-posters', 'off');
     else root.removeAttribute('data-posters');
@@ -40,16 +54,14 @@
 
   function onClick(event) {
     var node = event.target;
+    if (node && node.nodeType !== 1) node = node.parentElement;
     if (!node || !node.closest) return;
     var postersBtn = node.closest('[data-posters-toggle]');
     var axisBtn = node.closest('[data-axis-toggle]');
     if (!postersBtn && !axisBtn) return;
     if (postersBtn) state.posters = state.posters === 'off' ? 'on' : 'off';
     if (axisBtn) state.axis = state.axis === 'down' ? 'across' : 'down';
-    try {
-      window.localStorage.setItem(POSTERS, state.posters);
-      window.localStorage.setItem(AXIS, state.axis);
-    } catch (err) { /* the choice still applies for this view */ }
+    write();
     apply();
   }
 

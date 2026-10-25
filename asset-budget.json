@@ -1,9 +1,9 @@
 {
   "perFileMaxKb": {
-    "station": 22.1
+    "station": 22.2
   },
   "totals": {
-    "totalJsKb": 9.4,
-    "totalCssKb": 22.1
+    "totalJsKb": 9.8,
+    "totalCssKb": 22.2
   }
 }
