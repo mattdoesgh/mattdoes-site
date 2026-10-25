@@ -18,6 +18,8 @@
 
 html {
   scroll-behavior: auto;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -136,8 +138,13 @@ main {
 
 .sign {
   margin: var(--space-0);
+  max-width: 100%;
   font-size: var(--type-sign);
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.sign a {
+  overflow-wrap: anywhere;
 }
 
 .stage {
@@ -161,6 +168,7 @@ main {
 
 .bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
   gap: var(--space-md);
 }
@@ -168,7 +176,7 @@ main {
 .play {
   flex: 0 0 auto;
   min-height: var(--hit-phone);
-  min-width: 6.5rem;
+  min-width: min(6.5rem, 33vw);
   padding: var(--space-tight) var(--space-md);
   font-size: var(--type-nav);
   letter-spacing: var(--track-label);
@@ -212,11 +220,12 @@ main {
 }
 
 .slider {
-  flex: 1;
+  flex: 1 1 8rem;
   display: flex;
   flex-direction: column;
   gap: var(--space-tight);
-  min-width: var(--space-0);
+  /* 100% lets the slider drop under the button when text zoom widens "volume". */
+  min-width: min(100%, 8rem);
 }
 
 .slider span {

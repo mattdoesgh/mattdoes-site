@@ -70,6 +70,10 @@ test('watching renders posters on and across, and other pages do not', () => {
   assert.match(css, /\.poster-switch\s*\{[^}]*font-size:\s*var\(--type-setting\)/);
   const tokens = fs.readFileSync(path.join(REPO_ROOT, 'site', 'tokens.css'), 'utf8');
   assert.match(tokens, /--hit-pad:\s*calc\(var\(--hit-setting\) - var\(--type-setting\) - var\(--space-phone-row\)\)/);
+  assert.match(tokens, /--hit-setting:\s*2\.75rem;/);
+  assert.match(tokens, /--type-setting:\s*clamp\(0\.5625rem,\s*0\.05rem \+ 1\.95vw,\s*1\.2rem\)/);
+  assert.match(tokens, /--type-body:\s*clamp\(1\.125rem,/);
+  assert.match(tokens, /--space-md:\s*clamp\(0\.75rem,/);
   assert.match(css, /\.poster-switch:first-child\s*\{[^}]*padding-top:\s*var\(--hit-pad\)/);
   assert.match(css, /\.poster-switch:last-child\s*\{[^}]*margin-bottom:\s*calc\(var\(--hit-pad\) \* -1\)/);
   assert.doesNotMatch(css, /\.poster-switch::before/);

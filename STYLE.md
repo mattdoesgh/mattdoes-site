@@ -16,12 +16,12 @@ Home is pink on black. A verb page flips to black type on a pink field (`--field
 - `--body` — system-ui, sans-serif
 - `--mono` — ui-monospace, then Cascadia Mono, Segoe UI Mono, Menlo, Consolas, monospace
 - `--weight-regular` — 400
-- Sizes are the `--type-*` scale in `site/tokens.css`. `--row-size` is the desktop row.
+- Sizes are the `--type-*` scale in `site/tokens.css`. Each step is a `clamp()` of rem and vw, so type grows with the window and with text zoom. `--row-size` is the desktop row.
 - Tracking is `--track-none` (0), `--track-stars` (0.06em), `--track-label` (0.08em). Kickers and flags use `--track-label`.
 
 ## Space and edges
 
-Spacing is the `--space-*` scale. Borders are `--line-*`. Focus rings are `--outline-*`. Radius is `--radius` (0). Hit targets are `--hit` (44px) and `--hit-phone` (48px).
+Spacing is the `--space-*` scale, fluid `clamp()` values of rem and vw. Borders are `--line-*`. Focus rings are `--outline-*`. Radius is `--radius` (0). Hit targets are `--hit` (44px floor) and `--hit-phone` (48px floor); both grow on a wide window.
 
 ## Standing rules
 

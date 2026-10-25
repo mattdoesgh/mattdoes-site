@@ -101,7 +101,7 @@ test('the home prefix is clipped shut until hover', () => {
   assert.match(css, /\.verb:hover \.verb-prefix,\s*\.verb:focus-visible \.verb-prefix \{\s*width:\s*4\.08em;\s*margin-right:\s*var\(--space-prefix\);/);
   assert.match(tokens, /--space-prefix:\s*0\.24em;/);
   assert.match(css, /@media \(hover: none\) and \(max-width: 1023px\)[\s\S]*\.verb-kicker \{[^}]*font-size:\s*var\(--type-kicker\)/);
-  assert.match(tokens, /--type-kicker:\s*1\.5rem;/);
+  assert.match(tokens, /--type-kicker:\s*clamp\(1\.5rem,/);
   assert.match(css, /@media \(min-width: 1024px\)[\s\S]*\.verb-prefix \{[^}]*font-size:\s*var\(--type-prefix\)/);
   assert.match(tokens, /--type-prefix:\s*1\.8em;/);
   assert.match(tokens, /--row-size:\s*clamp\(4\.5rem, calc\(\(100vw - 5\.6rem\) \/ 8\.55\), 14rem\);/);

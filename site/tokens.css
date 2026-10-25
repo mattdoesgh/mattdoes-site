@@ -27,23 +27,31 @@
   --track-stars: 0.06em;
   --track-label: 0.08em;
 
-  --type-body: 1.125rem;
-  --type-time: 0.8125rem;
-  --type-meta: 0.95rem;
-  --type-flag: 0.85rem;
-  /* Poster settings beside the films count. About 9px, under half the count. */
-  --type-setting: 0.5625rem;
-  --type-lede: 1.2rem;
-  --type-preview: 1.15rem;
-  --type-kicker: 1.5rem;
-  --type-sign: clamp(4rem, 16vw, 8.5rem);
+  /* Fluid type. clamp(rem, rem + vw, rem) holds the phone size and
+     grows toward a wide window. 200% zoom still scales the rem. */
+  --type-body: clamp(1.125rem, 1.008rem + 0.48vw, 1.44rem);
+  --type-time: clamp(0.8125rem, 0.728rem + 0.35vw, 1.04rem);
+  --type-meta: clamp(0.95rem, 0.851rem + 0.41vw, 1.216rem);
+  --type-flag: clamp(0.85rem, 0.762rem + 0.36vw, 1.088rem);
+  /* Poster settings beside the films count. 0.2 of the count's 12vw,
+     so the two-row stack stays about half the numeral on every window.
+     The floor is the compact phone size. */
+  --type-setting: clamp(0.5625rem, 0.05rem + 1.95vw, 1.2rem);
+  --type-lede: clamp(1.2rem, 1.075rem + 0.51vw, 1.536rem);
+  --type-preview: clamp(1.15rem, 1.03rem + 0.49vw, 1.472rem);
+  --type-kicker: clamp(1.5rem, 1.344rem + 0.64vw, 1.92rem);
+  /* min(4rem, 28vw) keeps a one-word title inside a narrow window when
+     text zoom doubles rem. At a 16px root this is the old 16vw curve. */
+  --type-sign: clamp(min(4rem, 28vw), 16vw, 8.5rem);
   --type-verb: clamp(2.4rem, 8vw, 4.6rem);
   --type-prize: clamp(1.6rem, 4vw, 2.4rem);
   --type-verb-phone: clamp(3.25rem, calc((100vw - 3rem) / 4.5), 14rem);
   --type-contact-heading: clamp(1.8rem, 4vw, 2.4rem);
   --type-contact: clamp(1.7rem, 5vw, 2.8rem);
-  --type-total: clamp(3.5rem, 12vw, 6.5rem);
-  --type-total-label: clamp(1.5rem, 3.4vw, 2.25rem);
+  /* The vw cap inside min() only bites when text zoom inflates rem past
+     the window. At a 16px root the count stays on the old 12vw curve. */
+  --type-total: clamp(min(3.5rem, 18vw), 12vw, 6.5rem);
+  --type-total-label: clamp(min(1.5rem, 8vw), 3.4vw, 2.25rem);
   /* Outline on the big count. em tracks --type-total, so the ring scales
      with the clamp. The 1.5px floor is applied at the call site. */
   --stroke-total: 0.06em;
@@ -74,48 +82,49 @@
   --outline-black: 3px solid var(--black);
   --outline-contrast: 3px solid currentColor;
   --outline-offset: 3px;
-  --hit: 44px;
-  --hit-phone: 48px;
-  --hit-setting: 32px;
-  /* Spare tap padding on a poster row: the 32px target minus the 9px type and the row gap. */
+  --hit: clamp(2.75rem, 2.4rem + 0.7vw, 3.5rem);
+  --hit-phone: clamp(3rem, 2.6rem + 0.8vw, 3.75rem);
+  /* 44px touch floor. The padding trick spends the spare on the poster switches. */
+  --hit-setting: 2.75rem;
   --hit-pad: calc(var(--hit-setting) - var(--type-setting) - var(--space-phone-row));
-  --icon: 1.35rem;
-  --measure: 40rem;
+  --icon: clamp(1.35rem, 1.21rem + 0.58vw, 1.728rem);
+  --measure: clamp(40rem, 34rem + 8vw, 48rem);
 
   --space-0: 0;
   --space-clip: -1px;
   --space-prefix: 0.24em;
-  --space-tight: 0.2rem;
-  --space-phone-row: 0.12rem;
-  --space-outlink-desk: 0.15rem;
-  --space-cap: 0.3rem;
-  --space-row: 0.35rem;
-  --space-heading: 0 0 0.4rem;
-  --space-total-gap: 0.45rem;
-  --space-home-footer: 0.5rem;
-  --space-outlinks: 0.5rem 0 0;
-  --space-statement: 0.55rem 0 0;
-  --space-flag: 0.6rem;
-  --space-md: 0.75rem;
-  --space-track: 0.75rem 0;
-  --space-skip: 0.55rem 0.8rem;
-  --space-lede: 0.8rem 0 0;
+  /* Fluid space. Same shape as the type scale: phone size, then rem + vw. */
+  --space-tight: clamp(0.2rem, 0.179rem + 0.09vw, 0.256rem);
+  --space-phone-row: clamp(0.12rem, 0.108rem + 0.05vw, 0.154rem);
+  --space-outlink-desk: clamp(0.15rem, 0.134rem + 0.06vw, 0.192rem);
+  --space-cap: clamp(0.3rem, 0.269rem + 0.13vw, 0.384rem);
+  --space-row: clamp(0.35rem, 0.314rem + 0.15vw, 0.448rem);
+  --space-heading: 0 0 clamp(0.4rem, 0.358rem + 0.17vw, 0.512rem);
+  --space-total-gap: clamp(0.45rem, 0.403rem + 0.19vw, 0.576rem);
+  --space-home-footer: clamp(0.5rem, 0.448rem + 0.21vw, 0.64rem);
+  --space-outlinks: clamp(0.5rem, 0.448rem + 0.21vw, 0.64rem) 0 0;
+  --space-statement: clamp(0.55rem, 0.493rem + 0.23vw, 0.704rem) 0 0;
+  --space-flag: clamp(0.6rem, 0.538rem + 0.26vw, 0.768rem);
+  --space-md: clamp(0.75rem, 0.672rem + 0.32vw, 0.96rem);
+  --space-track: clamp(0.75rem, 0.672rem + 0.32vw, 0.96rem) 0;
+  --space-skip: clamp(0.55rem, 0.493rem + 0.23vw, 0.704rem) clamp(0.8rem, 0.717rem + 0.34vw, 1.024rem);
+  --space-lede: clamp(0.8rem, 0.717rem + 0.34vw, 1.024rem) 0 0;
   --space-verb-pad: 0 0.02em;
   --space-verb-pad-desk: 0.03em 0.02em 0.05em;
-  --space-slot-text: 0.35rem 0 0;
-  --space-redaction-text: 0.4rem 0 0;
-  --space-verb-row: 0.85rem 0.15rem 1rem;
-  --space-home-link: 0 0 0.6rem;
-  --space-1: 1rem;
-  --space-tracks: 1rem 0 0;
-  --space-incident: 1.2rem 0 1.35rem;
-  --space-feed: 1.25rem 0 0;
-  --space-status: 0 0 1.25rem;
-  --space-nav: 0 0 1rem;
-  --space-total: 1.4rem 0 0;
-  --space-section: 1.5rem;
-  --space-players: 2rem;
-  --space-footer: 2.5rem;
+  --space-slot-text: clamp(0.35rem, 0.314rem + 0.15vw, 0.448rem) 0 0;
+  --space-redaction-text: clamp(0.4rem, 0.358rem + 0.17vw, 0.512rem) 0 0;
+  --space-verb-row: clamp(0.85rem, 0.762rem + 0.36vw, 1.088rem) clamp(0.15rem, 0.134rem + 0.06vw, 0.192rem) clamp(1rem, 0.896rem + 0.43vw, 1.28rem);
+  --space-home-link: 0 0 clamp(0.6rem, 0.538rem + 0.26vw, 0.768rem);
+  --space-1: clamp(1rem, 0.896rem + 0.43vw, 1.28rem);
+  --space-tracks: clamp(1rem, 0.896rem + 0.43vw, 1.28rem) 0 0;
+  --space-incident: clamp(1.2rem, 1.075rem + 0.51vw, 1.536rem) 0 clamp(1.35rem, 1.21rem + 0.58vw, 1.728rem);
+  --space-feed: clamp(1.25rem, 1.12rem + 0.53vw, 1.6rem) 0 0;
+  --space-status: 0 0 clamp(1.25rem, 1.12rem + 0.53vw, 1.6rem);
+  --space-nav: 0 0 clamp(1rem, 0.896rem + 0.43vw, 1.28rem);
+  --space-total: clamp(1.4rem, 1.254rem + 0.6vw, 1.792rem) 0 0;
+  --space-section: clamp(1.5rem, 1.344rem + 0.64vw, 1.92rem);
+  --space-players: clamp(2rem, 1.792rem + 0.85vw, 2.56rem);
+  --space-footer: clamp(2.5rem, 2.24rem + 1.07vw, 3.2rem);
   --space-kicker: 0 0 clamp(1.35rem, 3vh, 2rem);
   --space-page: clamp(1rem, 3vw, 2.75rem);
   --space-page-desk: clamp(1rem, 2.4vh, 2rem) clamp(1.25rem, 2vw, 2.4rem);
@@ -127,15 +136,15 @@
   --space-desk-feed: clamp(1.4rem, 2vw, 2.4rem);
   --space-desk-tracks: clamp(1.2rem, 2vw, 2rem) clamp(1.4rem, 2.4vw, 2.6rem);
   --space-footer-desk: clamp(2rem, 5vh, 4rem);
-  --space-status-gap: 0.4rem 1.5rem;
-  --space-verb-gap: 0.35rem 1.25rem;
-  --space-socials: 0.1rem 0.85rem;
-  --space-track-row: 0.2rem 0.75rem;
-  --space-outlinks-gap: 0.75rem 1.5rem;
-  --space-nav-gap: 0.4rem 1.4rem;
-  --space-nav-gap-desk: 0.5rem 1.8rem;
-  --space-incident-grid: 1rem 1.5rem;
-  --space-incident-desk: 0.55rem;
+  --space-status-gap: clamp(0.4rem, 0.358rem + 0.17vw, 0.512rem) clamp(1.5rem, 1.344rem + 0.64vw, 1.92rem);
+  --space-verb-gap: clamp(0.35rem, 0.314rem + 0.15vw, 0.448rem) clamp(1.25rem, 1.12rem + 0.53vw, 1.6rem);
+  --space-socials: clamp(0.1rem, 0.09rem + 0.04vw, 0.128rem) clamp(0.85rem, 0.762rem + 0.36vw, 1.088rem);
+  --space-track-row: clamp(0.2rem, 0.179rem + 0.09vw, 0.256rem) clamp(0.75rem, 0.672rem + 0.32vw, 0.96rem);
+  --space-outlinks-gap: clamp(0.75rem, 0.672rem + 0.32vw, 0.96rem) clamp(1.5rem, 1.344rem + 0.64vw, 1.92rem);
+  --space-nav-gap: clamp(0.4rem, 0.358rem + 0.17vw, 0.512rem) clamp(1.4rem, 1.254rem + 0.6vw, 1.792rem);
+  --space-nav-gap-desk: clamp(0.5rem, 0.448rem + 0.21vw, 0.64rem) clamp(1.8rem, 1.613rem + 0.77vw, 2.304rem);
+  --space-incident-grid: clamp(1rem, 0.896rem + 0.43vw, 1.28rem) clamp(1.5rem, 1.344rem + 0.64vw, 1.92rem);
+  --space-incident-desk: clamp(0.55rem, 0.493rem + 0.23vw, 0.704rem);
 }
 
 body[data-polarity="flip"] {
