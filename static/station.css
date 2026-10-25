@@ -586,7 +586,7 @@ body[data-polarity="flip"] .total-label {
   flex: 0 0 auto;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--space-tight);
+  gap: var(--space-phone-row);
   margin-left: auto;
 }
 
@@ -594,8 +594,8 @@ body[data-polarity="flip"] .total-label {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-row);
-  min-height: var(--hit-phone);
+  gap: var(--space-tight);
+  min-height: var(--hit-setting);
   margin: var(--space-0);
   padding: var(--space-0);
   border: var(--line-none);
@@ -603,7 +603,7 @@ body[data-polarity="flip"] .total-label {
   background: transparent;
   color: inherit;
   font-family: var(--body);
-  font-size: var(--type-meta);
+  font-size: var(--type-setting);
   font-weight: var(--weight-regular);
   letter-spacing: var(--track-label);
   line-height: 1;
@@ -622,7 +622,7 @@ body[data-polarity="flip"] .total-label {
   display: flex;
   align-items: stretch;
   flex: 0 0 auto;
-  min-height: var(--hit-phone);
+  min-height: var(--hit-setting);
   border: var(--line-strong);
   background: transparent;
 }
@@ -633,7 +633,7 @@ body[data-polarity="flip"] .total-label {
   justify-content: center;
   flex: 1 0 auto;
   min-width: 4.75em;
-  padding: var(--space-0) var(--space-row);
+  padding: var(--space-0) var(--space-tight);
   background: transparent;
   color: inherit;
 }
@@ -1599,11 +1599,6 @@ html.is-locked body {
 
   .verb-nav {
     gap: var(--space-nav-gap-desk);
-  }
-
-  .poster-switch,
-  .poster-track {
-    min-height: var(--hit);
   }
 }
 

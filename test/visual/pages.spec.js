@@ -279,10 +279,13 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
     && places.controls.y < places.word.y + places.word.h
     && places.controls.y + places.controls.h > places.word.y;
   expect(coversCount).toBe(false);
+  expect(places.controls.y).toBeLessThan(places.num.y + places.num.h);
   expect(places.axis.y).toBeGreaterThanOrEqual(places.posters.y + places.posters.h - 1);
   expect(Math.abs((places.axis.x + places.axis.w) - (places.posters.x + places.posters.w))).toBeLessThan(2);
-  expect(places.posters.h).toBeGreaterThanOrEqual(44);
-  expect(places.axis.h).toBeGreaterThanOrEqual(44);
+  expect(places.posters.h).toBeGreaterThanOrEqual(32);
+  expect(places.axis.h).toBeGreaterThanOrEqual(32);
+  expect(places.posters.h).toBeLessThan(40);
+  expect(places.axis.h).toBeLessThan(40);
   const settingType = await posters.evaluate((el) => getComputedStyle(el).fontFamily);
   expect(settingType.toLowerCase()).not.toContain('anton');
 
