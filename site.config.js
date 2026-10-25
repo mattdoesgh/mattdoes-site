@@ -1,12 +1,7 @@
-// site.config.js — single source of identity + per-section copy.
+// site.config.js — build settings and per-section copy.
 // Leave any string empty to omit that element from the rendered page.
 
 /**
- * @typedef {object} SiteLink
- * @property {string} label    rendered label, e.g. `'github'`
- * @property {string} href     URL (any safeUrl-allowed scheme)
- * @property {string} [meta]   optional secondary text shown next to label
- *
  * @typedef {object} SiteSection
  * @property {string} [who]    left-rail heading
  * @property {string} [bio]    left-rail subtitle
@@ -15,8 +10,6 @@
  * @typedef {object} SiteConfig
  * @property {string} title
  * @property {string} url     canonical origin, no trailing slash
- * @property {{ name: string, handle?: string, bio?: string }} identity
- * @property {SiteLink[]} links
  * @property {{
  *   listening: SiteSection,
  * }} sections
@@ -44,30 +37,6 @@
 export const siteConfig = {
   title: 'mattdoes.online',
   url:   'https://mattdoes.online',
-
-  // Identity shown in the left rail of feed/listing pages.
-  identity: {
-    name:   'matt',
-    handle: '@mattdoes',
-    bio:    'Developer, musician, tinkerer.',
-  },
-
-  // External presence. Empty href = omitted from the rail.
-  // External presence. Empty href = omitted from the about page.
-  // Letterboxd, X, Instagram, and Last.fm are also the footer profile nav
-  // (design-system Footer DEFAULT_PROFILES). Letterboxd and X are the
-  // topbar social chips too (Topbar LETTERBOXD_PROFILE and X_PROFILE).
-  // Keep those hrefs in sync.
-  links: [
-    { label: 'github',      href: 'https://github.com/mattdoesgh',                              meta: '/mattdoesgh' },
-    { label: 'letterboxd',  href: 'https://letterboxd.com/mattdoes',                            meta: '/mattdoes'   },
-    { label: '𝕏',          href: 'https://x.com/mattdoes',                                     meta: '/mattdoes'   },
-    { label: 'instagram',   href: 'https://www.instagram.com/mattdoes.ig',                      meta: '/mattdoes.ig' },
-    { label: 'last.fm',     href: 'https://www.last.fm/user/djverism',                          meta: '/djverism'   },
-    { label: 'Spotify',     href: 'https://open.spotify.com/artist/617fKVTXkDafXJshlNUzF3',     meta: '↗'           },
-    { label: 'Apple Music', href: 'https://music.apple.com/us/artist/verism-rip/1676956374',    meta: '↗'           },
-    { label: 'say hi',      href: 'mailto:matt@mattdoes.online',                                meta: '↗'           },
-  ],
 
   // Per-section labels. Page components may use `who` as a concise title;
   // descriptions stay empty because the writing itself explains each section.

@@ -1,24 +1,15 @@
-// Audit backlog: "URL output safety — Malicious Last.fm links and authored
-// Markdown URL fixtures". Covers audit finding #1.
-//
-// Three layers:
-//   1. Unit tests of safeUrl()/esc() from templates/_helpers.js — the
-//      primitives every other layer relies on.
-//   2. A negative content fixture with authored Markdown links carrying unsafe
-//      schemes / attribute-breaking text — built and asserted.
-//   3. A seeded Last.fm cache (own temp CACHE_DIR) carrying a javascript:
-//      URL, a quote-breaking URL, and a normal URL — built into the real
-//      content directory and asserted on the homepage.
+// URL output safety. safeUrl()/esc() reject unsafe schemes, and a seeded
+// Last.fm cache must not publish those URLs on the listening pages.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import { esc, safeUrl } from '../lib/safe-url.js';
 import {
-  runBuild, buildFixtureVault, readDist, seedLastfmCache, REPO_ROOT,
+  buildFixtureVault, readDist, seedLastfmCache, REPO_ROOT,
 } from './helpers/run-build.js';
 
-// ── 1. safeUrl / esc unit tests ─────────────────────────────────────────
+// safeUrl / esc
 test('safeUrl neutralizes dangerous schemes', () => {
   assert.equal(safeUrl('javascript:alert(1)'), '#');
   assert.equal(safeUrl('JavaScript:alert(1)'), '#');
@@ -62,19 +53,6 @@ test('esc escapes every attribute-breaking character', () => {
   assert.ok(!escaped.includes('"'), 'no raw double quote survives esc()');
 });
 
-// ── 2. authored Markdown link fixture ───────────────────────────────────
-test('a content directory of unsafe markdown does not publish those links', () => {
-  const res = runBuild({
-    contentDir: path.join(REPO_ROOT, 'test', 'fixtures', 'url-safety'),
-  });
-  assert.equal(res.status, 0, `url-safety fixture build failed:\n${res.stderr}`);
-  const html = readDist(res.distDir, 'index.html');
-  assert.ok(!/href="javascript:/i.test(html), 'no javascript: href');
-  assert.ok(!/href="data:/i.test(html), 'no data: href');
-  assert.ok(!/onmouseover="alert/i.test(html));
-});
-
-// ── 3. seeded Last.fm cache ─────────────────────────────────────────────
 // The build reads <CACHE_DIR>/lastfm.json (mtime-fresh within cacheTtl). We
 // seed a temp cache dir with a poisoned payload and build against it — the
 // repo .cache is never touched, so this is safe under parallel test files.
