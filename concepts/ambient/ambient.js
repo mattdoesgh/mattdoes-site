@@ -24,9 +24,22 @@ import {
   windAt,
   writeLattice,
 } from '../flock-model.js';
+import { holdMotion } from './motion.js';
 
 const reduceQuery = matchMedia('(prefers-reduced-motion: reduce)');
-let reduce = reduceQuery.matches;
+const coarseQuery = matchMedia('(pointer: coarse)');
+const hoverQuery = matchMedia('(hover: none)');
+const fineQuery = matchMedia('(pointer: fine)');
+
+function readReduce() {
+  return holdMotion(reduceQuery.matches, {
+    coarse: coarseQuery.matches,
+    hoverNone: hoverQuery.matches,
+    fine: fineQuery.matches,
+  });
+}
+
+let reduce = readReduce();
 const book = createVoiceBook();
 const birds = createFlock();
 // The 2/1 loop ratios, stretched so the swells and the silences are longer.
@@ -1098,6 +1111,7 @@ function draw() {
   canvas.dataset.yaw = view.yaw.toFixed(3);
   canvas.dataset.pitch = view.pitch.toFixed(3);
   canvas.dataset.zoom = view.zoom.toFixed(3);
+  canvas.dataset.motion = reduce ? 'reduce' : 'full';
   markSolo();
 }
 
@@ -1341,14 +1355,19 @@ document.addEventListener('visibilitychange', () => {
   else show();
 });
 window.addEventListener('pagehide', hide);
-reduceQuery.addEventListener('change', () => {
-  reduce = reduceQuery.matches;
-  if (reduce) {
+function applyMotionPreference() {
+  const next = readReduce();
+  const turnedOn = next && !reduce;
+  reduce = next;
+  if (turnedOn) {
     view.yawVel = 0;
     view.pitchVel = 0;
   }
   paint();
-});
+}
+for (const query of [reduceQuery, coarseQuery, hoverQuery, fineQuery]) {
+  query.addEventListener('change', applyMotionPreference);
+}
 addEventListener('resize', paint);
 armAuto(performance.now());
 setInterval(() => {

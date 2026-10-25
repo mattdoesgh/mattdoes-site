@@ -141,7 +141,7 @@ test('every unshared entry resolves to a built page', () => {
     const css = fs.readFileSync(path.join(REPO_ROOT, rel), 'utf8');
     assert.deepEqual(violationsInCss(css, rel, tokens), []);
   }
-  for (const rel of ['concepts/ambient/ambient.js', 'concepts/flock-model.js', 'concepts/hub.js']) {
+  for (const rel of ['concepts/ambient/ambient.js', 'concepts/ambient/motion.js', 'concepts/flock-model.js', 'concepts/hub.js']) {
     const source = fs.readFileSync(path.join(REPO_ROOT, rel), 'utf8');
     assert.deepEqual(violationsInSource(source, rel, tokens), []);
   }
