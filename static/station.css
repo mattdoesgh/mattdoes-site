@@ -199,6 +199,23 @@ body[data-polarity="flip"] .sign {
   outline-offset: var(--outline-offset);
 }
 
+/* The last.fm row's lower line. One line, clipped, so a long title cannot
+   grow the row or move the verb's hit area. The dot is paint only. */
+.listen-line {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.listen-dot {
+  color: var(--pink);
+  font-size: var(--type-flag);
+  line-height: 1;
+}
+
 .stars {
   font-family: var(--body);
   letter-spacing: var(--track-stars);
@@ -1348,6 +1365,13 @@ html.is-locked body {
     color: var(--pink);
     font-size: var(--type-stars-desk);
     white-space: nowrap;
+  }
+
+  /* A sentence, not a short film title. Full row width, one step down
+     from the verb, still clipped when the title is long. */
+  .listen-line {
+    max-width: 100%;
+    font-size: var(--type-title-desk);
   }
 
   .redaction {

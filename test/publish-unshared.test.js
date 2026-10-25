@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
 
 import { publishUnshared } from '../lib/publish-unshared.js';
-import { unsharedEntries, unsharedHref, unsharedPrefix } from '../concepts/entries.js';
+import { unsharedEntries, unsharedHref } from '../concepts/entries.js';
 import { sitemapPaths, unsharedEnabled } from '../site/verbs.ts';
 import { loadTokens, violationsInCss, violationsInSource } from '../lib/design-tokens.js';
 import { renderUnshared } from '../site/render.js';
@@ -67,7 +67,8 @@ test('every unshared entry resolves to a built page', () => {
   assert.doesNotMatch(hub, /music\.apple\.com|spotify\.com|bandcamp\.com|noindex/i);
   assert.equal(doc.querySelector('meta[name="description"]')?.getAttribute('content'), 'matt does unshared.');
   assert.equal(doc.querySelector('link[rel="canonical"]')?.getAttribute('href'), 'https://mattdoes.online/unshared/');
-  assert.equal(doc.querySelector('.verb-kicker')?.textContent, unsharedPrefix);
+  assert.equal(doc.querySelector('.verb-kicker'), null);
+  assert.equal(hub.includes('unshared does'), false);
 
   const rowHrefs = hrefs(hub, 'a.verb');
   assert.ok(unsharedEntries.length > 0);
@@ -80,6 +81,9 @@ test('every unshared entry resolves to a built page', () => {
     const builtDoc = new JSDOM(built).window.document;
     assert.doesNotMatch(built, /noindex|mailto:|music\.apple\.com|spotify\.com|bandcamp\.com/i);
     assert.equal(builtDoc.querySelector('h1')?.textContent, 'birds1');
+    assert.equal(builtDoc.querySelector('a.home')?.textContent, 'matt does');
+    assert.equal(builtDoc.querySelector('a.home')?.getAttribute('href'), '/');
+    assert.ok(built.indexOf('class="home"') < built.indexOf('<h1'));
     assert.equal(builtDoc.querySelector('title')?.textContent, 'birds1 · mattdoes.online');
     assert.equal(builtDoc.querySelector('meta[property="og:title"]')?.getAttribute('content'), 'birds1 · mattdoes.online');
     assert.equal(builtDoc.querySelector('meta[name="description"]')?.getAttribute('content'), 'birds1');
@@ -89,9 +93,9 @@ test('every unshared entry resolves to a built page', () => {
   }
 
   const label = doc.querySelector('.verb-label')?.textContent;
-  const prefix = doc.querySelector('.verb-prefix')?.textContent;
+  assert.equal(doc.querySelector('.verb-prefix'), null);
   assert.equal(label, 'birds1');
-  assert.equal(prefix, `${unsharedPrefix} `);
+  assert.equal(doc.querySelector('a.verb')?.textContent, 'birds1');
   assert.equal(rowHrefs[0], '/unshared/birds1/');
   assert.equal(renderUnshared({ siteUrl: 'https://mattdoes.online' }), hub);
 

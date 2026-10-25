@@ -21,6 +21,19 @@ for (const [name, url] of pages) {
   });
 }
 
+test('the unshared row is birds1', async ({ page }) => {
+  await page.goto('/unshared/');
+  await page.evaluate(() => document.fonts.ready);
+  await expect(page.locator('h1')).toHaveText('matt does unshared');
+  const row = page.locator('a.verb');
+  await expect(row).toHaveText('birds1');
+  await expect(row).toHaveAttribute('href', '/unshared/birds1/');
+  await expect(page.locator('.verb-prefix, .verb-kicker')).toHaveCount(0);
+  await expect(page.locator('body')).not.toContainText('unshared does');
+  const box = await row.boundingBox();
+  expect(box.height).toBeGreaterThanOrEqual(44);
+});
+
 test('birds1', async ({ page }, info) => {
   await page.addInitScript(() => {
     let seed = 1;
@@ -33,9 +46,32 @@ test('birds1', async ({ page }, info) => {
   const width = info.project.use.viewport.width;
   await page.goto('/unshared/birds1/');
   await page.evaluate(() => document.fonts.ready);
+  const home = page.locator('a.home');
+  await expect(home).toHaveText('matt does');
+  await expect(home).toHaveAttribute('href', '/');
+  const homeBox = await home.boundingBox();
+  expect(homeBox.height).toBeGreaterThanOrEqual(44);
+  const hitsHome = await home.evaluate((el) => {
+    const box = el.getBoundingClientRect();
+    const xs = [box.left + 8, box.left + box.width / 2];
+    const ys = [box.top + 4, box.top + box.height / 2, box.bottom - 4];
+    return ys.every((y) => xs.every((x) => document.elementFromPoint(x, y) === el));
+  });
+  expect(hitsHome).toBe(true);
+  const canvasShare = await page.evaluate(() => {
+    const box = document.querySelector('canvas').getBoundingClientRect();
+    return box.height / window.innerHeight;
+  });
+  expect(canvasShare).toBeGreaterThan(0.55);
   await expect(page.locator('h1')).toHaveText('birds1');
   await expect(page.locator('#field')).toHaveAttribute('data-motion', 'reduce');
   await expect(page).toHaveScreenshot(`birds1-${width}.png`, { fullPage: true });
+  await home.focus();
+  const ring = await home.evaluate((el) => {
+    const style = getComputedStyle(el);
+    return { color: style.outlineColor, style: style.outlineStyle, width: style.outlineWidth };
+  });
+  expect(ring).toEqual({ color: 'rgb(0, 0, 0)', style: 'solid', width: '3px' });
 });
 
 test('footer', async ({ page }, info) => {
@@ -53,9 +89,10 @@ test('a narrow hover window keeps the pink preview and no row rule', async ({ pa
   await page.evaluate(() => document.fonts.ready);
   const hover = await page.evaluate(() => window.matchMedia('(hover: hover)').matches);
   expect(hover).toBe(true);
-  const previewColor = await page.locator('.preview').evaluate((el) => getComputedStyle(el).color);
-  const linkColor = await page.locator('.preview a').evaluate((el) => getComputedStyle(el).color);
-  const starColor = await page.locator('.preview .stars').evaluate((el) => getComputedStyle(el).color);
+  const film = page.locator('.verb-row', { has: page.locator('a[href="/watching/"]') });
+  const previewColor = await film.locator('.preview').evaluate((el) => getComputedStyle(el).color);
+  const linkColor = await film.locator('.preview a').evaluate((el) => getComputedStyle(el).color);
+  const starColor = await film.locator('.preview .stars').evaluate((el) => getComputedStyle(el).color);
   const border = await page.locator('.verb-row').first().evaluate((el) => getComputedStyle(el).borderTopWidth);
   const kicker = await page.locator('.verb-kicker').evaluate((el) => getComputedStyle(el).display);
   expect(previewColor).toBe('rgb(247, 200, 216)');
@@ -63,6 +100,10 @@ test('a narrow hover window keeps the pink preview and no row rule', async ({ pa
   expect(starColor).toBe('rgb(247, 200, 216)');
   expect(border).toBe('0px');
   expect(kicker).toBe('none');
+  const listen = page.locator('.listen-line');
+  await expect(listen).toHaveText(/last listened\s+Fixture Track — Fixture Artist/);
+  const listenColor = await listen.evaluate((el) => getComputedStyle(el).color);
+  expect(listenColor).toBe('rgb(247, 200, 216)');
   await expect(page).toHaveScreenshot('home-800.png', { fullPage: true });
 });
 
@@ -333,6 +374,29 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
   await expect(page.locator('#feed')).toBeVisible();
   const restored = await page.locator('#feed').evaluate((el) => getComputedStyle(el).flexDirection);
   expect(restored).toBe('column');
+});
+
+test('the home listen line is one clipped row', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(() => document.fonts.ready);
+  const line = page.locator('.listen-line');
+  await expect(line).toHaveText(/last listened\s+Fixture Track — Fixture Artist/);
+  const box = await line.evaluate((el) => {
+    const style = getComputedStyle(el);
+    const lineHeight = Number.parseFloat(style.lineHeight);
+    const height = el.getBoundingClientRect().height;
+    return {
+      whiteSpace: style.whiteSpace,
+      overflow: style.overflowX,
+      ellipsis: style.textOverflow,
+      oneLine: height <= lineHeight * 1.6,
+    };
+  });
+  expect(box.whiteSpace).toBe('nowrap');
+  expect(box.overflow).toBe('hidden');
+  expect(box.ellipsis).toBe('ellipsis');
+  expect(box.oneLine).toBe(true);
+  await expect(page.locator('.wave')).toHaveCount(0);
 });
 
 test('phone shows the kicker and desktop hides it', async ({ page }, info) => {

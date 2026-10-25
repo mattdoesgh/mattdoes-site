@@ -6,6 +6,7 @@ import { socialIcon } from './social-icons.js';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 import { formatScrobbleCount } from '../lib/format.js';
 import { CHART_SPARES, LISTENING_PERIODS, TOP_LIMIT, albumImageUrl, albumsWithCovers, musicUrl } from '../lib/lastfm.js';
+import { staticListen } from '../lib/listen-line.js';
 
 const LUCIA_MAIL = 'mailto:luciadoes@mail.grokbot.com';
 
@@ -262,6 +263,24 @@ function watchPreview(watch) {
 }
 
 /**
+ * The lower line of the last.fm row. The verb link stays the row above it,
+ * so the track link is a sibling, not a nested anchor. No track means no
+ * line: an empty row would be worse than the verb alone.
+ *
+ * @param {unknown} tracks
+ * @returns {string}
+ */
+function listenPreview(tracks) {
+  const line = staticListen(tracks);
+  if (!line) return '';
+  const href = musicUrl(line.link);
+  const what = href
+    ? `<a class="listen-what" href="${esc(href)}"${relFor(href)}>${esc(line.pair)}</a>`
+    : `<span class="listen-what">${esc(line.pair)}</span>`;
+  return `<span class="preview listen-line"><span class="listen-state">${esc(line.state)}</span> ${what}</span>`;
+}
+
+/**
  * Names the published verbs. Two read as "a and b"; more use a serial comma.
  *
  * @returns {string}
@@ -283,7 +302,11 @@ export function renderHome(ctx) {
   const items = verbs.map((verb) => {
     const heading = verbHeading(verb.label);
     const prefix = heading.slice(0, heading.length - verb.label.length);
-    const preview = verb.slug === 'watching' ? watchPreview(recent) : '';
+    const preview = verb.slug === 'watching'
+      ? watchPreview(recent)
+      : verb.slug === 'listening'
+        ? listenPreview(ctx.tracks)
+        : '';
     return `<li class="verb-row">
           <a class="verb" href="${verbPath(verb.slug)}"><span class="verb-prefix"><span>${esc(prefix)}</span></span><span class="verb-label">${esc(verb.label)}</span></a>
           ${preview}

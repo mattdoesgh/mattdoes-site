@@ -116,9 +116,15 @@ for (const { name, body, now, recent } of [
     recent: { playcount: 0, tracks: [] },
   },
   {
-    name: 'missing @attr on track[0] → not now-playing',
+    name: 'missing @attr on track[0] → not now-playing, newest track is last',
     body: lastfmBody(1, 3),
-    now: { nowPlaying: false },
+    now: {
+      nowPlaying: false,
+      last: {
+        artist: 'Artist 0', track: 'Song 0', album: 'Album 0',
+        link: 'https://www.last.fm/music/x/_/song-0',
+      },
+    },
     recent: { playcount: 3 },
   },
   {
@@ -181,6 +187,46 @@ for (const { name, body, now, recent } of [
   });
 }
 
+test('deriveBoth: nothing playing exposes the newest track as last', () => {
+  const { now } = deriveBoth(lastfmBody(2, 9));
+  assert.deepEqual(now, {
+    nowPlaying: false,
+    last: {
+      artist: 'Artist 0',
+      track: 'Song 0',
+      album: 'Album 0',
+      link: 'https://www.last.fm/music/x/_/song-0',
+    },
+  });
+  assert.equal('date' in now.last, false);
+  assert.equal('image' in now.last, false);
+  assert.equal('reason' in now, false);
+});
+
+test('deriveBoth: a nowplaying row stays the live track and does not attach last', () => {
+  const body = nowPlayingBody();
+  body.recenttracks.track.push({
+    name: 'Older',
+    artist: { '#text': 'Then' },
+    album: { '#text': 'Before' },
+    url: 'https://www.last.fm/music/Then/_/Older',
+    date: { uts: '1700000000' },
+  });
+  const { now, recent } = deriveBoth(body);
+  assert.equal(now.nowPlaying, true);
+  assert.equal(now.track, 'Live Song');
+  assert.equal(now.artist, 'Live Artist');
+  assert.equal('last' in now, false);
+  assert.equal(recent.tracks[1].track, 'Older');
+  assert.equal(recent.tracks[1].nowPlaying, false);
+});
+
+test('deriveBoth: a nowplaying flag of "true" is the only live marker', () => {
+  const { now } = deriveBoth(nowPlayingBody());
+  assert.equal(now.nowPlaying, true);
+  assert.equal(now['@attr'], undefined);
+});
+
 test('deriveBoth: recent is capped at the poll limit', () => {
   const { recent } = deriveBoth(lastfmBody(30, 100));
   assert.equal(recent.tracks.length, 25);
@@ -200,6 +246,8 @@ test('poller: one upstream call writes both now and recent from one response', a
   assert.equal(recent.data.tracks.length, 3);
   assert.equal('reason' in recent.data, false, 'recent snapshot is authoritative');
   assert.equal(now.data.nowPlaying, false, 'no nowplaying track → nowPlaying:false');
+  assert.equal(now.data.last.track, 'Song 0');
+  assert.equal(now.data.last.artist, 'Artist 0');
   assert.equal('reason' in now.data, false, 'now snapshot is authoritative');
 });
 
@@ -210,6 +258,7 @@ test('poller: a nowplaying track yields nowPlaying:true', async () => {
   const now = await env.LASTFM_CACHE.get('now:u', { type: 'json' });
   assert.equal(now.data.nowPlaying, true);
   assert.equal(now.data.track, 'Live Song');
+  assert.equal('last' in now.data, false);
   assert.equal('reason' in now.data, false);
 });
 
@@ -665,6 +714,7 @@ test('cache: browser max-age matches the freshness of now, recent, and charts', 
   const fetchStub = installFetch(() => { throw new Error('cache policy must not call Last.fm'); });
   try {
     const EDGE_RECENT = 'public, max-age=15, stale-while-revalidate=86400, stale-if-error=86400';
+    const EDGE_NOW = 'public, max-age=30, stale-while-revalidate=86400, stale-if-error=86400';
     const hit = async (url) => {
       const res = await listeningWorker.fetch(
         workerRequest(url, { headers: { 'cf-connecting-ip': '203.0.113.9' } }),
@@ -680,10 +730,10 @@ test('cache: browser max-age matches the freshness of now, recent, and charts', 
     const now = await hit(NOW);
     const recent = await hit(RECENT);
     const charts = await hit(CHARTS);
-    assert.equal(now.browser, 'public, max-age=15, s-maxage=15, must-revalidate');
+    assert.equal(now.browser, 'public, max-age=30, s-maxage=30, must-revalidate');
     assert.equal(recent.browser, 'public, max-age=60, s-maxage=15, must-revalidate');
     assert.equal(charts.browser, 'public, max-age=60, must-revalidate');
-    assert.equal(now.edge, EDGE_RECENT);
+    assert.equal(now.edge, EDGE_NOW);
     assert.equal(recent.edge, EDGE_RECENT);
     assert.equal(charts.edge, 'public, max-age=60, stale-if-error=604800');
     assert.equal(fetchStub.calls.length, 0);

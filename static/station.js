@@ -344,12 +344,136 @@
 
   armCovers();
 
+  /* Home last.fm line. Keep the clip in step with lib/listen-line.js. */
+  var LISTEN_LIMIT = 48;
+  var LISTEN_MS = 60000;
+  var listenTimer = 0;
+  var listenGen = 0;
+
+  function clipPair(track, artist) {
+    var title = String(track || '').replace(/\s+/g, ' ').trim();
+    var name = String(artist || '').replace(/\s+/g, ' ').trim();
+    if (!title || !name) return '';
+    var pair = title + ' \u2014 ' + name;
+    if (pair.length <= LISTEN_LIMIT) return pair;
+    return pair.slice(0, LISTEN_LIMIT - 1).replace(/\s+$/, '') + '\u2026';
+  }
+
+  function musicHref(link) {
+    if (typeof link !== 'string') return '';
+    var value = link.trim();
+    if (!/^https:\/\//i.test(value) || /[\s"'<>\\]/.test(value)) return '';
+    try {
+      var url = new URL(value);
+      if (url.username || url.password || url.port) return '';
+      var host = url.hostname.toLowerCase();
+      if (host !== 'www.last.fm' && host !== 'last.fm') return '';
+      if (url.pathname.toLowerCase().indexOf('/user/') !== -1) return '';
+      return url.toString();
+    } catch (err) {
+      return '';
+    }
+  }
+
+  function paintListen(line, state, pair, link, live) {
+    var href = musicHref(link);
+    line.replaceChildren();
+    if (live) {
+      var dot = document.createElement('span');
+      dot.className = 'listen-dot';
+      dot.setAttribute('aria-hidden', 'true');
+      dot.textContent = '\u25cf';
+      line.appendChild(dot);
+      line.appendChild(document.createTextNode(' '));
+    }
+    var label = document.createElement('span');
+    label.className = 'listen-state';
+    label.textContent = state;
+    line.appendChild(label);
+    line.appendChild(document.createTextNode(' '));
+    var what = document.createElement(href ? 'a' : 'span');
+    what.className = 'listen-what';
+    what.textContent = pair;
+    if (href) {
+      what.href = href;
+      what.rel = 'noopener noreferrer';
+    }
+    line.appendChild(what);
+  }
+
+  function applyListen(data) {
+    var line = document.querySelector('.listen-line');
+    if (!line || !data || data.reason) return;
+    var state;
+    var pair;
+    var link;
+    var live = false;
+    if (data.nowPlaying) {
+      state = 'now listening';
+      pair = clipPair(data.track, data.artist);
+      link = data.link;
+      live = true;
+    } else if (data.last) {
+      state = 'last listened';
+      pair = clipPair(data.last.track, data.last.artist);
+      link = data.last.link;
+    } else {
+      return;
+    }
+    if (!pair) return;
+    paintListen(line, state, pair, link, live);
+  }
+
+  function stopListen() {
+    if (!listenTimer) return;
+    clearTimeout(listenTimer);
+    listenTimer = 0;
+  }
+
+  function scheduleListen() {
+    stopListen();
+    listenTimer = setTimeout(pullListen, LISTEN_MS);
+  }
+
+  function pullListen() {
+    stopListen();
+    if (document.hidden || typeof fetch !== 'function') return;
+    var gen = ++listenGen;
+    fetch('/api/listening/now', { headers: { accept: 'application/json' } })
+      .then(function (res) { return res && res.ok ? res.json() : null; })
+      .then(function (data) {
+        if (gen !== listenGen) return;
+        if (data) applyListen(data);
+      })
+      .catch(function () {})
+      .then(function () {
+        if (gen !== listenGen || document.hidden) return;
+        scheduleListen();
+      });
+  }
+
+  function onVisibility() {
+    if (document.hidden) {
+      stopListen();
+      listenGen += 1;
+      return;
+    }
+    pullListen();
+  }
+
+  function armListen() {
+    if (!document.querySelector('.listen-line')) return;
+    document.addEventListener('visibilitychange', onVisibility);
+    pullListen();
+  }
+
   function start() {
     /* frequency-key */
     document.addEventListener('keydown', onKey);
     /* frequency-key */
     bindScene();
     refresh();
+    armListen();
   }
 
   if (document.prerendering) {

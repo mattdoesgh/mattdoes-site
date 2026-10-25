@@ -69,6 +69,21 @@ export async function prepare(page, { pinFonts = true, phone = false } = {}) {
         contentType: 'image/png',
       });
     }
+    if (url.includes('/api/listening/now')) {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          nowPlaying: false,
+          last: {
+            artist: 'Fixture Artist',
+            track: 'Fixture Track',
+            album: 'Fixture Album',
+            link: 'https://www.last.fm/music/Fixture+Artist/_/Fixture+Track',
+          },
+        }),
+      });
+    }
     if (url.startsWith('http://127.0.0.1') || url.startsWith('http://localhost')) {
       return route.continue();
     }

@@ -1,8 +1,6 @@
-// One line to add an "unshared does X" row. The slug is the folder under
-// concepts/ and the path under /unshared/. The publish step fails when the
-// folder has no index.html.
-
-export const unsharedPrefix = 'unshared does';
+// One line to add a row. The slug is the folder under concepts/ and the
+// path under /unshared/. The publish step fails when the folder has no
+// index.html.
 
 export const unsharedEntries = [
   { slug: 'birds1', label: 'birds1' },

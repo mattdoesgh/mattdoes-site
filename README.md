@@ -1,59 +1,26 @@
 # mattdoes.online
 
-Source for [mattdoes.online](https://mattdoes.online). Static HTML from a small verb registry, hosted on Cloudflare Pages. Live listening sits on a same-origin Worker.
+[matt does online](https://mattdoes.online). Static pages from `site/verbs.ts`, on Cloudflare Pages, with same-origin Workers under `/api/`.
 
-## what's on it
-
-- **home** (`/`) — the verb list. The letterboxd row also shows the newest film and its stars.
-- **watching** (`/watching/`) — recent Letterboxd watches. Posters are mirrored to `media.mattdoes.online` at build time.
-- **listening** (`/listening/`) — recent plays from the listening worker, baked at build time and refreshed live. The monthly album chart is a weekly snapshot of a deep Last.fm pool, so a dropped cover is replaced and the grid stays 25. A build that still sees a short snapshot asks Last.fm for that same pool. Progressive cover JPEGs are re-encoded with sharp and stored on the media host. A progressive file with no baseline copy to serve is omitted.
-- **unshared** (`/unshared/`) — a hub and `/unshared/birds1/`. Both are in the sitemap. The home menu does not link here. Unshared has no socials or mailbox. The birds1 heading is `birds1`.
-- **404** — not found.
-
-`/frequency/` is a noindex page and is not in the menu or the sitemap. This site does not keep legacy redirects.
-
-## how it's built
-
-`site/verbs.ts` lists the verbs. The slug is the URL and the label is separate. `build.js` fetches listening data and the Letterboxd RSS, uploads posters when `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are set, reuses a poster already on the media host when they are not, and writes `dist/`. A failed poster fetch or upload omits that poster and does not fail the build.
-
-`scripts/pages-prebuild.sh` does not clone anything. The Cloudflare Pages build command stays `bash scripts/pages-prebuild.sh && npm run build`.
-
-Workers, same-origin under `/api/`:
-
-- **`mattdoes-listening`** — `/api/listening/now` and `/api/listening/recent`.
-- **`mattdoes-geo`** — still deployed. The page no longer draws a map.
-- **`mattdoes-csp-report`** — collects CSP reports.
-
-`mattdoes-rebuild` has no route. Every six hours it POSTs the Pages deploy hook so the Letterboxd snapshot stays current. The listening worker also asks for that rebuild after it refreshes the album chart on Monday at 11:00 UTC, which is 6:00 AM US Central during daylight time and 5:00 AM during standard time.
-
-## running it
+## run, test, build, deploy
 
 ```
 npm install
-npm run build
-```
-
-Output lands in `dist/`.
-
-```
 npm test
 npm run typecheck
-npm run lint             # html-validate against dist/**/*.html
-npm run audit            # npm audit --audit-level=moderate
-npm run check:tokens     # colors, font families, and font sizes stay in site/tokens.css
-npm run test:visual      # screenshot baselines of the main pages at 1280 and 390
-npm run optimize-media   # .webp variants from content/attachments, if that directory exists
-npm run sync-media       # push those files to R2 (needs a CF token; uses the wrangler pin in workers/)
-```
-
-CI (`.github/workflows/build.yml`) audits, typechecks `site/`, builds, lints HTML, checks design tokens, runs tests, and compares screenshot baselines. Cloudflare Pages deploys from a successful GitHub push on its own. Style lives in `site/tokens.css` and `STYLE.md`.
-
-## workers
-
-KV bindings, routes, and secret names live in each `wrangler.toml`. From the repo root:
-
-```
+npm run build
 npm run deploy:workers
 ```
 
-Listening secrets are `LASTFM_USERNAME` and `LASTFM_API_KEY`. Wrangler stays the version pinned in `workers/package-lock.json`. Do not run `npx wrangler`.
+`npm run build` writes `dist/`. Pages runs `bash scripts/pages-prebuild.sh && npm run build`. A successful GitHub push deploys. Listening secrets are `LASTFM_USERNAME` and `LASTFM_API_KEY`.
+
+## layout
+
+`build.js` writes `dist/` from `site/`, `lib/`, and `static/`. `concepts/` is copied to `dist/unshared/`. `workers/` holds the Workers. `scripts/` is prebuild, deploy, and media. `test/` is the node tests. `site.config.js` is build settings.
+
+## workers
+
+- `mattdoes-listening` — `/api/listening/now`, `/api/listening/recent`, `/api/listening/charts`
+- `mattdoes-geo` — `/api/geo/lookup`. The page does not call it.
+- `mattdoes-csp-report` — `/api/csp-report`
+- `mattdoes-rebuild` — no route. A six-hour cron POSTs the Pages deploy hook. Listening asks for that rebuild after the Monday 11:00 UTC chart refresh.
