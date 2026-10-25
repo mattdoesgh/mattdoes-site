@@ -27,8 +27,14 @@
     else root.removeAttribute('data-poster-axis');
     var postersBtn = document.querySelector('[data-posters-toggle]');
     var axisBtn = document.querySelector('[data-axis-toggle]');
-    if (postersBtn) postersBtn.setAttribute('aria-pressed', state.posters === 'on' ? 'true' : 'false');
-    if (axisBtn) axisBtn.setAttribute('aria-pressed', state.axis === 'down' ? 'true' : 'false');
+    if (postersBtn) {
+      postersBtn.setAttribute('aria-pressed', state.posters === 'on' ? 'true' : 'false');
+      postersBtn.setAttribute('aria-label', 'posters ' + state.posters);
+    }
+    if (axisBtn) {
+      axisBtn.setAttribute('aria-pressed', state.axis === 'down' ? 'true' : 'false');
+      axisBtn.setAttribute('aria-label', 'layout ' + state.axis);
+    }
     return Boolean(postersBtn && axisBtn);
   }
 

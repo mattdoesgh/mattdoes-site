@@ -237,11 +237,17 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
   const axis = page.locator('[data-axis-toggle]');
   const feed = page.locator('#feed');
   await expect(posters).toHaveAttribute('aria-pressed', 'true');
+  await expect(posters).toHaveAttribute('aria-label', 'posters on');
   await expect(axis).toHaveAttribute('aria-pressed', 'false');
+  await expect(axis).toHaveAttribute('aria-label', 'layout across');
   await expect(page.locator('.poster-on')).toBeVisible();
-  await expect(page.locator('.poster-off')).toBeHidden();
+  await expect(page.locator('.poster-off')).toBeVisible();
   await expect(page.locator('.axis-across')).toBeVisible();
-  await expect(page.locator('.axis-down')).toBeHidden();
+  await expect(page.locator('.axis-down')).toBeVisible();
+  const chosen = await page.locator('.poster-on').evaluate((el) => getComputedStyle(el).backgroundColor);
+  const idle = await page.locator('.poster-off').evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(chosen).toBe('rgb(0, 0, 0)');
+  expect(idle).not.toBe(chosen);
 
   const width = info.project.use.viewport.width;
   const before = await feed.evaluate((el) => ({
@@ -273,23 +279,37 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
     && places.controls.y < places.word.y + places.word.h
     && places.controls.y + places.controls.h > places.word.y;
   expect(coversCount).toBe(false);
+  expect(places.axis.y).toBeGreaterThanOrEqual(places.posters.y + places.posters.h - 1);
+  expect(Math.abs((places.axis.x + places.axis.w) - (places.posters.x + places.posters.w))).toBeLessThan(2);
   expect(places.posters.h).toBeGreaterThanOrEqual(44);
   expect(places.axis.h).toBeGreaterThanOrEqual(44);
+  const settingType = await posters.evaluate((el) => getComputedStyle(el).fontFamily);
+  expect(settingType.toLowerCase()).not.toContain('anton');
 
   const postersWidth = places.posters.w;
   const axisWidth = places.axis.w;
   await posters.click();
   await expect(posters).toHaveAttribute('aria-pressed', 'false');
-  await expect(page.locator('.poster-on')).toBeHidden();
+  await expect(posters).toHaveAttribute('aria-label', 'posters off');
+  await expect(page.locator('.poster-on')).toBeVisible();
   await expect(page.locator('.poster-off')).toBeVisible();
+  const offFill = await page.locator('.poster-off').evaluate((el) => getComputedStyle(el).backgroundColor);
+  const onFill = await page.locator('.poster-on').evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(offFill).toBe('rgb(0, 0, 0)');
+  expect(onFill).not.toBe(offFill);
   await expect(feed).toBeHidden();
   const postersOffWidth = await posters.evaluate((el) => el.getBoundingClientRect().width);
   expect(Math.abs(postersOffWidth - postersWidth)).toBeLessThan(1);
 
   await axis.click();
   await expect(axis).toHaveAttribute('aria-pressed', 'true');
+  await expect(axis).toHaveAttribute('aria-label', 'layout down');
   await expect(page.locator('.axis-down')).toBeVisible();
-  await expect(page.locator('.axis-across')).toBeHidden();
+  await expect(page.locator('.axis-across')).toBeVisible();
+  const downFill = await page.locator('.axis-down').evaluate((el) => getComputedStyle(el).backgroundColor);
+  const acrossFill = await page.locator('.axis-across').evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(downFill).toBe('rgb(0, 0, 0)');
+  expect(acrossFill).not.toBe(downFill);
   const axisDownWidth = await axis.evaluate((el) => el.getBoundingClientRect().width);
   expect(Math.abs(axisDownWidth - axisWidth)).toBeLessThan(1);
   await expect(page.locator('html')).toHaveAttribute('data-poster-axis', 'down');
