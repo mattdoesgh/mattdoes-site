@@ -31,6 +31,8 @@
   --type-time: 0.8125rem;
   --type-meta: 0.95rem;
   --type-flag: 0.85rem;
+  /* Poster settings beside the films count. About two thirds of --type-meta. */
+  --type-setting: 0.65rem;
   --type-lede: 1.2rem;
   --type-preview: 1.15rem;
   --type-kicker: 1.5rem;
@@ -73,6 +75,7 @@
   --outline-offset: 3px;
   --hit: 44px;
   --hit-phone: 48px;
+  --hit-setting: 32px;
   --icon: 1.35rem;
   --measure: 40rem;
 

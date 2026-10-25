@@ -67,6 +67,9 @@ test('watching renders posters on and across, and other pages do not', () => {
   assert.equal(doc.querySelector('.poster-sizer'), null);
   assert.match(css, /\.poster-controls\s*\{[^}]*flex-direction:\s*column/);
   assert.match(css, /\.poster-switch\s*\{[^}]*font-family:\s*var\(--body\)/);
+  assert.match(css, /\.poster-switch\s*\{[^}]*font-size:\s*var\(--type-setting\)/);
+  assert.match(css, /\.poster-switch\s*\{[^}]*min-height:\s*var\(--hit-setting\)/);
+  assert.match(css, /\.poster-controls\s*\{[^}]*gap:\s*var\(--space-phone-row\)/);
   assert.match(css, /\.poster-track\s*\{[^}]*border:\s*var\(--line-strong\)/);
   assert.match(css, /\.poster-on,\s*\n\.axis-across\s*\{[^}]*background:\s*var\(--ink\)/);
   assert.equal(doc.querySelector('#feed')?.tagName, 'OL');
