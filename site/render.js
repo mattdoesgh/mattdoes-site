@@ -612,9 +612,19 @@ export function renderListen(ctx) {
 }
 
 /**
- * @param {object} ctx
+ * Apple Music, Spotify, and the email mailto. The preview hub uses this
+ * same list, so a contact change lands in both places.
+ *
  * @returns {string}
  */
+export function unsharedOutlinks() {
+  return `<ul class="outlinks">
+        ${emailOutlink(unsharedContact.email)}
+        <li>${link(APPLE, 'Apple Music')}</li>
+        <li>${link(SPOTIFY, 'Spotify')}</li>
+      </ul>`;
+}
+
 export function renderUnshared(ctx) {
   const verb = verbByRenderer('unshared');
   const heading = verbHeading(verb.label);
@@ -630,11 +640,7 @@ export function renderUnshared(ctx) {
     main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
       <p class="lede">Fun is unshared</p>
       ${bandcampSlot(unsharedPlayer.bandcamp)}
-      <ul class="outlinks">
-        ${emailOutlink(unsharedContact.email)}
-        <li>${link(APPLE, 'Apple Music')}</li>
-        <li>${link(SPOTIFY, 'Spotify')}</li>
-      </ul>
+      ${unsharedOutlinks()}
       ${SECRET_PATHS.includes('/frequency/') ? bar('/frequency/', 'frequency') : ''}`,
   });
 }

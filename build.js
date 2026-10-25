@@ -54,4 +54,4 @@ const concepts = copyConceptsForPreview(DIST_DIR);
 console.log(`✓ built in ${((Date.now() - t0) / 1000).toFixed(2)}s`);
 console.log(`  ${watches.length} recent watches · ${lastfmTracks.length} listening rows`);
 console.log(`  dist: ${distSize}  ·  ${DIST_DIR}`);
-if (concepts) console.log('  concepts: copied for this preview build');
+if (concepts) console.log('  unshared preview: copied');

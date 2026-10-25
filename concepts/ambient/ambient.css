@@ -1,15 +1,13 @@
-/* Concept mock for /unshared/. One generative field.
-   Colors, type, and font stacks come from site/tokens.css.
-   Phone rules are the base. Desktop starts at 1024. */
+/* Ambient flock. Phone rules are the base. Desktop starts at 1024. */
 
-@import "../site/tokens.css";
+@import "../../site/tokens.css";
 
 @font-face {
   font-family: "Anton";
   font-style: normal;
   font-weight: var(--weight-regular);
   font-display: swap;
-  src: url("../static/fonts/Anton-latin.woff2") format("woff2");
+  src: url("../../static/fonts/Anton-latin.woff2") format("woff2");
 }
 
 *,
@@ -66,13 +64,18 @@ button {
   cursor: pointer;
 }
 
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
 .skip-link {
   position: absolute;
   left: var(--space-1);
   top: var(--space-0);
   transform: translateY(-120%);
-  background: var(--pink);
-  color: var(--black);
+  background: var(--black);
+  color: var(--pink);
   padding: var(--space-skip);
   z-index: 2;
   text-decoration: none;
