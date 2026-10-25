@@ -1,6 +1,5 @@
 /* Unshared hub. Phone rules are the base. Desktop starts at 1024.
-   The row is the label. A phone with no hover shows the kicker above it.
-   The page is pink, so a tap turns the row black with pink type. */
+   The page is the heading and the row. A tap turns the row black with pink type. */
 
 @import "../../site/tokens.css";
 
@@ -78,8 +77,7 @@ main {
 }
 
 .sign,
-.verb,
-.verb-kicker {
+.verb {
   font-family: var(--display);
   font-weight: var(--weight-regular);
   letter-spacing: var(--track-none);
@@ -127,11 +125,6 @@ main {
   white-space: nowrap;
 }
 
-.verb-kicker {
-  display: none;
-  margin: var(--space-0);
-}
-
 .verb:hover,
 .verb:focus-visible {
   background: var(--black);
@@ -140,14 +133,6 @@ main {
 }
 
 @media (hover: none) and (max-width: 1023px) {
-  .verb-kicker {
-    display: block;
-    margin: var(--space-kicker);
-    color: var(--ink);
-    font-size: var(--type-kicker);
-    line-height: 1.2;
-  }
-
   .verb {
     min-height: var(--hit-phone);
   }

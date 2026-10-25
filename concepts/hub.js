@@ -2,7 +2,7 @@
 
 import { siteConfig } from '../site.config.js';
 import { esc } from '../lib/safe-url.js';
-import { unsharedEntries, unsharedHref, unsharedPrefix } from './entries.js';
+import { unsharedEntries, unsharedHref } from './entries.js';
 
 /**
  * @param {string} [siteUrl]
@@ -35,7 +35,6 @@ export function renderHubDocument(siteUrl = siteConfig.url) {
     <main id="main">
       <h1 class="sign"><a href="/">matt does unshared</a></h1>
       <nav aria-label="unshared">
-        <p class="verb-kicker" aria-hidden="true">${esc(unsharedPrefix)}</p>
         <ol class="verbs">
           ${rows}
         </ol>

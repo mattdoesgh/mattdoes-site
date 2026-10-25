@@ -28,7 +28,8 @@ test('the unshared row is birds1', async ({ page }) => {
   const row = page.locator('a.verb');
   await expect(row).toHaveText('birds1');
   await expect(row).toHaveAttribute('href', '/unshared/birds1/');
-  await expect(page.locator('.verb-prefix')).toHaveCount(0);
+  await expect(page.locator('.verb-prefix, .verb-kicker')).toHaveCount(0);
+  await expect(page.locator('body')).not.toContainText('unshared does');
   const box = await row.boundingBox();
   expect(box.height).toBeGreaterThanOrEqual(44);
 });
