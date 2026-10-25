@@ -53,7 +53,7 @@ export function runBuild({
   cacheDir = makeTempDir('mattdoes-cache-'),
   siteUrl = 'https://mattdoes.online',
   env = {},
-}) {
+} = {}) {
   const childEnv = {
     ...process.env,
     DIST_DIR: distDir,
