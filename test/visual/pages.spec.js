@@ -33,6 +33,11 @@ test('birds1', async ({ page }, info) => {
   const width = info.project.use.viewport.width;
   await page.goto('/unshared/birds1/');
   await page.evaluate(() => document.fonts.ready);
+  const home = page.locator('a.home');
+  await expect(home).toHaveText('matt does');
+  await expect(home).toHaveAttribute('href', '/');
+  const homeBox = await home.boundingBox();
+  expect(homeBox.height).toBeGreaterThanOrEqual(44);
   await expect(page.locator('h1')).toHaveText('birds1');
   await expect(page.locator('#field')).toHaveAttribute('data-motion', 'reduce');
   await expect(page).toHaveScreenshot(`birds1-${width}.png`, { fullPage: true });

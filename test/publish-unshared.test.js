@@ -80,6 +80,9 @@ test('every unshared entry resolves to a built page', () => {
     const builtDoc = new JSDOM(built).window.document;
     assert.doesNotMatch(built, /noindex|mailto:|music\.apple\.com|spotify\.com|bandcamp\.com/i);
     assert.equal(builtDoc.querySelector('h1')?.textContent, 'birds1');
+    assert.equal(builtDoc.querySelector('a.home')?.textContent, 'matt does');
+    assert.equal(builtDoc.querySelector('a.home')?.getAttribute('href'), '/');
+    assert.ok(built.indexOf('class="home"') < built.indexOf('<h1'));
     assert.equal(builtDoc.querySelector('title')?.textContent, 'birds1 · mattdoes.online');
     assert.equal(builtDoc.querySelector('meta[property="og:title"]')?.getAttribute('content'), 'birds1 · mattdoes.online');
     assert.equal(builtDoc.querySelector('meta[name="description"]')?.getAttribute('content'), 'birds1');

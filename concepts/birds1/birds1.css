@@ -95,6 +95,29 @@ main {
   min-height: 0;
 }
 
+.mast {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.home {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--hit);
+  margin: var(--space-0);
+  padding: var(--space-0);
+  font-family: var(--display);
+  font-weight: var(--weight-regular);
+  font-size: var(--type-kicker);
+  letter-spacing: var(--track-none);
+  line-height: 1;
+  color: var(--ink);
+  text-decoration: none;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .sign,
 .play {
   font-family: var(--display);

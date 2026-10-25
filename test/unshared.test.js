@@ -57,6 +57,9 @@ test('unshared has no contact mailto and the hub is the built page', () => {
   const birds = fs.readFileSync(path.join(distDir, 'unshared', 'birds1', 'index.html'), 'utf8');
   const birdsDoc = new JSDOM(birds).window.document;
   assert.equal(birdsDoc.querySelector('h1')?.textContent, 'birds1');
+  assert.equal(birdsDoc.querySelector('a.home')?.textContent, 'matt does');
+  assert.equal(birdsDoc.querySelector('a.home')?.getAttribute('href'), '/');
+  assert.ok(birds.indexOf('class="home"') < birds.indexOf('<h1'));
   assert.equal(birdsDoc.querySelector('title')?.textContent, 'birds1 · mattdoes.online');
   assert.equal(birdsDoc.querySelector('meta[property="og:title"]')?.getAttribute('content'), 'birds1 · mattdoes.online');
 
