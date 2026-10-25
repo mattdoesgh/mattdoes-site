@@ -563,15 +563,15 @@ body[data-polarity="flip"] .total-label {
   color: var(--black);
 }
 
-/* Films count on the left. Poster controls take the right of that row.
-   The count itself does not wrap. If the controls do not fit beside it,
+/* Films count on the left. Poster settings stack on the right of that row.
+   The count itself does not wrap. If the settings do not fit beside it,
    they drop to the next line and stay on the right. Listening keeps .total. */
 .watch-head {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   column-gap: var(--space-md);
-  row-gap: var(--space-0);
+  row-gap: var(--space-tight);
   margin: var(--space-total);
 }
 
@@ -584,65 +584,84 @@ body[data-polarity="flip"] .total-label {
 .poster-controls {
   display: flex;
   flex: 0 0 auto;
-  align-items: baseline;
-  gap: var(--space-row);
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-tight);
   margin-left: auto;
 }
 
 .poster-switch {
-  display: inline-grid;
-  place-items: center;
-  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-row);
   min-height: var(--hit-phone);
   margin: var(--space-0);
-  padding: var(--space-0) var(--space-tight);
+  padding: var(--space-0);
   border: var(--line-none);
   border-radius: var(--radius);
   background: transparent;
   color: inherit;
-  font-family: var(--display);
-  font-size: var(--type-total-label);
+  font-family: var(--body);
+  font-size: var(--type-meta);
   font-weight: var(--weight-regular);
-  letter-spacing: var(--track-none);
+  letter-spacing: var(--track-label);
   line-height: 1;
-  text-transform: none;
+  text-transform: lowercase;
   text-decoration: none;
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
 }
 
-.poster-switch > span {
-  grid-area: 1 / 1;
+.poster-key {
+  flex: 0 0 auto;
 }
 
-.poster-sizer {
-  visibility: hidden;
+.poster-track {
+  display: flex;
+  align-items: stretch;
+  flex: 0 0 auto;
+  min-height: var(--hit-phone);
+  border: var(--line-strong);
+  background: transparent;
 }
 
-.poster-off,
-.axis-down {
-  display: none;
+.poster-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 0 auto;
+  min-width: 4.75em;
+  padding: var(--space-0) var(--space-row);
+  background: transparent;
+  color: inherit;
 }
 
-html[data-posters="off"] .poster-on {
-  display: none;
+.poster-seg + .poster-seg {
+  border-left: var(--line-strong);
 }
 
-html[data-posters="off"] .poster-off {
-  display: block;
+.poster-on,
+.axis-across {
+  background: var(--ink);
+  color: var(--field);
 }
 
+html[data-posters="off"] .poster-on,
 html[data-poster-axis="down"] .axis-across {
-  display: none;
+  background: transparent;
+  color: inherit;
 }
 
+html[data-posters="off"] .poster-off,
 html[data-poster-axis="down"] .axis-down {
-  display: block;
+  background: var(--ink);
+  color: var(--field);
 }
 
-.poster-switch:hover,
-.poster-switch:focus-visible {
+.poster-switch:hover .poster-key,
+.poster-switch:focus-visible .poster-key {
   text-decoration: underline;
   text-underline-offset: 0.08em;
 }
@@ -1582,7 +1601,8 @@ html.is-locked body {
     gap: var(--space-nav-gap-desk);
   }
 
-  .poster-switch {
+  .poster-switch,
+  .poster-track {
     min-height: var(--hit);
   }
 }

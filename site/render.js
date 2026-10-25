@@ -461,7 +461,7 @@ function posterPrefsTag(assets) {
  * @returns {string}
  */
 function posterControls() {
-  return `<span class="poster-controls" role="group" aria-label="poster strip"><button type="button" class="poster-switch" data-posters-toggle aria-pressed="true" aria-controls="feed"><span class="poster-sizer" aria-hidden="true">posters off</span><span class="poster-on">posters on</span><span class="poster-off">posters off</span></button><button type="button" class="poster-switch poster-axis" data-axis-toggle aria-pressed="false" aria-controls="feed"><span class="poster-sizer" aria-hidden="true">across</span><span class="axis-across">across</span><span class="axis-down">down</span></button></span>`;
+  return `<span class="poster-controls" role="group" aria-label="poster strip"><button type="button" class="poster-switch" data-posters-toggle aria-pressed="true" aria-controls="feed" aria-label="posters on"><span class="poster-key">posters</span><span class="poster-track"><span class="poster-seg poster-on">on</span><span class="poster-seg poster-off">off</span></span></button><button type="button" class="poster-switch" data-axis-toggle aria-pressed="false" aria-controls="feed" aria-label="layout across"><span class="poster-key">layout</span><span class="poster-track"><span class="poster-seg axis-across">across</span><span class="poster-seg axis-down">down</span></span></button></span>`;
 }
 
 /**

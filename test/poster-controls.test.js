@@ -54,15 +54,21 @@ test('watching renders posters on and across, and other pages do not', () => {
   assert.equal(axis.getAttribute('type'), 'button');
   assert.equal(posters.getAttribute('aria-pressed'), 'true');
   assert.equal(axis.getAttribute('aria-pressed'), 'false');
+  assert.equal(posters.getAttribute('aria-label'), 'posters on');
+  assert.equal(axis.getAttribute('aria-label'), 'layout across');
   assert.equal(posters.getAttribute('aria-controls'), 'feed');
   assert.equal(axis.getAttribute('aria-controls'), 'feed');
-  assert.equal(posters.querySelector('.poster-on')?.textContent, 'posters on');
-  assert.equal(posters.querySelector('.poster-off')?.textContent, 'posters off');
-  assert.equal(posters.querySelector('.poster-sizer')?.textContent, 'posters off');
-  assert.equal(posters.querySelector('.poster-sizer')?.getAttribute('aria-hidden'), 'true');
+  assert.equal(posters.querySelector('.poster-key')?.textContent, 'posters');
+  assert.equal(posters.querySelector('.poster-on')?.textContent, 'on');
+  assert.equal(posters.querySelector('.poster-off')?.textContent, 'off');
+  assert.equal(axis.querySelector('.poster-key')?.textContent, 'layout');
   assert.equal(axis.querySelector('.axis-across')?.textContent, 'across');
   assert.equal(axis.querySelector('.axis-down')?.textContent, 'down');
-  assert.equal(axis.querySelector('.poster-sizer')?.textContent, 'across');
+  assert.equal(doc.querySelector('.poster-sizer'), null);
+  assert.match(css, /\.poster-controls\s*\{[^}]*flex-direction:\s*column/);
+  assert.match(css, /\.poster-switch\s*\{[^}]*font-family:\s*var\(--body\)/);
+  assert.match(css, /\.poster-track\s*\{[^}]*border:\s*var\(--line-strong\)/);
+  assert.match(css, /\.poster-on,\s*\n\.axis-across\s*\{[^}]*background:\s*var\(--ink\)/);
   assert.equal(doc.querySelector('#feed')?.tagName, 'OL');
   assert.equal(doc.querySelector('.watch-head')?.nextElementSibling?.id, 'feed');
 
@@ -93,7 +99,9 @@ test('the toggles change state, persist, and restore aria-pressed', async () => 
 
   posters.click();
   assert.equal(posters.getAttribute('aria-pressed'), 'false');
+  assert.equal(posters.getAttribute('aria-label'), 'posters off');
   assert.equal(axis.getAttribute('aria-pressed'), 'false');
+  assert.equal(axis.getAttribute('aria-label'), 'layout across');
   assert.equal(root.getAttribute('data-posters'), 'off');
   assert.equal(root.hasAttribute('data-poster-axis'), false);
   assert.equal(live.window.localStorage.getItem('mattdoes-posters'), 'off');
@@ -101,6 +109,7 @@ test('the toggles change state, persist, and restore aria-pressed', async () => 
 
   axis.click();
   assert.equal(axis.getAttribute('aria-pressed'), 'true');
+  assert.equal(axis.getAttribute('aria-label'), 'layout down');
   assert.equal(root.getAttribute('data-poster-axis'), 'down');
   assert.equal(live.window.localStorage.getItem('mattdoes-poster-axis'), 'down');
   assert.equal(root.getAttribute('data-posters'), 'off');
@@ -118,7 +127,9 @@ test('the toggles change state, persist, and restore aria-pressed', async () => 
   assert.equal(stored.window.document.documentElement.getAttribute('data-posters'), 'off');
   assert.equal(stored.window.document.documentElement.getAttribute('data-poster-axis'), 'down');
   assert.equal(stored.window.document.querySelector('[data-posters-toggle]').getAttribute('aria-pressed'), 'false');
+  assert.equal(stored.window.document.querySelector('[data-posters-toggle]').getAttribute('aria-label'), 'posters off');
   assert.equal(stored.window.document.querySelector('[data-axis-toggle]').getAttribute('aria-pressed'), 'true');
+  assert.equal(stored.window.document.querySelector('[data-axis-toggle]').getAttribute('aria-label'), 'layout down');
 
   const junk = domWith({ 'mattdoes-posters': 'maybe', 'mattdoes-poster-axis': 'up' });
   assert.equal(junk.window.document.documentElement.hasAttribute('data-posters'), false);
