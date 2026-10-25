@@ -33,9 +33,32 @@ test('birds1', async ({ page }, info) => {
   const width = info.project.use.viewport.width;
   await page.goto('/unshared/birds1/');
   await page.evaluate(() => document.fonts.ready);
+  const home = page.locator('a.home');
+  await expect(home).toHaveText('matt does');
+  await expect(home).toHaveAttribute('href', '/');
+  const homeBox = await home.boundingBox();
+  expect(homeBox.height).toBeGreaterThanOrEqual(44);
+  const hitsHome = await home.evaluate((el) => {
+    const box = el.getBoundingClientRect();
+    const xs = [box.left + 8, box.left + box.width / 2];
+    const ys = [box.top + 4, box.top + box.height / 2, box.bottom - 4];
+    return ys.every((y) => xs.every((x) => document.elementFromPoint(x, y) === el));
+  });
+  expect(hitsHome).toBe(true);
+  const canvasShare = await page.evaluate(() => {
+    const box = document.querySelector('canvas').getBoundingClientRect();
+    return box.height / window.innerHeight;
+  });
+  expect(canvasShare).toBeGreaterThan(0.55);
   await expect(page.locator('h1')).toHaveText('birds1');
   await expect(page.locator('#field')).toHaveAttribute('data-motion', 'reduce');
   await expect(page).toHaveScreenshot(`birds1-${width}.png`, { fullPage: true });
+  await home.focus();
+  const ring = await home.evaluate((el) => {
+    const style = getComputedStyle(el);
+    return { color: style.outlineColor, style: style.outlineStyle, width: style.outlineWidth };
+  });
+  expect(ring).toEqual({ color: 'rgb(0, 0, 0)', style: 'solid', width: '3px' });
 });
 
 test('footer', async ({ page }, info) => {
