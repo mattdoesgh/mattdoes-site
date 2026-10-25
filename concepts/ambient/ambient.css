@@ -124,6 +124,7 @@ main {
   height: 100%;
   background: transparent;
   touch-action: none;
+  overscroll-behavior: none;
   cursor: crosshair;
 }
 

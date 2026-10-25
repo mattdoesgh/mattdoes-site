@@ -3,9 +3,13 @@
 // schedule another one for that play.
 
 import {
+  HEX_H,
   VOICE_COUNT,
+  ZOOM_MAX,
+  ZOOM_MIN,
   createFlock,
   createVoiceBook,
+  hexRing,
   shouldSchedule,
   stepFlock,
 } from '../flock-model.js';
@@ -18,7 +22,7 @@ const periods = [21, 17, 25, 18, 31, 19.6, 22];
 const tightChord = [130.81, 196, 261.63, 311.13, 392];
 const openChord = [174.61, 207.65, 261.63, 277.18, 349.23, 415.3];
 
-const view = { yaw: 0.4, pitch: 0.18, finger: null };
+const view = { yaw: 0.4, pitch: 0.22, dist: 3.85, finger: null, focus: null };
 const audio = { ctx: null, master: null, on: false };
 let graph = null;
 let clock = 0;
@@ -26,6 +30,7 @@ let raf = 0;
 let hidden = false;
 let retire = [];
 let cohesion = 0.5;
+let mood = 'drift';
 
 const $ = (sel) => document.querySelector(sel);
 const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
@@ -157,7 +162,7 @@ function look() {
   const sp = Math.sin(view.pitch);
   const sy = Math.sin(view.yaw);
   const cy = Math.cos(view.yaw);
-  const dist = 4.3;
+  const dist = view.dist;
   const eye = { x: sy * cp * dist, y: sp * dist * 0.85, z: cy * cp * dist };
   const fl = Math.hypot(eye.x, eye.y, eye.z) || 1;
   const forward = { x: -eye.x / fl, y: -eye.y / fl, z: -eye.z / fl };
@@ -180,8 +185,9 @@ function project(p, cam, w, h) {
   const x = dx * cam.right.x + dy * cam.right.y + dz * cam.right.z;
   const y = dx * cam.up.x + dy * cam.up.y + dz * cam.up.z;
   const z = dx * cam.forward.x + dy * cam.forward.y + dz * cam.forward.z;
-  if (z < 0.2) return null;
-  const f = (h * 0.52) / z;
+  if (z < 0.15) return null;
+  const basis = Math.max(Math.min(w, h), w * 0.58);
+  const f = (basis * 0.86) / z;
   return { x: w * 0.5 + x * f, y: h * 0.5 - y * f, f, z };
 }
 
@@ -205,33 +211,60 @@ function placeListener(ctx, cam, t) {
   glide(listener.upZ, cam.up.z, t);
 }
 
+function closeness() {
+  return clamp((ZOOM_MAX - view.dist) / (ZOOM_MAX - ZOOM_MIN), 0, 1);
+}
+
+function voicedBird(voice) {
+  return birds[voice.bird];
+}
+
+function isHot(bird) {
+  if (view.focus == null || !bird) return false;
+  const focus = birds[view.focus];
+  if (bird === focus) return true;
+  return Math.hypot(bird.x - focus.x, bird.y - focus.y, bird.z - focus.z) < 0.9;
+}
+
+function applyFocus(index) {
+  view.focus = index == null || index < 0 ? null : index;
+  if (!graph) return;
+  for (let i = 0; i < VOICE_COUNT; i += 1) graph.voices[i].bird = i;
+  if (view.focus != null && view.focus >= VOICE_COUNT) graph.voices[0].bird = view.focus;
+}
+
 function syncSpace() {
   if (!audio.on || !graph || !audio.ctx) return;
   const cam = look();
   const t = audio.ctx.currentTime;
+  const close = closeness();
   try { placeListener(audio.ctx, cam, t); } catch { /* older listener */ }
-  let distSum = 0;
   for (let i = 0; i < VOICE_COUNT; i += 1) {
-    const bird = birds[i];
     const voice = graph.voices[i];
+    const bird = voicedBird(voice);
     const speed = Math.hypot(bird.vx, bird.vy, bird.vz);
-    const bright = clamp(240 + speed * 3400 + bird.turn * 2200, 180, 5200);
+    const hot = isHot(bird);
+    const bright = clamp(
+      280 + speed * 2600 + bird.turn * 1600 + close * 2400 + bird.wall * 1800 + (mood === 'scatter' ? 1400 : 0),
+      200,
+      6800,
+    );
     glide(voice.filter.frequency, bright, t);
-    glide(voice.panner.positionX, bird.x * 2, t);
-    glide(voice.panner.positionY, bird.y * 2, t);
-    glide(voice.panner.positionZ, bird.z * 2, t);
-    const dist = Math.hypot(bird.x, bird.y, bird.z);
-    distSum += dist;
-    const density = clamp(bird.near / 6, 0, 1);
-    glide(voice.send.gain, 0.04 + dist * 0.12 + (1 - density) * 0.08, t);
+    voice.filter.Q.value = 0.55 + close * 0.7;
+    glide(voice.panner.positionX, bird.x, t);
+    glide(voice.panner.positionY, bird.y, t);
+    glide(voice.panner.positionZ, bird.z, t);
+    const dry = (0.24 + close * 0.9) * (hot ? 1.55 : 1);
+    glide(voice.dry.gain, dry, t);
+    const room = clamp((0.46 - close * 0.36) + bird.wall * 0.12 + (mood === 'gather' ? -0.06 : 0.04), 0.03, 0.72);
+    glide(voice.send.gain, room, t);
   }
-  const mean = distSum / VOICE_COUNT;
-  glide(graph.delay.delayTime, clamp(0.18 + mean * 0.28, 0.12, 0.9), t);
-  glide(graph.fb.gain, clamp(0.12 + (1 - cohesion) * 0.28, 0.08, 0.46), t);
-  glide(graph.wet.gain, clamp(0.18 + mean * 0.22, 0.12, 0.7), t);
+  glide(graph.delay.delayTime, clamp(0.14 + (1 - close) * 0.5, 0.1, 0.78), t);
+  glide(graph.fb.gain, clamp(0.12 + (1 - close) * 0.26 + (mood === 'scatter' ? 0.06 : 0), 0.08, 0.44), t);
+  glide(graph.wet.gain, clamp(0.68 - close * 0.5 + (mood === 'gather' ? -0.08 : 0.04), 0.08, 0.78), t);
 }
 
-function tone(voice, time, freq, peak, attack, release, type, gen) {
+function tone(voice, time, freq, peak, attack, release, type, gen, bird, hold = true) {
   const ctx = audio.ctx;
   const osc = ctx.createOscillator();
   const g = env(ctx, time, peak, attack, release);
@@ -248,7 +281,8 @@ function tone(voice, time, freq, peak, attack, release, type, gen) {
   osc.start(time);
   osc.stop(end);
   osc.onended = () => book.drop(entry);
-  voice.until = end;
+  if (hold) voice.until = end;
+  if (bird) bird.pulse = 1;
 }
 
 function start() {
@@ -292,9 +326,9 @@ function start() {
     const panner = ctx.createPanner();
     panner.panningModel = 'HRTF';
     panner.distanceModel = 'inverse';
-    panner.refDistance = 0.9;
-    panner.maxDistance = 24;
-    panner.rolloffFactor = 1.15;
+    panner.refDistance = 1.15;
+    panner.maxDistance = 28;
+    panner.rolloffFactor = 0.72;
     const dry = ctx.createGain();
     dry.gain.value = 0.82;
     const room = ctx.createGain();
@@ -304,7 +338,7 @@ function start() {
     dry.connect(audio.master);
     panner.connect(room);
     room.connect(send);
-    voices.push({ filter, panner, dry, send: room, until: 0 });
+    voices.push({ filter, panner, dry, send: room, until: 0, bird: i });
   }
 
   const sub = ctx.createOscillator();
@@ -325,26 +359,51 @@ function start() {
   book.track({ node: sub2, start: t0 }, gen);
 
   graph = { voices, delay, damp, fb, wet, verb, send, subGain, impulseTimer: 0 };
+  applyFocus(view.focus);
   const next = periods.map((period, i) => t0 + (period % 5) * 0.17 + i * 0.05);
   clock = setInterval(() => {
     if (!shouldSchedule(book, gen) || !audio.ctx || !graph) return;
     const now = audio.ctx.currentTime;
     const horizon = now + 0.28;
-    const tight = cohesion > 0.58;
+    const close = closeness();
     for (let i = 0; i < VOICE_COUNT; i += 1) {
       const voice = graph.voices[i];
+      const bird = voicedBird(voice);
+      if (bird.wall > 0.62 && !bird.armed) {
+        bird.armed = true;
+        bird.pluck = true;
+      }
+      if (bird.wall < 0.28) bird.armed = false;
+      if (bird.pluck && shouldSchedule(book, gen)) {
+        bird.pluck = false;
+        const height = clamp((bird.y + HEX_H) / (HEX_H * 2), 0, 1);
+        const freq = openChord[Math.min(openChord.length - 1, Math.round(height * (openChord.length - 1)))] * 2;
+        tone(voice, now + 0.02, freq, 0.016, 0.01, 0.16, 'sine', gen, bird);
+      }
       if (next[i] > horizon || voice.until > now + 0.05) continue;
-      const bird = birds[i];
-      const height = clamp((bird.y + 1.5) / 3, 0, 1);
-      const pool = tight ? tightChord : openChord;
-      const freq = pool[Math.min(pool.length - 1, Math.round(height * (pool.length - 1)))];
-      const density = clamp(0.35 + bird.near / 8, 0.35, 1);
-      const peak = (tight ? 0.04 : 0.022) * density;
-      const dur = tight ? 1.5 + height * 0.8 : 0.09 + (1 - cohesion) * 0.05;
-      const attack = tight ? 0.35 : 0.012;
-      tone(voice, Math.max(next[i], now + 0.02), freq, peak, attack, dur, tight ? 'sine' : 'triangle', gen);
-      const gap = tight ? 0.7 + periods[i] * 0.025 : periods[i] * 0.22;
-      next[i] += gap;
+      const hot = isHot(bird);
+      const local = bird.near >= 2 || mood === 'gather';
+      const scatter = mood === 'scatter';
+      if (scatter && !hot && i % 2 === 1) {
+        next[i] = now + periods[i] * 0.34;
+        continue;
+      }
+      const height = clamp((bird.y + HEX_H) / (HEX_H * 2), 0, 1);
+      const pool = scatter ? openChord : (local ? tightChord : openChord);
+      let freq = pool[Math.min(pool.length - 1, Math.round(height * (pool.length - 1)))];
+      if (scatter) freq *= 2;
+      const density = clamp(0.4 + bird.near / 6, 0.4, 1);
+      const swell = local && !scatter;
+      const peak = (swell ? 0.045 : 0.02) * density * (hot ? 1.7 : 1);
+      const dur = swell ? 1.7 + height * 0.9 : 0.08 + (scatter ? 0.03 : 0.05);
+      const attack = swell ? 0.32 : 0.012;
+      const when = Math.max(next[i], now + 0.02);
+      tone(voice, when, freq, peak, attack, dur, swell ? 'sine' : 'triangle', gen, bird);
+      if (close > 0.55) {
+        tone(voice, when, freq * 2, peak * 0.2 * close, attack, dur * 0.75, 'sine', gen, null, false);
+      }
+      const gap = swell ? 0.55 + periods[i] * 0.02 : periods[i] * (scatter ? 0.42 : 0.24);
+      next[i] += hot ? gap * 0.62 : gap;
       if (next[i] < now) next[i] = now + gap;
     }
   }, 40);
@@ -398,6 +457,39 @@ function fit(canvas) {
   return { w, h };
 }
 
+function cageDots() {
+  const dots = [];
+  const top = hexRing(HEX_H);
+  const bottom = hexRing(-HEX_H);
+  for (const ring of [top, bottom]) {
+    for (let i = 0; i < ring.length; i += 1) {
+      const a = ring[i];
+      const b = ring[(i + 1) % ring.length];
+      for (let s = 0; s < 10; s += 1) {
+        const t = s / 10;
+        dots.push({
+          x: a.x + (b.x - a.x) * t,
+          y: a.y,
+          z: a.z + (b.z - a.z) * t,
+        });
+      }
+    }
+  }
+  for (let i = 0; i < top.length; i += 1) {
+    for (let s = 1; s < 8; s += 1) {
+      const t = s / 8;
+      dots.push({
+        x: top[i].x,
+        y: top[i].y + (bottom[i].y - top[i].y) * t,
+        z: top[i].z,
+      });
+    }
+  }
+  return dots;
+}
+
+const cage = cageDots();
+
 function draw() {
   const canvas = $('#field');
   const { w, h } = fit(canvas);
@@ -408,28 +500,62 @@ function draw() {
   g.fillRect(0, 0, w, h);
   g.fillStyle = pink;
   const time = reduce ? 0 : performance.now() * 0.001;
-  const order = birds.map((bird, index) => ({ bird, index, depth: 0 }));
-  for (const item of order) {
-    const p = project(item.bird, cam, w, h);
-    item.depth = p ? p.z : 999;
-    item.p = p;
+  const marks = [];
+  for (let i = 0; i < cage.length; i += 1) {
+    const p = project(cage[i], cam, w, h);
+    if (p) marks.push({ p, kind: 'cage' });
   }
-  order.sort((a, b) => b.depth - a.depth);
-  for (const item of order) {
-    if (!item.p) continue;
-    const bird = item.bird;
-    const scatter = 0.05 + (1 - cohesion) * 0.16 + (1 - clamp(bird.near / 7, 0, 1)) * 0.06;
+  for (let i = 0; i < birds.length; i += 1) {
+    const p = project(birds[i], cam, w, h);
+    if (p) marks.push({ p, kind: 'bird', index: i });
+  }
+  if (view.finger) {
+    const p = project(view.finger, cam, w, h);
+    if (p) marks.push({ p, kind: 'finger' });
+  }
+  marks.sort((a, b) => b.p.z - a.p.z);
+  for (const mark of marks) {
+    if (mark.kind === 'cage') {
+      const radius = clamp(mark.p.f * 0.012, 0.8, 2.4);
+      g.globalAlpha = clamp(0.22 + mark.p.f * 0.08, 0.18, 0.55);
+      g.beginPath();
+      g.arc(mark.p.x, mark.p.y, radius, 0, Math.PI * 2);
+      g.fill();
+      continue;
+    }
+    if (mark.kind === 'finger') {
+      const spread = mood === 'scatter' ? 0.16 : 0.05;
+      for (let k = 0; k < 4; k += 1) {
+        const ang = time * 1.2 + k * 1.57;
+        const p = project({
+          x: view.finger.x + Math.cos(ang) * spread,
+          y: view.finger.y + Math.sin(ang * 1.3) * spread * 0.6,
+          z: view.finger.z + Math.sin(ang) * spread,
+        }, cam, w, h);
+        if (!p) continue;
+        g.globalAlpha = mood === 'scatter' ? 0.85 : 0.55;
+        g.beginPath();
+        g.arc(p.x, p.y, clamp(p.f * 0.02, 1.2, 4), 0, Math.PI * 2);
+        g.fill();
+      }
+      continue;
+    }
+    const bird = birds[mark.index];
+    const hot = isHot(bird);
+    const open = mood === 'scatter' ? 0.2 : mood === 'gather' ? 0.04 : 0.08 + (1 - clamp(bird.near / 4, 0, 1)) * 0.07;
+    const pulse = bird.pulse || 0;
     for (let k = 0; k < bird.dots.length; k += 1) {
       const dot = bird.dots[k];
-      const wobble = reduce ? 0 : Math.sin(time * 2.4 + item.index * 1.7 + k) * 0.025;
+      const wobble = reduce ? 0 : Math.sin(time * 2.4 + mark.index * 1.7 + k) * 0.02;
+      const puff = open * (1 + pulse * 0.8);
       const p = project({
-        x: bird.x + dot.ox * scatter + wobble,
-        y: bird.y + dot.oy * scatter,
-        z: bird.z + dot.oz * scatter * 0.8,
+        x: bird.x + dot.ox * puff + wobble,
+        y: bird.y + dot.oy * puff,
+        z: bird.z + dot.oz * puff * 0.8,
       }, cam, w, h);
       if (!p) continue;
-      const radius = clamp(p.f * (0.018 + scatter * 0.04), 1.1, 7);
-      g.globalAlpha = clamp(0.35 + p.f * 0.45, 0.25, 1);
+      const radius = clamp(p.f * (0.016 + puff * 0.05) * (1 + pulse * 0.9 + (hot ? 0.28 : 0)), 1.1, 9);
+      g.globalAlpha = clamp(0.32 + p.f * 0.4 + pulse * 0.5 + (hot ? 0.28 : 0), 0.25, 1);
       g.beginPath();
       g.arc(p.x, p.y, radius, 0, Math.PI * 2);
       g.fill();
@@ -443,10 +569,15 @@ function frame(now) {
   if (hidden) return;
   const dt = Math.min(0.05, (now - (frame.last || now)) / 1000 || 0.016);
   frame.last = now;
+  const pointersDown = pointers.size > 0;
   if (!reduce) {
-    view.yaw += dt * 0.16;
+    if (!pointersDown) view.yaw += dt * 0.11;
     const state = stepFlock(birds, dt, view.finger, false);
     cohesion = state.cohesion;
+    mood = state.mode;
+    for (let i = 0; i < birds.length; i += 1) {
+      birds[i].pulse = Math.max(0, birds[i].pulse - dt * 1.35);
+    }
     if (audio.on) syncSpace();
     draw();
     raf = requestAnimationFrame(frame);
@@ -454,6 +585,7 @@ function frame(now) {
   }
   const state = stepFlock(birds, dt, view.finger, true);
   cohesion = state.cohesion;
+  mood = state.mode;
   draw();
 }
 
@@ -470,46 +602,137 @@ function paint() {
   raf = requestAnimationFrame(frame);
 }
 
-function point(event) {
+function point(event, dx, dy) {
   const canvas = $('#field');
   const rect = canvas.getBoundingClientRect();
   const nx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   const ny = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
   const cam = look();
-  const span = 1.35;
+  const span = 1.55;
   view.finger = {
-    x: cam.right.x * nx * span + cam.up.x * ny * span * 0.8,
-    y: cam.right.y * nx * span + cam.up.y * ny * span * 0.8,
-    z: cam.right.z * nx * span + cam.up.z * ny * span * 0.8,
+    x: cam.right.x * nx * span + cam.up.x * ny * span * 0.75,
+    y: cam.right.y * nx * span + cam.up.y * ny * span * 0.75,
+    z: cam.right.z * nx * span + cam.up.z * ny * span * 0.75,
   };
-  view.yaw += (event.movementX || 0) * 0.0025;
-  view.pitch = clamp(view.pitch + (event.movementY || 0) * -0.0015, -0.35, 0.7);
+  view.yaw += dx * 0.0042;
+  view.pitch = clamp(view.pitch - dy * 0.0028, -0.5, 0.85);
+  if (audio.on) syncSpace();
+  if (reduce) paint();
+}
+
+function pickBird(event) {
+  const canvas = $('#field');
+  const rect = canvas.getBoundingClientRect();
+  const cam = look();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+  let best = -1;
+  let bestD = 36;
+  for (let i = 0; i < birds.length; i += 1) {
+    const p = project(birds[i], cam, rect.width, rect.height);
+    if (!p) continue;
+    const dist = Math.hypot(p.x - x, p.y - y);
+    if (dist < bestD) {
+      bestD = dist;
+      best = i;
+    }
+  }
+  applyFocus(best);
+  if (audio.on) syncSpace();
+  if (reduce) paint();
+}
+
+function pinchSpan() {
+  const pts = [...pointers.values()];
+  if (pts.length < 2) return 0;
+  return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+}
+
+function setZoom(next) {
+  view.dist = clamp(next, ZOOM_MIN, ZOOM_MAX);
+  if (audio.on) syncSpace();
   if (reduce) paint();
 }
 
 const field = $('#field');
-let dragging = false;
+const pointers = new Map();
+let pinchDist = 0;
+let gestureZoom = 0;
+let travel = 0;
+let downAt = 0;
+
 field.addEventListener('pointerdown', (event) => {
-  dragging = true;
+  pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
   try { field.setPointerCapture(event.pointerId); } catch { /* the point still lands */ }
-  point(event);
+  if (pointers.size === 1) {
+    travel = 0;
+    downAt = performance.now();
+    pinchDist = 0;
+  } else {
+    view.finger = null;
+    pinchDist = pinchSpan();
+    travel = 99;
+  }
 });
 field.addEventListener('pointermove', (event) => {
-  if (!dragging) return;
-  point(event);
+  const prev = pointers.get(event.pointerId);
+  if (!prev) return;
+  const dx = event.clientX - prev.x;
+  const dy = event.clientY - prev.y;
+  pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  if (pointers.size >= 2) {
+    const span = pinchSpan();
+    if (pinchDist > 8 && span > 8) setZoom(view.dist * (pinchDist / span));
+    pinchDist = span;
+    view.finger = null;
+    travel = 99;
+    return;
+  }
+  travel += Math.abs(dx) + Math.abs(dy);
+  if (travel > 7) point(event, dx, dy);
 });
-function release() {
-  dragging = false;
-  view.finger = null;
+function release(event) {
+  const tap = pointers.size === 1 && travel < 8 && performance.now() - downAt < 420;
+  pointers.delete(event.pointerId);
+  if (pointers.size === 0) {
+    view.finger = null;
+    pinchDist = 0;
+    if (tap) pickBird(event);
+  } else if (pointers.size === 1) {
+    pinchDist = 0;
+    travel = 99;
+  }
 }
 field.addEventListener('pointerup', release);
-field.addEventListener('pointercancel', release);
+field.addEventListener('pointercancel', (event) => {
+  pointers.delete(event.pointerId);
+  view.finger = null;
+  pinchDist = 0;
+  travel = 99;
+});
+field.addEventListener('wheel', (event) => {
+  event.preventDefault();
+  const line = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 140 : 1;
+  const gain = event.ctrlKey ? 0.01 : 0.0015;
+  setZoom(view.dist * Math.exp(event.deltaY * line * gain));
+}, { passive: false });
+field.addEventListener('gesturestart', (event) => {
+  event.preventDefault();
+  gestureZoom = view.dist;
+});
+field.addEventListener('gesturechange', (event) => {
+  event.preventDefault();
+  const scale = event.scale || 1;
+  setZoom(gestureZoom / scale);
+});
 field.addEventListener('keydown', (event) => {
   const step = event.shiftKey ? 0.08 : 0.04;
   if (event.key === 'ArrowRight') view.yaw += step;
   else if (event.key === 'ArrowLeft') view.yaw -= step;
-  else if (event.key === 'ArrowUp') view.pitch = clamp(view.pitch + step, -0.35, 0.7);
-  else if (event.key === 'ArrowDown') view.pitch = clamp(view.pitch - step, -0.35, 0.7);
+  else if (event.key === 'ArrowUp') view.pitch = clamp(view.pitch + step, -0.5, 0.85);
+  else if (event.key === 'ArrowDown') view.pitch = clamp(view.pitch - step, -0.5, 0.85);
+  else if (event.key === '+' || event.key === '=') setZoom(view.dist * 0.92);
+  else if (event.key === '-' || event.key === '_') setZoom(view.dist * 1.08);
   else return;
   event.preventDefault();
   paint();

@@ -10,9 +10,11 @@ Adding a row is one object in `unsharedEntries`, plus a folder `concepts/<slug>/
 
 ## Ambient
 
-`/unshared/ambient/` is a flock. Thirty-two birds, five dots each, one hundred and sixty particles. Seven of the birds are voices. Each voice is a Web Audio panner at the bird, with the listener at the camera. The picture is canvas 2D with a manual perspective. There are no audio files and no libraries.
+`/unshared/ambient/` is a flock inside a dotted hexagonal prism. Thirty-two birds, five dots each, one hundred and sixty particles. Seven of the birds are voices. Each voice is a Web Audio panner at the bird, and the listener sits on the camera, so turning the view pans the flock around you. The picture is canvas 2D with a manual perspective. There are no audio files and no libraries.
 
-Nothing is audible until play. Dragging before that only moves the picture. A finger close to a bird scatters the flock. Farther away it draws them in. A tight flock swells on a close chord. A scattered flock plucks an open one. Height picks the tone, speed and turning open the filter, neighbors set the loudness, and distance feeds the room. A dry pair near 55 Hz sits under it. The volume slider starts at 35, and a compressor sits in front of the speakers.
+The birds keep their distance, follow a few leaders, and wander, so the flock spreads through the prism and breaks into shifting groups. The prism is drawn in the same pink dots. A bird that nears a wall is steered back in. The wall also opens the filter and lets a soft high pluck through.
+
+Nothing is audible until play. One finger, or a mouse drag, turns the camera and places the pointer in the flock. Close to a bird, the pointer scatters them into sparse high plucks. Farther away it gathers them into consonant swells. The wheel, a trackpad pinch, or a two-finger pinch zooms. Zooming in is louder, drier, and brighter. Zooming out is distant and washed in the room. A tap on a bird, or on its group, makes that voice louder and more present. A tap on empty space lets it go. A voiced bird's dots brighten while its note is sounding. The canvas does not scroll or zoom the page. A dry pair near 55 Hz sits under it. The volume slider starts at 35, and a compressor sits in front of the speakers.
 
 Play is a toggle. Stop ramps the master to silence in about 50ms, drops every oscillator in that play, and disconnects the delay. The next play starts clean. Leaving the page or hiding the tab runs the same stop. Reduced motion holds the flock still and still plays. A hidden tab stops drawing.
 
@@ -28,4 +30,4 @@ The context stays suspended until the play tap, and `resume()` runs inside that 
 
 ## Bundle
 
-`concepts/ambient/ambient.js` is 16,541 bytes, 5,203 bytes gzipped. `concepts/flock-model.js` is 6,042 bytes, 1,945 bytes gzipped. The page loads both. Seven voices. One hundred and sixty particles.
+`concepts/ambient/ambient.js` is 23,687 bytes, 6,977 bytes gzipped. `concepts/flock-model.js` is 9,803 bytes, 3,155 bytes gzipped. The page loads both. Seven voices. One hundred and sixty particles.
