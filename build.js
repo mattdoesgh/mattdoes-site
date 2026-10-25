@@ -24,7 +24,6 @@ import { siteConfig } from './site.config.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST_DIR = path.resolve(process.env.DIST_DIR || path.join(__dirname, 'dist'));
 const CACHE_DIR = path.resolve(process.env.CACHE_DIR || path.join(__dirname, '.cache'));
-const CONTENT_DIR = process.env.CONTENT_DIR || path.resolve(__dirname, 'content');
 const SITE_URL = process.env.SITE_URL || siteConfig.url || 'https://mattdoes.online';
 
 const t0 = Date.now();
@@ -40,7 +39,6 @@ const watches = await mirrorPosters(rawWatches);
 
 const { distSize } = await emit({
   distDir: DIST_DIR,
-  contentDir: CONTENT_DIR,
   siteUrl: SITE_URL,
   lastfmTracks,
   scrobbleTotal,
