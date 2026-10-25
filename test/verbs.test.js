@@ -13,8 +13,8 @@ import { verbs, sitemapPaths, SECRET_PATHS, unsharedEnabled, assertRegistry, val
 let distDir;
 test.before(() => { ({ distDir } = buildFixtureVault()); });
 
-test('the registry names watching and listening while unshared is offline', () => {
-  assert.equal(unsharedEnabled, false);
+test('the home menu names watching and listening while unshared is published beside it', () => {
+  assert.equal(unsharedEnabled, true);
   const slugs = verbs.map((verb) => verb.slug);
   assert.deepEqual(slugs, ['watching', 'listening']);
   assert.equal(new Set(slugs).size, slugs.length);
@@ -193,26 +193,32 @@ test('nothing public is built outside the registry except / and /404', () => {
     '404.html',
     ...verbs.map((verb) => `${verb.slug}/index.html`),
     ...SECRET_PATHS.map((route) => `${route.replace(/^\//, '').replace(/\/$/, '')}/index.html`),
+    'unshared/index.html',
+    'unshared/birds1/index.html',
   ]);
   const html = listDistHtml(distDir).map((file) => path.relative(distDir, file).split(path.sep).join('/'));
   assert.deepEqual(html.filter((file) => !allowed.has(file)), []);
   const sitemap = readDist(distDir, 'sitemap.xml');
-  assert.equal(sitemap.includes('/unshared/'), false);
+  assert.ok(sitemap.includes('<loc>https://mattdoes.online/unshared/</loc>'));
+  assert.ok(sitemap.includes('<loc>https://mattdoes.online/unshared/birds1/</loc>'));
   assert.equal(sitemap.includes('/frequency/'), false);
   assert.equal(sitemap.includes('/movies/'), false);
   assert.equal(sitemap.includes('<loc>https://mattdoes.online/watch/</loc>'), false);
   assert.equal(sitemap.includes('<loc>https://mattdoes.online/listen/</loc>'), false);
   assert.equal(sitemap.includes('/digs/'), false);
-  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), false);
+  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), true);
+  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'birds1', 'index.html')), true);
   assert.equal(fs.existsSync(path.join(distDir, 'frequency', 'index.html')), false);
   const home = readDist(distDir, 'index.html');
   assert.equal(home.includes('/unshared/'), false);
   assert.doesNotMatch(home, /frequency|lucia|luciadoes/i);
 });
 
-test('/unshared/ is not built and no built file links to it or names the mailto', () => {
-  assert.equal(unsharedEnabled, false);
-  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), false);
+test('the home page does not link to unshared, and no built file names the mailto', () => {
+  assert.equal(unsharedEnabled, true);
+  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), true);
+  const home = readDist(distDir, 'index.html');
+  assert.equal(home.includes('/unshared/'), false);
   const files = [];
   const walk = (dir) => {
     for (const name of fs.readdirSync(dir)) {
@@ -226,8 +232,10 @@ test('/unshared/ is not built and no built file links to it or names the mailto'
   for (const file of files) {
     const text = fs.readFileSync(file).toString('latin1');
     const rel = path.relative(distDir, file);
-    assert.equal(text.includes('/unshared/'), false, rel);
     assert.equal(text.includes('luciadoes+unshared@'), false, rel);
+    const name = rel.split(path.sep).join('/');
+    if (name === 'sitemap.xml' || name.startsWith('unshared/')) continue;
+    assert.equal(text.includes('/unshared/'), false, rel);
   }
 });
 
@@ -247,6 +255,10 @@ test('/frequency/ is not built and no built HTML or JS names it', () => {
   assert.ok(built.length > 0);
   for (const file of built) {
     const text = fs.readFileSync(file, 'utf8');
-    assert.equal(text.includes('frequency'), false, path.relative(distDir, file));
+    const rel = path.relative(distDir, file).split(path.sep).join('/');
+    assert.equal(text.includes('/frequency/'), false, rel);
+    // birds1 sets AudioParam.frequency. That property is not the secret page.
+    if (rel.startsWith('unshared/')) continue;
+    assert.equal(text.includes('frequency'), false, rel);
   }
 });

@@ -24,22 +24,9 @@ import {
   windAt,
   writeLattice,
 } from '../flock-model.js';
-import { holdMotion } from './motion.js';
 
 const reduceQuery = matchMedia('(prefers-reduced-motion: reduce)');
-const coarseQuery = matchMedia('(pointer: coarse)');
-const hoverQuery = matchMedia('(hover: none)');
-const fineQuery = matchMedia('(pointer: fine)');
-
-function readReduce() {
-  return holdMotion(reduceQuery.matches, {
-    coarse: coarseQuery.matches,
-    hoverNone: hoverQuery.matches,
-    fine: fineQuery.matches,
-  });
-}
-
-let reduce = readReduce();
+let reduce = reduceQuery.matches;
 const book = createVoiceBook();
 const birds = createFlock();
 // The 2/1 loop ratios, stretched so the swells and the silences are longer.
@@ -1356,7 +1343,7 @@ document.addEventListener('visibilitychange', () => {
 });
 window.addEventListener('pagehide', hide);
 function applyMotionPreference() {
-  const next = readReduce();
+  const next = reduceQuery.matches;
   const turnedOn = next && !reduce;
   reduce = next;
   if (turnedOn) {
@@ -1365,9 +1352,7 @@ function applyMotionPreference() {
   }
   paint();
 }
-for (const query of [reduceQuery, coarseQuery, hoverQuery, fineQuery]) {
-  query.addEventListener('change', applyMotionPreference);
-}
+reduceQuery.addEventListener('change', applyMotionPreference);
 addEventListener('resize', paint);
 armAuto(performance.now());
 setInterval(() => {

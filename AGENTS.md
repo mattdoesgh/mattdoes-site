@@ -1,6 +1,6 @@
 # Agent notes
 
-The site is a short list of verbs. `site/verbs.ts` is the registry. Each verb has a slug (the URL) and a separate label. The visible heading is `matt does ` plus the label: letterboxd at `/watching/`, last.fm at `/listening/`. `/unshared/` stays offline while `unsharedEnabled` is false in `site/verbs.ts`; the renderer stays. The home menu, the routes, and the sitemap come from the published verbs. An unknown source or a missing renderer fails the build. `/frequency/` is a noindex secret: it is not in the registry or the sitemap, and it stays offline while `SECRET_PATHS` is empty.
+The site is a short list of verbs. `site/verbs.ts` is the registry. Each verb has a slug (the URL) and a separate label. The visible heading is `matt does ` plus the label: letterboxd at `/watching/`, last.fm at `/listening/`. `/unshared/` is published (the hub and `/unshared/birds1/`) and both are in the sitemap. They stay off the home menu. The home menu and the verb routes come from the published verbs. An unknown source or a missing renderer fails the build. `/frequency/` is a noindex secret: it is not in the registry or the sitemap, and it stays offline while `SECRET_PATHS` is empty.
 
 This site does not keep legacy redirects. Old paths are not redirected.
 

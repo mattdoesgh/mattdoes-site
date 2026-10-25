@@ -159,21 +159,6 @@ main {
   outline-color: var(--pink);
 }
 
-.outlinks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-outlinks-gap);
-  margin: var(--space-outlinks);
-  padding: var(--space-0);
-  list-style: none;
-}
-
-.outlinks a {
-  min-height: var(--hit);
-  display: inline-flex;
-  align-items: center;
-}
-
 @media (hover: hover) {
   .verb:hover .verb-prefix,
   .verb:focus-visible .verb-prefix {
@@ -242,29 +227,5 @@ main {
     min-height: 1.75em;
     padding: var(--space-verb-pad-desk);
     font-size: var(--type-verb-desk);
-  }
-
-  .outlinks {
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-outlink-desk);
-    margin: var(--space-0);
-  }
-
-  .outlinks a {
-    font-family: var(--display);
-    font-weight: var(--weight-regular);
-    letter-spacing: var(--track-none);
-    font-size: var(--type-outlink);
-    line-height: 0.9;
-    width: 100%;
-    white-space: nowrap;
-  }
-
-  .outlinks a:hover,
-  .outlinks a:focus-visible {
-    background: var(--black);
-    color: var(--pink);
-    outline-color: var(--pink);
   }
 }

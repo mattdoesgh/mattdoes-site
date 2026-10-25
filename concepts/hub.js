@@ -1,14 +1,16 @@
-// The preview hub. One registry row becomes one "unshared does X" link.
-// Contact links come from the same function the offline page uses.
+// The Unshared hub. One registry row becomes one "unshared does X" link.
 
+import { siteConfig } from '../site.config.js';
 import { esc } from '../lib/safe-url.js';
-import { unsharedOutlinks } from '../site/render.js';
 import { unsharedEntries, unsharedHref, unsharedPrefix } from './entries.js';
 
 /**
+ * @param {string} [siteUrl]
  * @returns {string}
  */
-export function renderHubDocument() {
+export function renderHubDocument(siteUrl = siteConfig.url) {
+  const origin = String(siteUrl || siteConfig.url || 'https://mattdoes.online').replace(/\/$/, '');
+  const canonical = `${origin}/unshared/`;
   const rows = unsharedEntries.map((entry) => {
     const href = esc(unsharedHref(entry));
     const label = esc(entry.label);
@@ -20,9 +22,14 @@ export function renderHubDocument() {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex">
     <title>matt does unshared</title>
-    <link rel="stylesheet" href="hub.css">
+    <meta name="description" content="matt does unshared.">
+    <link rel="canonical" href="${esc(canonical)}">
+    <meta property="og:title" content="matt does unshared">
+    <meta property="og:description" content="matt does unshared.">
+    <meta property="og:url" content="${esc(canonical)}">
+    <meta property="og:type" content="website">
+    <link rel="stylesheet" href="./hub.css">
   </head>
   <body data-polarity="flip">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -34,7 +41,6 @@ export function renderHubDocument() {
           ${rows}
         </ol>
       </nav>
-      ${unsharedOutlinks()}
     </main>
   </body>
 </html>

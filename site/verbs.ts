@@ -15,8 +15,8 @@ export interface Verb {
   readonly renderer: RendererName;
 }
 
-/** Set true to publish /unshared/ again. The page renderer stays. */
-export const unsharedEnabled = false;
+/** Publish /unshared/ and its entries. The home menu stays the other verbs. */
+export const unsharedEnabled = true;
 
 export const verbCatalog = [
   { slug: 'watching', label: 'letterboxd', source: 'letterboxd', renderer: 'watch' },
@@ -24,7 +24,8 @@ export const verbCatalog = [
   { slug: 'unshared', label: 'unshared', source: 'static', renderer: 'unshared' },
 ] as const satisfies readonly Verb[];
 
-export const verbs = verbCatalog.filter((verb) => unsharedEnabled || verb.slug !== 'unshared');
+/** Home menu and verb routes. Unshared is published beside this list. */
+export const verbs = verbCatalog.filter((verb) => verb.slug !== 'unshared');
 
 /** Footer socials. One line to add or remove a link. */
 export interface SocialLink {
@@ -66,9 +67,7 @@ export interface UnsharedContact {
   readonly email?: string;
 }
 
-export const unsharedContact: UnsharedContact = {
-  email: 'luciadoes+unshared@mail.grokbot.com',
-};
+export const unsharedContact: UnsharedContact = {};
 
 const REQUIRED_SLUGS = ['watching', 'listening'] as const;
 
@@ -81,9 +80,13 @@ export function verbPath(slug: string): string {
   return `/${slug}/`;
 }
 
-/** Public crawl paths. Secrets are not included. */
+/** Public crawl paths. Secrets are not included. Unshared stays off the home menu. */
+const UNSHARED_PATHS = ['/unshared/', '/unshared/birds1/'] as const;
+
 export function sitemapPaths(): readonly string[] {
-  return ['/', ...verbs.map((verb) => verbPath(verb.slug))];
+  const paths = ['/', ...verbs.map((verb) => verbPath(verb.slug))];
+  if (!unsharedEnabled) return paths;
+  return [...paths, ...UNSHARED_PATHS];
 }
 
 export function validateVerbs(

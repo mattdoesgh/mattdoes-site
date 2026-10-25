@@ -81,6 +81,12 @@ test('the active verb is marked and the secret stays off the public pages', () =
     const text = fs.readFileSync(path.join(distDir, rel), 'utf8');
     assert.doesNotMatch(text, /lucia|frequency|transmission|luciadoes/i, rel);
   }
-  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), false);
+  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), true);
+  assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'birds1', 'index.html')), true);
+  for (const rel of ['unshared/index.html', 'unshared/birds1/index.html']) {
+    const text = fs.readFileSync(path.join(distDir, rel), 'utf8');
+    assert.doesNotMatch(text, /noindex/, rel);
+    assert.doesNotMatch(text, /lucia|frequency|transmission|luciadoes/i, rel);
+  }
   assert.equal(fs.existsSync(path.join(distDir, 'frequency', 'index.html')), false);
 });
