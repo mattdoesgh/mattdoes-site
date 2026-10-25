@@ -258,19 +258,57 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
   await expect(feed).toBeVisible();
   const stacked = await feed.evaluate((el) => {
     const style = getComputedStyle(el);
+    const films = [...el.querySelectorAll('.film')].slice(0, 3);
+    const feedBox = el.getBoundingClientRect();
     return {
       display: style.display,
       dir: style.flexDirection,
       overflowY: style.overflowY,
+      maxHeight: style.maxHeight,
       transition: style.transitionDuration,
       animation: style.animationName,
+      feedBottom: feedBox.bottom,
+      cards: films.map((film) => {
+        const img = film.querySelector('img').getBoundingClientRect();
+        const name = film.querySelector('.name').getBoundingClientRect();
+        const meta = film.querySelector('.meta')?.getBoundingClientRect() || null;
+        const box = film.getBoundingClientRect();
+        return {
+          imgBottom: img.bottom,
+          imgLeft: img.left,
+          imgRight: img.right,
+          nameTop: name.top,
+          nameBottom: name.bottom,
+          metaTop: meta ? meta.top : null,
+          metaLeft: meta ? meta.left : null,
+          boxTop: box.top,
+          boxBottom: box.bottom,
+        };
+      }),
     };
   });
   expect(stacked.display).toBe('flex');
   expect(stacked.dir).toBe('column');
-  expect(stacked.overflowY).toBe('auto');
+  expect(stacked.overflowY).toBe('visible');
+  expect(stacked.maxHeight).toBe('none');
   expect(stacked.transition).toBe('0s');
   expect(stacked.animation).toBe('none');
+  expect(stacked.cards.length).toBe(3);
+  for (const card of stacked.cards) {
+    expect(card.nameTop).toBeGreaterThanOrEqual(card.imgBottom - 1);
+    expect(card.boxBottom).toBeLessThanOrEqual(stacked.feedBottom + 1);
+    expect(card.nameBottom).toBeLessThanOrEqual(stacked.feedBottom + 1);
+    expect(card.metaTop).not.toBeNull();
+    expect(card.metaTop).toBeGreaterThanOrEqual(card.nameBottom - 1);
+    expect(card.metaLeft).toBeGreaterThanOrEqual(card.imgLeft - 1);
+    expect(card.metaLeft).toBeLessThan(card.imgRight);
+  }
+  const gaps = [
+    stacked.cards[1].boxTop - stacked.cards[0].boxBottom,
+    stacked.cards[2].boxTop - stacked.cards[1].boxBottom,
+  ];
+  expect(Math.abs(gaps[0] - gaps[1])).toBeLessThan(2);
+  expect(gaps[0]).toBeGreaterThan(8);
 
   await axis.focus();
   await page.keyboard.press('Shift+Tab');

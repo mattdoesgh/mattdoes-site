@@ -151,13 +151,18 @@ test('a stored choice is on the document before the buttons are parsed', async (
   assert.equal(dom.window.document.querySelector('[data-axis-toggle]').getAttribute('aria-pressed'), 'false');
 });
 
-test('the strip hides when posters are off and scrolls on the y axis when down', () => {
+test('the strip hides when posters are off and stacks in the page when down', () => {
   const down = css.slice(css.indexOf('html[data-poster-axis="down"] .feed'), css.indexOf('html[data-poster-axis="down"] .film'));
   assert.match(down, /display:\s*flex/);
   assert.match(down, /flex-direction:\s*column/);
-  assert.match(down, /overflow-y:\s*auto/);
-  assert.match(down, /scroll-snap-type:\s*y mandatory/);
+  assert.match(down, /overflow:\s*visible/);
+  assert.match(down, /max-height:\s*none/);
+  assert.match(down, /gap:\s*var\(--space-section\)/);
+  assert.doesNotMatch(down, /overflow-y:\s*auto/);
+  assert.doesNotMatch(down, /max-height:\s*70vh/);
+  assert.doesNotMatch(down, /scroll-snap-type:\s*y/);
   assert.doesNotMatch(down, /animation|transition|transform/);
+  assert.match(css, /html\[data-poster-axis="down"\] \.film \.copy\s*\{[^}]*flex-direction:\s*column/);
   const off = css.slice(css.indexOf('html[data-posters="off"] .feed'));
   assert.match(off, /display:\s*none/);
   assert.ok(css.indexOf('html[data-posters="off"] .feed') > css.indexOf('html[data-poster-axis="down"] .feed'));
@@ -175,7 +180,8 @@ test('the strip hides when posters are off and scrolls on the y axis when down',
   const stacked = dom.window.getComputedStyle(feed);
   assert.equal(stacked.display, 'flex');
   assert.equal(stacked.flexDirection, 'column');
-  assert.equal(stacked.overflowY, 'auto');
+  assert.equal(stacked.overflowY, 'visible');
+  assert.equal(stacked.maxHeight, 'none');
   dom.window.document.documentElement.setAttribute('data-posters', 'off');
   assert.equal(dom.window.getComputedStyle(feed).display, 'none');
 });

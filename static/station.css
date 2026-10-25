@@ -1563,35 +1563,36 @@ html.is-locked body {
   }
 }
 
-/* Down stacks the strip. The phone scroller changes axis. Desktop leaves
-   the grid and uses the same column. No motion: the change is instant.
+/* Down puts every poster in the page, title then stars under the image.
+   The phone scroller and the desktop hero both stand down. Spacing is the
+   same between cards. No motion: the change is instant.
    Posters off wins when both choices are set, so this block stays above it. */
 html[data-poster-axis="down"] .feed {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  gap: var(--space-section);
   margin-inline: var(--space-0);
-  padding-inline: var(--space-0);
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior-x: auto;
-  overscroll-behavior-y: contain;
-  scroll-snap-type: y mandatory;
-  scroll-padding-inline: var(--space-0);
-  scroll-padding-block: var(--space-page);
-  max-height: 70vh;
+  padding: var(--space-0);
+  overflow: visible;
+  overscroll-behavior: auto;
+  scroll-snap-type: none;
+  scroll-padding: var(--space-0);
+  max-height: none;
+  width: 100%;
 }
 
 html[data-poster-axis="down"] .film {
   flex: 0 0 auto;
-  width: min(78%, 18rem);
-  scroll-snap-align: start;
+  width: min(100%, 24rem);
+  scroll-snap-align: none;
 }
 
 html[data-poster-axis="down"] .film:first-child {
   grid-column: auto;
 }
 
+html[data-poster-axis="down"] .film .film-open,
 html[data-poster-axis="down"] .film:first-child .film-open {
   display: flex;
   flex-direction: column;
@@ -1599,6 +1600,15 @@ html[data-poster-axis="down"] .film:first-child .film-open {
   gap: var(--space-md);
 }
 
+html[data-poster-axis="down"] .film .copy {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  min-width: var(--space-0);
+}
+
+html[data-poster-axis="down"] .film-open img,
 html[data-poster-axis="down"] .film:first-child .film-open img {
   width: 100%;
   max-width: 100%;
@@ -1607,7 +1617,9 @@ html[data-poster-axis="down"] .film:first-child .film-open img {
   aspect-ratio: 2 / 3;
 }
 
-html[data-poster-axis="down"] .film .name {
+html[data-poster-axis="down"] .film .name,
+html[data-poster-axis="down"] .film:first-child .name,
+html[data-poster-axis="down"] .film:not(:first-child) .name {
   font-size: var(--type-kicker);
 }
 
