@@ -716,6 +716,10 @@ html[data-posters="off"] .axis-across {
   display: none;
 }
 
+.album-tile picture {
+  display: contents;
+}
+
 .album-tile img {
   display: block;
   width: 100%;

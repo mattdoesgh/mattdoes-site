@@ -291,9 +291,9 @@
       "route": "/listening/",
       "anchors": ["class=\"album-grid\"", "class=\"album-tile\""],
       "endpoints": ["/api/listening/charts"],
-      "text": "The chart is 25 albums for the last month, five across, with a few hidden spares. There is no period switcher. A cover that fails in the browser is dropped and the next spare is shown. The browser does not call /api/listening/charts. The Pages build does.",
-      "risks": ["The listening worker has to deploy before the Pages build that reads charts:week.", "A short chart is not padded with blank art."],
-      "devices": ["Covers are 300px squares, lazy. Check the grid at 390 and 1280."]
+      "text": "The chart is 25 albums for the last month, five across, with a few hidden spares. There is no period switcher. A cover that fails in the browser is dropped and the next spare is shown. The browser does not call /api/listening/charts. The Pages build does. The img is the 300px baseline JPEG, lazy, with width and height 300. When the media host has them, a picture adds AVIF and WebP at 240 and 300 plus a 240 JPEG, with sizes for the five-column grid. A variant that is not public is left out of the markup.",
+      "risks": ["The listening worker has to deploy before the Pages build that reads charts:week.", "A short chart is not padded with blank art.", "A format missing its 300px file is omitted so a desktop browser does not upscale the 240px file."],
+      "devices": ["The phone slot is about 72 CSS px. At DPR 3 that is about 215 device px, so the 240px file is the one to fetch. Check the grid at 390 and 1280."]
     },
     {
       "id": "listening-recent",
