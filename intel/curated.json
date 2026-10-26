@@ -28,7 +28,7 @@
     },
     {
       "id": "frequency-offline",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "paths": ["site/verbs.ts", "site/render.js", "lib/emit/index.js"],
       "text": "/frequency/ is a noindex secret. It stays out of the registry and the sitemap, and it stays offline while SECRET_PATHS is empty. The prize mailto lives only in renderFrequency. Do not copy that address into docs, the index, or a public page."
     },
@@ -40,7 +40,7 @@
     },
     {
       "id": "wave-words",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "paths": ["site/render.js", "static/station.css"],
       "text": "The wave sits only on the words that label the big counts: scrobbles and films. The numbers are outline only. Stars are black fill with a pink outline."
     },
@@ -83,7 +83,7 @@
     },
     {
       "id": "safe-area",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "paths": [
         "site/tokens.css",
         "site/render.js",
@@ -112,7 +112,7 @@
     },
     {
       "id": "pseudo-hit-area",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "paths": ["static/station.css", "static/poster-prefs.js"],
       "text": "Do not grow a hit area with an absolutely positioned ::before or ::after. On /watching/ with posters off, that box stretched over the page on iPhone. Use padding and a negative margin."
     },
@@ -124,7 +124,7 @@
     },
     {
       "id": "period-switcher",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "paths": ["lib/lastfm.js"],
       "text": "The listening chart is the last month only. LISTENING_PERIODS has one id. Do not add a period switcher."
     },
@@ -156,7 +156,7 @@
     },
     {
       "id": "offline-flags",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "paths": ["lib/listening.js", "lib/watches.js"],
       "text": "LISTENING_OFFLINE=1 and LETTERBOXD_OFFLINE=1 skip the network for tests and CI. The production Pages build does not set them."
     },
@@ -176,25 +176,25 @@
     },
     {
       "id": "iphone-hit-area",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "paths": ["static/station.css", "static/poster-prefs.js"],
       "text": "Posters off broke the page on iPhone. The cause was a 32px ::before hit area plus iOS text inflation, and invalid localStorage values were kept. The fix is padding, a negative margin, text-size-adjust, and dropping stored values that are not on or off, across or down."
     },
     {
       "id": "toggle-size",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "paths": ["site/tokens.css", "static/station.css"],
       "text": "Poster settings were resized four times. The settled target is compact, about half the films numeral, still tappable, and fluid. Do not reopen that size without a preview at both viewports."
     },
     {
       "id": "cover-placeholder",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "paths": ["lib/covers.js", "lib/lastfm.js"],
       "text": "A placeholder question-mark cover and a wrong cover were fixed by dropping blank art and backfilling. Albums without a real cover stay off the grid."
     },
     {
       "id": "chart-only-note",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "paths": ["site/render.js", "static/station.js"],
       "text": "A chat note called /listening/ a monthly chart with no recent list. The page still renders the recent list and station.js refreshes it from /api/listening/recent. Do not delete that list on the strength of the note."
     },
@@ -228,7 +228,7 @@
   "features": [
     {
       "id": "home-rows",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "route": "/",
       "anchors": ["aria-label=\"verbs\"", "class=\"verb-kicker\""],
       "text": "Home is the verb list. The visible words are matt does plus the registry label. Unshared is not in the list. The latest film sits on the letterboxd row, with no underline.",
@@ -237,7 +237,7 @@
     },
     {
       "id": "home-listen",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "route": "/",
       "anchors": ["preview listen-line", "now listening"],
       "endpoints": ["/api/listening/now"],
@@ -249,7 +249,7 @@
     },
     {
       "id": "watching-strip",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "route": "/watching/",
       "anchors": ["class=\"film-open\"", "data-scene"],
       "text": "Recent films are a strip. The first image is eager. The rest are lazy. src stays off the img until posters are on, so an off preference does not fetch. A poster that was not mirrored is omitted.",
@@ -258,7 +258,7 @@
     },
     {
       "id": "watching-toggles",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "route": "/watching/",
       "anchors": ["data-posters-toggle", "data-axis-toggle", "data-pull"],
       "storageKeys": ["mattdoes-posters", "mattdoes-poster-axis"],
@@ -269,7 +269,7 @@
     },
     {
       "id": "watching-scene",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "route": "/watching/",
       "anchors": ["id=\"scene\"", "data-review"],
       "text": "Opening a film uses a dialog. The wide poster is not in the tree until the scene opens. The review is a data attribute, not card text.",
@@ -278,7 +278,7 @@
     },
     {
       "id": "watching-count",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "route": "/watching/",
       "anchors": ["countLine(ctx.filmCount", "parseFilmCount"],
       "text": "The films count is the public Letterboxd total, not the length of the RSS window. A missing count hides the line and does not fail the build. The word films is the wave. The number is an outline.",
@@ -287,7 +287,7 @@
     },
     {
       "id": "listening-chart",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "route": "/listening/",
       "anchors": ["class=\"album-grid\"", "class=\"album-tile\""],
       "endpoints": ["/api/listening/charts"],
@@ -297,7 +297,7 @@
     },
     {
       "id": "listening-recent",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "route": "/listening/",
       "anchors": ["class=\"recent-label\"", "id=\"tracks\""],
       "endpoints": ["/api/listening/recent"],
@@ -307,7 +307,7 @@
     },
     {
       "id": "listening-count",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "route": "/listening/",
       "anchors": ["countLine(ctx.playcount", "formatScrobbleCount"],
       "text": "The scrobble total is one line. The word scrobbles waves. The number is an outline. Zero or missing hides the line.",
@@ -316,7 +316,7 @@
     },
     {
       "id": "wave-counts",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "route": "",
       "anchors": ["WAVE_WORDS", "class=\"wave\""],
       "text": "Only scrobbles and films take the wave. Spoken text stays in the accessibility tree. The painted letters are aria-hidden. Reduced motion stops the animation and keeps a static sine.",
@@ -343,7 +343,7 @@
     },
     {
       "id": "frequency",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "route": "/frequency/",
       "anchors": ["function renderFrequency", "frequency-key"],
       "text": "The secret page is offline while SECRET_PATHS is empty. Emit cuts the key hook out of the shipped station.js and fails if the word frequency remains. The prize mailto stays in renderFrequency only.",
@@ -352,7 +352,7 @@
     },
     {
       "id": "social-footer",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
       "route": "/",
       "anchors": ["rel=\"me noopener\"", "lastfmSocialEnabled"],
       "text": "The footer is a row of social marks. last.fm stays hidden while lastfmSocialEnabled is false. The icon function can remain. Links are https profile URLs and do not point at unshared.",
