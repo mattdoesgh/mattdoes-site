@@ -66,16 +66,16 @@ Measured on this tree. Tokens are `bytes / 4`, rounded, and are estimates. Tool 
 | `intel/index.json` | 172,127 bytes. Do not read it. Query it. |
 | `intel/curated.json` | 20,923 bytes |
 | `AGENTS.md` | 3,848 bytes. The previous file was 820 bytes. |
-| Full `npm run intel` when a scanned file changed | 109 ms |
-| Second run, nothing dirty | 21 ms, every section kept |
-| `npm run intel:check` | 352 ms |
+| Full `npm run intel` when a scanned file changed | 109 ms (a later clean tree regenerated in 116 ms) |
+| Second run, nothing dirty | 19 ms to write the file, 77 ms wall, every section kept |
+| `npm run intel:check` | 335 ms |
 
 Locate cost, measured as bytes returned before editing:
 
 | Task | Search hits | Hit bytes | `--feature` bytes |
 | --- | --- | --- | --- |
 | Poster toggles (`data-posters-toggle`) | 6 files | 128,931 | 1,614 (`watching-toggles`) |
-| Now-listening line (`now listening`) | 3 files | 29,597 | 1,456 (`home-listen`) |
+| Now-listening line (`now listening`) | 3 files | 29,597 | 1,417 (`home-listen`) |
 | Unshared registry (`unsharedEntries`) | 5 files | 49,705 | 1,131 (`unshared-hub`) |
 | birds1 path | 16 files | 97,222 | 1,450 (`birds1`) |
 
