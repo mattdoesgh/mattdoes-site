@@ -62,8 +62,13 @@ test('a missing curated anchor fails the build', () => {
 test('dead css classes are only flagged when product strings do not use them', () => {
   const { index } = buildIndex();
   const flagged = index.sections.simplification.classesOnlyInCss.map((item) => item.class);
-  assert.ok(flagged.includes('status'), flagged.join(','));
-  assert.ok(flagged.includes('time'), flagged.join(','));
+  for (const name of ['status', 'time', 'verb-nav', 'redaction', 'lede', 'outlinks', 'home-link', 'kicker']) {
+    assert.equal(flagged.includes(name), false, `${name} still flagged: ${flagged.join(',')}`);
+  }
+  const defined = index.sections.tokens.entries.map((entry) => entry.name);
+  for (const name of ['--signal', '--space-desk-feed', '--space-incident', '--space-incident-desk', '--space-incident-grid']) {
+    assert.equal(defined.includes(name), false, name);
+  }
   const product = [];
   const walk = (dir) => {
     for (const name of fs.readdirSync(dir)) {
