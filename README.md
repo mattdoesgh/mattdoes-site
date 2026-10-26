@@ -2,6 +2,8 @@
 
 [matt does online](https://mattdoes.online). Static pages from `site/verbs.ts`, on Cloudflare Pages, with same-origin Workers under `/api/`.
 
+Agents start at [AGENTS.md](AGENTS.md). The generated map is [intel/index.json](intel/index.json).
+
 ## run, test, build, deploy
 
 ```

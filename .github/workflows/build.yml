@@ -123,6 +123,12 @@ jobs:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
         run: npm ci
 
+      # Full history: verified-at is a commit sha, and a shallow checkout
+      # cannot see it. This job already fetches every commit for the
+      # secret-history test.
+      - name: Check project index
+        run: npm run intel:check
+
       - name: Run regression test suite
         run: npm test
 
