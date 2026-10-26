@@ -4,7 +4,7 @@
   "decisions": [
     {
       "id": "tokens-only",
-      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "paths": ["site/tokens.css", "lib/design-tokens.js", "STYLE.md"],
       "text": "site/tokens.css is the only place a raw color, font stack, or font size is written. Pages use var(--token). The build keeps the polarity colors, the font stacks, and --row-size live and inlines the rest. Pink is #F7C8D8."
     },
@@ -28,7 +28,7 @@
     },
     {
       "id": "frequency-offline",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "paths": ["site/verbs.ts", "site/render.js", "lib/emit/index.js"],
       "text": "/frequency/ is a noindex secret. It stays out of the registry and the sitemap, and it stays offline while SECRET_PATHS is empty. The prize mailto lives only in renderFrequency. Do not copy that address into docs, the index, or a public page."
     },
@@ -40,13 +40,13 @@
     },
     {
       "id": "wave-words",
-      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "paths": ["site/render.js", "static/station.css"],
       "text": "The wave sits only on the words that label the big counts: scrobbles and films. The numbers are outline only. Stars are black fill with a pink outline."
     },
     {
       "id": "fluid-type",
-      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "paths": ["site/tokens.css"],
       "text": "Type and spacing scale with clamp() tokens. Poster settings are about half the films numeral (--type-setting) and still grow a 44px tap target by padding and a negative margin."
     },
@@ -83,7 +83,7 @@
     },
     {
       "id": "safe-area",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "paths": [
         "site/tokens.css",
         "site/render.js",
@@ -112,13 +112,13 @@
     },
     {
       "id": "pseudo-hit-area",
-      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "paths": ["static/station.css", "static/poster-prefs.js"],
       "text": "Do not grow a hit area with an absolutely positioned ::before or ::after. On /watching/ with posters off, that box stretched over the page on iPhone. Use padding and a negative margin."
     },
     {
       "id": "chrome-habits",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "paths": ["STYLE.md"],
       "text": "No grid lines, no chips, no unfold or wipe animations, no flavor text, no numbering. Lowercase labels."
     },
@@ -176,13 +176,13 @@
     },
     {
       "id": "iphone-hit-area",
-      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "paths": ["static/station.css", "static/poster-prefs.js"],
       "text": "Posters off broke the page on iPhone. The cause was a 32px ::before hit area plus iOS text inflation, and invalid localStorage values were kept. The fix is padding, a negative margin, text-size-adjust, and dropping stored values that are not on or off, across or down."
     },
     {
       "id": "toggle-size",
-      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "paths": ["site/tokens.css", "static/station.css"],
       "text": "Poster settings were resized four times. The settled target is compact, about half the films numeral, still tappable, and fluid. Do not reopen that size without a preview at both viewports."
     },
@@ -194,13 +194,13 @@
     },
     {
       "id": "chart-only-note",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "paths": ["site/render.js", "static/station.js"],
       "text": "A chat note called /listening/ a monthly chart with no recent list. The page still renders the recent list and station.js refreshes it from /api/listening/recent. Do not delete that list on the strength of the note."
     },
     {
       "id": "ambient-is-birds1",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "paths": ["concepts/entries.js", "concepts/birds1/index.html"],
       "text": "The generative flock was described as /unshared/ambient/. The shipped route is /unshared/birds1/. There is no ambient path. Do not add one unless the registry changes."
     }
@@ -214,7 +214,7 @@
     },
     {
       "id": "hit-targets",
-      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "paths": ["site/tokens.css"],
       "text": "--hit floors at 44px and --hit-phone at 48px. Poster settings use --hit-setting (44px) via padding, not a covering pseudo-element."
     },
@@ -228,7 +228,7 @@
   "features": [
     {
       "id": "home-rows",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "route": "/",
       "anchors": ["aria-label=\"verbs\"", "class=\"verb-kicker\""],
       "text": "Home is the verb list. The visible words are matt does plus the registry label. Unshared is not in the list. The latest film sits on the letterboxd row, with no underline.",
@@ -237,7 +237,7 @@
     },
     {
       "id": "home-listen",
-      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "route": "/",
       "anchors": ["preview listen-line", "now listening"],
       "endpoints": ["/api/listening/now"],
@@ -249,7 +249,7 @@
     },
     {
       "id": "watching-strip",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "route": "/watching/",
       "anchors": ["class=\"film-open\"", "data-scene"],
       "text": "Recent films are a strip. The first image is eager. The rest are lazy. src stays off the img until posters are on, so an off preference does not fetch. A poster that was not mirrored is omitted.",
@@ -258,7 +258,7 @@
     },
     {
       "id": "watching-toggles",
-      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "route": "/watching/",
       "anchors": ["data-posters-toggle", "data-axis-toggle", "data-pull"],
       "storageKeys": ["mattdoes-posters", "mattdoes-poster-axis"],
@@ -269,7 +269,7 @@
     },
     {
       "id": "watching-scene",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "route": "/watching/",
       "anchors": ["id=\"scene\"", "data-review"],
       "text": "Opening a film uses a dialog. The wide poster is not in the tree until the scene opens. The review is a data attribute, not card text.",
@@ -278,7 +278,7 @@
     },
     {
       "id": "watching-count",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "route": "/watching/",
       "anchors": ["countLine(ctx.filmCount", "parseFilmCount"],
       "text": "The films count is the public Letterboxd total, not the length of the RSS window. A missing count hides the line and does not fail the build. The word films is the wave. The number is an outline.",
@@ -287,7 +287,7 @@
     },
     {
       "id": "listening-chart",
-      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "route": "/listening/",
       "anchors": ["class=\"album-grid\"", "class=\"album-tile\""],
       "endpoints": ["/api/listening/charts"],
@@ -297,7 +297,7 @@
     },
     {
       "id": "listening-recent",
-      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "route": "/listening/",
       "anchors": ["class=\"recent-label\"", "id=\"tracks\""],
       "endpoints": ["/api/listening/recent"],
@@ -307,7 +307,7 @@
     },
     {
       "id": "listening-count",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "route": "/listening/",
       "anchors": ["countLine(ctx.playcount", "formatScrobbleCount"],
       "text": "The scrobble total is one line. The word scrobbles waves. The number is an outline. Zero or missing hides the line.",
@@ -316,7 +316,7 @@
     },
     {
       "id": "wave-counts",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "route": "",
       "anchors": ["WAVE_WORDS", "class=\"wave\""],
       "text": "Only scrobbles and films take the wave. Spoken text stays in the accessibility tree. The painted letters are aria-hidden. Reduced motion stops the animation and keeps a static sine.",
@@ -325,7 +325,7 @@
     },
     {
       "id": "unshared-hub",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "route": "/unshared/",
       "anchors": ["aria-label=\"unshared\"", "unsharedEntries"],
       "text": "The hub is one row per concepts/entries.js slug, without an unshared does prefix. The first row is birds1. It is in the sitemap and off the home menu. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
@@ -334,7 +334,7 @@
     },
     {
       "id": "birds1",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "route": "/unshared/birds1/",
       "anchors": ["id=\"field\"", "id=\"play\"", "from '../flock-model.js'"],
       "text": "birds1 is the generative flock. The heading has no space. A small matt does link sits above it and goes home. The canvas is a cube seen corner-on as a hexagon, with a faint lattice. Drag is pitch and yaw only. Pinch zooms. Tap selects. Idle play solos birds. Sound is live Web Audio, including a digital-wind layer. There is no /unshared/ambient/ route.",
@@ -343,7 +343,7 @@
     },
     {
       "id": "frequency",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "route": "/frequency/",
       "anchors": ["function renderFrequency", "frequency-key"],
       "text": "The secret page is offline while SECRET_PATHS is empty. Emit cuts the key hook out of the shipped station.js and fails if the word frequency remains. The prize mailto stays in renderFrequency only.",
@@ -352,7 +352,7 @@
     },
     {
       "id": "social-footer",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "route": "/",
       "anchors": ["rel=\"me noopener\"", "lastfmSocialEnabled"],
       "text": "The footer is a row of social marks. last.fm stays hidden while lastfmSocialEnabled is false. The icon function can remain. Links are https profile URLs and do not point at unshared.",
