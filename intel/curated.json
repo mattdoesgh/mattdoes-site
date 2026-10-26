@@ -4,7 +4,7 @@
   "decisions": [
     {
       "id": "tokens-only",
-      "verified-at": "7ca52b298798e8287c3bc5b0fc23f5bda491d349",
+      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
       "paths": ["site/tokens.css", "lib/design-tokens.js", "STYLE.md"],
       "text": "site/tokens.css is the only place a raw color, font stack, or font size is written. Pages use var(--token). The build keeps the polarity colors, the font stacks, and --row-size live and inlines the rest. Pink is #F7C8D8."
     },
@@ -40,13 +40,13 @@
     },
     {
       "id": "wave-words",
-      "verified-at": "7ca52b298798e8287c3bc5b0fc23f5bda491d349",
+      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
       "paths": ["site/render.js", "static/station.css"],
       "text": "The wave sits only on the words that label the big counts: scrobbles and films. The numbers are outline only. Stars are black fill with a pink outline."
     },
     {
       "id": "fluid-type",
-      "verified-at": "7ca52b298798e8287c3bc5b0fc23f5bda491d349",
+      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
       "paths": ["site/tokens.css"],
       "text": "Type and spacing scale with clamp() tokens. Poster settings are about half the films numeral (--type-setting) and still grow a 44px tap target by padding and a negative margin."
     },
@@ -64,13 +64,13 @@
     },
     {
       "id": "actions-pin",
-      "verified-at": "37b1cd4fc866452db7943301dc5f4bf19752465d",
+      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
       "paths": [".github/workflows/build.yml"],
       "text": "GitHub Actions stay pinned to a full commit SHA, with permissions contents: read."
     },
     {
       "id": "zero-spend",
-      "verified-at": "37b1cd4fc866452db7943301dc5f4bf19752465d",
+      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
       "paths": ["package.json"],
       "text": "Zero spend. No new runtime dependency. Dev-only tooling has to be a plain Node script."
     },
@@ -80,6 +80,21 @@
       "external": true,
       "paths": ["static/_headers"],
       "text": "Cloudflare Email Obfuscation stays on. It is a dashboard setting, not a file. The CSP comment in static/_headers admits the decoder. Do not turn obfuscation off to chase a CSP warning."
+    },
+    {
+      "id": "safe-area",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": [
+        "site/tokens.css",
+        "site/render.js",
+        "static/station.css",
+        "concepts/hub.js",
+        "concepts/hub.css",
+        "concepts/birds1/index.html",
+        "concepts/birds1/birds1.css",
+        "lib/design-tokens.js"
+      ],
+      "text": "The viewport meta is width=device-width, initial-scale=1, viewport-fit=cover. It does not lock zoom. Safe-area padding is max() of the page padding and env(safe-area-inset-*), written only in site/tokens.css. Phone edges use --space-page. From 1024, edges use the desktop padding. Body padding keeps the type, the footer marks, and the birds1 control bar out of the notch and the home indicator in portrait and landscape. The film scene and the pull hint use the same tokens. A device with no inset keeps the previous padding."
     },
     {
       "id": "charts-cron",
@@ -97,7 +112,7 @@
     },
     {
       "id": "pseudo-hit-area",
-      "verified-at": "7ca52b298798e8287c3bc5b0fc23f5bda491d349",
+      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
       "paths": ["static/station.css", "static/poster-prefs.js"],
       "text": "Do not grow a hit area with an absolutely positioned ::before or ::after. On /watching/ with posters off, that box stretched over the page on iPhone. Use padding and a negative margin."
     },
@@ -161,13 +176,13 @@
     },
     {
       "id": "iphone-hit-area",
-      "verified-at": "7ca52b298798e8287c3bc5b0fc23f5bda491d349",
+      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
       "paths": ["static/station.css", "static/poster-prefs.js"],
       "text": "Posters off broke the page on iPhone. The cause was a 32px ::before hit area plus iOS text inflation, and invalid localStorage values were kept. The fix is padding, a negative margin, text-size-adjust, and dropping stored values that are not on or off, across or down."
     },
     {
       "id": "toggle-size",
-      "verified-at": "7ca52b298798e8287c3bc5b0fc23f5bda491d349",
+      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
       "paths": ["site/tokens.css", "static/station.css"],
       "text": "Poster settings were resized four times. The settled target is compact, about half the films numeral, still tappable, and fluid. Do not reopen that size without a preview at both viewports."
     },
@@ -199,7 +214,7 @@
     },
     {
       "id": "hit-targets",
-      "verified-at": "7ca52b298798e8287c3bc5b0fc23f5bda491d349",
+      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
       "paths": ["site/tokens.css"],
       "text": "--hit floors at 44px and --hit-phone at 48px. Poster settings use --hit-setting (44px) via padding, not a covering pseudo-element."
     },
@@ -243,7 +258,7 @@
     },
     {
       "id": "watching-toggles",
-      "verified-at": "7ca52b298798e8287c3bc5b0fc23f5bda491d349",
+      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
       "route": "/watching/",
       "anchors": ["data-posters-toggle", "data-axis-toggle", "data-pull"],
       "storageKeys": ["mattdoes-posters", "mattdoes-poster-axis"],
@@ -324,7 +339,7 @@
       "anchors": ["id=\"field\"", "id=\"play\"", "from '../flock-model.js'"],
       "text": "birds1 is the generative flock. The heading has no space. A small matt does link sits above it and goes home. The canvas is a cube seen corner-on as a hexagon, with a faint lattice. Drag is pitch and yaw only. Pinch zooms. Tap selects. Idle play solos birds. Sound is live Web Audio, including a digital-wind layer. There is no /unshared/ambient/ route.",
       "risks": ["Do not add an audio file. The visual suite stubs Math.random and setInterval, so it does not prove the sound.", "The home link's hit area was wrong once. elementFromPoint has to hit the link, not the canvas."],
-      "devices": ["The canvas uses touch-action: none and the page does not scroll. Check 390 and 1280. Reduced motion sets data-motion=reduce."]
+      "devices": ["The canvas uses touch-action: none and the page does not scroll. Body padding includes the safe area, so the control bar clears the home indicator in portrait and landscape. Check 390 and 1280. Reduced motion sets data-motion=reduce."]
     },
     {
       "id": "frequency",
@@ -342,7 +357,7 @@
       "anchors": ["rel=\"me noopener\"", "lastfmSocialEnabled"],
       "text": "The footer is a row of social marks. last.fm stays hidden while lastfmSocialEnabled is false. The icon function can remain. Links are https profile URLs and do not point at unshared.",
       "risks": ["Turning the last.fm mark back on is a one-line flag, not a new icon."],
-      "devices": ["The footer is in the visual suite as its own shot at 390 and 1280. It has no safe-area padding."]
+      "devices": ["The footer is in the visual suite as its own shot at 390 and 1280. Those shots have no insets, so the marks stay where they were. On a phone, body padding uses the safe-area tokens and the marks clear the home indicator."]
     }
   ]
 }

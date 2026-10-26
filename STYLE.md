@@ -1,6 +1,6 @@
 # Style
 
-`site/tokens.css` is the source. Pages use `var(--token)`. The build keeps the polarity colors, the font stacks, and `--row-size` as custom properties and inlines the rest, so the shipped CSS stays inside the size budget. A raw color, font family, or font size outside that file fails `npm run check:tokens`.
+`site/tokens.css` is the source. Pages use `var(--token)`. The build keeps the polarity colors, the font stacks, `--row-size`, and the safe-area edges as custom properties and inlines the rest, so the shipped CSS stays inside the size budget. A raw color, font family, or font size outside that file fails `npm run check:tokens`.
 
 ## Palette
 
@@ -21,7 +21,7 @@ Home is pink on black. A verb page flips to black type on a pink field (`--field
 
 ## Space and edges
 
-Spacing is the `--space-*` scale, fluid `clamp()` values of rem and vw. Borders are `--line-*`. Focus rings are `--outline-*`. Radius is `--radius` (0). Hit targets are `--hit` (44px floor) and `--hit-phone` (48px floor); both grow on a wide window.
+Spacing is the `--space-*` scale, fluid `clamp()` values of rem and vw. Borders are `--line-*`. Focus rings are `--outline-*`. Radius is `--radius` (0). Hit targets are `--hit` (44px floor) and `--hit-phone` (48px floor); both grow on a wide window. Page edges are `max()` of that padding and `env(safe-area-inset-*)`. Those `env()` calls stay in `site/tokens.css`. A device with no inset keeps the padding it had.
 
 ## Standing rules
 
