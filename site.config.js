@@ -1,6 +1,6 @@
 // site.config.js — build settings the render and the fetchers read.
 // The home map, the status pill, and the per-section bios are gone.
-// workers/geo still serves /api/geo/lookup. No page calls it.
+// The geo worker was retired on Oct 25 2026. No page called it.
 // There is no GeoJSON bake script. Do not add one back here.
 
 /**

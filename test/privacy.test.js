@@ -1,5 +1,5 @@
-// The page does not store a visitor location. The geo worker remains deployed
-// and unused by this shell.
+// The page does not store a visitor location. The geo worker was retired
+// on Oct 25 2026. No page called it.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -12,6 +12,6 @@ test('the station client does not touch localStorage or geolocation', () => {
   assert.doesNotMatch(src, /localStorage|sessionStorage|geolocation|indexedDB/);
 });
 
-test('the geo worker is still in the repo', () => {
-  assert.equal(fs.existsSync(path.join(REPO_ROOT, 'workers', 'geo', 'src', 'index.js')), true);
+test('the geo worker is not in the repo', () => {
+  assert.equal(fs.existsSync(path.join(REPO_ROOT, 'workers', 'geo')), false);
 });
