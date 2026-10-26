@@ -1,7 +1,7 @@
 // Worker unit tests stub bindings, so deleting one from wrangler.toml
 // still leaves the suite green. These checks read the config that deploys.
-// A route without `*` does not match a query string. Geo's lookup reads
-// lat and lng from the query, so that pattern has to end in a wildcard.
+// A route without `*` does not match a query string. A worker that reads
+// searchParams needs a pattern that ends in a wildcard.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -27,10 +27,6 @@ function source(worker) {
 }
 
 test('deployed bindings stay declared', () => {
-  const geo = toml('geo');
-  assert.match(geo, /binding\s*=\s*"GEO_CACHE"/);
-  assert.match(geo, /name\s*=\s*"GEO_RL"/);
-
   assert.match(toml('csp-report'), /name\s*=\s*"CSP_RL"/);
 
   const listening = toml('listening');
@@ -43,7 +39,7 @@ test('deployed bindings stay declared', () => {
 });
 
 test('a worker that reads the query string uses a wildcard route', () => {
-  for (const worker of ['geo', 'listening', 'csp-report']) {
+  for (const worker of ['listening', 'csp-report']) {
     const routes = patterns(toml(worker));
     assert.ok(routes.length > 0, `${worker} has no route`);
     if (!source(worker).includes('searchParams')) continue;
@@ -51,10 +47,6 @@ test('a worker that reads the query string uses a wildcard route', () => {
       assert.match(route, /\*$/, `${worker} reads the query string but ${route} has no wildcard`);
     }
   }
-});
-
-test('geo lookup keeps the wildcard on the real pattern', () => {
-  assert.deepEqual(patterns(toml('geo')), ['mattdoes.online/api/geo/lookup*']);
 });
 
 test('rebuild is a six-hour cron that expects the DEPLOY_HOOK secret', () => {

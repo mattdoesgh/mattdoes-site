@@ -4,11 +4,11 @@ Reviewed against the tree at `ae5523b` and the code this change adds. The page i
 
 ## Structure
 
-`build.js` fetches the listening snapshot and the Letterboxd diary, mirrors posters, then `lib/emit` writes HTML from `site/verbs.ts`. `site/render.js` is one string-template shell for `/`, `/watching/`, `/listening/`, `/404`, and the offline `/frequency/` page. `/unshared/` is a second publisher (`lib/publish-unshared.js`) that copies `concepts/`. Four Workers sit on `/api/*` or on a cron. There is no `content/` directory. Notes are not in the repo anymore.
+`build.js` fetches the listening snapshot and the Letterboxd diary, mirrors posters, then `lib/emit` writes HTML from `site/verbs.ts`. `site/render.js` is one string-template shell for `/`, `/watching/`, `/listening/`, `/404`, and the offline `/frequency/` page. `/unshared/` is a second publisher (`lib/publish-unshared.js`) that copies `concepts/`. Three Workers sit on `/api/*` or on a cron. There is no `content/` directory. Notes are not in the repo anymore.
 
 That split is fine. What is not fine is the residue of the previous site. `site.config.js` still described a GeoJSON bake, a status pill, and section bios that nothing read. `lib/time.js` existed only so `test/time.test.js` could import it, and the test described a deleted `templates/_helpers.js`. Comments in the listening worker named `now-playing.js` and `listening-live.js`, which are not in the tree. Those are the files an agent would open first and trust. They are removed or corrected here.
 
-`workers/geo` is still deployed. The page does not call `/api/geo/lookup`, and the Permissions-Policy denies geolocation. The worker, its KV binding, and its tests are real. Deleting them is an infra change, not a comment fix. Leave them until Matt wants the route gone.
+`workers/geo` was retired on Oct 25 2026 with Matt's approval. No page called `/api/geo/lookup`, and the Permissions-Policy denies geolocation. The worker, its KV binding, and its tests are gone.
 
 `scripts/optimize-media.js` and `scripts/sync-media.js` still walk `content/attachments/` and no-op when it is missing. Poster bytes go through `lib/posters.js`, not those scripts. Do not point a new media task at them.
 
@@ -50,7 +50,7 @@ The build output is unchanged by those edits. An offline production build before
 
 ## What not to do from this review
 
-- Do not retire the geo worker, the recent-track list, or the CSP hasher in this kind of change.
+- Do not retire the recent-track list or the CSP hasher in this kind of change. The geo worker was retired later, in its own change, after Matt approved it.
 - Do not rename `buildFixtureVault`. It is a bad name and it is imported everywhere. A rename is churn.
 - Do not add safe-area padding without a preview at 390×844. It moves the footer and the birds1 bar.
 - Do not delete the dead station selectors without updating the two tests that require them.

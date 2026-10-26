@@ -36,7 +36,7 @@ test('query facts that agents rely on stay true', () => {
   const listening = index.sections.workers.entries.find((entry) => entry.name === 'mattdoes-listening');
   assert.ok(listening.crons.includes('0 11 * * 1'));
   const names = index.sections.workers.entries.flatMap((entry) => entry.bindings.map((binding) => binding.name));
-  for (const name of ['CSP_RL', 'GEO_CACHE', 'GEO_RL', 'LISTEN_RL', 'LASTFM_CACHE', 'LISTENING_POLLER', 'REBUILD']) {
+  for (const name of ['CSP_RL', 'LISTEN_RL', 'LASTFM_CACHE', 'LISTENING_POLLER', 'REBUILD']) {
     assert.ok(names.includes(name), name);
   }
   const text = serializeIndex(index);

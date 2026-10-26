@@ -54,7 +54,13 @@
       "id": "wrangler-pin",
       "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
       "paths": ["workers/package-lock.json", "scripts/wrangler-bin.js", "scripts/deploy-workers.js"],
-      "text": "Wrangler stays at the version in workers/package-lock.json. Do not run npx wrangler. Keep the CSP_RL, GEO_CACHE, and GEO_RL bindings."
+      "text": "Wrangler stays at the version in workers/package-lock.json. Do not run npx wrangler. Keep the CSP_RL binding."
+    },
+    {
+      "id": "geo-retired",
+      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
+      "paths": ["scripts/deploy-workers.js", "README.md", "AGENTS.md"],
+      "text": "The mattdoes-geo worker was retired on Oct 25 2026 with Matt's approval. No page called /api/geo/lookup. The worker, the GEO_CACHE KV binding, and the GEO_RL rate limit are not in the repo. Do not add them back."
     },
     {
       "id": "actions-pin",
@@ -130,8 +136,8 @@
     {
       "id": "bindings",
       "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
-      "paths": ["workers/csp-report/wrangler.toml", "workers/geo/wrangler.toml", "workers/listening/wrangler.toml"],
-      "text": "CSP_RL, GEO_CACHE, GEO_RL, LISTEN_RL, LASTFM_CACHE, and LISTENING_POLLER stay. A missing rate-limit binding fails the worker closed."
+      "paths": ["workers/csp-report/wrangler.toml", "workers/listening/wrangler.toml"],
+      "text": "CSP_RL, LISTEN_RL, LASTFM_CACHE, and LISTENING_POLLER stay. A missing rate-limit binding fails the worker closed."
     },
     {
       "id": "offline-flags",

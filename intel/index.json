@@ -108,7 +108,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "0f25bdee9c8c87fbab902518772b085c6b5bc588a0d0e1f3f7f4b954e7cfe066",
+      "sha256": "937c68b5ed5e1e7348632aaeac2b5d0bc8cd0a644eb879a8792a4436ec11935f",
       "gitBlob": null
     },
     {
@@ -233,8 +233,8 @@
     },
     {
       "path": "scripts/deploy-workers.js",
-      "sha256": "f2b28cae28ee6a4387f6b4278c76257a41feb4aceb5ddb3eeef43fb39c3160ab",
-      "gitBlob": "6260fe3c77e9a30a521e51abe11199017cf09f75"
+      "sha256": "98d9e4b36ff3713edaac0c4557f94322770dda40588514b72382b2f0822d76fc",
+      "gitBlob": "52d5f2c6c23234386f166e95a67eea6dc06ca3bd"
     },
     {
       "path": "scripts/git-hooks/pre-commit",
@@ -273,8 +273,8 @@
     },
     {
       "path": "site.config.js",
-      "sha256": "581afebca28f660d8807647efa76d30e8e57ffced78f3a1aaa927195f4aae972",
-      "gitBlob": "05ac26bd545ebc2f0cad54be77a8a1d39c52905e"
+      "sha256": "45c7dcc4c25a96283b8346be6cee21b5f668d49d16368a25312ec5417b08159f",
+      "gitBlob": "f15be39ccc7f64490f5cab647c7bc9388e4852cb"
     },
     {
       "path": "site/render.js",
@@ -398,8 +398,8 @@
     },
     {
       "path": "test/csp-headers.test.js",
-      "sha256": "ec399f56e745a866f4b83f0f5a701f4a96612742803c052f57f9c33fbbf719d8",
-      "gitBlob": "dda405beadca393a241280c48432172cc615afdc"
+      "sha256": "164763d646681b3914eb66da3ec891475bd99796bcb5bf87336415ef3f8b0b2f",
+      "gitBlob": "b7ba53822ce46d8481afbca6fead4835db59ccff"
     },
     {
       "path": "test/design-tokens.test.js",
@@ -473,8 +473,8 @@
     },
     {
       "path": "test/helpers/worker-env.js",
-      "sha256": "d0fe063de54ee17a251e4cdce616444c3f78dcbe30706e761fb042b837ea6787",
-      "gitBlob": "7f97efcac945a2de40e79701887801a9f5795235"
+      "sha256": "74b39c7b7114569cf78d744d7f2d2e49df9c5c63149269a52d608194dc27b00a",
+      "gitBlob": "2f682df121a64704eafb1c3d60a37c599deed1ef"
     },
     {
       "path": "test/home-listen.test.js",
@@ -488,8 +488,8 @@
     },
     {
       "path": "test/intel.test.js",
-      "sha256": "c9f64cdcd77ef615ba287b324d5d9ec8bc1e9e7194960066b6b9921ad71c4a14",
-      "gitBlob": "f9e41b82c602582cce37191602f7426de4e99160"
+      "sha256": "592979fa745e935b6d90956a5c7cdee735960c09a1aec9f058613ec9563fde34",
+      "gitBlob": "2fe38dd6947025402392730b080569b5bdb492e5"
     },
     {
       "path": "test/lastfm-codec.test.js",
@@ -548,8 +548,8 @@
     },
     {
       "path": "test/privacy.test.js",
-      "sha256": "e68cd41a478db59e595a8984035a74ccc2a4e2b6863db5a91f4e4b9f76b709d0",
-      "gitBlob": "0aa8a9ef0ae2633834891d247701b1e482e7feb5"
+      "sha256": "5a6103ba8d41f11c928197afdd5acefb0657e73066097fb52fc6cd715973df2c",
+      "gitBlob": "fb543db734c0a00fa634482c0acadd21b0bfd971"
     },
     {
       "path": "test/progressive-enhancement.test.js",
@@ -583,8 +583,8 @@
     },
     {
       "path": "test/sync-media-wrangler.test.js",
-      "sha256": "926dbbdf1c123d46232f3a7a96705bf52f989c61afe460be15668ae18d614ea7",
-      "gitBlob": "1a3c03d36f7e74138418d59855532751867f0e7f"
+      "sha256": "1d18b2ccc499ccb0d20b7d70043efabcf34c9afaf304e39e43842e0545651289",
+      "gitBlob": "1b8e3d247dcb677b9e04eb1591b47dc7d85a15df"
     },
     {
       "path": "test/unshared.test.js",
@@ -633,18 +633,13 @@
     },
     {
       "path": "test/worker-config.test.js",
-      "sha256": "d3a8023bf0a346883ef9417bcf40e401b50696922452c319c5d77850accffd24",
-      "gitBlob": "e1cbb0b93deee2d8d23540a21d05001a2d2ad5d2"
+      "sha256": "aafea1d00e468548494c190805c8010e8daaf4b199be147111410ec281b89eaf",
+      "gitBlob": "e4a31df7e0c6f85e78e4776c01ee93ca93e973d3"
     },
     {
       "path": "test/worker-csp-report.test.js",
       "sha256": "da4b47266fc07d284f71fc1021e60f498b57819295d29ce2ff3db7e6ad2d6f9a",
       "gitBlob": "10f3dc8bf3c3f343a99576d6ae713c86b2cb5789"
-    },
-    {
-      "path": "test/worker-geo.test.js",
-      "sha256": "02a889e2d92cd3d907a90fe401d3bd5f62f1cff36c2bca6d4022144ad5c5027e",
-      "gitBlob": "f293aedae7793d60618d55e54e0286a0421b059d"
     },
     {
       "path": "test/worker-listening.test.js",
@@ -655,11 +650,6 @@
       "path": "test/worker-rebuild.test.js",
       "sha256": "7c980af99ae860316c34eccf6f226a28d877c4a60fdfca6d49444b7102f557d5",
       "gitBlob": "48f8e8f38d09cf1f247720e12967899c94451f36"
-    },
-    {
-      "path": "test/worker-simplify.test.js",
-      "sha256": "bfb80a8b0a8ae2da597eb603ae0365254001f40737cbf83a27827e221af45b78",
-      "gitBlob": "e13687df5a3d74c11062e213271fcd9383703d0f"
     },
     {
       "path": "test/worker-transport.test.js",
@@ -682,24 +672,9 @@
       "gitBlob": "b8e0d12ec362d1efd295c246b2c839942d061dba"
     },
     {
-      "path": "workers/geo/src/index.js",
-      "sha256": "b2347b209f0f277512d8d49efb5646b9b2f96a3e163416c4c2724860900eadee",
-      "gitBlob": "0012cec5969db702cee7a1a15f9b39553e77662a"
-    },
-    {
-      "path": "workers/geo/wrangler.toml",
-      "sha256": "91ffdbfa59c8af78cac2f20d4b80fe7bc842ce89031017a0a0278722e4723f11",
-      "gitBlob": "c971fa1932ac7076f6368a217afc9d1221422edb"
-    },
-    {
-      "path": "workers/lib/simplify.js",
-      "sha256": "1494284b1ec66d98786ba93e868dae2fe8add10c97678cd87c9f0d07dc6737e6",
-      "gitBlob": "6d2a8632fb096df73efe519997550cb3b3d9f04a"
-    },
-    {
       "path": "workers/lib/transport.js",
-      "sha256": "bc12f4ba418b35ed8d594fdb8a48090fc14d11cd14ef4e1789f74e2b118d7c77",
-      "gitBlob": "db1146e7f33837574d1b21cf828ce8a5f87131e5"
+      "sha256": "cec82a4cf96fe51d0df8293dd79c12b1cca41855cc5770012c4701e4c1159adb",
+      "gitBlob": "04ce73ce1d018bf343ef20ff716b67c51098d639"
     },
     {
       "path": "workers/listening/src/index.js",
@@ -708,13 +683,13 @@
     },
     {
       "path": "workers/listening/wrangler.toml",
-      "sha256": "bf82f318372cec0cad27a3d172b5c74cf588a7d545753a73b3f276d179eaffe6",
-      "gitBlob": "b55fa92a643d1fd2c818d04b357b05e6b4f98245"
+      "sha256": "6ce26a4e8aceca615321ae14620a51c6c091d3f442d7db6075a5f2354d1ab27e",
+      "gitBlob": "6afe9b391745159e3393e4e53e100ea4b2139baf"
     },
     {
       "path": "workers/package.json",
-      "sha256": "a04c7fefa369c16c9e0708e8bb2bfcb14d99bbf7dc28a42831788e3a6e2e320f",
-      "gitBlob": "34cd51988ac41f3ea8b6c764ec6d4094a4ca22c9"
+      "sha256": "b859b275dbbff35f80f135ed52fffc7674cfab2e6e4dcd4f20ba35815bcbe90d",
+      "gitBlob": "660a5aaffa968e231541382870d368f7c587c91d"
     },
     {
       "path": "workers/rebuild/src/index.js",
@@ -1042,15 +1017,11 @@
         "test/wave-scope.test.js",
         "test/worker-config.test.js",
         "test/worker-csp-report.test.js",
-        "test/worker-geo.test.js",
         "test/worker-listening.test.js",
         "test/worker-rebuild.test.js",
-        "test/worker-simplify.test.js",
         "test/worker-transport.test.js",
         "test/workflow-permissions.test.js",
         "workers/csp-report/src/index.js",
-        "workers/geo/src/index.js",
-        "workers/lib/simplify.js",
         "workers/lib/transport.js",
         "workers/listening/src/index.js",
         "workers/rebuild/src/index.js"
@@ -1605,14 +1576,6 @@
           "to": "workers/csp-report/src/index.js"
         },
         {
-          "from": "test/worker-geo.test.js",
-          "to": "test/helpers/worker-env.js"
-        },
-        {
-          "from": "test/worker-geo.test.js",
-          "to": "workers/geo/src/index.js"
-        },
-        {
           "from": "test/worker-listening.test.js",
           "to": "lib/lastfm.js"
         },
@@ -1629,10 +1592,6 @@
           "to": "workers/rebuild/src/index.js"
         },
         {
-          "from": "test/worker-simplify.test.js",
-          "to": "workers/lib/simplify.js"
-        },
-        {
           "from": "test/worker-transport.test.js",
           "to": "test/helpers/worker-env.js"
         },
@@ -1642,14 +1601,6 @@
         },
         {
           "from": "workers/csp-report/src/index.js",
-          "to": "workers/lib/transport.js"
-        },
-        {
-          "from": "workers/geo/src/index.js",
-          "to": "workers/lib/simplify.js"
-        },
-        {
-          "from": "workers/geo/src/index.js",
           "to": "workers/lib/transport.js"
         },
         {
@@ -1871,7 +1822,6 @@
           "test/film-count.test.js",
           "test/listening-snapshot.test.js",
           "test/worker-csp-report.test.js",
-          "test/worker-geo.test.js",
           "test/worker-listening.test.js",
           "test/worker-transport.test.js"
         ],
@@ -1883,17 +1833,9 @@
         "workers/csp-report/src/index.js": [
           "test/worker-csp-report.test.js"
         ],
-        "workers/geo/src/index.js": [
-          "test/worker-geo.test.js"
-        ],
-        "workers/lib/simplify.js": [
-          "test/worker-simplify.test.js",
-          "workers/geo/src/index.js"
-        ],
         "workers/lib/transport.js": [
           "test/worker-transport.test.js",
           "workers/csp-report/src/index.js",
-          "workers/geo/src/index.js",
           "workers/listening/src/index.js",
           "workers/rebuild/src/index.js"
         ],
@@ -1911,9 +1853,6 @@
         "intel/curated.json",
         "workers/csp-report/src/index.js",
         "workers/csp-report/wrangler.toml",
-        "workers/geo/src/index.js",
-        "workers/geo/wrangler.toml",
-        "workers/lib/simplify.js",
         "workers/lib/transport.js",
         "workers/listening/src/index.js",
         "workers/listening/wrangler.toml",
@@ -1941,31 +1880,6 @@
           "env": [
             "CSP_REPORTS",
             "CSP_RL"
-          ]
-        },
-        {
-          "name": "mattdoes-geo",
-          "main": "src/index.js",
-          "routes": [
-            "mattdoes.online/api/geo/lookup*"
-          ],
-          "crons": [],
-          "bindings": [
-            {
-              "name": "GEO_CACHE",
-              "kind": "kv_namespaces"
-            },
-            {
-              "name": "GEO_RL",
-              "kind": "ratelimits"
-            }
-          ],
-          "secrets": [],
-          "file": "workers/geo/wrangler.toml",
-          "source": "workers/geo/src/index.js",
-          "env": [
-            "GEO_CACHE",
-            "GEO_RL"
           ]
         },
         {
@@ -2130,17 +2044,12 @@
         "test/wave-scope.test.js",
         "test/worker-config.test.js",
         "test/worker-csp-report.test.js",
-        "test/worker-geo.test.js",
         "test/worker-listening.test.js",
         "test/worker-rebuild.test.js",
-        "test/worker-simplify.test.js",
         "test/worker-transport.test.js",
         "test/workflow-permissions.test.js",
         "workers/csp-report/src/index.js",
         "workers/csp-report/wrangler.toml",
-        "workers/geo/src/index.js",
-        "workers/geo/wrangler.toml",
-        "workers/lib/simplify.js",
         "workers/lib/transport.js",
         "workers/listening/src/index.js",
         "workers/listening/wrangler.toml",
@@ -2220,19 +2129,6 @@
           "files": [
             "build.js",
             "scripts/check-asset-budget.js"
-          ]
-        },
-        {
-          "name": "GEO_CACHE",
-          "files": [
-            "test/worker-geo.test.js",
-            "workers/geo/src/index.js"
-          ]
-        },
-        {
-          "name": "GEO_RL",
-          "files": [
-            "workers/geo/src/index.js"
           ]
         },
         {
@@ -2443,15 +2339,11 @@
         "test/wave-scope.test.js",
         "test/worker-config.test.js",
         "test/worker-csp-report.test.js",
-        "test/worker-geo.test.js",
         "test/worker-listening.test.js",
         "test/worker-rebuild.test.js",
-        "test/worker-simplify.test.js",
         "test/worker-transport.test.js",
         "test/workflow-permissions.test.js",
         "workers/csp-report/src/index.js",
-        "workers/geo/src/index.js",
-        "workers/lib/simplify.js",
         "workers/lib/transport.js",
         "workers/listening/src/index.js",
         "workers/rebuild/src/index.js"
@@ -3620,17 +3512,12 @@
         "test/wave-scope.test.js",
         "test/worker-config.test.js",
         "test/worker-csp-report.test.js",
-        "test/worker-geo.test.js",
         "test/worker-listening.test.js",
         "test/worker-rebuild.test.js",
-        "test/worker-simplify.test.js",
         "test/worker-transport.test.js",
         "test/workflow-permissions.test.js",
         "workers/csp-report/src/index.js",
         "workers/csp-report/wrangler.toml",
-        "workers/geo/src/index.js",
-        "workers/geo/wrangler.toml",
-        "workers/lib/simplify.js",
         "workers/lib/transport.js",
         "workers/listening/src/index.js",
         "workers/listening/wrangler.toml",
@@ -3759,8 +3646,8 @@
             },
             {
               "path": "workers/listening/wrangler.toml",
-              "sha256": "bf82f318372cec0cad27a3d172b5c74cf588a7d545753a73b3f276d179eaffe6",
-              "gitBlob": "b55fa92a643d1fd2c818d04b357b05e6b4f98245"
+              "sha256": "6ce26a4e8aceca615321ae14620a51c6c091d3f442d7db6075a5f2354d1ab27e",
+              "gitBlob": "6afe9b391745159e3393e4e53e100ea4b2139baf"
             }
           ]
         },
@@ -4040,8 +3927,8 @@
             },
             {
               "path": "site.config.js",
-              "sha256": "581afebca28f660d8807647efa76d30e8e57ffced78f3a1aaa927195f4aae972",
-              "gitBlob": "05ac26bd545ebc2f0cad54be77a8a1d39c52905e"
+              "sha256": "45c7dcc4c25a96283b8346be6cee21b5f668d49d16368a25312ec5417b08159f",
+              "gitBlob": "f15be39ccc7f64490f5cab647c7bc9388e4852cb"
             },
             {
               "path": "site/render.js",
@@ -4055,8 +3942,8 @@
             },
             {
               "path": "workers/listening/wrangler.toml",
-              "sha256": "bf82f318372cec0cad27a3d172b5c74cf588a7d545753a73b3f276d179eaffe6",
-              "gitBlob": "b55fa92a643d1fd2c818d04b357b05e6b4f98245"
+              "sha256": "6ce26a4e8aceca615321ae14620a51c6c091d3f442d7db6075a5f2354d1ab27e",
+              "gitBlob": "6afe9b391745159e3393e4e53e100ea4b2139baf"
             }
           ]
         },
@@ -4136,8 +4023,8 @@
             },
             {
               "path": "workers/lib/transport.js",
-              "sha256": "bc12f4ba418b35ed8d594fdb8a48090fc14d11cd14ef4e1789f74e2b118d7c77",
-              "gitBlob": "db1146e7f33837574d1b21cf828ce8a5f87131e5"
+              "sha256": "cec82a4cf96fe51d0df8293dd79c12b1cca41855cc5770012c4701e4c1159adb",
+              "gitBlob": "04ce73ce1d018bf343ef20ff716b67c51098d639"
             },
             {
               "path": "workers/listening/src/index.js",
@@ -4146,8 +4033,8 @@
             },
             {
               "path": "workers/listening/wrangler.toml",
-              "sha256": "bf82f318372cec0cad27a3d172b5c74cf588a7d545753a73b3f276d179eaffe6",
-              "gitBlob": "b55fa92a643d1fd2c818d04b357b05e6b4f98245"
+              "sha256": "6ce26a4e8aceca615321ae14620a51c6c091d3f442d7db6075a5f2354d1ab27e",
+              "gitBlob": "6afe9b391745159e3393e4e53e100ea4b2139baf"
             }
           ]
         },
@@ -4571,17 +4458,12 @@
         "test/wave-scope.test.js",
         "test/worker-config.test.js",
         "test/worker-csp-report.test.js",
-        "test/worker-geo.test.js",
         "test/worker-listening.test.js",
         "test/worker-rebuild.test.js",
-        "test/worker-simplify.test.js",
         "test/worker-transport.test.js",
         "test/workflow-permissions.test.js",
         "workers/csp-report/src/index.js",
         "workers/csp-report/wrangler.toml",
-        "workers/geo/src/index.js",
-        "workers/geo/wrangler.toml",
-        "workers/lib/simplify.js",
         "workers/lib/transport.js",
         "workers/listening/src/index.js",
         "workers/listening/wrangler.toml",
@@ -5172,14 +5054,6 @@
           "features": []
         },
         {
-          "file": "test/worker-geo.test.js",
-          "imports": [
-            "test/helpers/worker-env.js",
-            "workers/geo/src/index.js"
-          ],
-          "features": []
-        },
-        {
           "file": "test/worker-listening.test.js",
           "imports": [
             "lib/lastfm.js",
@@ -5196,13 +5070,6 @@
           "file": "test/worker-rebuild.test.js",
           "imports": [
             "workers/rebuild/src/index.js"
-          ],
-          "features": []
-        },
-        {
-          "file": "test/worker-simplify.test.js",
-          "imports": [
-            "workers/lib/simplify.js"
           ],
           "features": []
         },
@@ -5347,17 +5214,12 @@
         "test/wave-scope.test.js",
         "test/worker-config.test.js",
         "test/worker-csp-report.test.js",
-        "test/worker-geo.test.js",
         "test/worker-listening.test.js",
         "test/worker-rebuild.test.js",
-        "test/worker-simplify.test.js",
         "test/worker-transport.test.js",
         "test/workflow-permissions.test.js",
         "workers/csp-report/src/index.js",
         "workers/csp-report/wrangler.toml",
-        "workers/geo/src/index.js",
-        "workers/geo/wrangler.toml",
-        "workers/lib/simplify.js",
         "workers/lib/transport.js",
         "workers/listening/src/index.js",
         "workers/listening/wrangler.toml",

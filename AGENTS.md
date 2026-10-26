@@ -28,7 +28,7 @@ Feature ids and routes are in `intel/index.json`. Intent, rejected approaches, a
 - Do not verify posters, charts, or the live now-playing line with fixtures alone. The visual suite passed while the real preview had zero posters.
 - Do not grow a hit area with an absolutely positioned `::before` or `::after`. Padding and a negative margin are the hit area.
 - Do not inline a script or a style. CSP stays strict.
-- Do not run `npx wrangler`. Wrangler is the binary pinned in `workers/package-lock.json`. Keep the `CSP_RL`, `GEO_CACHE`, and `GEO_RL` bindings.
+- Do not run `npx wrangler`. Wrangler is the binary pinned in `workers/package-lock.json`. Keep the `CSP_RL` binding.
 - Do not pin a GitHub Action to a tag. `permissions` stay `contents: read`.
 - Do not invent watches or posts. A poster that is not mirrored is omitted.
 - `site/verbs.ts` is the registry. An unknown source or a missing renderer fails the build. `/unshared/` stays off the home menu. `/frequency/` is a noindex secret: it is not in the registry or the sitemap, and it stays offline while `SECRET_PATHS` is empty. Old paths are not redirected. Do not copy the prize mailto out of `renderFrequency`.

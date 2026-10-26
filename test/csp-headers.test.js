@@ -150,7 +150,7 @@ test('no Worker route or Pages function intercepts /cdn-cgi', () => {
     .filter((entry) => entry.isDirectory())
     .map((entry) => path.join(workersDir, entry.name, 'wrangler.toml'))
     .filter((file) => fs.existsSync(file));
-  assert.ok(tomls.length >= 4, 'expected the listening, geo, csp-report, and rebuild configs');
+  assert.ok(tomls.length >= 3, 'expected the listening, csp-report, and rebuild configs');
 
   for (const file of tomls) {
     const text = fs.readFileSync(file, 'utf8');
