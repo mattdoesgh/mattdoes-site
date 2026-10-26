@@ -108,7 +108,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "6b357d503173f386a659153ad34efb84cf28ee787ab37e5e9dae13c301ac277b",
+      "sha256": "63533f764b3711abf766dab810bc7720c477a0375564e6d4a52753ce36d7334e",
       "gitBlob": null
     },
     {
@@ -163,8 +163,8 @@
     },
     {
       "path": "lib/emit/index.js",
-      "sha256": "5d203b7a97735f5eacc4cd4807cd2961f25f2bb6f5ca8b1cd71ff64d9c1d5aeb",
-      "gitBlob": "8e69f3d5302f029674aff1572993ba7da166c3a8"
+      "sha256": "6149061ab53abd8bdc670f6ab60d84cb8506800604af51c0165c4d5af95b52df",
+      "gitBlob": "00da15610e55931fe7115c1fb0add4e597289c0f"
     },
     {
       "path": "lib/format.js",
@@ -277,6 +277,26 @@
       "gitBlob": "f15be39ccc7f64490f5cab647c7bc9388e4852cb"
     },
     {
+      "path": "site/build-log.json",
+      "sha256": "0240441bdaca5cf8ec41a8abdab398db9b6ffa7298051e4c7f3ed23e9b0bbb3c",
+      "gitBlob": "a5a71d78fc433e78893ee43d6205af82a52f7034"
+    },
+    {
+      "path": "site/concept-home.js",
+      "sha256": "6cb4792f06a04196acbbb7ad584e4a9cb88f9d31331940a9f63a51b366a6cac0",
+      "gitBlob": "1f4777b281ba6051fc2368584e4e55dc406993e5"
+    },
+    {
+      "path": "site/concept-laser.js",
+      "sha256": "01c9bed88d156ed6a8795a5bc101365800cf85a016ff2c92ee4ad2142ef797fe",
+      "gitBlob": "a162e32c7205e603c69503f7fbc558758ce3b376"
+    },
+    {
+      "path": "site/concept-online.css",
+      "sha256": "417d493d43036c4c7686190d418c332c1d2f0e390bfa8b247dcc604c31807d98",
+      "gitBlob": "ef675d329d3bdc1ced815c806783c73061b4bf61"
+    },
+    {
       "path": "site/render.js",
       "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
       "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
@@ -288,8 +308,8 @@
     },
     {
       "path": "site/tokens.css",
-      "sha256": "5978e0f2fded3189c3a9ab6f138883c1e1b8d6c2b4fcac078253b792b4a1c94a",
-      "gitBlob": "105b527070abf5609f8b80ee31a548a790263156"
+      "sha256": "e6341f6c5fa30216c4cfabc033f5feee752aadd3e53e3034c6ccb9ab293a973d",
+      "gitBlob": "21116c343a5d0d8787299cdefb182bb473cc4c51"
     },
     {
       "path": "site/tsconfig.json",
@@ -377,6 +397,11 @@
       "gitBlob": "2d0c3f982f447c8026456893cef6909e6decefcf"
     },
     {
+      "path": "test/concept-home.test.js",
+      "sha256": "e15504a0fb6cad506cd0ec21188e39c13f57f6ae0eac4dd57d14e87a21a4c538",
+      "gitBlob": "8ebf28bcdf3f4d165debf523203d35e81153432b"
+    },
+    {
       "path": "test/contrast.test.js",
       "sha256": "3b512d944b314c7359351234c17622900af48448a17925bdaa388411aff4068b",
       "gitBlob": "43ab8516ba859f6898b9227f7a3d4af1f5d44aa6"
@@ -403,8 +428,8 @@
     },
     {
       "path": "test/design-tokens.test.js",
-      "sha256": "53eb8889ccccc7e6fe0b14030cf1c630c757daded7da313892abd5f9bddf5b88",
-      "gitBlob": "7f558affda2afa17773e5758b09f2936e1464260"
+      "sha256": "7d8b09531b422c4c96a032fffc6c6713b1d32ee574551356b93b4acd461412a3",
+      "gitBlob": "e362357b466605746d2fdd91bca9322f076ac1d3"
     },
     {
       "path": "test/emit-units.test.js",
@@ -957,6 +982,8 @@
         "scripts/visual-serve.js",
         "scripts/wrangler-bin.js",
         "site.config.js",
+        "site/concept-home.js",
+        "site/concept-laser.js",
         "site/render.js",
         "site/social-icons.js",
         "site/verbs.ts",
@@ -970,6 +997,7 @@
         "test/build-validation.test.js",
         "test/chart-grid.test.js",
         "test/client-hardening.test.js",
+        "test/concept-home.test.js",
         "test/contrast.test.js",
         "test/cover-pixels.test.js",
         "test/cover-settle.test.js",
@@ -1125,6 +1153,10 @@
         },
         {
           "from": "lib/emit/index.js",
+          "to": "site/concept-home.js"
+        },
+        {
+          "from": "lib/emit/index.js",
           "to": "site/render.js"
         },
         {
@@ -1186,6 +1218,30 @@
         {
           "from": "scripts/sync-media.js",
           "to": "scripts/wrangler-bin.js"
+        },
+        {
+          "from": "site/concept-home.js",
+          "to": "lib/emit/assets.js"
+        },
+        {
+          "from": "site/concept-home.js",
+          "to": "lib/lastfm.js"
+        },
+        {
+          "from": "site/concept-home.js",
+          "to": "lib/listen-line.js"
+        },
+        {
+          "from": "site/concept-home.js",
+          "to": "lib/safe-url.js"
+        },
+        {
+          "from": "site/concept-home.js",
+          "to": "site/social-icons.js"
+        },
+        {
+          "from": "site/concept-home.js",
+          "to": "site/verbs.ts"
         },
         {
           "from": "site/render.js",
@@ -1273,6 +1329,14 @@
         },
         {
           "from": "test/client-hardening.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/concept-home.test.js",
+          "to": "site/concept-home.js"
+        },
+        {
+          "from": "test/concept-home.test.js",
           "to": "test/helpers/run-build.js"
         },
         {
@@ -1625,7 +1689,9 @@
         }
       ],
       "unresolved": [],
-      "unreferenced": [],
+      "unreferenced": [
+        "site/concept-laser.js"
+      ],
       "testOnly": [],
       "incoming": {
         "concepts/entries.js": [
@@ -1678,6 +1744,7 @@
         ],
         "lib/emit/assets.js": [
           "lib/emit/index.js",
+          "site/concept-home.js",
           "test/asset-contract.test.js",
           "test/asset-headers.test.js",
           "test/design-tokens.test.js"
@@ -1700,6 +1767,7 @@
           "lib/cover-settle.js",
           "lib/covers.js",
           "lib/listening.js",
+          "site/concept-home.js",
           "site/render.js",
           "test/chart-grid.test.js",
           "test/covers.test.js",
@@ -1713,6 +1781,7 @@
           "test/letterboxd.test.js"
         ],
         "lib/listen-line.js": [
+          "site/concept-home.js",
           "site/render.js",
           "test/home-listen.test.js"
         ],
@@ -1732,6 +1801,7 @@
         "lib/safe-url.js": [
           "concepts/hub.js",
           "lib/emit/feeds.js",
+          "site/concept-home.js",
           "site/render.js",
           "test/url-safety.test.js"
         ],
@@ -1755,6 +1825,10 @@
           "lib/listening.js",
           "lib/watches.js"
         ],
+        "site/concept-home.js": [
+          "lib/emit/index.js",
+          "test/concept-home.test.js"
+        ],
         "site/render.js": [
           "lib/emit/index.js",
           "test/chart-grid.test.js",
@@ -1770,6 +1844,7 @@
           "test/wave-scope.test.js"
         ],
         "site/social-icons.js": [
+          "site/concept-home.js",
           "site/render.js",
           "test/socials.test.js"
         ],
@@ -1778,6 +1853,7 @@
           "lib/emit/feeds.js",
           "lib/emit/index.js",
           "scripts/intel.js",
+          "site/concept-home.js",
           "site/render.js",
           "test/build-validation.test.js",
           "test/publish-unshared.test.js",
@@ -1798,6 +1874,7 @@
           "test/build-validation.test.js",
           "test/chart-grid.test.js",
           "test/client-hardening.test.js",
+          "test/concept-home.test.js",
           "test/csp-headers.test.js",
           "test/design-tokens.test.js",
           "test/feed-standards.test.js",
@@ -1989,6 +2066,8 @@
         "scripts/visual-serve.js",
         "scripts/wrangler-bin.js",
         "site.config.js",
+        "site/concept-home.js",
+        "site/concept-laser.js",
         "site/render.js",
         "site/social-icons.js",
         "site/verbs.ts",
@@ -2002,6 +2081,7 @@
         "test/build-validation.test.js",
         "test/chart-grid.test.js",
         "test/client-hardening.test.js",
+        "test/concept-home.test.js",
         "test/contrast.test.js",
         "test/cover-pixels.test.js",
         "test/cover-settle.test.js",
@@ -2081,6 +2161,12 @@
           ]
         },
         {
+          "name": "CF_PAGES_BRANCH",
+          "files": [
+            "site/concept-home.js"
+          ]
+        },
+        {
           "name": "CI",
           "files": [
             "playwright.config.js"
@@ -2102,6 +2188,12 @@
             "lib/posters.js",
             "scripts/sync-media.js",
             "test/chart-grid.test.js"
+          ]
+        },
+        {
+          "name": "CONCEPT_HOME",
+          "files": [
+            "site/concept-home.js"
           ]
         },
         {
@@ -2283,6 +2375,9 @@
         "scripts/visual-serve.js",
         "scripts/wrangler-bin.js",
         "site.config.js",
+        "site/concept-home.js",
+        "site/concept-laser.js",
+        "site/concept-online.css",
         "site/render.js",
         "site/social-icons.js",
         "site/tokens.css",
@@ -2297,6 +2392,7 @@
         "test/build-validation.test.js",
         "test/chart-grid.test.js",
         "test/client-hardening.test.js",
+        "test/concept-home.test.js",
         "test/contrast.test.js",
         "test/cover-pixels.test.js",
         "test/cover-settle.test.js",
@@ -2363,6 +2459,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2375,6 +2472,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2387,6 +2485,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2409,6 +2508,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2429,6 +2529,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2469,6 +2570,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2485,12 +2587,24 @@
           ]
         },
         {
+          "name": "--laser",
+          "value": "#b8ff3c",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "site/concept-online.css",
+            "test/concept-home.test.js"
+          ]
+        },
+        {
           "name": "--line-hair",
           "value": "1px solid currentColor",
           "live": false,
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2543,6 +2657,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2552,7 +2667,9 @@
           "live": true,
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
-          "files": []
+          "files": [
+            "site/concept-online.css"
+          ]
         },
         {
           "name": "--motion",
@@ -2573,6 +2690,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2585,6 +2703,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2597,6 +2716,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2609,6 +2729,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2621,6 +2742,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css",
             "test/home-preview.test.js",
             "test/verbs.test.js"
@@ -2667,6 +2789,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css",
             "test/listening-periods.test.js"
           ]
@@ -2680,6 +2803,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2690,6 +2814,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2823,6 +2948,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2865,6 +2991,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2885,6 +3012,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2897,6 +3025,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2909,6 +3038,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2921,6 +3051,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2933,6 +3064,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2945,6 +3077,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2965,6 +3098,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2977,6 +3111,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -2989,6 +3124,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3029,6 +3165,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3049,6 +3186,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3109,6 +3247,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": true,
           "files": [
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3121,6 +3260,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3162,6 +3302,7 @@
           "referencedInTokens": false,
           "files": [
             "concepts/birds1/birds1.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3274,6 +3415,7 @@
           "referencedInTokens": false,
           "files": [
             "concepts/birds1/birds1.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3286,6 +3428,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3328,6 +3471,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3358,6 +3502,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3369,6 +3514,7 @@
           "referencedInTokens": false,
           "files": [
             "concepts/birds1/birds1.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3390,6 +3536,7 @@
           "referencedInTokens": false,
           "files": [
             "concepts/birds1/birds1.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3421,6 +3568,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3463,6 +3611,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3483,6 +3632,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3523,6 +3673,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3534,6 +3685,7 @@
           "referencedInTokens": false,
           "files": [
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3567,6 +3719,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "site/concept-online.css",
             "static/station.css"
           ]
         },
@@ -3577,13 +3730,12 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": true,
           "files": [
+            "site/concept-online.css",
             "static/station.css"
           ]
         }
       ],
-      "unused": [
-        "--mono"
-      ]
+      "unused": []
     },
     "features": {
       "provenance": [
@@ -3636,6 +3788,10 @@
         "scripts/visual-serve.js",
         "scripts/wrangler-bin.js",
         "site.config.js",
+        "site/build-log.json",
+        "site/concept-home.js",
+        "site/concept-laser.js",
+        "site/concept-online.css",
         "site/render.js",
         "site/social-icons.js",
         "site/tokens.css",
@@ -3656,6 +3812,7 @@
         "test/build-validation.test.js",
         "test/chart-grid.test.js",
         "test/client-hardening.test.js",
+        "test/concept-home.test.js",
         "test/contrast.test.js",
         "test/cover-pixels.test.js",
         "test/cover-settle.test.js",
@@ -3733,6 +3890,7 @@
           "anchorFiles": {
             "aria-label=\"verbs\"": [
               "site/render.js",
+              "test/concept-home.test.js",
               "test/verbs.test.js"
             ],
             "class=\"verb-kicker\"": [
@@ -3744,12 +3902,14 @@
           "constants": {},
           "files": [
             "site/render.js",
+            "test/concept-home.test.js",
             "test/verbs.test.js"
           ],
           "sources": [
             "site/render.js"
           ],
           "tests": [
+            "test/concept-home.test.js",
             "test/verbs.test.js"
           ],
           "provenance": [
@@ -4411,6 +4571,7 @@
             "concepts/birds1/index.html"
           ],
           "tests": [
+            "test/concept-home.test.js",
             "test/csp-headers.test.js",
             "test/emit-units.test.js",
             "test/links.test.js",
@@ -4470,8 +4631,8 @@
           "provenance": [
             {
               "path": "lib/emit/index.js",
-              "sha256": "5d203b7a97735f5eacc4cd4807cd2961f25f2bb6f5ca8b1cd71ff64d9c1d5aeb",
-              "gitBlob": "8e69f3d5302f029674aff1572993ba7da166c3a8"
+              "sha256": "6149061ab53abd8bdc670f6ab60d84cb8506800604af51c0165c4d5af95b52df",
+              "gitBlob": "00da15610e55931fe7115c1fb0add4e597289c0f"
             },
             {
               "path": "site/render.js",
@@ -4494,6 +4655,7 @@
           ],
           "anchorFiles": {
             "rel=\"me noopener\"": [
+              "site/concept-home.js",
               "site/render.js"
             ],
             "lastfmSocialEnabled": [
@@ -4505,11 +4667,13 @@
           "endpoints": [],
           "constants": {},
           "files": [
+            "site/concept-home.js",
             "site/render.js",
             "site/verbs.ts",
             "test/socials.test.js"
           ],
           "sources": [
+            "site/concept-home.js",
             "site/render.js",
             "site/verbs.ts"
           ],
@@ -4517,6 +4681,11 @@
             "test/socials.test.js"
           ],
           "provenance": [
+            {
+              "path": "site/concept-home.js",
+              "sha256": "6cb4792f06a04196acbbb7ad584e4a9cb88f9d31331940a9f63a51b366a6cac0",
+              "gitBlob": "1f4777b281ba6051fc2368584e4e55dc406993e5"
+            },
             {
               "path": "site/render.js",
               "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
@@ -4582,6 +4751,10 @@
         "scripts/visual-serve.js",
         "scripts/wrangler-bin.js",
         "site.config.js",
+        "site/build-log.json",
+        "site/concept-home.js",
+        "site/concept-laser.js",
+        "site/concept-online.css",
         "site/render.js",
         "site/social-icons.js",
         "site/tokens.css",
@@ -4602,6 +4775,7 @@
         "test/build-validation.test.js",
         "test/chart-grid.test.js",
         "test/client-hardening.test.js",
+        "test/concept-home.test.js",
         "test/contrast.test.js",
         "test/cover-pixels.test.js",
         "test/cover-settle.test.js",
@@ -4748,6 +4922,18 @@
             "test/helpers/run-build.js"
           ],
           "features": []
+        },
+        {
+          "file": "test/concept-home.test.js",
+          "imports": [
+            "site/concept-home.js",
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "birds1",
+            "home-rows",
+            "social-footer"
+          ]
         },
         {
           "file": "test/contrast.test.js",
@@ -5352,6 +5538,10 @@
         "scripts/visual-serve.js",
         "scripts/wrangler-bin.js",
         "site.config.js",
+        "site/build-log.json",
+        "site/concept-home.js",
+        "site/concept-laser.js",
+        "site/concept-online.css",
         "site/render.js",
         "site/social-icons.js",
         "site/tokens.css",
@@ -5372,6 +5562,7 @@
         "test/build-validation.test.js",
         "test/chart-grid.test.js",
         "test/client-hardening.test.js",
+        "test/concept-home.test.js",
         "test/contrast.test.js",
         "test/cover-pixels.test.js",
         "test/cover-settle.test.js",
@@ -5439,10 +5630,10 @@
         "workers/rebuild/wrangler.toml"
       ],
       "classesOnlyInCss": [],
-      "unusedTokens": [
-        "--mono"
+      "unusedTokens": [],
+      "unreferencedModules": [
+        "site/concept-laser.js"
       ],
-      "unreferencedModules": [],
       "testOnlyModules": []
     }
   }

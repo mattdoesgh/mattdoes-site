@@ -8,6 +8,8 @@
   --black: #000000;
   --white: #ffffff;
   --pink: #f7c8d8;
+  /* Concept preview. A 532nm-style beam: light only, never a fill or a label. */
+  --laser: #b8ff3c;
 
   --field: var(--black);
   --ink: var(--white);

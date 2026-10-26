@@ -1,0 +1,54 @@
+{
+  "source": "merged pull requests on mattdoesgh/mattdoes-site",
+  "generated": "2026-10-26",
+  "entries": [
+    {
+      "n": 200,
+      "title": "serve phone-sized album cover variants",
+      "href": "https://github.com/mattdoesgh/mattdoes-site/pull/200",
+      "when": "2026-10-26"
+    },
+    {
+      "n": 199,
+      "title": "retire the unused geo worker",
+      "href": "https://github.com/mattdoesgh/mattdoes-site/pull/199",
+      "when": "2026-10-26"
+    },
+    {
+      "n": 198,
+      "title": "keep page edges clear of the iphone safe area",
+      "href": "https://github.com/mattdoesgh/mattdoes-site/pull/198",
+      "when": "2026-10-26"
+    },
+    {
+      "n": 197,
+      "title": "drop dead station css and unused tokens",
+      "href": "https://github.com/mattdoesgh/mattdoes-site/pull/197",
+      "when": "2026-10-26"
+    },
+    {
+      "n": 196,
+      "title": "add a generated project index agents can query",
+      "href": "https://github.com/mattdoesgh/mattdoes-site/pull/196",
+      "when": "2026-10-26"
+    },
+    {
+      "n": 195,
+      "title": "show posters off as a list and switch to down on a hard pull",
+      "href": "https://github.com/mattdoesgh/mattdoes-site/pull/195",
+      "when": "2026-10-25"
+    },
+    {
+      "n": 194,
+      "title": "scale type and spacing with the window",
+      "href": "https://github.com/mattdoesgh/mattdoes-site/pull/194",
+      "when": "2026-10-25"
+    },
+    {
+      "n": 193,
+      "title": "keep posters off from covering the watching page",
+      "href": "https://github.com/mattdoesgh/mattdoes-site/pull/193",
+      "when": "2026-10-25"
+    }
+  ]
+}

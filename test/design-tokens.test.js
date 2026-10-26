@@ -76,13 +76,13 @@ test('safe-area insets are tokens and the viewport opts in', () => {
       new RegExp(`--space-page-${side}:\\s*max\\(var\\(--space-page\\), env\\(safe-area-inset-${side}, 0px\\)\\);`),
     );
   }
-  const pages = ['site/render.js', 'concepts/hub.js', 'concepts/birds1/index.html'];
+  const pages = ['site/render.js', 'concepts/hub.js', 'concepts/birds1/index.html', 'site/concept-home.js'];
   for (const file of pages) {
     const text = fs.readFileSync(path.join(REPO_ROOT, file), 'utf8');
     assert.match(text, /width=device-width, initial-scale=1, viewport-fit=cover/);
     assert.doesNotMatch(text, /maximum-scale|user-scalable/);
   }
-  for (const file of ['static/station.css', 'concepts/hub.css', 'concepts/birds1/birds1.css']) {
+  for (const file of ['static/station.css', 'concepts/hub.css', 'concepts/birds1/birds1.css', 'site/concept-online.css']) {
     const css = fs.readFileSync(path.join(REPO_ROOT, file), 'utf8');
     assert.equal(css.includes('env('), false, `${file} writes env() outside site/tokens.css`);
     assert.match(css, /padding-bottom:\s*var\(--space-page-bottom\)/);

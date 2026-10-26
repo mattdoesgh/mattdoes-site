@@ -9,6 +9,19 @@
       "text": "site/tokens.css is the only place a raw color, font stack, or font size is written. Pages use var(--token). The build keeps the polarity colors, the font stacks, and --row-size live and inlines the rest. Pink is #F7C8D8."
     },
     {
+      "id": "concept-home",
+      "verified-at": "b8dbb3afa38d4a685856060366e50fafc7f1bb21",
+      "paths": [
+        "site/concept-home.js",
+        "site/concept-online.css",
+        "site/concept-laser.js",
+        "site/build-log.json",
+        "site/tokens.css",
+        "lib/emit/index.js"
+      ],
+      "text": "The concept home is a preview of /, not a second route. It is emitted only when CONCEPT_HOME=1, or when CF_PAGES_BRANCH is set and is not main or master. The main Pages build still calls renderHome, so production stays the verb list. The concept document is noindex. Do not merge it onto the live home. --laser is #b8ff3c and is light only: the Unshared room holds a rake, one beam with a flare, and an edge spill. The same green is the tap slice. It is not a text color, a border, or a button. Pink on black stays the interface. A link or button navigates on the first press. Repeated presses on a non-link (the wordmark, 01, unshared, on, and built) build a combo. Ranks are d dope, c crazy, b blast, a alright, s sweet, ss showtime, and sss ssstylish at 3, 6, 10, 16, 24, 35, and 50. A rank-up rakes a short fan. At sss the fan stays and the pink letters take a green edge, then the meter steps down after the idle. Reduced motion keeps the room beams still, skips the shear, and changes only the rank letters."
+    },
+    {
       "id": "strict-csp",
       "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
       "paths": ["lib/csp-policy.js", "static/_headers"],
