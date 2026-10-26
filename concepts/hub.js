@@ -20,7 +20,7 @@ export function renderHubDocument(siteUrl = siteConfig.url) {
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>matt does unshared</title>
     <meta name="description" content="matt does unshared.">
     <link rel="canonical" href="${esc(canonical)}">

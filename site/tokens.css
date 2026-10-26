@@ -1,8 +1,8 @@
 /* Station tokens. This file is the only place a raw color, font stack,
    or font size is written. Pages use var(--token).
    Field, ink, focus, and rule swap when a verb page flips.
-   The build keeps field, ink, focus, rule, the font stacks, and
-   --row-size live, and inlines every other token. */
+   The build keeps field, ink, focus, rule, the font stacks,
+   --row-size, and the safe-area edges live, and inlines every other token. */
 
 :root {
   --black: #000000;
@@ -117,7 +117,26 @@
   --space-footer: clamp(2.5rem, 2.24rem + 1.07vw, 3.2rem);
   --space-kicker: 0 0 clamp(1.35rem, 3vh, 2rem);
   --space-page: clamp(1rem, 3vw, 2.75rem);
-  --space-page-desk: clamp(1rem, 2.4vh, 2rem) clamp(1.25rem, 2vw, 2.4rem);
+  --space-page-block: clamp(1rem, 2.4vh, 2rem);
+  --space-page-inline: clamp(1.25rem, 2vw, 2.4rem);
+  --space-page-desk: var(--space-page-block) var(--space-page-inline);
+  /* env() is written only in this file. 0px keeps the page padding when a side has no inset. */
+  --space-page-top: max(var(--space-page), env(safe-area-inset-top, 0px));
+  --space-page-right: max(var(--space-page), env(safe-area-inset-right, 0px));
+  --space-page-bottom: max(var(--space-page), env(safe-area-inset-bottom, 0px));
+  --space-page-left: max(var(--space-page), env(safe-area-inset-left, 0px));
+  --space-page-desk-top: max(var(--space-page-block), env(safe-area-inset-top, 0px));
+  --space-page-desk-right: max(var(--space-page-inline), env(safe-area-inset-right, 0px));
+  --space-page-desk-bottom: max(var(--space-page-block), env(safe-area-inset-bottom, 0px));
+  --space-page-desk-left: max(var(--space-page-inline), env(safe-area-inset-left, 0px));
+  --space-md-top: max(var(--space-md), env(safe-area-inset-top, 0px));
+  --space-md-right: max(var(--space-md), env(safe-area-inset-right, 0px));
+  --space-md-bottom: max(var(--space-md), env(safe-area-inset-bottom, 0px));
+  --space-scene-top: max(calc(var(--hit-phone) + var(--space-md)), env(safe-area-inset-top, 0px));
+  --space-scene-right: max(var(--space-section), env(safe-area-inset-right, 0px));
+  --space-scene-bottom: max(var(--space-section), env(safe-area-inset-bottom, 0px));
+  --space-scene-left: max(var(--space-section), env(safe-area-inset-left, 0px));
+  --space-scene-desk-top: max(calc(var(--hit) + var(--space-md)), env(safe-area-inset-top, 0px));
   --space-phone-main: clamp(2rem, 5vh, 3rem);
   --space-phone-verbs: clamp(2rem, 4.8vh, 3.15rem);
   --space-desk-main: clamp(0.8rem, 2vh, 1.6rem);

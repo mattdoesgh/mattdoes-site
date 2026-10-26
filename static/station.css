@@ -32,6 +32,10 @@ body {
   display: flex;
   flex-direction: column;
   padding: var(--space-page);
+  padding-top: var(--space-page-top);
+  padding-right: var(--space-page-right);
+  padding-bottom: var(--space-page-bottom);
+  padding-left: var(--space-page-left);
   background-color: var(--field);
   color: var(--ink);
   font-family: var(--body);
@@ -907,6 +911,10 @@ html[data-posters="off"] .axis-across {
   max-width: none;
   max-height: none;
   padding: calc(var(--hit-phone) + var(--space-md)) var(--space-section) var(--space-section);
+  padding-top: var(--space-scene-top);
+  padding-right: var(--space-scene-right);
+  padding-bottom: var(--space-scene-bottom);
+  padding-left: var(--space-scene-left);
   overflow: hidden;
 }
 
@@ -916,8 +924,8 @@ html[data-posters="off"] .axis-across {
 
 .scene-close {
   position: fixed;
-  top: var(--space-md);
-  right: var(--space-md);
+  top: var(--space-md-top);
+  right: var(--space-md-right);
   z-index: 2;
   display: inline-flex;
   align-items: center;
@@ -1159,6 +1167,10 @@ html.is-locked body {
 @media (min-width: 1024px) {
   body {
     padding: var(--space-page-desk);
+    padding-top: var(--space-page-desk-top);
+    padding-right: var(--space-page-desk-right);
+    padding-bottom: var(--space-page-desk-bottom);
+    padding-left: var(--space-page-desk-left);
   }
 
   .sign,
@@ -1318,6 +1330,10 @@ html.is-locked body {
 
   .scene[open] {
     padding: calc(var(--hit) + var(--space-md)) var(--space-page) var(--space-page);
+    padding-top: var(--space-scene-desk-top);
+    padding-right: var(--space-page-right);
+    padding-bottom: var(--space-page-bottom);
+    padding-left: var(--space-page-left);
   }
 
   .scene-close {
@@ -1534,6 +1550,9 @@ html.is-holding {
   gap: var(--space-md);
   margin: var(--space-0);
   padding: var(--space-md) var(--space-page);
+  padding-right: var(--space-page-right);
+  padding-bottom: var(--space-md-bottom);
+  padding-left: var(--space-page-left);
   pointer-events: none;
   opacity: 0;
   font-family: var(--body);
