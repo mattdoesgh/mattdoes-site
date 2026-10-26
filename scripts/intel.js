@@ -944,8 +944,8 @@ function touch() {
   const head = git(['rev-parse', 'HEAD']);
   if (head.status !== 0) throw new Error('intel: git rev-parse HEAD failed');
   const sha = head.stdout.trim();
-  const { fresh, curated } = buildIndex();
-  const stale = staleEntries(curated, fresh);
+  const { index, curated } = buildIndex();
+  const stale = staleEntries(curated, index);
   if (!stale.length) {
     console.log('intel: nothing stale');
     return;

@@ -243,8 +243,8 @@
     },
     {
       "path": "scripts/intel.js",
-      "sha256": "23e443886b75c8a723f49db91ac835bac29b2d2ef4ea00199490d85f92330f22",
-      "gitBlob": "7ab1f3bf704a67156da2b06c43843814ef0853a7"
+      "sha256": "44be0158ee6c5412c8c127824d0a9e47bfbe53be955372c0c1f3e6d5f2a0cecb",
+      "gitBlob": "b5955cf2f8e48900015dd10a593ff54e310f3c7c"
     },
     {
       "path": "scripts/optimize-media.js",
