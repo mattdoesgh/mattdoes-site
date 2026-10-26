@@ -64,7 +64,6 @@ test('the build inlines sizes and keeps the polarity colors', () => {
   assert.match(css, /font-size:\s*clamp\(min\(4rem, 28vw\), 16vw, 8\.5rem\)/);
   assert.doesNotMatch(css, /var\(--type-/);
   assert.match(css, /--field:\s*#000000/);
-  assert.match(css, /--signal:\s*#f7c8d8/);
   assert.match(css, /body\[data-polarity="flip"\][\s\S]*--field:\s*#f7c8d8/);
   assert.match(css, /-webkit-text-stroke:\s*max\(0\.025em,\s*1\.5px\) #f7c8d8/);
 });
@@ -75,7 +74,6 @@ test('the shipped stylesheet still carries the pink star stroke', () => {
   assert.ok(shipped);
   const built = fs.readFileSync(path.join(distDir, shipped), 'utf8');
   assert.match(built, /--field:#000/);
-  assert.match(built, /--signal:#f7c8d8/);
   assert.match(built, /-webkit-text-stroke:\.025em #f7c8d8/);
   assert.doesNotMatch(built, /var\(--type-/);
 });

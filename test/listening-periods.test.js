@@ -200,7 +200,7 @@ test('listening type matches the watching titles', () => {
   const reduced = css.slice(css.indexOf('@media (prefers-reduced-motion: reduce)'));
   assert.match(reduced, /animation:\s*none !important/);
   assert.match(reduced, /\.wave span\s*\{[^}]*animation:\s*none/);
-  assert.match(css, /\.redaction-hint,\s*\.total-spoken,\s*\.layout-live,\s*\.scene\.is-still \.scene-title \{/);
+  assert.match(css, /\.total-spoken,\s*\.layout-live,\s*\.scene\.is-still \.scene-title \{/);
   const cap = css.slice(css.indexOf('.album-cap {'), css.indexOf('.album-by {'));
   assert.match(cap, /font-family:\s*var\(--display\)/);
   assert.match(cap, /font-weight:\s*var\(--weight-regular\)/);
