@@ -52,13 +52,13 @@
     },
     {
       "id": "wrangler-pin",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
       "paths": ["workers/package-lock.json", "scripts/wrangler-bin.js", "scripts/deploy-workers.js"],
       "text": "Wrangler stays at the version in workers/package-lock.json. Do not run npx wrangler. Keep the CSP_RL binding."
     },
     {
       "id": "geo-retired",
-      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
+      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
       "paths": ["scripts/deploy-workers.js", "README.md", "AGENTS.md"],
       "text": "The mattdoes-geo worker was retired on Oct 25 2026 with Matt's approval. No page called /api/geo/lookup. The worker, the GEO_CACHE KV binding, and the GEO_RL rate limit are not in the repo. Do not add them back."
     },
@@ -83,7 +83,7 @@
     },
     {
       "id": "charts-cron",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
       "paths": ["workers/listening/wrangler.toml", "workers/rebuild/wrangler.toml"],
       "text": "The monthly album chart refreshes Monday 11:00 UTC. Covers are on R2 at media.mattdoes.online. The listening worker must deploy before the Pages build that reads the charts key. mattdoes-rebuild posts the Pages deploy hook every six hours, and listening asks it to rebuild after the Monday refresh."
     }
@@ -121,7 +121,7 @@
     },
     {
       "id": "doc-sprawl",
-      "verified-at": "37b1cd4fc866452db7943301dc5f4bf19752465d",
+      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
       "paths": ["AGENTS.md", "README.md"],
       "text": "Docs were trimmed on purpose. Do not add a parallel guide. Extend AGENTS.md, this file, or the generated index."
     },
@@ -135,7 +135,7 @@
   "invariants": [
     {
       "id": "bindings",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
       "paths": ["workers/csp-report/wrangler.toml", "workers/listening/wrangler.toml"],
       "text": "CSP_RL, LISTEN_RL, LASTFM_CACHE, and LISTENING_POLLER stay. A missing rate-limit binding fails the worker closed."
     },
@@ -205,7 +205,7 @@
     },
     {
       "id": "one-pr",
-      "verified-at": "37b1cd4fc866452db7943301dc5f4bf19752465d",
+      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
       "paths": ["AGENTS.md"],
       "text": "One concern per pull request. Do not merge. Security changes need Matt's yes. Never paste secrets."
     }
@@ -222,7 +222,7 @@
     },
     {
       "id": "home-listen",
-      "verified-at": "37b1cd4fc866452db7943301dc5f4bf19752465d",
+      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
       "route": "/",
       "anchors": ["preview listen-line", "now listening"],
       "endpoints": ["/api/listening/now"],
@@ -272,7 +272,7 @@
     },
     {
       "id": "listening-chart",
-      "verified-at": "37b1cd4fc866452db7943301dc5f4bf19752465d",
+      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
       "route": "/listening/",
       "anchors": ["class=\"album-grid\"", "class=\"album-tile\""],
       "endpoints": ["/api/listening/charts"],
@@ -282,7 +282,7 @@
     },
     {
       "id": "listening-recent",
-      "verified-at": "37b1cd4fc866452db7943301dc5f4bf19752465d",
+      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
       "route": "/listening/",
       "anchors": ["class=\"recent-label\"", "id=\"tracks\""],
       "endpoints": ["/api/listening/recent"],
