@@ -108,7 +108,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "e923465a1202682b8098241ecd3c012dfd6b10a486ccffb0be4060ca8de9559f",
+      "sha256": "6b357d503173f386a659153ad34efb84cf28ee787ab37e5e9dae13c301ac277b",
       "gitBlob": null
     },
     {
@@ -118,8 +118,8 @@
     },
     {
       "path": "lib/cover-mirror.js",
-      "sha256": "c8ea225bf1c406d7b892e4861c1a3efb82aa4fcfc569143c2de731e5dd224a33",
-      "gitBlob": "7fbd08be7ef56c8ae390a7f699ec31e5c23690d8"
+      "sha256": "83d301b057bf1ea5bf9a3ae0119ec3e50c803dc23db8f573afa88737ae755ebf",
+      "gitBlob": "166560532879ca4fc4619f71e636be3a93b418c6"
     },
     {
       "path": "lib/cover-pixels.js",
@@ -128,8 +128,8 @@
     },
     {
       "path": "lib/cover-settle.js",
-      "sha256": "b2ec2ab13bf224535de78e7db93a3c68681bd4f18bda8759ac6c48e6db79663d",
-      "gitBlob": "eae26194c1cd0424d3cfd03af41df52b44ccba60"
+      "sha256": "c54a7e8cfea64f9fdccb4c5a4319ab5c99787307eb6ed2dba192aa341c7867a1",
+      "gitBlob": "548629922b51a0b1d8049a955b356d2dbf6bdcbf"
     },
     {
       "path": "lib/covers.js",
@@ -173,8 +173,8 @@
     },
     {
       "path": "lib/lastfm.js",
-      "sha256": "382122675e886d5a6c2eda31422dd488b0eadb7e2dc118272061451fe05ada81",
-      "gitBlob": "8cec802fcce9f61f096b643c0fbd5586a5be80af"
+      "sha256": "7721c6096efd9433b1a69b1d9064846f1b6af48634619e364f688cf38a889bcb",
+      "gitBlob": "8c0b2268a206680f830e0bf867c1f401596d8a93"
     },
     {
       "path": "lib/letterboxd.js",
@@ -188,8 +188,8 @@
     },
     {
       "path": "lib/listening.js",
-      "sha256": "1b5a8426ea4b392121b307f43e03f9dacf2180778ccacd9620c3f39e24c00ed1",
-      "gitBlob": "029a26ee5257df9b352f4c416e4b9a9fde375467"
+      "sha256": "82173ca4b66ccf6ad9acafabe7c0245f097c4419bdd4b9a9af8fa234bf97515a",
+      "gitBlob": "78c7ce442c7e9040d964084ae5ad606329ba9d8f"
     },
     {
       "path": "lib/posters.js",
@@ -278,8 +278,8 @@
     },
     {
       "path": "site/render.js",
-      "sha256": "8a9f2e20974c66382602266320cebf39546b4a01c0c9e68be716ef6a224dc5ec",
-      "gitBlob": "b12a491feb4c9ffc5a953108d252b10808442f83"
+      "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
+      "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
     },
     {
       "path": "site/social-icons.js",
@@ -328,8 +328,8 @@
     },
     {
       "path": "static/station.css",
-      "sha256": "c1c1400fc86a96096ab52e56d58eb128c434d8384061a20dd7dec0e75bae32a8",
-      "gitBlob": "5da2ab5c8d9774e069c144749eeea78b19c49eba"
+      "sha256": "790e2d7860f457e223d1731045bbce5b83af4c16cff4f4407cb3334513484f1b",
+      "gitBlob": "7d67108958ba6cc1e222ce5f24f9d9e2b106dc97"
     },
     {
       "path": "static/station.js",
@@ -388,8 +388,8 @@
     },
     {
       "path": "test/cover-settle.test.js",
-      "sha256": "4510a0675a807a0754d66817931f73b042afd0bbdbc6473ca1497f69348c44eb",
-      "gitBlob": "3ba129a9566d8c2de91031311d2e0d9368f07f65"
+      "sha256": "46295da0a70119a577170c252d84d61318895af4506605b8d1869b00c43dccfc",
+      "gitBlob": "54ad65fe202ae5f26b39096f53089b5fac682daf"
     },
     {
       "path": "test/covers.test.js",
@@ -493,8 +493,8 @@
     },
     {
       "path": "test/lastfm-codec.test.js",
-      "sha256": "3191b182adea9cc874e4eefecb1a727232803b2437f782d79a999348cb5226bb",
-      "gitBlob": "7b7287e7838da7e0fbfbeb6fabc14741de777a3b"
+      "sha256": "333914187f9c15f6129191c152f93e82512583330422a0a5d5d90bdf53db7579",
+      "gitBlob": "d02e5c11a379171c3fa13f09913d080fb2bce8fd"
     },
     {
       "path": "test/letterboxd.test.js",
@@ -513,8 +513,8 @@
     },
     {
       "path": "test/listening-snapshot.test.js",
-      "sha256": "e9f825a8496bd2bb2d2a4124e5e4ae03a90fa64a8ceda17c2b453e0c919773e1",
-      "gitBlob": "4d2a15f3d71b4a1499d2ea0525cb6f2cde8035cd"
+      "sha256": "7cdfcc69c5e726663e6f60c70b9f8da57dd9b0330b95529290d1e37f549d850c",
+      "gitBlob": "5b094b3f97cf15f12942645ac7387c9db3e72bd5"
     },
     {
       "path": "test/listening.test.js",
@@ -1288,6 +1288,10 @@
           "to": "lib/cover-settle.js"
         },
         {
+          "from": "test/cover-settle.test.js",
+          "to": "site/render.js"
+        },
+        {
           "from": "test/covers.test.js",
           "to": "lib/covers.js"
         },
@@ -1754,6 +1758,7 @@
         "site/render.js": [
           "lib/emit/index.js",
           "test/chart-grid.test.js",
+          "test/cover-settle.test.js",
           "test/film-count.test.js",
           "test/home-listen.test.js",
           "test/home-preview.test.js",
@@ -3750,8 +3755,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "8a9f2e20974c66382602266320cebf39546b4a01c0c9e68be716ef6a224dc5ec",
-              "gitBlob": "b12a491feb4c9ffc5a953108d252b10808442f83"
+              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
+              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
             }
           ]
         },
@@ -3823,8 +3828,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "8a9f2e20974c66382602266320cebf39546b4a01c0c9e68be716ef6a224dc5ec",
-              "gitBlob": "b12a491feb4c9ffc5a953108d252b10808442f83"
+              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
+              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
             },
             {
               "path": "static/station.js",
@@ -3878,8 +3883,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "8a9f2e20974c66382602266320cebf39546b4a01c0c9e68be716ef6a224dc5ec",
-              "gitBlob": "b12a491feb4c9ffc5a953108d252b10808442f83"
+              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
+              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
             },
             {
               "path": "static/station.js",
@@ -3953,8 +3958,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "8a9f2e20974c66382602266320cebf39546b4a01c0c9e68be716ef6a224dc5ec",
-              "gitBlob": "b12a491feb4c9ffc5a953108d252b10808442f83"
+              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
+              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
             },
             {
               "path": "static/poster-prefs.js",
@@ -3963,8 +3968,8 @@
             },
             {
               "path": "static/station.css",
-              "sha256": "c1c1400fc86a96096ab52e56d58eb128c434d8384061a20dd7dec0e75bae32a8",
-              "gitBlob": "5da2ab5c8d9774e069c144749eeea78b19c49eba"
+              "sha256": "790e2d7860f457e223d1731045bbce5b83af4c16cff4f4407cb3334513484f1b",
+              "gitBlob": "7d67108958ba6cc1e222ce5f24f9d9e2b106dc97"
             }
           ]
         },
@@ -4003,8 +4008,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "8a9f2e20974c66382602266320cebf39546b4a01c0c9e68be716ef6a224dc5ec",
-              "gitBlob": "b12a491feb4c9ffc5a953108d252b10808442f83"
+              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
+              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
             },
             {
               "path": "static/station.js",
@@ -4060,8 +4065,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "8a9f2e20974c66382602266320cebf39546b4a01c0c9e68be716ef6a224dc5ec",
-              "gitBlob": "b12a491feb4c9ffc5a953108d252b10808442f83"
+              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
+              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
             }
           ]
         },
@@ -4114,8 +4119,8 @@
           "provenance": [
             {
               "path": "lib/listening.js",
-              "sha256": "1b5a8426ea4b392121b307f43e03f9dacf2180778ccacd9620c3f39e24c00ed1",
-              "gitBlob": "029a26ee5257df9b352f4c416e4b9a9fde375467"
+              "sha256": "82173ca4b66ccf6ad9acafabe7c0245f097c4419bdd4b9a9af8fa234bf97515a",
+              "gitBlob": "78c7ce442c7e9040d964084ae5ad606329ba9d8f"
             },
             {
               "path": "site.config.js",
@@ -4124,8 +4129,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "8a9f2e20974c66382602266320cebf39546b4a01c0c9e68be716ef6a224dc5ec",
-              "gitBlob": "b12a491feb4c9ffc5a953108d252b10808442f83"
+              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
+              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
             },
             {
               "path": "workers/listening/src/index.js",
@@ -4195,13 +4200,13 @@
             },
             {
               "path": "lib/listening.js",
-              "sha256": "1b5a8426ea4b392121b307f43e03f9dacf2180778ccacd9620c3f39e24c00ed1",
-              "gitBlob": "029a26ee5257df9b352f4c416e4b9a9fde375467"
+              "sha256": "82173ca4b66ccf6ad9acafabe7c0245f097c4419bdd4b9a9af8fa234bf97515a",
+              "gitBlob": "78c7ce442c7e9040d964084ae5ad606329ba9d8f"
             },
             {
               "path": "site/render.js",
-              "sha256": "8a9f2e20974c66382602266320cebf39546b4a01c0c9e68be716ef6a224dc5ec",
-              "gitBlob": "b12a491feb4c9ffc5a953108d252b10808442f83"
+              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
+              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
             },
             {
               "path": "static/_headers",
@@ -4270,8 +4275,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "8a9f2e20974c66382602266320cebf39546b4a01c0c9e68be716ef6a224dc5ec",
-              "gitBlob": "b12a491feb4c9ffc5a953108d252b10808442f83"
+              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
+              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
             }
           ]
         },
@@ -4308,8 +4313,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "8a9f2e20974c66382602266320cebf39546b4a01c0c9e68be716ef6a224dc5ec",
-              "gitBlob": "b12a491feb4c9ffc5a953108d252b10808442f83"
+              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
+              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
             }
           ]
         },
@@ -4470,8 +4475,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "8a9f2e20974c66382602266320cebf39546b4a01c0c9e68be716ef6a224dc5ec",
-              "gitBlob": "b12a491feb4c9ffc5a953108d252b10808442f83"
+              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
+              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
             },
             {
               "path": "static/station.js",
@@ -4514,8 +4519,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "8a9f2e20974c66382602266320cebf39546b4a01c0c9e68be716ef6a224dc5ec",
-              "gitBlob": "b12a491feb4c9ffc5a953108d252b10808442f83"
+              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
+              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
             },
             {
               "path": "site/verbs.ts",
@@ -4760,9 +4765,23 @@
           "file": "test/cover-settle.test.js",
           "imports": [
             "lib/cover-mirror.js",
-            "lib/cover-settle.js"
+            "lib/cover-settle.js",
+            "site/render.js"
           ],
-          "features": []
+          "features": [
+            "frequency",
+            "home-listen",
+            "home-rows",
+            "listening-chart",
+            "listening-count",
+            "listening-recent",
+            "social-footer",
+            "watching-count",
+            "watching-scene",
+            "watching-strip",
+            "watching-toggles",
+            "wave-counts"
+          ]
         },
         {
           "file": "test/covers.test.js",
