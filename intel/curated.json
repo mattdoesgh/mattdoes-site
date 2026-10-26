@@ -1,0 +1,342 @@
+{
+  "schema": 1,
+  "handEdit": "Curated intent. Code wins when they disagree. A stale verified-at does not outrank the file.",
+  "decisions": [
+    {
+      "id": "tokens-only",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["site/tokens.css", "lib/design-tokens.js", "STYLE.md"],
+      "text": "site/tokens.css is the only place a raw color, font stack, or font size is written. Pages use var(--token). The build keeps the polarity colors, the font stacks, and --row-size live and inlines the rest. Pink is #F7C8D8."
+    },
+    {
+      "id": "strict-csp",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["lib/csp-policy.js", "static/_headers"],
+      "text": "CSP is strict: no unsafe-inline. HSTS is one year, without includeSubDomains and without preload. X-Frame-Options is DENY. COOP is same-origin. COEP is omitted because posters and the analytics beacon do not send CORP."
+    },
+    {
+      "id": "live-audio",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["concepts/birds1/birds1.js"],
+      "text": "Visitors are not served stored audio. birds1 synthesizes sound with Web Audio. Do not add an audio file."
+    },
+    {
+      "id": "registry",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["site/verbs.ts"],
+      "text": "site/verbs.ts is the registry. An unknown source or a missing renderer fails the build. /unshared/ stays off the home menu. Old paths are not redirected."
+    },
+    {
+      "id": "frequency-offline",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["site/verbs.ts", "site/render.js", "lib/emit/index.js"],
+      "text": "/frequency/ is a noindex secret. It stays out of the registry and the sitemap, and it stays offline while SECRET_PATHS is empty. The prize mailto lives only in renderFrequency. Do not copy that address into docs, the index, or a public page."
+    },
+    {
+      "id": "no-invented-watches",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["lib/posters.js", "lib/watches.js"],
+      "text": "Do not invent watches or posts. A poster that is not mirrored onto media.mattdoes.online is omitted. A failed poster fetch does not fail the build."
+    },
+    {
+      "id": "wave-words",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["site/render.js", "static/station.css"],
+      "text": "The wave sits only on the words that label the big counts: scrobbles and films. The numbers are outline only. Stars are black fill with a pink outline."
+    },
+    {
+      "id": "fluid-type",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["site/tokens.css"],
+      "text": "Type and spacing scale with clamp() tokens. Poster settings are about half the films numeral (--type-setting) and still grow a 44px tap target by padding and a negative margin."
+    },
+    {
+      "id": "wrangler-pin",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["workers/package-lock.json", "scripts/wrangler-bin.js", "scripts/deploy-workers.js"],
+      "text": "Wrangler stays at the version in workers/package-lock.json. Do not run npx wrangler. Keep the CSP_RL, GEO_CACHE, and GEO_RL bindings."
+    },
+    {
+      "id": "actions-pin",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": [".github/workflows/build.yml"],
+      "text": "GitHub Actions stay pinned to a full commit SHA, with permissions contents: read."
+    },
+    {
+      "id": "zero-spend",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["package.json"],
+      "text": "Zero spend. No new runtime dependency. Dev-only tooling has to be a plain Node script."
+    },
+    {
+      "id": "email-obfuscation",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "external": true,
+      "paths": ["static/_headers"],
+      "text": "Cloudflare Email Obfuscation stays on. It is a dashboard setting, not a file. The CSP comment in static/_headers admits the decoder. Do not turn obfuscation off to chase a CSP warning."
+    },
+    {
+      "id": "charts-cron",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["workers/listening/wrangler.toml", "workers/rebuild/wrangler.toml"],
+      "text": "The monthly album chart refreshes Monday 11:00 UTC. Covers are on R2 at media.mattdoes.online. The listening worker must deploy before the Pages build that reads the charts key. mattdoes-rebuild posts the Pages deploy hook every six hours, and listening asks it to rebuild after the Monday refresh."
+    }
+  ],
+  "rejected": [
+    {
+      "id": "vault",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["scripts/pages-prebuild.sh"],
+      "text": "The Obsidian vault and VAULT_TOKEN were removed. The prebuild must not clone. There is no content/ tree. Do not bring the vault back."
+    },
+    {
+      "id": "pseudo-hit-area",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["static/station.css", "static/poster-prefs.js"],
+      "text": "Do not grow a hit area with an absolutely positioned ::before or ::after. On /watching/ with posters off, that box stretched over the page on iPhone. Use padding and a negative margin."
+    },
+    {
+      "id": "chrome-habits",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["STYLE.md"],
+      "text": "No grid lines, no chips, no unfold or wipe animations, no flavor text, no numbering. Lowercase labels."
+    },
+    {
+      "id": "period-switcher",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["lib/lastfm.js"],
+      "text": "The listening chart is the last month only. LISTENING_PERIODS has one id. Do not add a period switcher."
+    },
+    {
+      "id": "legacy-redirects",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["static/_redirects"],
+      "text": "/watch and /movies are not redirected. They 404. The only redirect in the repo is www to the apex."
+    },
+    {
+      "id": "doc-sprawl",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["AGENTS.md", "README.md"],
+      "text": "Docs were trimmed on purpose. Do not add a parallel guide. Extend AGENTS.md, this file, or the generated index."
+    },
+    {
+      "id": "fixture-only-preview",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["test/visual/pages.spec.js"],
+      "text": "CI can pass while the real Pages preview has no posters, because the visual suite uses fixtures. A user-visible change is confirmed on the preview, at 390×844 and 1280×800."
+    }
+  ],
+  "invariants": [
+    {
+      "id": "bindings",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["workers/csp-report/wrangler.toml", "workers/geo/wrangler.toml", "workers/listening/wrangler.toml"],
+      "text": "CSP_RL, GEO_CACHE, GEO_RL, LISTEN_RL, LASTFM_CACHE, and LISTENING_POLLER stay. A missing rate-limit binding fails the worker closed."
+    },
+    {
+      "id": "offline-flags",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["lib/listening.js", "lib/watches.js"],
+      "text": "LISTENING_OFFLINE=1 and LETTERBOXD_OFFLINE=1 skip the network for tests and CI. The production Pages build does not set them."
+    },
+    {
+      "id": "home-menu",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["site/verbs.ts"],
+      "text": "The home menu is verbCatalog minus unshared. Publishing /unshared/ does not put it on the home list."
+    }
+  ],
+  "lessons": [
+    {
+      "id": "posters-missing-on-preview",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["lib/posters.js", "test/visual/pages.spec.js"],
+      "text": "The poster strip's CI passed with fixtures while the real preview had zero posters. Black boxes in a screenshot were the fixture, not the page. Compare a preview capture that was not scrolled."
+    },
+    {
+      "id": "iphone-hit-area",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["static/station.css", "static/poster-prefs.js"],
+      "text": "Posters off broke the page on iPhone. The cause was a 32px ::before hit area plus iOS text inflation, and invalid localStorage values were kept. The fix is padding, a negative margin, text-size-adjust, and dropping stored values that are not on or off, across or down."
+    },
+    {
+      "id": "toggle-size",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["site/tokens.css", "static/station.css"],
+      "text": "Poster settings were resized four times. The settled target is compact, about half the films numeral, still tappable, and fluid. Do not reopen that size without a preview at both viewports."
+    },
+    {
+      "id": "cover-placeholder",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["lib/covers.js", "lib/lastfm.js"],
+      "text": "A placeholder question-mark cover and a wrong cover were fixed by dropping blank art and backfilling. Albums without a real cover stay off the grid."
+    },
+    {
+      "id": "chart-only-note",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["site/render.js", "static/station.js"],
+      "text": "A chat note called /listening/ a monthly chart with no recent list. The page still renders the recent list and station.js refreshes it from /api/listening/recent. Do not delete that list on the strength of the note."
+    },
+    {
+      "id": "ambient-is-birds1",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["concepts/entries.js", "concepts/birds1/index.html"],
+      "text": "The generative flock was described as /unshared/ambient/. The shipped route is /unshared/birds1/. There is no ambient path. Do not add one unless the registry changes."
+    }
+  ],
+  "conventions": [
+    {
+      "id": "viewports",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["playwright.config.js"],
+      "text": "Check 390×844 and 1280×800. The visual suite also has an 800-wide home shot. Phone project is hasTouch."
+    },
+    {
+      "id": "hit-targets",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["site/tokens.css"],
+      "text": "--hit floors at 44px and --hit-phone at 48px. Poster settings use --hit-setting (44px) via padding, not a covering pseudo-element."
+    },
+    {
+      "id": "one-pr",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "paths": ["AGENTS.md"],
+      "text": "One concern per pull request. Do not merge. Security changes need Matt's yes. Never paste secrets."
+    }
+  ],
+  "features": [
+    {
+      "id": "home-rows",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "route": "/",
+      "anchors": ["aria-label=\"verbs\"", "class=\"verb-kicker\""],
+      "text": "Home is the verb list. The visible words are matt does plus the registry label. Unshared is not in the list. The latest film sits on the letterboxd row, with no underline.",
+      "risks": ["Adding a verb puts it on the home menu unless it is filtered out like unshared."],
+      "devices": ["The kicker is hidden at the 800px hover window. Check 390 and 1280 before moving it."]
+    },
+    {
+      "id": "home-listen",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "route": "/",
+      "anchors": ["preview listen-line", "now listening"],
+      "endpoints": ["/api/listening/now"],
+      "constantsFrom": ["lib/listen-line.js", "static/station.js"],
+      "parity": [["lib/listen-line.js", "LISTEN_LIMIT"], ["static/station.js", "LISTEN_LIMIT"]],
+      "text": "The last.fm row's lower line is baked as last listened so a build-time now-playing flag cannot go stale with JavaScript off. station.js polls /api/listening/now about once a minute and falls back to the last track. The clip length is duplicated in the classic script and in lib/listen-line.js. The parity check keeps the two numbers equal. Do not add a bundler to share them.",
+      "risks": ["A fixture build never shows a live now-playing line. Confirm on the preview.", "A truthy reason on the payload must leave the baked line alone."],
+      "devices": ["The line is one row. A long title is clipped to LISTEN_LIMIT. Check it at 390."]
+    },
+    {
+      "id": "watching-strip",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "route": "/watching/",
+      "anchors": ["class=\"film-open\"", "data-scene"],
+      "text": "Recent films are a strip. The first image is eager. The rest are lazy. src stays off the img until posters are on, so an off preference does not fetch. A poster that was not mirrored is omitted.",
+      "risks": ["Fixtures can pass while the preview has no images. #180.", "Do not hotlink Letterboxd."],
+      "devices": ["Horizontal scroll is the across axis. overscroll-behavior-x is contain. A real phone scroll is not the same as a fixture screenshot."]
+    },
+    {
+      "id": "watching-toggles",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "route": "/watching/",
+      "anchors": ["data-posters-toggle", "data-axis-toggle", "data-pull"],
+      "storageKeys": ["mattdoes-posters", "mattdoes-poster-axis"],
+      "constantsFrom": ["static/poster-prefs.js"],
+      "text": "Two stacked switches sit at the right of the films count. Posters off is a vertical text list: title, stars, rewatch, no images. Across is aria-disabled while posters are off, and the saved axis is kept. A deliberate pull switches across to down only from the bottom: the touch and wheel thresholds are the constants in poster-prefs.js. The hint is hidden under reduced motion. The script runs from the head so the choice is on the document element before first paint.",
+      "risks": ["An absolute ::before hit area covered the page on iPhone. #193.", "Invalid localStorage values must be deleted, not applied.", "Do not resize the switches without both viewports. The settled size is about half the numeral."],
+      "devices": ["iOS text-size-adjust must stay 100%. The tap spare grows away from the other switch, via padding and a negative margin."]
+    },
+    {
+      "id": "watching-scene",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "route": "/watching/",
+      "anchors": ["id=\"scene\"", "data-review"],
+      "text": "Opening a film uses a dialog. The wide poster is not in the tree until the scene opens. The review is a data attribute, not card text.",
+      "risks": ["The scene image should not download while the strip is closed."],
+      "devices": ["Reduced motion drops the scene-in animation. The dialog still has to open."]
+    },
+    {
+      "id": "watching-count",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "route": "/watching/",
+      "anchors": ["countLine(ctx.filmCount", "parseFilmCount"],
+      "text": "The films count is the public Letterboxd total, not the length of the RSS window. A missing count hides the line and does not fail the build. The word films is the wave. The number is an outline.",
+      "risks": ["LETTERBOXD_OFFLINE hides the live total. The preview is the check."],
+      "devices": ["The count and the switches share a row and wrap. Check 390 so they do not collide."]
+    },
+    {
+      "id": "listening-chart",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "route": "/listening/",
+      "anchors": ["class=\"album-grid\"", "class=\"album-tile\""],
+      "endpoints": ["/api/listening/charts"],
+      "text": "The chart is 25 albums for the last month, five across, with a few hidden spares. There is no period switcher. A cover that fails in the browser is dropped and the next spare is shown. The browser does not call /api/listening/charts. The Pages build does.",
+      "risks": ["The listening worker has to deploy before the Pages build that reads charts:week.", "A short chart is not padded with blank art."],
+      "devices": ["Covers are 300px squares, lazy. Check the grid at 390 and 1280."]
+    },
+    {
+      "id": "listening-recent",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "route": "/listening/",
+      "anchors": ["class=\"recent-label\"", "id=\"tracks\""],
+      "endpoints": ["/api/listening/recent"],
+      "text": "A recent list is still rendered under the chart and replaced from /api/listening/recent. The chat note that called the page chart-only is not what the code does. Leave the list until Matt changes it.",
+      "risks": ["A payload with a truthy reason must not wipe the baked list."],
+      "devices": ["The list is plain text. It should stay readable at 390 under the grid."]
+    },
+    {
+      "id": "listening-count",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "route": "/listening/",
+      "anchors": ["countLine(ctx.playcount", "formatScrobbleCount"],
+      "text": "The scrobble total is one line. The word scrobbles waves. The number is an outline. Zero or missing hides the line.",
+      "risks": ["The total and the recent payload can disagree if a client applies a playcount of 0 from an error payload. The reason field is the guard."],
+      "devices": ["The outline has a 1.5px floor so it does not disappear on a phone."]
+    },
+    {
+      "id": "wave-counts",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "route": "",
+      "anchors": ["WAVE_WORDS", "class=\"wave\""],
+      "text": "Only scrobbles and films take the wave. Spoken text stays in the accessibility tree. The painted letters are aria-hidden. Reduced motion stops the animation and keeps a static sine.",
+      "risks": ["Adding a third waved word is a product change, not a drive-by."],
+      "devices": ["The wave is transform only. It must not shift layout."]
+    },
+    {
+      "id": "unshared-hub",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "route": "/unshared/",
+      "anchors": ["aria-label=\"unshared\"", "unsharedEntries"],
+      "text": "The hub is one row per concepts/entries.js slug, without an unshared does prefix. The first row is birds1. It is in the sitemap and off the home menu. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
+      "risks": ["Publish fails when the page or the stylesheet is missing."],
+      "devices": ["The row hit target is at least 44px."]
+    },
+    {
+      "id": "birds1",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "route": "/unshared/birds1/",
+      "anchors": ["id=\"field\"", "id=\"play\"", "from '../flock-model.js'"],
+      "text": "birds1 is the generative flock. The heading has no space. A small matt does link sits above it and goes home. The canvas is a cube seen corner-on as a hexagon, with a faint lattice. Drag is pitch and yaw only. Pinch zooms. Tap selects. Idle play solos birds. Sound is live Web Audio, including a digital-wind layer. There is no /unshared/ambient/ route.",
+      "risks": ["Do not add an audio file. The visual suite stubs Math.random and setInterval, so it does not prove the sound.", "The home link's hit area was wrong once. elementFromPoint has to hit the link, not the canvas."],
+      "devices": ["The canvas uses touch-action: none and the page does not scroll. Check 390 and 1280. Reduced motion sets data-motion=reduce."]
+    },
+    {
+      "id": "frequency",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "route": "/frequency/",
+      "anchors": ["function renderFrequency", "frequency-key"],
+      "text": "The secret page is offline while SECRET_PATHS is empty. Emit cuts the key hook out of the shipped station.js and fails if the word frequency remains. The prize mailto stays in renderFrequency only.",
+      "risks": ["Putting the address in a doc, a test name, or the index publishes it.", "birds1 uses AudioParam.frequency. That is not this page. The offline check allows that property and rejects the path."],
+      "devices": ["There is no public page to screenshot while the path is empty."]
+    },
+    {
+      "id": "social-footer",
+      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "route": "/",
+      "anchors": ["rel=\"me noopener\"", "lastfmSocialEnabled"],
+      "text": "The footer is a row of social marks. last.fm stays hidden while lastfmSocialEnabled is false. The icon function can remain. Links are https profile URLs and do not point at unshared.",
+      "risks": ["Turning the last.fm mark back on is a one-line flag, not a new icon."],
+      "devices": ["The footer is in the visual suite as its own shot at 390 and 1280. It has no safe-area padding."]
+    }
+  ]
+}

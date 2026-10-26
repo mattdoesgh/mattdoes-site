@@ -1,0 +1,5663 @@
+{
+  "schema": 1,
+  "generated": true,
+  "handEdit": "Do not edit. Regenerate with npm run intel.",
+  "query": {
+    "feature": "node scripts/intel.js --feature <id>",
+    "route": "node scripts/intel.js --route <path>",
+    "changed": "node scripts/intel.js --changed <path>"
+  },
+  "layout": {
+    "contentDirExists": false,
+    "unsharedEnabled": true,
+    "secretPaths": [],
+    "socials": [
+      {
+        "label": "x",
+        "href": "https://x.com/mattdoes"
+      },
+      {
+        "label": "instagram",
+        "href": "https://www.instagram.com/mattdoes.ig/"
+      },
+      {
+        "label": "letterboxd",
+        "href": "https://letterboxd.com/mattdoes/"
+      },
+      {
+        "label": "github",
+        "href": "https://github.com/mattdoesgh"
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": ".github/dependabot.yml",
+      "sha256": "ff2d3099af8e900d6c2199ee6504936b1445f039135600496f03e3914981ec55",
+      "gitBlob": "29136bc45bbdaed62403970e538e9104923bbe8b"
+    },
+    {
+      "path": ".github/workflows/build.yml",
+      "sha256": "05e3b6fd8599b159ceb84056a90f7b89d4c652208bdf47d2713a1c38a5e1d862",
+      "gitBlob": "ce479b55c477375908d53c70e2d7a07cb0a58887"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "d4aaa713d21efe1d292e277cce54bc86ef11388e3f44b41e5e3d84e5bc93aae2",
+      "gitBlob": "ce4cac57827cd0a6a4cda12bf64b2735a06e4d96"
+    },
+    {
+      "path": ".htmlvalidate.json",
+      "sha256": "d2f560a4388986cdbef6902bac2e963f8bc84d15af32bfbf89931a9ff5488558",
+      "gitBlob": "012ffc61a1763911065232e1dd876eba6ee5fd0c"
+    },
+    {
+      "path": ".nvmrc",
+      "sha256": "f14b4987904bcb5814e4459a057ed4d20f58a633152288a761214dcd28780b56",
+      "gitBlob": "2bd5a0a98a36cc08ada88b804d3be047e6aa5b8a"
+    },
+    {
+      "path": "asset-budget.json",
+      "sha256": "879fbe40d3749cfafa79595d8a8ff52a1d07dba8fba9c77ab3be56505226a721",
+      "gitBlob": "d8c2ded7dbd6b6f0caaf3c99bdb8d5070f1c0862"
+    },
+    {
+      "path": "build.js",
+      "sha256": "9e22cf94598ee0c6eca826536b2e6bbec075cb74aff7ab832355620426fca82e",
+      "gitBlob": "714787f158551fe8c54704244f505a5114a3991f"
+    },
+    {
+      "path": "concepts/README.md",
+      "sha256": "c3545b5d3d866dbde649261622855cd0770fa5925eb9fd3f826ccd88587941bc",
+      "gitBlob": "095e2ac285e7e94a808db0636da5129bd18aceb0"
+    },
+    {
+      "path": "concepts/birds1/birds1.css",
+      "sha256": "c3c3810d5521e3f7790b9d10cd5a5caddf8a1323e3aea4c14c2a2f16d043bd64",
+      "gitBlob": "53d285edbefc6bf8994bc906d1db676396de30cc"
+    },
+    {
+      "path": "concepts/birds1/birds1.js",
+      "sha256": "6247ab0d8de2869f6177a61b77fbd2f956c925ead65dcde44415ab727119e954",
+      "gitBlob": "e8f72a148687384c40e31d3c44967660d3d98cd9"
+    },
+    {
+      "path": "concepts/birds1/index.html",
+      "sha256": "2843e28e631d1bfa85dcc63469a2987667cf645593ed9111ec50ebc643fd6d73",
+      "gitBlob": "ec335f2bc7c247459c9bfe4d14459c9c0b0a135c"
+    },
+    {
+      "path": "concepts/entries.js",
+      "sha256": "0cbd1a2176de312104a25a0c08e6a44652c27b4600c0155a44bde4401f43ca35",
+      "gitBlob": "d6c2a40c561f11bf9dd6b126a2189772fa0d71ac"
+    },
+    {
+      "path": "concepts/flock-model.js",
+      "sha256": "9c2c22a5db14d66b5ebfbaaa8e8f875ec7ba38406bfa20bc8318899e7f180dca",
+      "gitBlob": "aeeae32963668bf3fbe7486cc80699e59e3b5fdf"
+    },
+    {
+      "path": "concepts/hub.css",
+      "sha256": "e123224f77b8e1e0f81ba3842b439b92f2302b19e772e6ec026f886a11505740",
+      "gitBlob": "917e0117744b74241a3a09b08d17038fd84f7fe8"
+    },
+    {
+      "path": "concepts/hub.js",
+      "sha256": "6771a9d4be28a2bcb772b132195c1640411ad79a2ffea57bcb000fbf3a1283e8",
+      "gitBlob": "9e0a92d00fdf715a249842060105374c31847b91"
+    },
+    {
+      "path": "intel/curated.json",
+      "sha256": "ea0ab1db6d1abc0512b38175de2ba5d7ac3d0ec9b23d81e3b679e3f53ee0f255",
+      "gitBlob": null
+    },
+    {
+      "path": "lib/asset-budget.js",
+      "sha256": "82e4187c93c6b971322af5107eb8228d12c73b2126d74bb99172ab4dcb5674e6",
+      "gitBlob": "1ba268dbeb69b1b8eff04d0288da949b0c76dfb2"
+    },
+    {
+      "path": "lib/cover-mirror.js",
+      "sha256": "c8ea225bf1c406d7b892e4861c1a3efb82aa4fcfc569143c2de731e5dd224a33",
+      "gitBlob": "7fbd08be7ef56c8ae390a7f699ec31e5c23690d8"
+    },
+    {
+      "path": "lib/cover-pixels.js",
+      "sha256": "f5c9f0f5c46e72c563d367511e161007624bd07d691c11c6960a8dcae629b4c1",
+      "gitBlob": "955d917edd779b4f7945db5161d6f005fa9dfa8a"
+    },
+    {
+      "path": "lib/cover-settle.js",
+      "sha256": "b2ec2ab13bf224535de78e7db93a3c68681bd4f18bda8759ac6c48e6db79663d",
+      "gitBlob": "eae26194c1cd0424d3cfd03af41df52b44ccba60"
+    },
+    {
+      "path": "lib/covers.js",
+      "sha256": "c6355cdf4cd3d0a555b012275e1431ae8810e149d576db0fa3ff5b0a84ab3219",
+      "gitBlob": "8f7e30c5f146fc48be30182e6a6a1a18eecf354d"
+    },
+    {
+      "path": "lib/csp-policy.js",
+      "sha256": "b3db6c7e29b837bc4275a525b3e2e645a41e9eb5d31d84ffef460a8de4f5996c",
+      "gitBlob": "de82b11fa558d04a178587c7c8e23aabcfd9d0bf"
+    },
+    {
+      "path": "lib/design-tokens.js",
+      "sha256": "a6467aad3e2bd6a6d5c365e1e79a2e660f9bb62313b4093467ff87fe289ab616",
+      "gitBlob": "bad3ccedabadc93494a2e78d195074777ac18c53"
+    },
+    {
+      "path": "lib/emit/assets.js",
+      "sha256": "9bad7c177611aa3f0ed2e6a7ae579379a166f1c2f27530f6f41d97e76b0e2822",
+      "gitBlob": "f53403dc848c3a54beb06eb0ae5f6230abf0c0fb"
+    },
+    {
+      "path": "lib/emit/csp.js",
+      "sha256": "055cbecdd5dad1a09737a07fb7eec8263ebc6293c9a04489fa0859ac2338a613",
+      "gitBlob": "5e921886787c22b0813d853a6aa7c31005e5a94d"
+    },
+    {
+      "path": "lib/emit/feeds.js",
+      "sha256": "df7723aad447c4d3da46557ae80e0ee4a29bdce942d38c00814c15541fbc3d9a",
+      "gitBlob": "6d04807974cd67ae8d3aab0f9ebc0febb745205c"
+    },
+    {
+      "path": "lib/emit/index.js",
+      "sha256": "5d203b7a97735f5eacc4cd4807cd2961f25f2bb6f5ca8b1cd71ff64d9c1d5aeb",
+      "gitBlob": "8e69f3d5302f029674aff1572993ba7da166c3a8"
+    },
+    {
+      "path": "lib/format.js",
+      "sha256": "f4972dc986399f59602a81a17fd294fa808dbd27cc84abcdd039c45fccbfd81a",
+      "gitBlob": "a2cb1e11c42622dec8a4edeeb1a293b53244b48f"
+    },
+    {
+      "path": "lib/lastfm.js",
+      "sha256": "382122675e886d5a6c2eda31422dd488b0eadb7e2dc118272061451fe05ada81",
+      "gitBlob": "8cec802fcce9f61f096b643c0fbd5586a5be80af"
+    },
+    {
+      "path": "lib/letterboxd.js",
+      "sha256": "ba7495334048d8b954b3dd50efa71763f56899653da8fa32ec835ef6e49db0f9",
+      "gitBlob": "f1257424ecdd2371b1a6bcc7ae12e09f0b2294cb"
+    },
+    {
+      "path": "lib/listen-line.js",
+      "sha256": "1f96bbcc46af9e251175f62c161f2d085451852473cd989f25c85fc7a43ca01a",
+      "gitBlob": "6b37e88c2fe941954a5139c1bc13f5e8e68615c9"
+    },
+    {
+      "path": "lib/listening.js",
+      "sha256": "1b5a8426ea4b392121b307f43e03f9dacf2180778ccacd9620c3f39e24c00ed1",
+      "gitBlob": "029a26ee5257df9b352f4c416e4b9a9fde375467"
+    },
+    {
+      "path": "lib/posters.js",
+      "sha256": "ca0afe92d398b8f8ba64312ff4009fcbc5508e4db2226409a9ae17156b9a8658",
+      "gitBlob": "af65d54a085b9c7fabed8429a6c9fd3f3acd7d88"
+    },
+    {
+      "path": "lib/publish-unshared.js",
+      "sha256": "d3582ea6e99258b81b94ecc1b9b6aac07a9cb0384664d6af957bda8dced87557",
+      "gitBlob": "798fc2adc9ca0e948cd4ad0bdf12bc79a7353671"
+    },
+    {
+      "path": "lib/safe-url.js",
+      "sha256": "44e0b87690324ab36e2a1ff6895f0c429a7e082b683ab1b0bf7c3b37112d1037",
+      "gitBlob": "52b8c3e15a44fe6a05ef1c216ccefb322afa5cd9"
+    },
+    {
+      "path": "lib/watches.js",
+      "sha256": "1a4fbce80ebc9ce71f7b8732246c3bb4478a4cd44b98581b5deafe7eeefb41e6",
+      "gitBlob": "c00ecdf6a90621ab61916630a772e5b3810b9370"
+    },
+    {
+      "path": "package.json",
+      "sha256": "d66ea17da21f45da662a1f93a458f72389a184931d6d45de29a440403dbdfaad",
+      "gitBlob": "f1bb77c9e2b06cdd816b4e24951701f5207f1c67"
+    },
+    {
+      "path": "playwright.config.js",
+      "sha256": "dd4b5e0b29bb5a2db7245c895b271426465f3a15292971e5932bcf3d466c2274",
+      "gitBlob": "bb2902e8a059cfc98bd12eb8c8ae3af970a4064c"
+    },
+    {
+      "path": "scripts/check-asset-budget.js",
+      "sha256": "6cb296b9491ea8cd86f7bbfdce3ce5288012a15deaeb7078d12121dc557389e4",
+      "gitBlob": "1f5e6b9c336f9d207e309425fb86749f976aae58"
+    },
+    {
+      "path": "scripts/check-design-tokens.js",
+      "sha256": "81f8f3032796cef049558bd8cb204f5b55444926902a78b464acaabcc54a2b14",
+      "gitBlob": "3cfcc53fa22797c43e38773c092aa020a51d4694"
+    },
+    {
+      "path": "scripts/deploy-workers.js",
+      "sha256": "f2b28cae28ee6a4387f6b4278c76257a41feb4aceb5ddb3eeef43fb39c3160ab",
+      "gitBlob": "6260fe3c77e9a30a521e51abe11199017cf09f75"
+    },
+    {
+      "path": "scripts/git-hooks/pre-commit",
+      "sha256": "02a93947023f54624295680f0aa9d75f99776a0adb4d83a05b05f010cf5e8128",
+      "gitBlob": "78bbdf0f83dbdfa2616dd2ec5a08ced2fdf573f4"
+    },
+    {
+      "path": "scripts/intel.js",
+      "sha256": "23e443886b75c8a723f49db91ac835bac29b2d2ef4ea00199490d85f92330f22",
+      "gitBlob": "7ab1f3bf704a67156da2b06c43843814ef0853a7"
+    },
+    {
+      "path": "scripts/optimize-media.js",
+      "sha256": "cdbef474cda0e90182c3f7a9391fa20c7d737b18c42dab5fd11bbd8543f32101",
+      "gitBlob": "c358a28c284225cdda54e3826d67f0fb5b1d6392"
+    },
+    {
+      "path": "scripts/pages-prebuild.sh",
+      "sha256": "329aa41ef464a2e7f6c190e358ffbec5a803cfd800da83daa19cacad6f978bc0",
+      "gitBlob": "4340a35ab2b94425dfc09f3bde704a9da3b4b70d"
+    },
+    {
+      "path": "scripts/sync-media.js",
+      "sha256": "0ec97e0c260bc6032e3305ba78881bac2de8e6c48338ff30502e213d55865df3",
+      "gitBlob": "03987f72ffe969a573dbb23f567030818519e495"
+    },
+    {
+      "path": "scripts/visual-serve.js",
+      "sha256": "f13f352c3268b34b65dc903fbfebd1a752ca22c62e59012fe63f200bd9044dfc",
+      "gitBlob": "358d5714e26a6471108ff16b9be43545abc4b457"
+    },
+    {
+      "path": "scripts/wrangler-bin.js",
+      "sha256": "060dbc4fbdeec578bef6137000ba4b9f30e1d680be0d1848775a48da062238a4",
+      "gitBlob": "a8bea9edee81286765deb857abb052f2e5140a0a"
+    },
+    {
+      "path": "site.config.js",
+      "sha256": "581afebca28f660d8807647efa76d30e8e57ffced78f3a1aaa927195f4aae972",
+      "gitBlob": "05ac26bd545ebc2f0cad54be77a8a1d39c52905e"
+    },
+    {
+      "path": "site/render.js",
+      "sha256": "610da3dc250abb28988a25b72276135824679c28bd039b2df2f1b48d49d073d8",
+      "gitBlob": "cf89fb6580b8d7398ce56d8f1768f4ff72282f91"
+    },
+    {
+      "path": "site/social-icons.js",
+      "sha256": "3ee171780cab9eedf2eb997f791f9ab9350109921b2d017ce97234fa064ab858",
+      "gitBlob": "3e99dab5d94f48f2347699fb844f0bfef4cc0253"
+    },
+    {
+      "path": "site/tokens.css",
+      "sha256": "d44f30a42442f4e0ec41d1259c8ec529196ece5ac7c449f0eed75189755bb778",
+      "gitBlob": "904b89eebf7dd6c867b05ab1804e3f8bf262e3cd"
+    },
+    {
+      "path": "site/tsconfig.json",
+      "sha256": "0f559f8a4a36a00f5c53b77bf7c7d0aec8376547bb69a8f218b431f15a4e259a",
+      "gitBlob": "ef429e92488678bd9e0acaada8d77ba4a4c15f18"
+    },
+    {
+      "path": "site/verbs.ts",
+      "sha256": "7b2eed65da1c0bc8ee9c3eda507bc92b175aef505e914565ff1b1b9661c3192c",
+      "gitBlob": "55631d4109db62f528c6c6ef8d9853cdb27a8ee0"
+    },
+    {
+      "path": "static/_headers",
+      "sha256": "7c9e689ad1be4665bf4310c6354b87bee576366bf537f8fd8bdba9d6a1e1157e",
+      "gitBlob": "501b0d148cdaafe75935d9122bf4a39abf355682"
+    },
+    {
+      "path": "static/_redirects",
+      "sha256": "67e6fbe6440c66d23ce6be5cc5e381d163cfa4d701e75f7e6cf58767a9e14e61",
+      "gitBlob": "c594a3b3a82c51a4b5a1e2f3571c137504f21755"
+    },
+    {
+      "path": "static/favicon.svg",
+      "sha256": "3f411bd12b1725b4d7b20f48d71e6a68d8f678bf0947fdf023bad56c1c3d7581",
+      "gitBlob": "5ddb4a1f7d668aeb3076b961a77255678322e2b7"
+    },
+    {
+      "path": "static/fonts/OFL.txt",
+      "sha256": "ee67e6ee22790b7929f1a3769ca2801d565c64b5a9096942c1adf5596de9c9e4",
+      "gitBlob": "93feddee37145696e123ea65a6772cab09663f9e"
+    },
+    {
+      "path": "static/poster-prefs.js",
+      "sha256": "db42e4554507f56dbe68178b099b3f0b2a91e5df5b86f8b11915cde69199b035",
+      "gitBlob": "343a52ed3ba071b7ff4b99c4be644ae04baee558"
+    },
+    {
+      "path": "static/station.css",
+      "sha256": "b66c9a094aff20349cfc29659abf6d269f8024a368e088ff2d59f5af87532dc7",
+      "gitBlob": "4599c695b656ad5a0c39cd1daad13e48567c87c1"
+    },
+    {
+      "path": "static/station.js",
+      "sha256": "28cd31949428e47b14e8e47975e19efdc97aff7f535845c952300487af9d7792",
+      "gitBlob": "fc30900dca08d2f2ba9e59eb3545a173224eb1ca"
+    },
+    {
+      "path": "test/accessibility.test.js",
+      "sha256": "65defc69287920777b768b576e364d652ff257368cb97c2c8113d96d265a1749",
+      "gitBlob": "acd539a577f8e1e776c94d0d6969cc889eb70510"
+    },
+    {
+      "path": "test/album-tiles.test.js",
+      "sha256": "57bfff792fc8b70c260ecc109130f27de7736f773f698a1a5edb6cf9ab11cf85",
+      "gitBlob": "5d45ecffe00e62bbc0417bc0d0dd134686b783ad"
+    },
+    {
+      "path": "test/asset-budget.test.js",
+      "sha256": "9d08096e2ee4d229b5ceb18fc862cf160e73eb0d7e871de8f938f184f284a7ab",
+      "gitBlob": "e71a0b69cd17c6944f6d61d9dbfb9d1326654eff"
+    },
+    {
+      "path": "test/asset-contract.test.js",
+      "sha256": "3dec5e01b44a5a2c0b486cbefc5dd70691282171049a587994631913545ac668",
+      "gitBlob": "8957f2747ed1a1566fabce2dab9fd027fe5fc67f"
+    },
+    {
+      "path": "test/asset-headers.test.js",
+      "sha256": "691eebf219e7bab7757006b23b88954b87933c8866183c1b9ebc6f20d1dd189f",
+      "gitBlob": "b69650a5e65a20a21b233db2f9d3cfb3cf45a8e5"
+    },
+    {
+      "path": "test/build-validation.test.js",
+      "sha256": "820d64905570085443b77d87976125a1ab5e3d8b37d0e0afa01bfc9637416027",
+      "gitBlob": "ec57aebd715dbc6977dfb5756146fb61c4d5751d"
+    },
+    {
+      "path": "test/chart-grid.test.js",
+      "sha256": "51515c892a974861b64f32895ca3445624b145b13dde6ff916a869aa4f614025",
+      "gitBlob": "7104fba36015ae634923c94722ade4ee6d442b67"
+    },
+    {
+      "path": "test/client-hardening.test.js",
+      "sha256": "d22635e68106f97b1c3d98d117c7ce2951bcf27ddde8d0bddb615d7e0bb6b2c4",
+      "gitBlob": "2d0c3f982f447c8026456893cef6909e6decefcf"
+    },
+    {
+      "path": "test/contrast.test.js",
+      "sha256": "086f7ed05f3132575a9bae895a16c8bc072b0cb6e449c98eb30410a78def4f46",
+      "gitBlob": "7658592115f01962a456b8dc146a0eadae66129b"
+    },
+    {
+      "path": "test/cover-pixels.test.js",
+      "sha256": "a5cd38df1aff9a2d5de36b302c73142339cada79d1e397f7efed1f3098d51f71",
+      "gitBlob": "3491294f6079cab9f09fa83d17ae50f5e7111104"
+    },
+    {
+      "path": "test/cover-settle.test.js",
+      "sha256": "4510a0675a807a0754d66817931f73b042afd0bbdbc6473ca1497f69348c44eb",
+      "gitBlob": "3ba129a9566d8c2de91031311d2e0d9368f07f65"
+    },
+    {
+      "path": "test/covers.test.js",
+      "sha256": "cabcf0a10dfd47139f012959b72582dc1c704b7867df651fc9511c14a29428ef",
+      "gitBlob": "0d4c3155a1f2fdb31fcea736e65198304e9a0bdc"
+    },
+    {
+      "path": "test/csp-headers.test.js",
+      "sha256": "ec399f56e745a866f4b83f0f5a701f4a96612742803c052f57f9c33fbbf719d8",
+      "gitBlob": "dda405beadca393a241280c48432172cc615afdc"
+    },
+    {
+      "path": "test/design-tokens.test.js",
+      "sha256": "94ee73164045152779edf91239c88cf3d032be9a0833bba75c20b830a161819a",
+      "gitBlob": "d6327fafcd5195e2b4f9089cf471bb1443aceaef"
+    },
+    {
+      "path": "test/emit-units.test.js",
+      "sha256": "b07dc5653db6f67c087489a9d9edb54d818a827450eda21dfcd18d58dce2f972",
+      "gitBlob": "955b00f18dabd831c9ec7d0666c9935dd925c3af"
+    },
+    {
+      "path": "test/feed-standards.test.js",
+      "sha256": "4fcf951eeba0d7171c88b5b8a3cf648ee4afa03c2e24bae7577463e4557cf08e",
+      "gitBlob": "24c92b8b66a2579cb0be031dc707724bf1e8072e"
+    },
+    {
+      "path": "test/film-count.test.js",
+      "sha256": "0468466e9fc5768d355c3d1c4f851e9f48bf045b7525dbe5be7122d451da2df8",
+      "gitBlob": "f97491001146be85cc0c493f92ad53d5ee07c017"
+    },
+    {
+      "path": "test/fixtures/lastfm-cache/lastfm.json",
+      "sha256": "88ae56ed9b3b3efe7df7ee4edce6a96d1b00d7bc14d8166b9130bbaa368edd29",
+      "gitBlob": "d7d284d3bae72a73560d20559cb6d6aa551f0209"
+    },
+    {
+      "path": "test/fixtures/lastfm-periods.json",
+      "sha256": "a1b9827e977a38155c7e87c0e31300e12c50c48187f57f4254a2226c0c4a2f6e",
+      "gitBlob": "b79b22564a789a6b726eef207a39fefc7f5d5b64"
+    },
+    {
+      "path": "test/fixtures/letterboxd-rss.xml",
+      "sha256": "9bad62ebcd8663dc27c62ad763f4f9a13bc7b6ae5c32b513f3ae6f84e6ea6d63",
+      "gitBlob": "b1759741225291060736c109cd00c31a9d1af9d5"
+    },
+    {
+      "path": "test/fixtures/visual/fonts/LICENSE",
+      "sha256": "63d3ba759d12804c5b31a9d5940d855c1820d1f5999e6b0872eb1c7ff045fbc9",
+      "gitBlob": "b3d93a1235a82213fbc451853317c40e62ed9272"
+    },
+    {
+      "path": "test/fixtures/visual/lastfm.json",
+      "sha256": "a8a2b997d0678f7a6b091f2f5cd4c9586809914558a62eb95baf3b757d7eb439",
+      "gitBlob": "8f68f23fcdf938dba252e451c82444b403fb93a3"
+    },
+    {
+      "path": "test/fixtures/visual/letterboxd.json",
+      "sha256": "a804c055c187afeeec6d6a80a1619a1a3ba1bde4af04d779feeedd0f8a457fa6",
+      "gitBlob": "1aa213480b697abf005f5936490fccc2a4070f01"
+    },
+    {
+      "path": "test/flock-model.test.js",
+      "sha256": "5aa4bd1cfc1a786d6f3bc3c2e51cdc417bc2efaec07451e20f3448fa60c0a1d0",
+      "gitBlob": "408494778c149e2e2b25c71d0024d1ed61c20d3b"
+    },
+    {
+      "path": "test/headers-golden.test.js",
+      "sha256": "c27d34db9fb5a60b23b45cd171df67815030009aff89fdf768e6a65f8e32ed7c",
+      "gitBlob": "417a39e2c7f00bdaf5e7afaa3f7788d2a92b3e7a"
+    },
+    {
+      "path": "test/helpers/parse-headers.js",
+      "sha256": "a692dedc2a50829696f0746273914ae738bb4cec1183d7e7745eb0e901e135fe",
+      "gitBlob": "493e4e20cef2e8d6d80f1cddb12b1b69891f6d8d"
+    },
+    {
+      "path": "test/helpers/run-build.js",
+      "sha256": "955667a2d004d29ae172a3256fe9e55d3f6fa2a144868b8523270c1e75c011ad",
+      "gitBlob": "ec07f833617268ec96da52f0116b55ff4b3a1270"
+    },
+    {
+      "path": "test/helpers/worker-env.js",
+      "sha256": "d0fe063de54ee17a251e4cdce616444c3f78dcbe30706e761fb042b837ea6787",
+      "gitBlob": "7f97efcac945a2de40e79701887801a9f5795235"
+    },
+    {
+      "path": "test/home-listen.test.js",
+      "sha256": "8ed2ca47bc34b4ca96a22969bebaded81719d5cd7fd2dc7740b05bbdc53f91e5",
+      "gitBlob": "fecffc9bb8347a43cf02d5298a0d98a071e38e48"
+    },
+    {
+      "path": "test/home-preview.test.js",
+      "sha256": "5beb5dbf43ba4a2def2dc3e5478e7041ebc50b2fe86ece034a060238d29730da",
+      "gitBlob": "3d8a12f7e74dd6aff2619322f5ddf9d59b235ad6"
+    },
+    {
+      "path": "test/intel.test.js",
+      "sha256": "b938c59e4d24bd55d6a03cc53dbc44da60f4d9b0da64cb1d392500903161af11",
+      "gitBlob": "4e28e68e32c4bd6ffc1842c187b51fe761f9a4c6"
+    },
+    {
+      "path": "test/lastfm-codec.test.js",
+      "sha256": "3191b182adea9cc874e4eefecb1a727232803b2437f782d79a999348cb5226bb",
+      "gitBlob": "7b7287e7838da7e0fbfbeb6fabc14741de777a3b"
+    },
+    {
+      "path": "test/letterboxd.test.js",
+      "sha256": "0487291ca70297cbe30307748eb83385a2dee73042b26e3efc8fd4ecb424433d",
+      "gitBlob": "b29adcf2fde107165dfd369bf5525e7619e81899"
+    },
+    {
+      "path": "test/links.test.js",
+      "sha256": "e69a0cdeebd174d2963561aa849169e2ca98fd32159c610d810daa1edbc09d7a",
+      "gitBlob": "568671d9024f07cf55a710a9072ebc2d55e20a62"
+    },
+    {
+      "path": "test/listening-periods.test.js",
+      "sha256": "d90646b49c619b52ffa9870a666f8c17a714c36b31d4d834801a5682b816128d",
+      "gitBlob": "f36ce29f778ae61c3d3a8b09263fa461b2a1003a"
+    },
+    {
+      "path": "test/listening-snapshot.test.js",
+      "sha256": "e9f825a8496bd2bb2d2a4124e5e4ae03a90fa64a8ceda17c2b453e0c919773e1",
+      "gitBlob": "4d2a15f3d71b4a1499d2ea0525cb6f2cde8035cd"
+    },
+    {
+      "path": "test/listening.test.js",
+      "sha256": "817558462c58511e1cf9444d19d43285a1ba4a39a66c6b5549cc3ec7805133b3",
+      "gitBlob": "9f732c30e7b087abd5ef9b49d5f4658984492fd3"
+    },
+    {
+      "path": "test/media.test.js",
+      "sha256": "b03c9caa7a5809c1a073c1836fdec6ce229d50d280c2dcbca33249ddc02514ed",
+      "gitBlob": "04de59aa074fdf3f0ed2115d5e17d715d7041590"
+    },
+    {
+      "path": "test/pages-prebuild.test.js",
+      "sha256": "f8dd2142d5538599e497da7a877e6cbaed965559e897c11c33783fcf2c277062",
+      "gitBlob": "240b294be42a649773043cc7a4f1f4a04ce24744"
+    },
+    {
+      "path": "test/poster-controls.test.js",
+      "sha256": "120711d764f2b0e724ba906602ab6df1dd18af11b707c140c38a8f4e54c6a964",
+      "gitBlob": "05e271d435b9b143d4412b8b5b9fe504b28e5d50"
+    },
+    {
+      "path": "test/posters.test.js",
+      "sha256": "825cf83615e065c597cf8af05eec407de14e86cad234a3dac85189b89582fae7",
+      "gitBlob": "2ebf9da818d808115a96d34cdaa842e1774701a2"
+    },
+    {
+      "path": "test/prerender-safety.test.js",
+      "sha256": "0488f76895e1bb70225b4c227d0d97fe6556614f4a7eddb6df1b49380f4a9d4c",
+      "gitBlob": "ec37b46a7e5637da20146c538beadf452b5ad84e"
+    },
+    {
+      "path": "test/privacy.test.js",
+      "sha256": "e68cd41a478db59e595a8984035a74ccc2a4e2b6863db5a91f4e4b9f76b709d0",
+      "gitBlob": "0aa8a9ef0ae2633834891d247701b1e482e7feb5"
+    },
+    {
+      "path": "test/progressive-enhancement.test.js",
+      "sha256": "d02d33c20847ebc33ef4dc923749e1c23fa52b7af64369bf6a90d127d091ab02",
+      "gitBlob": "4f38026820d1d910b985dd41bcb901502f8986d3"
+    },
+    {
+      "path": "test/publish-unshared.test.js",
+      "sha256": "cba37efc973de1f8ee641bb223a5aeed5c0c52962601153ac2d4266ca60c3231",
+      "gitBlob": "3b4d8b2a15c6a953588d4a3627ee36185960f082"
+    },
+    {
+      "path": "test/scrobble-count-parity.test.js",
+      "sha256": "1e49d66532ae200dc5a84f5ce26ccd58c6d977e7e664f12dccfdf6691ba9068a",
+      "gitBlob": "44590d41caaddefbd7f43e230a407e06c9cd062f"
+    },
+    {
+      "path": "test/secrets-history.test.js",
+      "sha256": "bf1b7cc6301a4514b7ea1ea3e082c597b191970b737385e216da34913b5ac2b2",
+      "gitBlob": "d4ca69a93ec7070f0f68cf8f09faf09485a618f6"
+    },
+    {
+      "path": "test/security-remediation.test.js",
+      "sha256": "e5ca55aa6bf013490de10358db471da4581e9a325ecdb430e076fcb1c274cc96",
+      "gitBlob": "cc06c0a807452e1a0731b19f17813f5ebcf7ad05"
+    },
+    {
+      "path": "test/socials.test.js",
+      "sha256": "7b32cda886cd1d7eedc846d28da07c8412dca039c5f522c6d0f391afc6ab93f3",
+      "gitBlob": "168fa66bcba124de74ae6b478f0115c9f45728a6"
+    },
+    {
+      "path": "test/sync-media-wrangler.test.js",
+      "sha256": "926dbbdf1c123d46232f3a7a96705bf52f989c61afe460be15668ae18d614ea7",
+      "gitBlob": "1a3c03d36f7e74138418d59855532751867f0e7f"
+    },
+    {
+      "path": "test/unshared.test.js",
+      "sha256": "4535762e13a681615587bb457ec7aec33af64106ad51768b3b861fcf9b819f95",
+      "gitBlob": "3309a68b411a01a757af20ed69b594b33af1f00c"
+    },
+    {
+      "path": "test/url-safety.test.js",
+      "sha256": "86a3224859f439f44ac739054682df40d8407eee18d8c8f271e29ee02a0cc363",
+      "gitBlob": "575f4aa121e24a4e8fff649694d219c891cc9fb8"
+    },
+    {
+      "path": "test/verbs.test.js",
+      "sha256": "117a4764407eaecc46c39c1cd6af9e908abba78daf1ee52314ea1084686dfab0",
+      "gitBlob": "cef5036e0fc14b63d3dc6d773ef3bfc4654dd710"
+    },
+    {
+      "path": "test/visual/axe.spec.js",
+      "sha256": "38be5e9fdbbf41269581934b622044a6c4803ceed9036f124b89d97e0f6ee03b",
+      "gitBlob": "b2ed659258c415cb7461e91cd4179f134b2016a7"
+    },
+    {
+      "path": "test/visual/pages.spec.js",
+      "sha256": "db6ee77f116a213c43ac8dd97ced7091480925ebde41a2da512fc544eb803f00",
+      "gitBlob": "9322a71efa13980b7d7112cddc172e7df44afec0"
+    },
+    {
+      "path": "test/visual/prepare.js",
+      "sha256": "35869e5132eedec5c2d2027e8b1b731702c3f29719b8f501afd9c34021227b40",
+      "gitBlob": "c8a3bfe94e87970476a12ae2277658a529251174"
+    },
+    {
+      "path": "test/visual/scale.spec.js",
+      "sha256": "46694594e3a37a616493b93af48180fe13fd82c56219a5c6d9ce7c26197cadd7",
+      "gitBlob": "c38b9909250051029b61ad7be5dcb1da9f74b113"
+    },
+    {
+      "path": "test/w3c-coverage.test.js",
+      "sha256": "1b48e7cd365cc1b1a6ed1e6cb6dfa1a2857e70caf64c6f44b5f8e9c2950001ac",
+      "gitBlob": "1b17285f2e94a2472e4fe0adb4e386384dea1782"
+    },
+    {
+      "path": "test/wave-scope.test.js",
+      "sha256": "d75636bd80edf66431736b18f6e51551088ee9486239caf08c85d937d5dd46b8",
+      "gitBlob": "b149aba2b401f0a9ca8042007f2f0998cf21da47"
+    },
+    {
+      "path": "test/worker-config.test.js",
+      "sha256": "d3a8023bf0a346883ef9417bcf40e401b50696922452c319c5d77850accffd24",
+      "gitBlob": "e1cbb0b93deee2d8d23540a21d05001a2d2ad5d2"
+    },
+    {
+      "path": "test/worker-csp-report.test.js",
+      "sha256": "da4b47266fc07d284f71fc1021e60f498b57819295d29ce2ff3db7e6ad2d6f9a",
+      "gitBlob": "10f3dc8bf3c3f343a99576d6ae713c86b2cb5789"
+    },
+    {
+      "path": "test/worker-geo.test.js",
+      "sha256": "02a889e2d92cd3d907a90fe401d3bd5f62f1cff36c2bca6d4022144ad5c5027e",
+      "gitBlob": "f293aedae7793d60618d55e54e0286a0421b059d"
+    },
+    {
+      "path": "test/worker-listening.test.js",
+      "sha256": "3b850341b784cf763ec0aa69c69fc5e5074c41a5eef25757600653821951f5e1",
+      "gitBlob": "1d63d82820579638bfd4f3821d3a508f4953a6d8"
+    },
+    {
+      "path": "test/worker-rebuild.test.js",
+      "sha256": "7c980af99ae860316c34eccf6f226a28d877c4a60fdfca6d49444b7102f557d5",
+      "gitBlob": "48f8e8f38d09cf1f247720e12967899c94451f36"
+    },
+    {
+      "path": "test/worker-simplify.test.js",
+      "sha256": "bfb80a8b0a8ae2da597eb603ae0365254001f40737cbf83a27827e221af45b78",
+      "gitBlob": "e13687df5a3d74c11062e213271fcd9383703d0f"
+    },
+    {
+      "path": "test/worker-transport.test.js",
+      "sha256": "e711a0244c8ca29663b52a1d12d4d8c9c6a7bf6f9e1d0509c6cd0db211a44fa1",
+      "gitBlob": "c487f3ed89158f1ee53a24176c106e0c5d87562f"
+    },
+    {
+      "path": "test/workflow-permissions.test.js",
+      "sha256": "a5cf9489569d466d7ee1bb10315f372c8d2b1b421c9b3c44b0a34d97de193323",
+      "gitBlob": "5a653951bb49a27a6c3a3bf9d58e9df7936d971b"
+    },
+    {
+      "path": "workers/csp-report/src/index.js",
+      "sha256": "18a839e62effee82f4d3959bdffe12ca5dcc9f9d012e52eb7439714fc878f51b",
+      "gitBlob": "c672b40fafebe9d89a7ea9185513db43c8a1a29a"
+    },
+    {
+      "path": "workers/csp-report/wrangler.toml",
+      "sha256": "6facd4eef73d96be648c00cbda382bac05b406833dc5fc582309ea6a5e38f982",
+      "gitBlob": "b8e0d12ec362d1efd295c246b2c839942d061dba"
+    },
+    {
+      "path": "workers/geo/src/index.js",
+      "sha256": "b2347b209f0f277512d8d49efb5646b9b2f96a3e163416c4c2724860900eadee",
+      "gitBlob": "0012cec5969db702cee7a1a15f9b39553e77662a"
+    },
+    {
+      "path": "workers/geo/wrangler.toml",
+      "sha256": "91ffdbfa59c8af78cac2f20d4b80fe7bc842ce89031017a0a0278722e4723f11",
+      "gitBlob": "c971fa1932ac7076f6368a217afc9d1221422edb"
+    },
+    {
+      "path": "workers/lib/simplify.js",
+      "sha256": "1494284b1ec66d98786ba93e868dae2fe8add10c97678cd87c9f0d07dc6737e6",
+      "gitBlob": "6d2a8632fb096df73efe519997550cb3b3d9f04a"
+    },
+    {
+      "path": "workers/lib/transport.js",
+      "sha256": "bc12f4ba418b35ed8d594fdb8a48090fc14d11cd14ef4e1789f74e2b118d7c77",
+      "gitBlob": "db1146e7f33837574d1b21cf828ce8a5f87131e5"
+    },
+    {
+      "path": "workers/listening/src/index.js",
+      "sha256": "aa7bb4b7a07b2cb99f5c8010a96e0e64a5176309c435b58170f6f3e240975e42",
+      "gitBlob": "b98343b3c4543663caa0834ebf72e935e07e826d"
+    },
+    {
+      "path": "workers/listening/wrangler.toml",
+      "sha256": "bf82f318372cec0cad27a3d172b5c74cf588a7d545753a73b3f276d179eaffe6",
+      "gitBlob": "b55fa92a643d1fd2c818d04b357b05e6b4f98245"
+    },
+    {
+      "path": "workers/package.json",
+      "sha256": "a04c7fefa369c16c9e0708e8bb2bfcb14d99bbf7dc28a42831788e3a6e2e320f",
+      "gitBlob": "34cd51988ac41f3ea8b6c764ec6d4094a4ca22c9"
+    },
+    {
+      "path": "workers/rebuild/src/index.js",
+      "sha256": "759d15e1e9bff27ce33f20b131c1683829130e84f0308dc5169a523d17eb79f0",
+      "gitBlob": "ba89cce15afb93bde9d1a766d32021030c467853"
+    },
+    {
+      "path": "workers/rebuild/wrangler.toml",
+      "sha256": "38e527bd3877312b2c625d5be300deaefca33ae90ed11824760386a74bdd8347",
+      "gitBlob": "f53aa77ef782fd33ab1a792dc5fca88faf2b1afd"
+    }
+  ],
+  "sections": {
+    "routes": {
+      "provenance": [
+        "concepts/README.md",
+        "concepts/birds1/birds1.css",
+        "concepts/birds1/birds1.js",
+        "concepts/birds1/index.html",
+        "concepts/entries.js",
+        "concepts/flock-model.js",
+        "concepts/hub.css",
+        "concepts/hub.js",
+        "intel/curated.json",
+        "lib/emit/index.js",
+        "lib/listening.js",
+        "lib/publish-unshared.js",
+        "site/render.js",
+        "site/verbs.ts",
+        "static/poster-prefs.js",
+        "static/station.js"
+      ],
+      "entries": [
+        {
+          "path": "/",
+          "published": true,
+          "inSitemap": true,
+          "render": "renderHome",
+          "page": "site/render.js",
+          "scripts": [
+            "static/station.js"
+          ],
+          "styles": [
+            "static/station.css",
+            "site/tokens.css"
+          ],
+          "data": [
+            "lib/watches.js",
+            "lib/listening.js",
+            "lib/listen-line.js",
+            "lib/letterboxd.js"
+          ],
+          "endpoints": [
+            {
+              "path": "/api/listening/now",
+              "from": "browser",
+              "file": "static/station.js"
+            }
+          ],
+          "files": [
+            "lib/letterboxd.js",
+            "lib/listen-line.js",
+            "lib/listening.js",
+            "lib/watches.js",
+            "site/render.js",
+            "site/tokens.css",
+            "static/station.css",
+            "static/station.js"
+          ]
+        },
+        {
+          "path": "/404.html",
+          "published": true,
+          "inSitemap": false,
+          "render": "renderNotFound",
+          "page": "site/render.js",
+          "scripts": [
+            "static/station.js"
+          ],
+          "styles": [
+            "static/station.css",
+            "site/tokens.css"
+          ],
+          "data": [],
+          "endpoints": [],
+          "files": [
+            "site/render.js",
+            "site/tokens.css",
+            "static/station.css",
+            "static/station.js"
+          ]
+        },
+        {
+          "path": "/frequency/",
+          "published": false,
+          "inSitemap": false,
+          "render": "renderFrequency",
+          "page": "site/render.js",
+          "scripts": [],
+          "styles": [],
+          "data": [],
+          "endpoints": [],
+          "files": [
+            "site/render.js"
+          ]
+        },
+        {
+          "path": "/listening/",
+          "published": true,
+          "inSitemap": true,
+          "render": "renderListen",
+          "page": "site/render.js",
+          "scripts": [
+            "static/station.js"
+          ],
+          "styles": [
+            "static/station.css",
+            "site/tokens.css"
+          ],
+          "data": [
+            "lib/listening.js",
+            "lib/lastfm.js",
+            "lib/listen-line.js"
+          ],
+          "endpoints": [
+            {
+              "path": "/api/listening/recent",
+              "from": "browser",
+              "file": "static/station.js"
+            },
+            {
+              "path": "/api/listening/charts",
+              "from": "build",
+              "file": "lib/listening.js"
+            }
+          ],
+          "files": [
+            "lib/lastfm.js",
+            "lib/listen-line.js",
+            "lib/listening.js",
+            "site/render.js",
+            "site/tokens.css",
+            "static/station.css",
+            "static/station.js"
+          ]
+        },
+        {
+          "path": "/unshared/",
+          "published": true,
+          "inSitemap": true,
+          "render": "renderUnshared",
+          "page": "site/render.js",
+          "scripts": [],
+          "styles": [
+            "concepts/hub.css",
+            "site/tokens.css"
+          ],
+          "data": [
+            "concepts/hub.js",
+            "concepts/entries.js"
+          ],
+          "endpoints": [],
+          "files": [
+            "concepts/entries.js",
+            "concepts/hub.css",
+            "concepts/hub.js",
+            "site/render.js",
+            "site/tokens.css"
+          ]
+        },
+        {
+          "path": "/unshared/birds1/",
+          "published": true,
+          "inSitemap": true,
+          "render": null,
+          "page": "concepts/birds1/index.html",
+          "scripts": [
+            "concepts/birds1/birds1.js"
+          ],
+          "styles": [
+            "concepts/birds1/birds1.css",
+            "site/tokens.css"
+          ],
+          "data": [
+            "concepts/flock-model.js"
+          ],
+          "endpoints": [],
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/birds1/birds1.js",
+            "concepts/birds1/index.html",
+            "concepts/flock-model.js",
+            "site/tokens.css"
+          ]
+        },
+        {
+          "path": "/watching/",
+          "published": true,
+          "inSitemap": true,
+          "render": "renderWatch",
+          "page": "site/render.js",
+          "scripts": [
+            "static/station.js",
+            "static/poster-prefs.js"
+          ],
+          "styles": [
+            "static/station.css",
+            "site/tokens.css"
+          ],
+          "data": [
+            "lib/watches.js",
+            "lib/posters.js",
+            "lib/letterboxd.js"
+          ],
+          "endpoints": [],
+          "files": [
+            "lib/letterboxd.js",
+            "lib/posters.js",
+            "lib/watches.js",
+            "site/render.js",
+            "site/tokens.css",
+            "static/poster-prefs.js",
+            "static/station.css",
+            "static/station.js"
+          ]
+        }
+      ]
+    },
+    "modules": {
+      "provenance": [
+        "build.js",
+        "concepts/birds1/birds1.js",
+        "concepts/birds1/index.html",
+        "concepts/entries.js",
+        "concepts/flock-model.js",
+        "concepts/hub.js",
+        "intel/curated.json",
+        "lib/asset-budget.js",
+        "lib/cover-mirror.js",
+        "lib/cover-pixels.js",
+        "lib/cover-settle.js",
+        "lib/covers.js",
+        "lib/csp-policy.js",
+        "lib/design-tokens.js",
+        "lib/emit/assets.js",
+        "lib/emit/csp.js",
+        "lib/emit/feeds.js",
+        "lib/emit/index.js",
+        "lib/format.js",
+        "lib/lastfm.js",
+        "lib/letterboxd.js",
+        "lib/listen-line.js",
+        "lib/listening.js",
+        "lib/posters.js",
+        "lib/publish-unshared.js",
+        "lib/safe-url.js",
+        "lib/watches.js",
+        "playwright.config.js",
+        "scripts/check-asset-budget.js",
+        "scripts/check-design-tokens.js",
+        "scripts/deploy-workers.js",
+        "scripts/intel.js",
+        "scripts/optimize-media.js",
+        "scripts/sync-media.js",
+        "scripts/visual-serve.js",
+        "scripts/wrangler-bin.js",
+        "site.config.js",
+        "site/render.js",
+        "site/social-icons.js",
+        "site/verbs.ts",
+        "static/poster-prefs.js",
+        "static/station.js",
+        "test/accessibility.test.js",
+        "test/album-tiles.test.js",
+        "test/asset-budget.test.js",
+        "test/asset-contract.test.js",
+        "test/asset-headers.test.js",
+        "test/build-validation.test.js",
+        "test/chart-grid.test.js",
+        "test/client-hardening.test.js",
+        "test/contrast.test.js",
+        "test/cover-pixels.test.js",
+        "test/cover-settle.test.js",
+        "test/covers.test.js",
+        "test/csp-headers.test.js",
+        "test/design-tokens.test.js",
+        "test/emit-units.test.js",
+        "test/feed-standards.test.js",
+        "test/film-count.test.js",
+        "test/flock-model.test.js",
+        "test/headers-golden.test.js",
+        "test/helpers/parse-headers.js",
+        "test/helpers/run-build.js",
+        "test/helpers/worker-env.js",
+        "test/home-listen.test.js",
+        "test/home-preview.test.js",
+        "test/intel.test.js",
+        "test/lastfm-codec.test.js",
+        "test/letterboxd.test.js",
+        "test/links.test.js",
+        "test/listening-periods.test.js",
+        "test/listening-snapshot.test.js",
+        "test/listening.test.js",
+        "test/media.test.js",
+        "test/pages-prebuild.test.js",
+        "test/poster-controls.test.js",
+        "test/posters.test.js",
+        "test/prerender-safety.test.js",
+        "test/privacy.test.js",
+        "test/progressive-enhancement.test.js",
+        "test/publish-unshared.test.js",
+        "test/scrobble-count-parity.test.js",
+        "test/secrets-history.test.js",
+        "test/security-remediation.test.js",
+        "test/socials.test.js",
+        "test/sync-media-wrangler.test.js",
+        "test/unshared.test.js",
+        "test/url-safety.test.js",
+        "test/verbs.test.js",
+        "test/visual/axe.spec.js",
+        "test/visual/pages.spec.js",
+        "test/visual/prepare.js",
+        "test/visual/scale.spec.js",
+        "test/w3c-coverage.test.js",
+        "test/wave-scope.test.js",
+        "test/worker-config.test.js",
+        "test/worker-csp-report.test.js",
+        "test/worker-geo.test.js",
+        "test/worker-listening.test.js",
+        "test/worker-rebuild.test.js",
+        "test/worker-simplify.test.js",
+        "test/worker-transport.test.js",
+        "test/workflow-permissions.test.js",
+        "workers/csp-report/src/index.js",
+        "workers/geo/src/index.js",
+        "workers/lib/simplify.js",
+        "workers/lib/transport.js",
+        "workers/listening/src/index.js",
+        "workers/rebuild/src/index.js"
+      ],
+      "edges": [
+        {
+          "from": "build.js",
+          "to": "lib/emit/index.js"
+        },
+        {
+          "from": "build.js",
+          "to": "lib/listening.js"
+        },
+        {
+          "from": "build.js",
+          "to": "lib/posters.js"
+        },
+        {
+          "from": "build.js",
+          "to": "lib/watches.js"
+        },
+        {
+          "from": "build.js",
+          "to": "site.config.js"
+        },
+        {
+          "from": "build.js",
+          "to": "site/verbs.ts"
+        },
+        {
+          "from": "concepts/birds1/birds1.js",
+          "to": "concepts/flock-model.js"
+        },
+        {
+          "from": "concepts/hub.js",
+          "to": "concepts/entries.js"
+        },
+        {
+          "from": "concepts/hub.js",
+          "to": "lib/safe-url.js"
+        },
+        {
+          "from": "concepts/hub.js",
+          "to": "site.config.js"
+        },
+        {
+          "from": "lib/cover-settle.js",
+          "to": "lib/cover-mirror.js"
+        },
+        {
+          "from": "lib/cover-settle.js",
+          "to": "lib/cover-pixels.js"
+        },
+        {
+          "from": "lib/cover-settle.js",
+          "to": "lib/covers.js"
+        },
+        {
+          "from": "lib/cover-settle.js",
+          "to": "lib/lastfm.js"
+        },
+        {
+          "from": "lib/covers.js",
+          "to": "lib/lastfm.js"
+        },
+        {
+          "from": "lib/emit/assets.js",
+          "to": "lib/design-tokens.js"
+        },
+        {
+          "from": "lib/emit/csp.js",
+          "to": "lib/csp-policy.js"
+        },
+        {
+          "from": "lib/emit/feeds.js",
+          "to": "lib/safe-url.js"
+        },
+        {
+          "from": "lib/emit/feeds.js",
+          "to": "site/verbs.ts"
+        },
+        {
+          "from": "lib/emit/index.js",
+          "to": "lib/emit/assets.js"
+        },
+        {
+          "from": "lib/emit/index.js",
+          "to": "lib/emit/csp.js"
+        },
+        {
+          "from": "lib/emit/index.js",
+          "to": "lib/emit/feeds.js"
+        },
+        {
+          "from": "lib/emit/index.js",
+          "to": "lib/publish-unshared.js"
+        },
+        {
+          "from": "lib/emit/index.js",
+          "to": "site.config.js"
+        },
+        {
+          "from": "lib/emit/index.js",
+          "to": "site/render.js"
+        },
+        {
+          "from": "lib/emit/index.js",
+          "to": "site/verbs.ts"
+        },
+        {
+          "from": "lib/listening.js",
+          "to": "lib/cover-settle.js"
+        },
+        {
+          "from": "lib/listening.js",
+          "to": "lib/lastfm.js"
+        },
+        {
+          "from": "lib/listening.js",
+          "to": "site.config.js"
+        },
+        {
+          "from": "lib/publish-unshared.js",
+          "to": "concepts/entries.js"
+        },
+        {
+          "from": "lib/publish-unshared.js",
+          "to": "concepts/hub.js"
+        },
+        {
+          "from": "lib/watches.js",
+          "to": "lib/letterboxd.js"
+        },
+        {
+          "from": "lib/watches.js",
+          "to": "site.config.js"
+        },
+        {
+          "from": "scripts/check-asset-budget.js",
+          "to": "lib/asset-budget.js"
+        },
+        {
+          "from": "scripts/check-design-tokens.js",
+          "to": "lib/design-tokens.js"
+        },
+        {
+          "from": "scripts/deploy-workers.js",
+          "to": "scripts/wrangler-bin.js"
+        },
+        {
+          "from": "scripts/intel.js",
+          "to": "concepts/entries.js"
+        },
+        {
+          "from": "scripts/intel.js",
+          "to": "lib/design-tokens.js"
+        },
+        {
+          "from": "scripts/intel.js",
+          "to": "site/verbs.ts"
+        },
+        {
+          "from": "scripts/sync-media.js",
+          "to": "scripts/wrangler-bin.js"
+        },
+        {
+          "from": "site/render.js",
+          "to": "concepts/hub.js"
+        },
+        {
+          "from": "site/render.js",
+          "to": "lib/format.js"
+        },
+        {
+          "from": "site/render.js",
+          "to": "lib/lastfm.js"
+        },
+        {
+          "from": "site/render.js",
+          "to": "lib/listen-line.js"
+        },
+        {
+          "from": "site/render.js",
+          "to": "lib/safe-url.js"
+        },
+        {
+          "from": "site/render.js",
+          "to": "site/social-icons.js"
+        },
+        {
+          "from": "site/render.js",
+          "to": "site/verbs.ts"
+        },
+        {
+          "from": "test/accessibility.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/album-tiles.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/asset-budget.test.js",
+          "to": "lib/asset-budget.js"
+        },
+        {
+          "from": "test/asset-budget.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/asset-contract.test.js",
+          "to": "lib/emit/assets.js"
+        },
+        {
+          "from": "test/asset-contract.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/asset-headers.test.js",
+          "to": "lib/emit/assets.js"
+        },
+        {
+          "from": "test/build-validation.test.js",
+          "to": "site/verbs.ts"
+        },
+        {
+          "from": "test/build-validation.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/chart-grid.test.js",
+          "to": "lib/lastfm.js"
+        },
+        {
+          "from": "test/chart-grid.test.js",
+          "to": "lib/listening.js"
+        },
+        {
+          "from": "test/chart-grid.test.js",
+          "to": "site/render.js"
+        },
+        {
+          "from": "test/chart-grid.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/chart-grid.test.js",
+          "to": "test/helpers/worker-env.js"
+        },
+        {
+          "from": "test/client-hardening.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/cover-pixels.test.js",
+          "to": "lib/cover-pixels.js"
+        },
+        {
+          "from": "test/cover-settle.test.js",
+          "to": "lib/cover-mirror.js"
+        },
+        {
+          "from": "test/cover-settle.test.js",
+          "to": "lib/cover-settle.js"
+        },
+        {
+          "from": "test/covers.test.js",
+          "to": "lib/covers.js"
+        },
+        {
+          "from": "test/covers.test.js",
+          "to": "lib/lastfm.js"
+        },
+        {
+          "from": "test/csp-headers.test.js",
+          "to": "lib/csp-policy.js"
+        },
+        {
+          "from": "test/csp-headers.test.js",
+          "to": "test/helpers/parse-headers.js"
+        },
+        {
+          "from": "test/csp-headers.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/design-tokens.test.js",
+          "to": "lib/design-tokens.js"
+        },
+        {
+          "from": "test/design-tokens.test.js",
+          "to": "lib/emit/assets.js"
+        },
+        {
+          "from": "test/design-tokens.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/emit-units.test.js",
+          "to": "lib/emit/feeds.js"
+        },
+        {
+          "from": "test/feed-standards.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/film-count.test.js",
+          "to": "lib/letterboxd.js"
+        },
+        {
+          "from": "test/film-count.test.js",
+          "to": "lib/watches.js"
+        },
+        {
+          "from": "test/film-count.test.js",
+          "to": "site/render.js"
+        },
+        {
+          "from": "test/film-count.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/film-count.test.js",
+          "to": "test/helpers/worker-env.js"
+        },
+        {
+          "from": "test/flock-model.test.js",
+          "to": "concepts/flock-model.js"
+        },
+        {
+          "from": "test/headers-golden.test.js",
+          "to": "lib/csp-policy.js"
+        },
+        {
+          "from": "test/headers-golden.test.js",
+          "to": "test/helpers/parse-headers.js"
+        },
+        {
+          "from": "test/headers-golden.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/home-listen.test.js",
+          "to": "lib/listen-line.js"
+        },
+        {
+          "from": "test/home-listen.test.js",
+          "to": "site/render.js"
+        },
+        {
+          "from": "test/home-listen.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/home-preview.test.js",
+          "to": "site/render.js"
+        },
+        {
+          "from": "test/home-preview.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/intel.test.js",
+          "to": "scripts/intel.js"
+        },
+        {
+          "from": "test/lastfm-codec.test.js",
+          "to": "lib/lastfm.js"
+        },
+        {
+          "from": "test/letterboxd.test.js",
+          "to": "lib/letterboxd.js"
+        },
+        {
+          "from": "test/letterboxd.test.js",
+          "to": "lib/watches.js"
+        },
+        {
+          "from": "test/links.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/listening-periods.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/listening-periods.test.js",
+          "to": "workers/listening/src/index.js"
+        },
+        {
+          "from": "test/listening-snapshot.test.js",
+          "to": "lib/listening.js"
+        },
+        {
+          "from": "test/listening-snapshot.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/listening-snapshot.test.js",
+          "to": "test/helpers/worker-env.js"
+        },
+        {
+          "from": "test/listening.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/media.test.js",
+          "to": "site/render.js"
+        },
+        {
+          "from": "test/poster-controls.test.js",
+          "to": "site/render.js"
+        },
+        {
+          "from": "test/poster-controls.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/posters.test.js",
+          "to": "lib/posters.js"
+        },
+        {
+          "from": "test/posters.test.js",
+          "to": "site/render.js"
+        },
+        {
+          "from": "test/prerender-safety.test.js",
+          "to": "lib/csp-policy.js"
+        },
+        {
+          "from": "test/prerender-safety.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/privacy.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/progressive-enhancement.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/publish-unshared.test.js",
+          "to": "concepts/entries.js"
+        },
+        {
+          "from": "test/publish-unshared.test.js",
+          "to": "lib/design-tokens.js"
+        },
+        {
+          "from": "test/publish-unshared.test.js",
+          "to": "lib/publish-unshared.js"
+        },
+        {
+          "from": "test/publish-unshared.test.js",
+          "to": "site/render.js"
+        },
+        {
+          "from": "test/publish-unshared.test.js",
+          "to": "site/verbs.ts"
+        },
+        {
+          "from": "test/scrobble-count-parity.test.js",
+          "to": "lib/format.js"
+        },
+        {
+          "from": "test/scrobble-count-parity.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/security-remediation.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/socials.test.js",
+          "to": "site/social-icons.js"
+        },
+        {
+          "from": "test/socials.test.js",
+          "to": "site/verbs.ts"
+        },
+        {
+          "from": "test/socials.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/sync-media-wrangler.test.js",
+          "to": "scripts/wrangler-bin.js"
+        },
+        {
+          "from": "test/unshared.test.js",
+          "to": "site/render.js"
+        },
+        {
+          "from": "test/unshared.test.js",
+          "to": "site/verbs.ts"
+        },
+        {
+          "from": "test/unshared.test.js",
+          "to": "test/helpers/parse-headers.js"
+        },
+        {
+          "from": "test/unshared.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/url-safety.test.js",
+          "to": "lib/safe-url.js"
+        },
+        {
+          "from": "test/url-safety.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/verbs.test.js",
+          "to": "site/verbs.ts"
+        },
+        {
+          "from": "test/verbs.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/visual/axe.spec.js",
+          "to": "test/visual/prepare.js"
+        },
+        {
+          "from": "test/visual/pages.spec.js",
+          "to": "test/visual/prepare.js"
+        },
+        {
+          "from": "test/visual/scale.spec.js",
+          "to": "test/visual/prepare.js"
+        },
+        {
+          "from": "test/w3c-coverage.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/wave-scope.test.js",
+          "to": "site/render.js"
+        },
+        {
+          "from": "test/wave-scope.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
+          "from": "test/worker-csp-report.test.js",
+          "to": "test/helpers/worker-env.js"
+        },
+        {
+          "from": "test/worker-csp-report.test.js",
+          "to": "workers/csp-report/src/index.js"
+        },
+        {
+          "from": "test/worker-geo.test.js",
+          "to": "test/helpers/worker-env.js"
+        },
+        {
+          "from": "test/worker-geo.test.js",
+          "to": "workers/geo/src/index.js"
+        },
+        {
+          "from": "test/worker-listening.test.js",
+          "to": "lib/lastfm.js"
+        },
+        {
+          "from": "test/worker-listening.test.js",
+          "to": "test/helpers/worker-env.js"
+        },
+        {
+          "from": "test/worker-listening.test.js",
+          "to": "workers/listening/src/index.js"
+        },
+        {
+          "from": "test/worker-rebuild.test.js",
+          "to": "workers/rebuild/src/index.js"
+        },
+        {
+          "from": "test/worker-simplify.test.js",
+          "to": "workers/lib/simplify.js"
+        },
+        {
+          "from": "test/worker-transport.test.js",
+          "to": "test/helpers/worker-env.js"
+        },
+        {
+          "from": "test/worker-transport.test.js",
+          "to": "workers/lib/transport.js"
+        },
+        {
+          "from": "workers/csp-report/src/index.js",
+          "to": "workers/lib/transport.js"
+        },
+        {
+          "from": "workers/geo/src/index.js",
+          "to": "workers/lib/simplify.js"
+        },
+        {
+          "from": "workers/geo/src/index.js",
+          "to": "workers/lib/transport.js"
+        },
+        {
+          "from": "workers/listening/src/index.js",
+          "to": "lib/covers.js"
+        },
+        {
+          "from": "workers/listening/src/index.js",
+          "to": "lib/lastfm.js"
+        },
+        {
+          "from": "workers/listening/src/index.js",
+          "to": "workers/lib/transport.js"
+        },
+        {
+          "from": "workers/rebuild/src/index.js",
+          "to": "workers/lib/transport.js"
+        }
+      ],
+      "unresolved": [],
+      "unreferenced": [],
+      "testOnly": [],
+      "incoming": {
+        "concepts/entries.js": [
+          "concepts/hub.js",
+          "lib/publish-unshared.js",
+          "scripts/intel.js",
+          "test/publish-unshared.test.js"
+        ],
+        "concepts/flock-model.js": [
+          "concepts/birds1/birds1.js",
+          "test/flock-model.test.js"
+        ],
+        "concepts/hub.js": [
+          "lib/publish-unshared.js",
+          "site/render.js"
+        ],
+        "lib/asset-budget.js": [
+          "scripts/check-asset-budget.js",
+          "test/asset-budget.test.js"
+        ],
+        "lib/cover-mirror.js": [
+          "lib/cover-settle.js",
+          "test/cover-settle.test.js"
+        ],
+        "lib/cover-pixels.js": [
+          "lib/cover-settle.js",
+          "test/cover-pixels.test.js"
+        ],
+        "lib/cover-settle.js": [
+          "lib/listening.js",
+          "test/cover-settle.test.js"
+        ],
+        "lib/covers.js": [
+          "lib/cover-settle.js",
+          "test/covers.test.js",
+          "workers/listening/src/index.js"
+        ],
+        "lib/csp-policy.js": [
+          "lib/emit/csp.js",
+          "test/csp-headers.test.js",
+          "test/headers-golden.test.js",
+          "test/prerender-safety.test.js"
+        ],
+        "lib/design-tokens.js": [
+          "lib/emit/assets.js",
+          "scripts/check-design-tokens.js",
+          "scripts/intel.js",
+          "test/design-tokens.test.js",
+          "test/publish-unshared.test.js"
+        ],
+        "lib/emit/assets.js": [
+          "lib/emit/index.js",
+          "test/asset-contract.test.js",
+          "test/asset-headers.test.js",
+          "test/design-tokens.test.js"
+        ],
+        "lib/emit/csp.js": [
+          "lib/emit/index.js"
+        ],
+        "lib/emit/feeds.js": [
+          "lib/emit/index.js",
+          "test/emit-units.test.js"
+        ],
+        "lib/emit/index.js": [
+          "build.js"
+        ],
+        "lib/format.js": [
+          "site/render.js",
+          "test/scrobble-count-parity.test.js"
+        ],
+        "lib/lastfm.js": [
+          "lib/cover-settle.js",
+          "lib/covers.js",
+          "lib/listening.js",
+          "site/render.js",
+          "test/chart-grid.test.js",
+          "test/covers.test.js",
+          "test/lastfm-codec.test.js",
+          "test/worker-listening.test.js",
+          "workers/listening/src/index.js"
+        ],
+        "lib/letterboxd.js": [
+          "lib/watches.js",
+          "test/film-count.test.js",
+          "test/letterboxd.test.js"
+        ],
+        "lib/listen-line.js": [
+          "site/render.js",
+          "test/home-listen.test.js"
+        ],
+        "lib/listening.js": [
+          "build.js",
+          "test/chart-grid.test.js",
+          "test/listening-snapshot.test.js"
+        ],
+        "lib/posters.js": [
+          "build.js",
+          "test/posters.test.js"
+        ],
+        "lib/publish-unshared.js": [
+          "lib/emit/index.js",
+          "test/publish-unshared.test.js"
+        ],
+        "lib/safe-url.js": [
+          "concepts/hub.js",
+          "lib/emit/feeds.js",
+          "site/render.js",
+          "test/url-safety.test.js"
+        ],
+        "lib/watches.js": [
+          "build.js",
+          "test/film-count.test.js",
+          "test/letterboxd.test.js"
+        ],
+        "scripts/intel.js": [
+          "test/intel.test.js"
+        ],
+        "scripts/wrangler-bin.js": [
+          "scripts/deploy-workers.js",
+          "scripts/sync-media.js",
+          "test/sync-media-wrangler.test.js"
+        ],
+        "site.config.js": [
+          "build.js",
+          "concepts/hub.js",
+          "lib/emit/index.js",
+          "lib/listening.js",
+          "lib/watches.js"
+        ],
+        "site/render.js": [
+          "lib/emit/index.js",
+          "test/chart-grid.test.js",
+          "test/film-count.test.js",
+          "test/home-listen.test.js",
+          "test/home-preview.test.js",
+          "test/media.test.js",
+          "test/poster-controls.test.js",
+          "test/posters.test.js",
+          "test/publish-unshared.test.js",
+          "test/unshared.test.js",
+          "test/wave-scope.test.js"
+        ],
+        "site/social-icons.js": [
+          "site/render.js",
+          "test/socials.test.js"
+        ],
+        "site/verbs.ts": [
+          "build.js",
+          "lib/emit/feeds.js",
+          "lib/emit/index.js",
+          "scripts/intel.js",
+          "site/render.js",
+          "test/build-validation.test.js",
+          "test/publish-unshared.test.js",
+          "test/socials.test.js",
+          "test/unshared.test.js",
+          "test/verbs.test.js"
+        ],
+        "test/helpers/parse-headers.js": [
+          "test/csp-headers.test.js",
+          "test/headers-golden.test.js",
+          "test/unshared.test.js"
+        ],
+        "test/helpers/run-build.js": [
+          "test/accessibility.test.js",
+          "test/album-tiles.test.js",
+          "test/asset-budget.test.js",
+          "test/asset-contract.test.js",
+          "test/build-validation.test.js",
+          "test/chart-grid.test.js",
+          "test/client-hardening.test.js",
+          "test/csp-headers.test.js",
+          "test/design-tokens.test.js",
+          "test/feed-standards.test.js",
+          "test/film-count.test.js",
+          "test/headers-golden.test.js",
+          "test/home-listen.test.js",
+          "test/home-preview.test.js",
+          "test/links.test.js",
+          "test/listening-periods.test.js",
+          "test/listening-snapshot.test.js",
+          "test/listening.test.js",
+          "test/poster-controls.test.js",
+          "test/prerender-safety.test.js",
+          "test/privacy.test.js",
+          "test/progressive-enhancement.test.js",
+          "test/scrobble-count-parity.test.js",
+          "test/security-remediation.test.js",
+          "test/socials.test.js",
+          "test/unshared.test.js",
+          "test/url-safety.test.js",
+          "test/verbs.test.js",
+          "test/w3c-coverage.test.js",
+          "test/wave-scope.test.js"
+        ],
+        "test/helpers/worker-env.js": [
+          "test/chart-grid.test.js",
+          "test/film-count.test.js",
+          "test/listening-snapshot.test.js",
+          "test/worker-csp-report.test.js",
+          "test/worker-geo.test.js",
+          "test/worker-listening.test.js",
+          "test/worker-transport.test.js"
+        ],
+        "test/visual/prepare.js": [
+          "test/visual/axe.spec.js",
+          "test/visual/pages.spec.js",
+          "test/visual/scale.spec.js"
+        ],
+        "workers/csp-report/src/index.js": [
+          "test/worker-csp-report.test.js"
+        ],
+        "workers/geo/src/index.js": [
+          "test/worker-geo.test.js"
+        ],
+        "workers/lib/simplify.js": [
+          "test/worker-simplify.test.js",
+          "workers/geo/src/index.js"
+        ],
+        "workers/lib/transport.js": [
+          "test/worker-transport.test.js",
+          "workers/csp-report/src/index.js",
+          "workers/geo/src/index.js",
+          "workers/listening/src/index.js",
+          "workers/rebuild/src/index.js"
+        ],
+        "workers/listening/src/index.js": [
+          "test/listening-periods.test.js",
+          "test/worker-listening.test.js"
+        ],
+        "workers/rebuild/src/index.js": [
+          "test/worker-rebuild.test.js"
+        ]
+      }
+    },
+    "workers": {
+      "provenance": [
+        "intel/curated.json",
+        "workers/csp-report/src/index.js",
+        "workers/csp-report/wrangler.toml",
+        "workers/geo/src/index.js",
+        "workers/geo/wrangler.toml",
+        "workers/lib/simplify.js",
+        "workers/lib/transport.js",
+        "workers/listening/src/index.js",
+        "workers/listening/wrangler.toml",
+        "workers/package.json",
+        "workers/rebuild/src/index.js",
+        "workers/rebuild/wrangler.toml"
+      ],
+      "entries": [
+        {
+          "name": "mattdoes-csp-report",
+          "main": "src/index.js",
+          "routes": [
+            "mattdoes.online/api/csp-report"
+          ],
+          "crons": [],
+          "bindings": [
+            {
+              "name": "CSP_RL",
+              "kind": "ratelimits"
+            }
+          ],
+          "secrets": [],
+          "file": "workers/csp-report/wrangler.toml",
+          "source": "workers/csp-report/src/index.js",
+          "env": [
+            "CSP_REPORTS",
+            "CSP_RL"
+          ]
+        },
+        {
+          "name": "mattdoes-geo",
+          "main": "src/index.js",
+          "routes": [
+            "mattdoes.online/api/geo/lookup*"
+          ],
+          "crons": [],
+          "bindings": [
+            {
+              "name": "GEO_CACHE",
+              "kind": "kv_namespaces"
+            },
+            {
+              "name": "GEO_RL",
+              "kind": "ratelimits"
+            }
+          ],
+          "secrets": [],
+          "file": "workers/geo/wrangler.toml",
+          "source": "workers/geo/src/index.js",
+          "env": [
+            "GEO_CACHE",
+            "GEO_RL"
+          ]
+        },
+        {
+          "name": "mattdoes-listening",
+          "main": "src/index.js",
+          "routes": [
+            "mattdoes.online/api/listening/now",
+            "mattdoes.online/api/listening/recent",
+            "mattdoes.online/api/listening/charts"
+          ],
+          "crons": [
+            "* * * * *",
+            "0 11 * * 1"
+          ],
+          "bindings": [
+            {
+              "name": "LASTFM_CACHE",
+              "kind": "kv_namespaces"
+            },
+            {
+              "name": "LISTEN_RL",
+              "kind": "ratelimits"
+            },
+            {
+              "name": "LISTENING_POLLER",
+              "kind": "durable_objects.bindings",
+              "className": "ListeningPoller"
+            },
+            {
+              "name": "REBUILD",
+              "kind": "services",
+              "service": "mattdoes-rebuild"
+            }
+          ],
+          "secrets": [],
+          "file": "workers/listening/wrangler.toml",
+          "source": "workers/listening/src/index.js",
+          "env": [
+            "LASTFM_API_KEY",
+            "LASTFM_CACHE",
+            "LASTFM_USERNAME",
+            "LISTENING_POLLER",
+            "LISTEN_RL",
+            "REBUILD"
+          ]
+        },
+        {
+          "name": "mattdoes-rebuild",
+          "main": "src/index.js",
+          "routes": [],
+          "crons": [
+            "0 */6 * * *"
+          ],
+          "bindings": [],
+          "secrets": [
+            "DEPLOY_HOOK"
+          ],
+          "file": "workers/rebuild/wrangler.toml",
+          "source": "workers/rebuild/src/index.js",
+          "env": [
+            "DEPLOY_HOOK"
+          ]
+        }
+      ]
+    },
+    "env": {
+      "provenance": [
+        "build.js",
+        "concepts/birds1/birds1.js",
+        "concepts/entries.js",
+        "concepts/flock-model.js",
+        "concepts/hub.js",
+        "intel/curated.json",
+        "lib/asset-budget.js",
+        "lib/cover-mirror.js",
+        "lib/cover-pixels.js",
+        "lib/cover-settle.js",
+        "lib/covers.js",
+        "lib/csp-policy.js",
+        "lib/design-tokens.js",
+        "lib/emit/assets.js",
+        "lib/emit/csp.js",
+        "lib/emit/feeds.js",
+        "lib/emit/index.js",
+        "lib/format.js",
+        "lib/lastfm.js",
+        "lib/letterboxd.js",
+        "lib/listen-line.js",
+        "lib/listening.js",
+        "lib/posters.js",
+        "lib/publish-unshared.js",
+        "lib/safe-url.js",
+        "lib/watches.js",
+        "playwright.config.js",
+        "scripts/check-asset-budget.js",
+        "scripts/check-design-tokens.js",
+        "scripts/deploy-workers.js",
+        "scripts/intel.js",
+        "scripts/optimize-media.js",
+        "scripts/pages-prebuild.sh",
+        "scripts/sync-media.js",
+        "scripts/visual-serve.js",
+        "scripts/wrangler-bin.js",
+        "site.config.js",
+        "site/render.js",
+        "site/social-icons.js",
+        "site/verbs.ts",
+        "static/poster-prefs.js",
+        "static/station.js",
+        "test/accessibility.test.js",
+        "test/album-tiles.test.js",
+        "test/asset-budget.test.js",
+        "test/asset-contract.test.js",
+        "test/asset-headers.test.js",
+        "test/build-validation.test.js",
+        "test/chart-grid.test.js",
+        "test/client-hardening.test.js",
+        "test/contrast.test.js",
+        "test/cover-pixels.test.js",
+        "test/cover-settle.test.js",
+        "test/covers.test.js",
+        "test/csp-headers.test.js",
+        "test/design-tokens.test.js",
+        "test/emit-units.test.js",
+        "test/feed-standards.test.js",
+        "test/film-count.test.js",
+        "test/flock-model.test.js",
+        "test/headers-golden.test.js",
+        "test/helpers/parse-headers.js",
+        "test/helpers/run-build.js",
+        "test/helpers/worker-env.js",
+        "test/home-listen.test.js",
+        "test/home-preview.test.js",
+        "test/intel.test.js",
+        "test/lastfm-codec.test.js",
+        "test/letterboxd.test.js",
+        "test/links.test.js",
+        "test/listening-periods.test.js",
+        "test/listening-snapshot.test.js",
+        "test/listening.test.js",
+        "test/media.test.js",
+        "test/pages-prebuild.test.js",
+        "test/poster-controls.test.js",
+        "test/posters.test.js",
+        "test/prerender-safety.test.js",
+        "test/privacy.test.js",
+        "test/progressive-enhancement.test.js",
+        "test/publish-unshared.test.js",
+        "test/scrobble-count-parity.test.js",
+        "test/secrets-history.test.js",
+        "test/security-remediation.test.js",
+        "test/socials.test.js",
+        "test/sync-media-wrangler.test.js",
+        "test/unshared.test.js",
+        "test/url-safety.test.js",
+        "test/verbs.test.js",
+        "test/visual/axe.spec.js",
+        "test/visual/pages.spec.js",
+        "test/visual/prepare.js",
+        "test/visual/scale.spec.js",
+        "test/w3c-coverage.test.js",
+        "test/wave-scope.test.js",
+        "test/worker-config.test.js",
+        "test/worker-csp-report.test.js",
+        "test/worker-geo.test.js",
+        "test/worker-listening.test.js",
+        "test/worker-rebuild.test.js",
+        "test/worker-simplify.test.js",
+        "test/worker-transport.test.js",
+        "test/workflow-permissions.test.js",
+        "workers/csp-report/src/index.js",
+        "workers/csp-report/wrangler.toml",
+        "workers/geo/src/index.js",
+        "workers/geo/wrangler.toml",
+        "workers/lib/simplify.js",
+        "workers/lib/transport.js",
+        "workers/listening/src/index.js",
+        "workers/listening/wrangler.toml",
+        "workers/rebuild/src/index.js",
+        "workers/rebuild/wrangler.toml"
+      ],
+      "entries": [
+        {
+          "name": "ASSET_BUDGET",
+          "files": [
+            "scripts/check-asset-budget.js"
+          ]
+        },
+        {
+          "name": "ASSET_BUDGET_STRICT",
+          "files": [
+            "scripts/check-asset-budget.js"
+          ]
+        },
+        {
+          "name": "CACHE_DIR",
+          "files": [
+            "build.js"
+          ]
+        },
+        {
+          "name": "CI",
+          "files": [
+            "playwright.config.js"
+          ]
+        },
+        {
+          "name": "CLOUDFLARE_ACCOUNT_ID",
+          "files": [
+            "lib/cover-mirror.js",
+            "lib/posters.js",
+            "scripts/sync-media.js",
+            "test/chart-grid.test.js"
+          ]
+        },
+        {
+          "name": "CLOUDFLARE_API_TOKEN",
+          "files": [
+            "lib/cover-mirror.js",
+            "lib/posters.js",
+            "scripts/sync-media.js",
+            "test/chart-grid.test.js"
+          ]
+        },
+        {
+          "name": "CONTENT_DIR",
+          "files": [
+            "scripts/optimize-media.js",
+            "scripts/sync-media.js"
+          ]
+        },
+        {
+          "name": "CSP_REPORTS",
+          "files": [
+            "workers/csp-report/src/index.js"
+          ]
+        },
+        {
+          "name": "CSP_RL",
+          "files": [
+            "workers/csp-report/src/index.js"
+          ]
+        },
+        {
+          "name": "DEPLOY_HOOK",
+          "files": [
+            "workers/rebuild/src/index.js"
+          ]
+        },
+        {
+          "name": "DIST_DIR",
+          "files": [
+            "build.js",
+            "scripts/check-asset-budget.js"
+          ]
+        },
+        {
+          "name": "GEO_CACHE",
+          "files": [
+            "test/worker-geo.test.js",
+            "workers/geo/src/index.js"
+          ]
+        },
+        {
+          "name": "GEO_RL",
+          "files": [
+            "workers/geo/src/index.js"
+          ]
+        },
+        {
+          "name": "LASTFM_API_KEY",
+          "files": [
+            "lib/listening.js",
+            "test/chart-grid.test.js",
+            "test/listening-snapshot.test.js",
+            "workers/listening/src/index.js"
+          ]
+        },
+        {
+          "name": "LASTFM_CACHE",
+          "files": [
+            "test/worker-listening.test.js",
+            "workers/listening/src/index.js"
+          ]
+        },
+        {
+          "name": "LASTFM_USERNAME",
+          "files": [
+            "lib/listening.js",
+            "test/chart-grid.test.js",
+            "test/listening-snapshot.test.js",
+            "workers/listening/src/index.js"
+          ]
+        },
+        {
+          "name": "LETTERBOXD_OFFLINE",
+          "files": [
+            "lib/posters.js",
+            "lib/watches.js",
+            "test/film-count.test.js",
+            "test/letterboxd.test.js"
+          ]
+        },
+        {
+          "name": "LISTEN_RL",
+          "files": [
+            "test/worker-listening.test.js",
+            "workers/listening/src/index.js"
+          ]
+        },
+        {
+          "name": "LISTENING_OFFLINE",
+          "files": [
+            "lib/listening.js",
+            "test/chart-grid.test.js",
+            "test/listening-snapshot.test.js"
+          ]
+        },
+        {
+          "name": "LISTENING_POLLER",
+          "files": [
+            "workers/listening/src/index.js"
+          ]
+        },
+        {
+          "name": "MEDIA_BUCKET",
+          "files": [
+            "scripts/sync-media.js"
+          ]
+        },
+        {
+          "name": "REBUILD",
+          "files": [
+            "workers/listening/src/index.js"
+          ]
+        },
+        {
+          "name": "SITE_URL",
+          "files": [
+            "build.js"
+          ]
+        },
+        {
+          "name": "VAULT_BRANCH",
+          "files": [
+            "test/pages-prebuild.test.js"
+          ]
+        },
+        {
+          "name": "VAULT_DIR",
+          "files": [
+            "test/pages-prebuild.test.js"
+          ]
+        },
+        {
+          "name": "VAULT_TOKEN",
+          "files": [
+            "test/pages-prebuild.test.js"
+          ]
+        },
+        {
+          "name": "VISUAL_FIXTURE",
+          "files": [
+            "lib/posters.js",
+            "test/posters.test.js"
+          ]
+        },
+        {
+          "name": "VISUAL_PORT",
+          "files": [
+            "scripts/visual-serve.js"
+          ]
+        }
+      ]
+    },
+    "tokens": {
+      "provenance": [
+        "build.js",
+        "concepts/birds1/birds1.css",
+        "concepts/birds1/birds1.js",
+        "concepts/birds1/index.html",
+        "concepts/entries.js",
+        "concepts/flock-model.js",
+        "concepts/hub.css",
+        "concepts/hub.js",
+        "intel/curated.json",
+        "lib/asset-budget.js",
+        "lib/cover-mirror.js",
+        "lib/cover-pixels.js",
+        "lib/cover-settle.js",
+        "lib/covers.js",
+        "lib/csp-policy.js",
+        "lib/design-tokens.js",
+        "lib/emit/assets.js",
+        "lib/emit/csp.js",
+        "lib/emit/feeds.js",
+        "lib/emit/index.js",
+        "lib/format.js",
+        "lib/lastfm.js",
+        "lib/letterboxd.js",
+        "lib/listen-line.js",
+        "lib/listening.js",
+        "lib/posters.js",
+        "lib/publish-unshared.js",
+        "lib/safe-url.js",
+        "lib/watches.js",
+        "playwright.config.js",
+        "scripts/check-asset-budget.js",
+        "scripts/check-design-tokens.js",
+        "scripts/deploy-workers.js",
+        "scripts/intel.js",
+        "scripts/optimize-media.js",
+        "scripts/sync-media.js",
+        "scripts/visual-serve.js",
+        "scripts/wrangler-bin.js",
+        "site.config.js",
+        "site/render.js",
+        "site/social-icons.js",
+        "site/tokens.css",
+        "static/poster-prefs.js",
+        "static/station.css",
+        "static/station.js",
+        "test/accessibility.test.js",
+        "test/album-tiles.test.js",
+        "test/asset-budget.test.js",
+        "test/asset-contract.test.js",
+        "test/asset-headers.test.js",
+        "test/build-validation.test.js",
+        "test/chart-grid.test.js",
+        "test/client-hardening.test.js",
+        "test/contrast.test.js",
+        "test/cover-pixels.test.js",
+        "test/cover-settle.test.js",
+        "test/covers.test.js",
+        "test/csp-headers.test.js",
+        "test/design-tokens.test.js",
+        "test/emit-units.test.js",
+        "test/feed-standards.test.js",
+        "test/film-count.test.js",
+        "test/flock-model.test.js",
+        "test/headers-golden.test.js",
+        "test/helpers/parse-headers.js",
+        "test/helpers/run-build.js",
+        "test/helpers/worker-env.js",
+        "test/home-listen.test.js",
+        "test/home-preview.test.js",
+        "test/intel.test.js",
+        "test/lastfm-codec.test.js",
+        "test/letterboxd.test.js",
+        "test/links.test.js",
+        "test/listening-periods.test.js",
+        "test/listening-snapshot.test.js",
+        "test/listening.test.js",
+        "test/media.test.js",
+        "test/pages-prebuild.test.js",
+        "test/poster-controls.test.js",
+        "test/posters.test.js",
+        "test/prerender-safety.test.js",
+        "test/privacy.test.js",
+        "test/progressive-enhancement.test.js",
+        "test/publish-unshared.test.js",
+        "test/scrobble-count-parity.test.js",
+        "test/secrets-history.test.js",
+        "test/security-remediation.test.js",
+        "test/socials.test.js",
+        "test/sync-media-wrangler.test.js",
+        "test/unshared.test.js",
+        "test/url-safety.test.js",
+        "test/verbs.test.js",
+        "test/visual/axe.spec.js",
+        "test/visual/pages.spec.js",
+        "test/visual/prepare.js",
+        "test/visual/scale.spec.js",
+        "test/w3c-coverage.test.js",
+        "test/wave-scope.test.js",
+        "test/worker-config.test.js",
+        "test/worker-csp-report.test.js",
+        "test/worker-geo.test.js",
+        "test/worker-listening.test.js",
+        "test/worker-rebuild.test.js",
+        "test/worker-simplify.test.js",
+        "test/worker-transport.test.js",
+        "test/workflow-permissions.test.js",
+        "workers/csp-report/src/index.js",
+        "workers/geo/src/index.js",
+        "workers/lib/simplify.js",
+        "workers/lib/transport.js",
+        "workers/listening/src/index.js",
+        "workers/rebuild/src/index.js"
+      ],
+      "entries": [
+        {
+          "name": "--black",
+          "value": "#000000",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": true,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--body",
+          "value": "system-ui, sans-serif",
+          "live": true,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--display",
+          "value": "\"Anton\", \"Arial Narrow\", \"Helvetica Condensed\", Impact, sans-serif",
+          "live": true,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--ease",
+          "value": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--field",
+          "value": "var(--black)",
+          "live": true,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--focus",
+          "value": "var(--pink)",
+          "live": true,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": true,
+          "files": []
+        },
+        {
+          "name": "--hit",
+          "value": "clamp(2.75rem, 2.4rem + 0.7vw, 3.5rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--hit-pad",
+          "value": "calc(var(--hit-setting) - var(--type-setting) - var(--space-phone-row))",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--hit-phone",
+          "value": "clamp(3rem, 2.6rem + 0.8vw, 3.75rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--hit-setting",
+          "value": "2.75rem",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": true,
+          "files": []
+        },
+        {
+          "name": "--icon",
+          "value": "clamp(1.35rem, 1.21rem + 0.58vw, 1.728rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--ink",
+          "value": "var(--white)",
+          "live": true,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--line-hair",
+          "value": "1px solid currentColor",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--line-none",
+          "value": "0",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--line-rule",
+          "value": "1px solid var(--rule)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--line-strong",
+          "value": "2px solid currentColor",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--line-thick",
+          "value": "3px",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--measure",
+          "value": "clamp(40rem, 34rem + 8vw, 48rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--mono",
+          "value": "ui-monospace, \"Cascadia Mono\", \"Segoe UI Mono\", Menlo, Consolas, monospace",
+          "live": true,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--motion",
+          "value": "240ms",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--outline-black",
+          "value": "3px solid var(--black)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--outline-contrast",
+          "value": "3px solid currentColor",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--outline-focus",
+          "value": "3px solid var(--focus)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--outline-none",
+          "value": "none",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--outline-offset",
+          "value": "3px",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--pink",
+          "value": "#f7c8d8",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": true,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css",
+            "test/home-preview.test.js",
+            "test/verbs.test.js"
+          ]
+        },
+        {
+          "name": "--radius",
+          "value": "0",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "lib/design-tokens.js",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--row-size",
+          "value": "clamp(4.5rem, calc((100vw - 5.6rem) / 8.55), 14rem)",
+          "live": true,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": true,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--rule",
+          "value": "rgba(247, 200, 216, 0.28)",
+          "live": true,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": true,
+          "files": []
+        },
+        {
+          "name": "--signal",
+          "value": "var(--pink)",
+          "live": true,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": []
+        },
+        {
+          "name": "--space-0",
+          "value": "0",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css",
+            "test/listening-periods.test.js"
+          ]
+        },
+        {
+          "name": "--space-1",
+          "value": "clamp(1rem, 0.896rem + 0.43vw, 1.28rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-cap",
+          "value": "clamp(0.3rem, 0.269rem + 0.13vw, 0.384rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-clip",
+          "value": "-1px",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-desk-block",
+          "value": "clamp(1.6rem, 3vh, 2.6rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-desk-feed",
+          "value": "clamp(1.4rem, 2vw, 2.4rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": []
+        },
+        {
+          "name": "--space-desk-main",
+          "value": "clamp(0.8rem, 2vh, 1.6rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-desk-tracks",
+          "value": "clamp(1.2rem, 2vw, 2rem) clamp(1.4rem, 2.4vw, 2.6rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-desk-verbs",
+          "value": "clamp(0.6rem, 1.6vh, 1.4rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-feed",
+          "value": "clamp(1.25rem, 1.12rem + 0.53vw, 1.6rem) 0 0",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-flag",
+          "value": "clamp(0.6rem, 0.538rem + 0.26vw, 0.768rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-footer",
+          "value": "clamp(2.5rem, 2.24rem + 1.07vw, 3.2rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-footer-desk",
+          "value": "clamp(2rem, 5vh, 4rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-heading",
+          "value": "0 0 clamp(0.4rem, 0.358rem + 0.17vw, 0.512rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-home-footer",
+          "value": "clamp(0.5rem, 0.448rem + 0.21vw, 0.64rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-home-link",
+          "value": "0 0 clamp(0.6rem, 0.538rem + 0.26vw, 0.768rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-incident",
+          "value": "clamp(1.2rem, 1.075rem + 0.51vw, 1.536rem) 0 clamp(1.35rem, 1.21rem + 0.58vw, 1.728rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": []
+        },
+        {
+          "name": "--space-incident-desk",
+          "value": "clamp(0.55rem, 0.493rem + 0.23vw, 0.704rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": []
+        },
+        {
+          "name": "--space-incident-grid",
+          "value": "clamp(1rem, 0.896rem + 0.43vw, 1.28rem) clamp(1.5rem, 1.344rem + 0.64vw, 1.92rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": []
+        },
+        {
+          "name": "--space-kicker",
+          "value": "0 0 clamp(1.35rem, 3vh, 2rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-lede",
+          "value": "clamp(0.8rem, 0.717rem + 0.34vw, 1.024rem) 0 0",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-md",
+          "value": "clamp(0.75rem, 0.672rem + 0.32vw, 0.96rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-nav",
+          "value": "0 0 clamp(1rem, 0.896rem + 0.43vw, 1.28rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-nav-gap",
+          "value": "clamp(0.4rem, 0.358rem + 0.17vw, 0.512rem) clamp(1.4rem, 1.254rem + 0.6vw, 1.792rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-nav-gap-desk",
+          "value": "clamp(0.5rem, 0.448rem + 0.21vw, 0.64rem) clamp(1.8rem, 1.613rem + 0.77vw, 2.304rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-outlink-desk",
+          "value": "clamp(0.15rem, 0.134rem + 0.06vw, 0.192rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-outlinks",
+          "value": "clamp(0.5rem, 0.448rem + 0.21vw, 0.64rem) 0 0",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-outlinks-gap",
+          "value": "clamp(0.75rem, 0.672rem + 0.32vw, 0.96rem) clamp(1.5rem, 1.344rem + 0.64vw, 1.92rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-page",
+          "value": "clamp(1rem, 3vw, 2.75rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-page-desk",
+          "value": "clamp(1rem, 2.4vh, 2rem) clamp(1.25rem, 2vw, 2.4rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-phone-main",
+          "value": "clamp(2rem, 5vh, 3rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-phone-row",
+          "value": "clamp(0.12rem, 0.108rem + 0.05vw, 0.154rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": true,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-phone-verbs",
+          "value": "clamp(2rem, 4.8vh, 3.15rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-players",
+          "value": "clamp(2rem, 1.792rem + 0.85vw, 2.56rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-prefix",
+          "value": "0.24em",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-redaction-text",
+          "value": "clamp(0.4rem, 0.358rem + 0.17vw, 0.512rem) 0 0",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-row",
+          "value": "clamp(0.35rem, 0.314rem + 0.15vw, 0.448rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-section",
+          "value": "clamp(1.5rem, 1.344rem + 0.64vw, 1.92rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-skip",
+          "value": "clamp(0.55rem, 0.493rem + 0.23vw, 0.704rem) clamp(0.8rem, 0.717rem + 0.34vw, 1.024rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-slot-text",
+          "value": "clamp(0.35rem, 0.314rem + 0.15vw, 0.448rem) 0 0",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-socials",
+          "value": "clamp(0.1rem, 0.09rem + 0.04vw, 0.128rem) clamp(0.85rem, 0.762rem + 0.36vw, 1.088rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-statement",
+          "value": "clamp(0.55rem, 0.493rem + 0.23vw, 0.704rem) 0 0",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-status",
+          "value": "0 0 clamp(1.25rem, 1.12rem + 0.53vw, 1.6rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-status-gap",
+          "value": "clamp(0.4rem, 0.358rem + 0.17vw, 0.512rem) clamp(1.5rem, 1.344rem + 0.64vw, 1.92rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-tight",
+          "value": "clamp(0.2rem, 0.179rem + 0.09vw, 0.256rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-total",
+          "value": "clamp(1.4rem, 1.254rem + 0.6vw, 1.792rem) 0 0",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-total-gap",
+          "value": "clamp(0.45rem, 0.403rem + 0.19vw, 0.576rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-track",
+          "value": "clamp(0.75rem, 0.672rem + 0.32vw, 0.96rem) 0",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-track-row",
+          "value": "clamp(0.2rem, 0.179rem + 0.09vw, 0.256rem) clamp(0.75rem, 0.672rem + 0.32vw, 0.96rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-tracks",
+          "value": "clamp(1rem, 0.896rem + 0.43vw, 1.28rem) 0 0",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-verb-gap",
+          "value": "clamp(0.35rem, 0.314rem + 0.15vw, 0.448rem) clamp(1.25rem, 1.12rem + 0.53vw, 1.6rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-verb-pad",
+          "value": "0 0.02em",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-verb-pad-desk",
+          "value": "0.03em 0.02em 0.05em",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--space-verb-row",
+          "value": "clamp(0.85rem, 0.762rem + 0.36vw, 1.088rem) clamp(0.15rem, 0.134rem + 0.06vw, 0.192rem) clamp(1rem, 0.896rem + 0.43vw, 1.28rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--stroke-total",
+          "value": "0.06em",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--track-label",
+          "value": "0.08em",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--track-none",
+          "value": "0",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--track-stars",
+          "value": "0.06em",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-album",
+          "value": "clamp(1.05rem, 2.8vw, 1.65rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-album-by",
+          "value": "0.72em",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-body",
+          "value": "clamp(1.125rem, 1.008rem + 0.48vw, 1.44rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-contact",
+          "value": "clamp(1.7rem, 5vw, 2.8rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-contact-heading",
+          "value": "clamp(1.8rem, 4vw, 2.4rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-flag",
+          "value": "clamp(0.85rem, 0.762rem + 0.36vw, 1.088rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-kicker",
+          "value": "clamp(1.5rem, 1.344rem + 0.64vw, 1.92rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-lede",
+          "value": "clamp(1.2rem, 1.075rem + 0.51vw, 1.536rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-lede-desk",
+          "value": "clamp(2.6rem, calc(var(--row-size) * 0.62), 7rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-list",
+          "value": "clamp(1.15rem, 0.9rem + 1.1vw, 1.85rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-meta",
+          "value": "clamp(0.95rem, 0.851rem + 0.41vw, 1.216rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-nav",
+          "value": "clamp(1.5rem, 4vw, 2.2rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-outlink",
+          "value": "clamp(2.4rem, calc(var(--row-size) * 0.5), 6rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-prefix",
+          "value": "1.8em",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-preview",
+          "value": "clamp(1.15rem, 1.03rem + 0.49vw, 1.472rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-preview-desk",
+          "value": "clamp(2.35rem, calc(var(--row-size) * 0.46), 5.6rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-prize",
+          "value": "clamp(1.6rem, 4vw, 2.4rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-redaction",
+          "value": "clamp(2rem, 3vw, 3.5rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-setting",
+          "value": "clamp(0.5625rem, 0.05rem + 1.95vw, 1.2rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": true,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-sign",
+          "value": "clamp(min(4rem, 28vw), 16vw, 8.5rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-stars-desk",
+          "value": "0.82em",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-time",
+          "value": "clamp(0.8125rem, 0.728rem + 0.35vw, 1.04rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-title",
+          "value": "clamp(2rem, 6vw, 3.3rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-title-desk",
+          "value": "clamp(1.65rem, 1.7vw, 2.45rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-total",
+          "value": "clamp(min(3.5rem, 18vw), 12vw, 6.5rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-total-label",
+          "value": "clamp(min(1.5rem, 8vw), 3.4vw, 2.25rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-verb",
+          "value": "clamp(2.4rem, 8vw, 4.6rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-verb-desk",
+          "value": "calc(var(--row-size) * 0.7125)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-verb-phone",
+          "value": "clamp(3.25rem, calc((100vw - 3rem) / 4.5), 14rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--wave-period",
+          "value": "2.5s",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--weight-regular",
+          "value": "400",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/birds1/birds1.css",
+            "concepts/hub.css",
+            "static/station.css"
+          ]
+        },
+        {
+          "name": "--white",
+          "value": "#ffffff",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": true,
+          "files": [
+            "static/station.css"
+          ]
+        }
+      ],
+      "unused": [
+        "--signal",
+        "--space-desk-feed",
+        "--space-incident",
+        "--space-incident-desk",
+        "--space-incident-grid"
+      ]
+    },
+    "features": {
+      "provenance": [
+        ".github/dependabot.yml",
+        ".github/workflows/build.yml",
+        ".gitignore",
+        ".htmlvalidate.json",
+        ".nvmrc",
+        "asset-budget.json",
+        "build.js",
+        "concepts/README.md",
+        "concepts/birds1/birds1.css",
+        "concepts/birds1/birds1.js",
+        "concepts/birds1/index.html",
+        "concepts/entries.js",
+        "concepts/flock-model.js",
+        "concepts/hub.css",
+        "concepts/hub.js",
+        "intel/curated.json",
+        "lib/asset-budget.js",
+        "lib/cover-mirror.js",
+        "lib/cover-pixels.js",
+        "lib/cover-settle.js",
+        "lib/covers.js",
+        "lib/csp-policy.js",
+        "lib/design-tokens.js",
+        "lib/emit/assets.js",
+        "lib/emit/csp.js",
+        "lib/emit/feeds.js",
+        "lib/emit/index.js",
+        "lib/format.js",
+        "lib/lastfm.js",
+        "lib/letterboxd.js",
+        "lib/listen-line.js",
+        "lib/listening.js",
+        "lib/posters.js",
+        "lib/publish-unshared.js",
+        "lib/safe-url.js",
+        "lib/watches.js",
+        "package.json",
+        "playwright.config.js",
+        "scripts/check-asset-budget.js",
+        "scripts/check-design-tokens.js",
+        "scripts/deploy-workers.js",
+        "scripts/git-hooks/pre-commit",
+        "scripts/intel.js",
+        "scripts/optimize-media.js",
+        "scripts/pages-prebuild.sh",
+        "scripts/sync-media.js",
+        "scripts/visual-serve.js",
+        "scripts/wrangler-bin.js",
+        "site.config.js",
+        "site/render.js",
+        "site/social-icons.js",
+        "site/tokens.css",
+        "site/tsconfig.json",
+        "site/verbs.ts",
+        "static/_headers",
+        "static/_redirects",
+        "static/favicon.svg",
+        "static/fonts/OFL.txt",
+        "static/poster-prefs.js",
+        "static/station.css",
+        "static/station.js",
+        "test/accessibility.test.js",
+        "test/album-tiles.test.js",
+        "test/asset-budget.test.js",
+        "test/asset-contract.test.js",
+        "test/asset-headers.test.js",
+        "test/build-validation.test.js",
+        "test/chart-grid.test.js",
+        "test/client-hardening.test.js",
+        "test/contrast.test.js",
+        "test/cover-pixels.test.js",
+        "test/cover-settle.test.js",
+        "test/covers.test.js",
+        "test/csp-headers.test.js",
+        "test/design-tokens.test.js",
+        "test/emit-units.test.js",
+        "test/feed-standards.test.js",
+        "test/film-count.test.js",
+        "test/fixtures/lastfm-cache/lastfm.json",
+        "test/fixtures/lastfm-periods.json",
+        "test/fixtures/letterboxd-rss.xml",
+        "test/fixtures/visual/fonts/LICENSE",
+        "test/fixtures/visual/lastfm.json",
+        "test/fixtures/visual/letterboxd.json",
+        "test/flock-model.test.js",
+        "test/headers-golden.test.js",
+        "test/helpers/parse-headers.js",
+        "test/helpers/run-build.js",
+        "test/helpers/worker-env.js",
+        "test/home-listen.test.js",
+        "test/home-preview.test.js",
+        "test/intel.test.js",
+        "test/lastfm-codec.test.js",
+        "test/letterboxd.test.js",
+        "test/links.test.js",
+        "test/listening-periods.test.js",
+        "test/listening-snapshot.test.js",
+        "test/listening.test.js",
+        "test/media.test.js",
+        "test/pages-prebuild.test.js",
+        "test/poster-controls.test.js",
+        "test/posters.test.js",
+        "test/prerender-safety.test.js",
+        "test/privacy.test.js",
+        "test/progressive-enhancement.test.js",
+        "test/publish-unshared.test.js",
+        "test/scrobble-count-parity.test.js",
+        "test/secrets-history.test.js",
+        "test/security-remediation.test.js",
+        "test/socials.test.js",
+        "test/sync-media-wrangler.test.js",
+        "test/unshared.test.js",
+        "test/url-safety.test.js",
+        "test/verbs.test.js",
+        "test/visual/axe.spec.js",
+        "test/visual/pages.spec.js",
+        "test/visual/prepare.js",
+        "test/visual/scale.spec.js",
+        "test/w3c-coverage.test.js",
+        "test/wave-scope.test.js",
+        "test/worker-config.test.js",
+        "test/worker-csp-report.test.js",
+        "test/worker-geo.test.js",
+        "test/worker-listening.test.js",
+        "test/worker-rebuild.test.js",
+        "test/worker-simplify.test.js",
+        "test/worker-transport.test.js",
+        "test/workflow-permissions.test.js",
+        "workers/csp-report/src/index.js",
+        "workers/csp-report/wrangler.toml",
+        "workers/geo/src/index.js",
+        "workers/geo/wrangler.toml",
+        "workers/lib/simplify.js",
+        "workers/lib/transport.js",
+        "workers/listening/src/index.js",
+        "workers/listening/wrangler.toml",
+        "workers/package.json",
+        "workers/rebuild/src/index.js",
+        "workers/rebuild/wrangler.toml"
+      ],
+      "entries": [
+        {
+          "id": "home-rows",
+          "route": "/",
+          "anchors": [
+            "aria-label=\"verbs\"",
+            "class=\"verb-kicker\""
+          ],
+          "anchorFiles": {
+            "aria-label=\"verbs\"": [
+              "site/render.js",
+              "test/verbs.test.js"
+            ],
+            "class=\"verb-kicker\"": [
+              "site/render.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [],
+          "constants": {},
+          "files": [
+            "site/render.js",
+            "test/verbs.test.js"
+          ],
+          "sources": [
+            "site/render.js"
+          ],
+          "tests": [
+            "test/verbs.test.js"
+          ],
+          "provenance": [
+            {
+              "path": "site/render.js",
+              "sha256": "610da3dc250abb28988a25b72276135824679c28bd039b2df2f1b48d49d073d8",
+              "gitBlob": "cf89fb6580b8d7398ce56d8f1768f4ff72282f91"
+            }
+          ]
+        },
+        {
+          "id": "home-listen",
+          "route": "/",
+          "anchors": [
+            "preview listen-line",
+            "now listening"
+          ],
+          "anchorFiles": {
+            "preview listen-line": [
+              "site/render.js",
+              "test/home-listen.test.js"
+            ],
+            "now listening": [
+              "lib/listen-line.js",
+              "static/station.js",
+              "test/home-listen.test.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [
+            "/api/listening/now"
+          ],
+          "constants": {
+            "lib/listen-line.js": {
+              "LISTEN_LIMIT": 48
+            },
+            "static/station.js": {
+              "LISTEN_LIMIT": 48,
+              "LISTEN_MS": 60000
+            }
+          },
+          "files": [
+            "lib/csp-policy.js",
+            "lib/listen-line.js",
+            "site/render.js",
+            "static/station.js",
+            "test/home-listen.test.js",
+            "test/visual/prepare.js",
+            "test/worker-listening.test.js",
+            "workers/listening/src/index.js",
+            "workers/listening/wrangler.toml"
+          ],
+          "sources": [
+            "lib/csp-policy.js",
+            "lib/listen-line.js",
+            "site/render.js",
+            "static/station.js",
+            "workers/listening/src/index.js",
+            "workers/listening/wrangler.toml"
+          ],
+          "tests": [
+            "test/home-listen.test.js",
+            "test/visual/prepare.js",
+            "test/worker-listening.test.js"
+          ],
+          "provenance": [
+            {
+              "path": "lib/csp-policy.js",
+              "sha256": "b3db6c7e29b837bc4275a525b3e2e645a41e9eb5d31d84ffef460a8de4f5996c",
+              "gitBlob": "de82b11fa558d04a178587c7c8e23aabcfd9d0bf"
+            },
+            {
+              "path": "lib/listen-line.js",
+              "sha256": "1f96bbcc46af9e251175f62c161f2d085451852473cd989f25c85fc7a43ca01a",
+              "gitBlob": "6b37e88c2fe941954a5139c1bc13f5e8e68615c9"
+            },
+            {
+              "path": "site/render.js",
+              "sha256": "610da3dc250abb28988a25b72276135824679c28bd039b2df2f1b48d49d073d8",
+              "gitBlob": "cf89fb6580b8d7398ce56d8f1768f4ff72282f91"
+            },
+            {
+              "path": "static/station.js",
+              "sha256": "28cd31949428e47b14e8e47975e19efdc97aff7f535845c952300487af9d7792",
+              "gitBlob": "fc30900dca08d2f2ba9e59eb3545a173224eb1ca"
+            },
+            {
+              "path": "workers/listening/src/index.js",
+              "sha256": "aa7bb4b7a07b2cb99f5c8010a96e0e64a5176309c435b58170f6f3e240975e42",
+              "gitBlob": "b98343b3c4543663caa0834ebf72e935e07e826d"
+            },
+            {
+              "path": "workers/listening/wrangler.toml",
+              "sha256": "bf82f318372cec0cad27a3d172b5c74cf588a7d545753a73b3f276d179eaffe6",
+              "gitBlob": "b55fa92a643d1fd2c818d04b357b05e6b4f98245"
+            }
+          ]
+        },
+        {
+          "id": "watching-strip",
+          "route": "/watching/",
+          "anchors": [
+            "class=\"film-open\"",
+            "data-scene"
+          ],
+          "anchorFiles": {
+            "class=\"film-open\"": [
+              "site/render.js",
+              "test/poster-controls.test.js"
+            ],
+            "data-scene": [
+              "site/render.js",
+              "static/station.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [],
+          "constants": {},
+          "files": [
+            "site/render.js",
+            "static/station.js",
+            "test/poster-controls.test.js"
+          ],
+          "sources": [
+            "site/render.js",
+            "static/station.js"
+          ],
+          "tests": [
+            "test/poster-controls.test.js"
+          ],
+          "provenance": [
+            {
+              "path": "site/render.js",
+              "sha256": "610da3dc250abb28988a25b72276135824679c28bd039b2df2f1b48d49d073d8",
+              "gitBlob": "cf89fb6580b8d7398ce56d8f1768f4ff72282f91"
+            },
+            {
+              "path": "static/station.js",
+              "sha256": "28cd31949428e47b14e8e47975e19efdc97aff7f535845c952300487af9d7792",
+              "gitBlob": "fc30900dca08d2f2ba9e59eb3545a173224eb1ca"
+            }
+          ]
+        },
+        {
+          "id": "watching-toggles",
+          "route": "/watching/",
+          "anchors": [
+            "data-posters-toggle",
+            "data-axis-toggle",
+            "data-pull"
+          ],
+          "anchorFiles": {
+            "data-posters-toggle": [
+              "site/render.js",
+              "static/poster-prefs.js",
+              "test/poster-controls.test.js",
+              "test/visual/pages.spec.js",
+              "test/visual/scale.spec.js"
+            ],
+            "data-axis-toggle": [
+              "site/render.js",
+              "static/poster-prefs.js",
+              "test/poster-controls.test.js",
+              "test/visual/pages.spec.js",
+              "test/visual/scale.spec.js"
+            ],
+            "data-pull": [
+              "static/poster-prefs.js",
+              "static/station.css",
+              "test/poster-controls.test.js"
+            ]
+          },
+          "storageKeys": [
+            "mattdoes-posters",
+            "mattdoes-poster-axis"
+          ],
+          "endpoints": [],
+          "constants": {
+            "static/poster-prefs.js": {
+              "WHEEL_PX": 480,
+              "WHEEL_MS": 600,
+              "GAP_MS": 120,
+              "TOUCH_PX": 100
+            }
+          },
+          "files": [
+            "site/render.js",
+            "static/poster-prefs.js",
+            "static/station.css",
+            "test/poster-controls.test.js",
+            "test/visual/axe.spec.js",
+            "test/visual/pages.spec.js",
+            "test/visual/scale.spec.js"
+          ],
+          "sources": [
+            "site/render.js",
+            "static/poster-prefs.js",
+            "static/station.css"
+          ],
+          "tests": [
+            "test/poster-controls.test.js",
+            "test/visual/axe.spec.js",
+            "test/visual/pages.spec.js",
+            "test/visual/scale.spec.js"
+          ],
+          "provenance": [
+            {
+              "path": "site/render.js",
+              "sha256": "610da3dc250abb28988a25b72276135824679c28bd039b2df2f1b48d49d073d8",
+              "gitBlob": "cf89fb6580b8d7398ce56d8f1768f4ff72282f91"
+            },
+            {
+              "path": "static/poster-prefs.js",
+              "sha256": "db42e4554507f56dbe68178b099b3f0b2a91e5df5b86f8b11915cde69199b035",
+              "gitBlob": "343a52ed3ba071b7ff4b99c4be644ae04baee558"
+            },
+            {
+              "path": "static/station.css",
+              "sha256": "b66c9a094aff20349cfc29659abf6d269f8024a368e088ff2d59f5af87532dc7",
+              "gitBlob": "4599c695b656ad5a0c39cd1daad13e48567c87c1"
+            }
+          ]
+        },
+        {
+          "id": "watching-scene",
+          "route": "/watching/",
+          "anchors": [
+            "id=\"scene\"",
+            "data-review"
+          ],
+          "anchorFiles": {
+            "id=\"scene\"": [
+              "site/render.js"
+            ],
+            "data-review": [
+              "site/render.js",
+              "static/station.js",
+              "test/media.test.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [],
+          "constants": {},
+          "files": [
+            "site/render.js",
+            "static/station.js",
+            "test/media.test.js"
+          ],
+          "sources": [
+            "site/render.js",
+            "static/station.js"
+          ],
+          "tests": [
+            "test/media.test.js"
+          ],
+          "provenance": [
+            {
+              "path": "site/render.js",
+              "sha256": "610da3dc250abb28988a25b72276135824679c28bd039b2df2f1b48d49d073d8",
+              "gitBlob": "cf89fb6580b8d7398ce56d8f1768f4ff72282f91"
+            },
+            {
+              "path": "static/station.js",
+              "sha256": "28cd31949428e47b14e8e47975e19efdc97aff7f535845c952300487af9d7792",
+              "gitBlob": "fc30900dca08d2f2ba9e59eb3545a173224eb1ca"
+            }
+          ]
+        },
+        {
+          "id": "watching-count",
+          "route": "/watching/",
+          "anchors": [
+            "countLine(ctx.filmCount",
+            "parseFilmCount"
+          ],
+          "anchorFiles": {
+            "countLine(ctx.filmCount": [
+              "site/render.js"
+            ],
+            "parseFilmCount": [
+              "lib/letterboxd.js",
+              "lib/watches.js",
+              "test/film-count.test.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [],
+          "constants": {},
+          "files": [
+            "lib/letterboxd.js",
+            "lib/watches.js",
+            "site/render.js",
+            "test/film-count.test.js"
+          ],
+          "sources": [
+            "lib/letterboxd.js",
+            "lib/watches.js",
+            "site/render.js"
+          ],
+          "tests": [
+            "test/film-count.test.js"
+          ],
+          "provenance": [
+            {
+              "path": "lib/letterboxd.js",
+              "sha256": "ba7495334048d8b954b3dd50efa71763f56899653da8fa32ec835ef6e49db0f9",
+              "gitBlob": "f1257424ecdd2371b1a6bcc7ae12e09f0b2294cb"
+            },
+            {
+              "path": "lib/watches.js",
+              "sha256": "1a4fbce80ebc9ce71f7b8732246c3bb4478a4cd44b98581b5deafe7eeefb41e6",
+              "gitBlob": "c00ecdf6a90621ab61916630a772e5b3810b9370"
+            },
+            {
+              "path": "site/render.js",
+              "sha256": "610da3dc250abb28988a25b72276135824679c28bd039b2df2f1b48d49d073d8",
+              "gitBlob": "cf89fb6580b8d7398ce56d8f1768f4ff72282f91"
+            }
+          ]
+        },
+        {
+          "id": "listening-chart",
+          "route": "/listening/",
+          "anchors": [
+            "class=\"album-grid\"",
+            "class=\"album-tile\""
+          ],
+          "anchorFiles": {
+            "class=\"album-grid\"": [
+              "site/render.js",
+              "test/album-tiles.test.js"
+            ],
+            "class=\"album-tile\"": [
+              "site/render.js",
+              "test/album-tiles.test.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [
+            "/api/listening/charts"
+          ],
+          "constants": {},
+          "files": [
+            "lib/listening.js",
+            "site.config.js",
+            "site/render.js",
+            "test/album-tiles.test.js",
+            "test/chart-grid.test.js",
+            "test/listening-snapshot.test.js",
+            "test/worker-listening.test.js",
+            "workers/listening/src/index.js",
+            "workers/listening/wrangler.toml"
+          ],
+          "sources": [
+            "lib/listening.js",
+            "site.config.js",
+            "site/render.js",
+            "workers/listening/src/index.js",
+            "workers/listening/wrangler.toml"
+          ],
+          "tests": [
+            "test/album-tiles.test.js",
+            "test/chart-grid.test.js",
+            "test/listening-snapshot.test.js",
+            "test/worker-listening.test.js"
+          ],
+          "provenance": [
+            {
+              "path": "lib/listening.js",
+              "sha256": "1b5a8426ea4b392121b307f43e03f9dacf2180778ccacd9620c3f39e24c00ed1",
+              "gitBlob": "029a26ee5257df9b352f4c416e4b9a9fde375467"
+            },
+            {
+              "path": "site.config.js",
+              "sha256": "581afebca28f660d8807647efa76d30e8e57ffced78f3a1aaa927195f4aae972",
+              "gitBlob": "05ac26bd545ebc2f0cad54be77a8a1d39c52905e"
+            },
+            {
+              "path": "site/render.js",
+              "sha256": "610da3dc250abb28988a25b72276135824679c28bd039b2df2f1b48d49d073d8",
+              "gitBlob": "cf89fb6580b8d7398ce56d8f1768f4ff72282f91"
+            },
+            {
+              "path": "workers/listening/src/index.js",
+              "sha256": "aa7bb4b7a07b2cb99f5c8010a96e0e64a5176309c435b58170f6f3e240975e42",
+              "gitBlob": "b98343b3c4543663caa0834ebf72e935e07e826d"
+            },
+            {
+              "path": "workers/listening/wrangler.toml",
+              "sha256": "bf82f318372cec0cad27a3d172b5c74cf588a7d545753a73b3f276d179eaffe6",
+              "gitBlob": "b55fa92a643d1fd2c818d04b357b05e6b4f98245"
+            }
+          ]
+        },
+        {
+          "id": "listening-recent",
+          "route": "/listening/",
+          "anchors": [
+            "class=\"recent-label\"",
+            "id=\"tracks\""
+          ],
+          "anchorFiles": {
+            "class=\"recent-label\"": [
+              "site/render.js"
+            ],
+            "id=\"tracks\"": [
+              "site/render.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [
+            "/api/listening/recent"
+          ],
+          "constants": {},
+          "files": [
+            "lib/csp-policy.js",
+            "lib/listening.js",
+            "site/render.js",
+            "static/_headers",
+            "static/station.js",
+            "test/chart-grid.test.js",
+            "test/listening-snapshot.test.js",
+            "test/worker-listening.test.js",
+            "workers/lib/transport.js",
+            "workers/listening/src/index.js",
+            "workers/listening/wrangler.toml"
+          ],
+          "sources": [
+            "lib/csp-policy.js",
+            "lib/listening.js",
+            "site/render.js",
+            "static/_headers",
+            "static/station.js",
+            "workers/lib/transport.js",
+            "workers/listening/src/index.js",
+            "workers/listening/wrangler.toml"
+          ],
+          "tests": [
+            "test/chart-grid.test.js",
+            "test/listening-snapshot.test.js",
+            "test/worker-listening.test.js"
+          ],
+          "provenance": [
+            {
+              "path": "lib/csp-policy.js",
+              "sha256": "b3db6c7e29b837bc4275a525b3e2e645a41e9eb5d31d84ffef460a8de4f5996c",
+              "gitBlob": "de82b11fa558d04a178587c7c8e23aabcfd9d0bf"
+            },
+            {
+              "path": "lib/listening.js",
+              "sha256": "1b5a8426ea4b392121b307f43e03f9dacf2180778ccacd9620c3f39e24c00ed1",
+              "gitBlob": "029a26ee5257df9b352f4c416e4b9a9fde375467"
+            },
+            {
+              "path": "site/render.js",
+              "sha256": "610da3dc250abb28988a25b72276135824679c28bd039b2df2f1b48d49d073d8",
+              "gitBlob": "cf89fb6580b8d7398ce56d8f1768f4ff72282f91"
+            },
+            {
+              "path": "static/_headers",
+              "sha256": "7c9e689ad1be4665bf4310c6354b87bee576366bf537f8fd8bdba9d6a1e1157e",
+              "gitBlob": "501b0d148cdaafe75935d9122bf4a39abf355682"
+            },
+            {
+              "path": "static/station.js",
+              "sha256": "28cd31949428e47b14e8e47975e19efdc97aff7f535845c952300487af9d7792",
+              "gitBlob": "fc30900dca08d2f2ba9e59eb3545a173224eb1ca"
+            },
+            {
+              "path": "workers/lib/transport.js",
+              "sha256": "bc12f4ba418b35ed8d594fdb8a48090fc14d11cd14ef4e1789f74e2b118d7c77",
+              "gitBlob": "db1146e7f33837574d1b21cf828ce8a5f87131e5"
+            },
+            {
+              "path": "workers/listening/src/index.js",
+              "sha256": "aa7bb4b7a07b2cb99f5c8010a96e0e64a5176309c435b58170f6f3e240975e42",
+              "gitBlob": "b98343b3c4543663caa0834ebf72e935e07e826d"
+            },
+            {
+              "path": "workers/listening/wrangler.toml",
+              "sha256": "bf82f318372cec0cad27a3d172b5c74cf588a7d545753a73b3f276d179eaffe6",
+              "gitBlob": "b55fa92a643d1fd2c818d04b357b05e6b4f98245"
+            }
+          ]
+        },
+        {
+          "id": "listening-count",
+          "route": "/listening/",
+          "anchors": [
+            "countLine(ctx.playcount",
+            "formatScrobbleCount"
+          ],
+          "anchorFiles": {
+            "countLine(ctx.playcount": [
+              "site/render.js"
+            ],
+            "formatScrobbleCount": [
+              "lib/format.js",
+              "site/render.js",
+              "test/scrobble-count-parity.test.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [],
+          "constants": {},
+          "files": [
+            "lib/format.js",
+            "site/render.js",
+            "test/scrobble-count-parity.test.js"
+          ],
+          "sources": [
+            "lib/format.js",
+            "site/render.js"
+          ],
+          "tests": [
+            "test/scrobble-count-parity.test.js"
+          ],
+          "provenance": [
+            {
+              "path": "lib/format.js",
+              "sha256": "f4972dc986399f59602a81a17fd294fa808dbd27cc84abcdd039c45fccbfd81a",
+              "gitBlob": "a2cb1e11c42622dec8a4edeeb1a293b53244b48f"
+            },
+            {
+              "path": "site/render.js",
+              "sha256": "610da3dc250abb28988a25b72276135824679c28bd039b2df2f1b48d49d073d8",
+              "gitBlob": "cf89fb6580b8d7398ce56d8f1768f4ff72282f91"
+            }
+          ]
+        },
+        {
+          "id": "wave-counts",
+          "route": "",
+          "anchors": [
+            "WAVE_WORDS",
+            "class=\"wave\""
+          ],
+          "anchorFiles": {
+            "WAVE_WORDS": [
+              "site/render.js",
+              "test/wave-scope.test.js"
+            ],
+            "class=\"wave\"": [
+              "site/render.js",
+              "test/wave-scope.test.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [],
+          "constants": {},
+          "files": [
+            "site/render.js",
+            "test/wave-scope.test.js"
+          ],
+          "sources": [
+            "site/render.js"
+          ],
+          "tests": [
+            "test/wave-scope.test.js"
+          ],
+          "provenance": [
+            {
+              "path": "site/render.js",
+              "sha256": "610da3dc250abb28988a25b72276135824679c28bd039b2df2f1b48d49d073d8",
+              "gitBlob": "cf89fb6580b8d7398ce56d8f1768f4ff72282f91"
+            }
+          ]
+        },
+        {
+          "id": "unshared-hub",
+          "route": "/unshared/",
+          "anchors": [
+            "aria-label=\"unshared\"",
+            "unsharedEntries"
+          ],
+          "anchorFiles": {
+            "aria-label=\"unshared\"": [
+              "concepts/hub.js"
+            ],
+            "unsharedEntries": [
+              "concepts/entries.js",
+              "concepts/hub.js",
+              "lib/publish-unshared.js",
+              "test/publish-unshared.test.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [],
+          "constants": {},
+          "files": [
+            "concepts/entries.js",
+            "concepts/hub.js",
+            "lib/publish-unshared.js",
+            "test/publish-unshared.test.js"
+          ],
+          "sources": [
+            "concepts/entries.js",
+            "concepts/hub.js",
+            "lib/publish-unshared.js"
+          ],
+          "tests": [
+            "test/csp-headers.test.js",
+            "test/emit-units.test.js",
+            "test/links.test.js",
+            "test/progressive-enhancement.test.js",
+            "test/publish-unshared.test.js",
+            "test/socials.test.js",
+            "test/verbs.test.js",
+            "test/visual/axe.spec.js",
+            "test/visual/pages.spec.js",
+            "test/visual/scale.spec.js"
+          ],
+          "provenance": [
+            {
+              "path": "concepts/entries.js",
+              "sha256": "0cbd1a2176de312104a25a0c08e6a44652c27b4600c0155a44bde4401f43ca35",
+              "gitBlob": "d6c2a40c561f11bf9dd6b126a2189772fa0d71ac"
+            },
+            {
+              "path": "concepts/hub.js",
+              "sha256": "6771a9d4be28a2bcb772b132195c1640411ad79a2ffea57bcb000fbf3a1283e8",
+              "gitBlob": "9e0a92d00fdf715a249842060105374c31847b91"
+            },
+            {
+              "path": "lib/publish-unshared.js",
+              "sha256": "d3582ea6e99258b81b94ecc1b9b6aac07a9cb0384664d6af957bda8dced87557",
+              "gitBlob": "798fc2adc9ca0e948cd4ad0bdf12bc79a7353671"
+            }
+          ]
+        },
+        {
+          "id": "birds1",
+          "route": "/unshared/birds1/",
+          "anchors": [
+            "id=\"field\"",
+            "id=\"play\"",
+            "from '../flock-model.js'"
+          ],
+          "anchorFiles": {
+            "id=\"field\"": [
+              "concepts/birds1/index.html"
+            ],
+            "id=\"play\"": [
+              "concepts/birds1/index.html"
+            ],
+            "from '../flock-model.js'": [
+              "concepts/birds1/birds1.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [],
+          "constants": {},
+          "files": [
+            "concepts/birds1/birds1.js",
+            "concepts/birds1/index.html"
+          ],
+          "sources": [
+            "concepts/birds1/birds1.js",
+            "concepts/birds1/index.html"
+          ],
+          "tests": [
+            "test/csp-headers.test.js",
+            "test/emit-units.test.js",
+            "test/links.test.js",
+            "test/progressive-enhancement.test.js",
+            "test/publish-unshared.test.js",
+            "test/verbs.test.js",
+            "test/visual/axe.spec.js",
+            "test/visual/pages.spec.js",
+            "test/visual/scale.spec.js"
+          ],
+          "provenance": [
+            {
+              "path": "concepts/birds1/birds1.js",
+              "sha256": "6247ab0d8de2869f6177a61b77fbd2f956c925ead65dcde44415ab727119e954",
+              "gitBlob": "e8f72a148687384c40e31d3c44967660d3d98cd9"
+            },
+            {
+              "path": "concepts/birds1/index.html",
+              "sha256": "2843e28e631d1bfa85dcc63469a2987667cf645593ed9111ec50ebc643fd6d73",
+              "gitBlob": "ec335f2bc7c247459c9bfe4d14459c9c0b0a135c"
+            }
+          ]
+        },
+        {
+          "id": "frequency",
+          "route": "/frequency/",
+          "anchors": [
+            "function renderFrequency",
+            "frequency-key"
+          ],
+          "anchorFiles": {
+            "function renderFrequency": [
+              "site/render.js"
+            ],
+            "frequency-key": [
+              "lib/emit/index.js",
+              "static/station.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [],
+          "constants": {},
+          "files": [
+            "lib/emit/index.js",
+            "site/render.js",
+            "static/station.js"
+          ],
+          "sources": [
+            "lib/emit/index.js",
+            "site/render.js",
+            "static/station.js"
+          ],
+          "tests": [
+            "test/emit-units.test.js",
+            "test/verbs.test.js"
+          ],
+          "provenance": [
+            {
+              "path": "lib/emit/index.js",
+              "sha256": "5d203b7a97735f5eacc4cd4807cd2961f25f2bb6f5ca8b1cd71ff64d9c1d5aeb",
+              "gitBlob": "8e69f3d5302f029674aff1572993ba7da166c3a8"
+            },
+            {
+              "path": "site/render.js",
+              "sha256": "610da3dc250abb28988a25b72276135824679c28bd039b2df2f1b48d49d073d8",
+              "gitBlob": "cf89fb6580b8d7398ce56d8f1768f4ff72282f91"
+            },
+            {
+              "path": "static/station.js",
+              "sha256": "28cd31949428e47b14e8e47975e19efdc97aff7f535845c952300487af9d7792",
+              "gitBlob": "fc30900dca08d2f2ba9e59eb3545a173224eb1ca"
+            }
+          ]
+        },
+        {
+          "id": "social-footer",
+          "route": "/",
+          "anchors": [
+            "rel=\"me noopener\"",
+            "lastfmSocialEnabled"
+          ],
+          "anchorFiles": {
+            "rel=\"me noopener\"": [
+              "site/render.js"
+            ],
+            "lastfmSocialEnabled": [
+              "site/verbs.ts",
+              "test/socials.test.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [],
+          "constants": {},
+          "files": [
+            "site/render.js",
+            "site/verbs.ts",
+            "test/socials.test.js"
+          ],
+          "sources": [
+            "site/render.js",
+            "site/verbs.ts"
+          ],
+          "tests": [
+            "test/socials.test.js"
+          ],
+          "provenance": [
+            {
+              "path": "site/render.js",
+              "sha256": "610da3dc250abb28988a25b72276135824679c28bd039b2df2f1b48d49d073d8",
+              "gitBlob": "cf89fb6580b8d7398ce56d8f1768f4ff72282f91"
+            },
+            {
+              "path": "site/verbs.ts",
+              "sha256": "7b2eed65da1c0bc8ee9c3eda507bc92b175aef505e914565ff1b1b9661c3192c",
+              "gitBlob": "55631d4109db62f528c6c6ef8d9853cdb27a8ee0"
+            }
+          ]
+        }
+      ]
+    },
+    "tests": {
+      "provenance": [
+        ".github/dependabot.yml",
+        ".github/workflows/build.yml",
+        ".gitignore",
+        ".htmlvalidate.json",
+        ".nvmrc",
+        "asset-budget.json",
+        "build.js",
+        "concepts/README.md",
+        "concepts/birds1/birds1.css",
+        "concepts/birds1/birds1.js",
+        "concepts/birds1/index.html",
+        "concepts/entries.js",
+        "concepts/flock-model.js",
+        "concepts/hub.css",
+        "concepts/hub.js",
+        "intel/curated.json",
+        "lib/asset-budget.js",
+        "lib/cover-mirror.js",
+        "lib/cover-pixels.js",
+        "lib/cover-settle.js",
+        "lib/covers.js",
+        "lib/csp-policy.js",
+        "lib/design-tokens.js",
+        "lib/emit/assets.js",
+        "lib/emit/csp.js",
+        "lib/emit/feeds.js",
+        "lib/emit/index.js",
+        "lib/format.js",
+        "lib/lastfm.js",
+        "lib/letterboxd.js",
+        "lib/listen-line.js",
+        "lib/listening.js",
+        "lib/posters.js",
+        "lib/publish-unshared.js",
+        "lib/safe-url.js",
+        "lib/watches.js",
+        "package.json",
+        "playwright.config.js",
+        "scripts/check-asset-budget.js",
+        "scripts/check-design-tokens.js",
+        "scripts/deploy-workers.js",
+        "scripts/git-hooks/pre-commit",
+        "scripts/intel.js",
+        "scripts/optimize-media.js",
+        "scripts/pages-prebuild.sh",
+        "scripts/sync-media.js",
+        "scripts/visual-serve.js",
+        "scripts/wrangler-bin.js",
+        "site.config.js",
+        "site/render.js",
+        "site/social-icons.js",
+        "site/tokens.css",
+        "site/tsconfig.json",
+        "site/verbs.ts",
+        "static/_headers",
+        "static/_redirects",
+        "static/favicon.svg",
+        "static/fonts/OFL.txt",
+        "static/poster-prefs.js",
+        "static/station.css",
+        "static/station.js",
+        "test/accessibility.test.js",
+        "test/album-tiles.test.js",
+        "test/asset-budget.test.js",
+        "test/asset-contract.test.js",
+        "test/asset-headers.test.js",
+        "test/build-validation.test.js",
+        "test/chart-grid.test.js",
+        "test/client-hardening.test.js",
+        "test/contrast.test.js",
+        "test/cover-pixels.test.js",
+        "test/cover-settle.test.js",
+        "test/covers.test.js",
+        "test/csp-headers.test.js",
+        "test/design-tokens.test.js",
+        "test/emit-units.test.js",
+        "test/feed-standards.test.js",
+        "test/film-count.test.js",
+        "test/fixtures/lastfm-cache/lastfm.json",
+        "test/fixtures/lastfm-periods.json",
+        "test/fixtures/letterboxd-rss.xml",
+        "test/fixtures/visual/fonts/LICENSE",
+        "test/fixtures/visual/lastfm.json",
+        "test/fixtures/visual/letterboxd.json",
+        "test/flock-model.test.js",
+        "test/headers-golden.test.js",
+        "test/helpers/parse-headers.js",
+        "test/helpers/run-build.js",
+        "test/helpers/worker-env.js",
+        "test/home-listen.test.js",
+        "test/home-preview.test.js",
+        "test/intel.test.js",
+        "test/lastfm-codec.test.js",
+        "test/letterboxd.test.js",
+        "test/links.test.js",
+        "test/listening-periods.test.js",
+        "test/listening-snapshot.test.js",
+        "test/listening.test.js",
+        "test/media.test.js",
+        "test/pages-prebuild.test.js",
+        "test/poster-controls.test.js",
+        "test/posters.test.js",
+        "test/prerender-safety.test.js",
+        "test/privacy.test.js",
+        "test/progressive-enhancement.test.js",
+        "test/publish-unshared.test.js",
+        "test/scrobble-count-parity.test.js",
+        "test/secrets-history.test.js",
+        "test/security-remediation.test.js",
+        "test/socials.test.js",
+        "test/sync-media-wrangler.test.js",
+        "test/unshared.test.js",
+        "test/url-safety.test.js",
+        "test/verbs.test.js",
+        "test/visual/axe.spec.js",
+        "test/visual/pages.spec.js",
+        "test/visual/prepare.js",
+        "test/visual/scale.spec.js",
+        "test/w3c-coverage.test.js",
+        "test/wave-scope.test.js",
+        "test/worker-config.test.js",
+        "test/worker-csp-report.test.js",
+        "test/worker-geo.test.js",
+        "test/worker-listening.test.js",
+        "test/worker-rebuild.test.js",
+        "test/worker-simplify.test.js",
+        "test/worker-transport.test.js",
+        "test/workflow-permissions.test.js",
+        "workers/csp-report/src/index.js",
+        "workers/csp-report/wrangler.toml",
+        "workers/geo/src/index.js",
+        "workers/geo/wrangler.toml",
+        "workers/lib/simplify.js",
+        "workers/lib/transport.js",
+        "workers/listening/src/index.js",
+        "workers/listening/wrangler.toml",
+        "workers/package.json",
+        "workers/rebuild/src/index.js",
+        "workers/rebuild/wrangler.toml"
+      ],
+      "entries": [
+        {
+          "file": "test/accessibility.test.js",
+          "imports": [
+            "test/helpers/run-build.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/album-tiles.test.js",
+          "imports": [
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "listening-chart"
+          ]
+        },
+        {
+          "file": "test/asset-budget.test.js",
+          "imports": [
+            "lib/asset-budget.js",
+            "test/helpers/run-build.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/asset-contract.test.js",
+          "imports": [
+            "lib/emit/assets.js",
+            "test/helpers/run-build.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/asset-headers.test.js",
+          "imports": [
+            "lib/emit/assets.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/build-validation.test.js",
+          "imports": [
+            "site/verbs.ts",
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "social-footer"
+          ]
+        },
+        {
+          "file": "test/chart-grid.test.js",
+          "imports": [
+            "lib/lastfm.js",
+            "lib/listening.js",
+            "site/render.js",
+            "test/helpers/run-build.js",
+            "test/helpers/worker-env.js"
+          ],
+          "features": [
+            "frequency",
+            "home-listen",
+            "home-rows",
+            "listening-chart",
+            "listening-count",
+            "listening-recent",
+            "social-footer",
+            "watching-count",
+            "watching-scene",
+            "watching-strip",
+            "watching-toggles",
+            "wave-counts"
+          ]
+        },
+        {
+          "file": "test/client-hardening.test.js",
+          "imports": [
+            "test/helpers/run-build.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/contrast.test.js",
+          "imports": [],
+          "features": []
+        },
+        {
+          "file": "test/cover-pixels.test.js",
+          "imports": [
+            "lib/cover-pixels.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/cover-settle.test.js",
+          "imports": [
+            "lib/cover-mirror.js",
+            "lib/cover-settle.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/covers.test.js",
+          "imports": [
+            "lib/covers.js",
+            "lib/lastfm.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/csp-headers.test.js",
+          "imports": [
+            "lib/csp-policy.js",
+            "test/helpers/parse-headers.js",
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "birds1",
+            "home-listen",
+            "listening-recent",
+            "unshared-hub"
+          ]
+        },
+        {
+          "file": "test/design-tokens.test.js",
+          "imports": [
+            "lib/design-tokens.js",
+            "lib/emit/assets.js",
+            "test/helpers/run-build.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/emit-units.test.js",
+          "imports": [
+            "lib/emit/feeds.js"
+          ],
+          "features": [
+            "birds1",
+            "frequency",
+            "unshared-hub"
+          ]
+        },
+        {
+          "file": "test/feed-standards.test.js",
+          "imports": [
+            "test/helpers/run-build.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/film-count.test.js",
+          "imports": [
+            "lib/letterboxd.js",
+            "lib/watches.js",
+            "site/render.js",
+            "test/helpers/run-build.js",
+            "test/helpers/worker-env.js"
+          ],
+          "features": [
+            "frequency",
+            "home-listen",
+            "home-rows",
+            "listening-chart",
+            "listening-count",
+            "listening-recent",
+            "social-footer",
+            "watching-count",
+            "watching-scene",
+            "watching-strip",
+            "watching-toggles",
+            "wave-counts"
+          ]
+        },
+        {
+          "file": "test/flock-model.test.js",
+          "imports": [
+            "concepts/flock-model.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/headers-golden.test.js",
+          "imports": [
+            "lib/csp-policy.js",
+            "test/helpers/parse-headers.js",
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "home-listen",
+            "listening-recent"
+          ]
+        },
+        {
+          "file": "test/home-listen.test.js",
+          "imports": [
+            "lib/listen-line.js",
+            "site/render.js",
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "frequency",
+            "home-listen",
+            "home-rows",
+            "listening-chart",
+            "listening-count",
+            "listening-recent",
+            "social-footer",
+            "watching-count",
+            "watching-scene",
+            "watching-strip",
+            "watching-toggles",
+            "wave-counts"
+          ]
+        },
+        {
+          "file": "test/home-preview.test.js",
+          "imports": [
+            "site/render.js",
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "frequency",
+            "home-listen",
+            "home-rows",
+            "listening-chart",
+            "listening-count",
+            "listening-recent",
+            "social-footer",
+            "watching-count",
+            "watching-scene",
+            "watching-strip",
+            "watching-toggles",
+            "wave-counts"
+          ]
+        },
+        {
+          "file": "test/intel.test.js",
+          "imports": [
+            "scripts/intel.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/lastfm-codec.test.js",
+          "imports": [
+            "lib/lastfm.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/letterboxd.test.js",
+          "imports": [
+            "lib/letterboxd.js",
+            "lib/watches.js"
+          ],
+          "features": [
+            "watching-count"
+          ]
+        },
+        {
+          "file": "test/links.test.js",
+          "imports": [
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "birds1",
+            "unshared-hub"
+          ]
+        },
+        {
+          "file": "test/listening-periods.test.js",
+          "imports": [
+            "test/helpers/run-build.js",
+            "workers/listening/src/index.js"
+          ],
+          "features": [
+            "home-listen",
+            "listening-chart",
+            "listening-recent"
+          ]
+        },
+        {
+          "file": "test/listening-snapshot.test.js",
+          "imports": [
+            "lib/listening.js",
+            "test/helpers/run-build.js",
+            "test/helpers/worker-env.js"
+          ],
+          "features": [
+            "listening-chart",
+            "listening-recent"
+          ]
+        },
+        {
+          "file": "test/listening.test.js",
+          "imports": [
+            "test/helpers/run-build.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/media.test.js",
+          "imports": [
+            "site/render.js"
+          ],
+          "features": [
+            "frequency",
+            "home-listen",
+            "home-rows",
+            "listening-chart",
+            "listening-count",
+            "listening-recent",
+            "social-footer",
+            "watching-count",
+            "watching-scene",
+            "watching-strip",
+            "watching-toggles",
+            "wave-counts"
+          ]
+        },
+        {
+          "file": "test/pages-prebuild.test.js",
+          "imports": [],
+          "features": []
+        },
+        {
+          "file": "test/poster-controls.test.js",
+          "imports": [
+            "site/render.js",
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "frequency",
+            "home-listen",
+            "home-rows",
+            "listening-chart",
+            "listening-count",
+            "listening-recent",
+            "social-footer",
+            "watching-count",
+            "watching-scene",
+            "watching-strip",
+            "watching-toggles",
+            "wave-counts"
+          ]
+        },
+        {
+          "file": "test/posters.test.js",
+          "imports": [
+            "lib/posters.js",
+            "site/render.js"
+          ],
+          "features": [
+            "frequency",
+            "home-listen",
+            "home-rows",
+            "listening-chart",
+            "listening-count",
+            "listening-recent",
+            "social-footer",
+            "watching-count",
+            "watching-scene",
+            "watching-strip",
+            "watching-toggles",
+            "wave-counts"
+          ]
+        },
+        {
+          "file": "test/prerender-safety.test.js",
+          "imports": [
+            "lib/csp-policy.js",
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "home-listen",
+            "listening-recent"
+          ]
+        },
+        {
+          "file": "test/privacy.test.js",
+          "imports": [
+            "test/helpers/run-build.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/progressive-enhancement.test.js",
+          "imports": [
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "birds1",
+            "unshared-hub"
+          ]
+        },
+        {
+          "file": "test/publish-unshared.test.js",
+          "imports": [
+            "concepts/entries.js",
+            "lib/design-tokens.js",
+            "lib/publish-unshared.js",
+            "site/render.js",
+            "site/verbs.ts"
+          ],
+          "features": [
+            "birds1",
+            "frequency",
+            "home-listen",
+            "home-rows",
+            "listening-chart",
+            "listening-count",
+            "listening-recent",
+            "social-footer",
+            "unshared-hub",
+            "watching-count",
+            "watching-scene",
+            "watching-strip",
+            "watching-toggles",
+            "wave-counts"
+          ]
+        },
+        {
+          "file": "test/scrobble-count-parity.test.js",
+          "imports": [
+            "lib/format.js",
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "listening-count"
+          ]
+        },
+        {
+          "file": "test/secrets-history.test.js",
+          "imports": [],
+          "features": []
+        },
+        {
+          "file": "test/security-remediation.test.js",
+          "imports": [
+            "test/helpers/run-build.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/socials.test.js",
+          "imports": [
+            "site/social-icons.js",
+            "site/verbs.ts",
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "social-footer",
+            "unshared-hub"
+          ]
+        },
+        {
+          "file": "test/sync-media-wrangler.test.js",
+          "imports": [
+            "scripts/wrangler-bin.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/unshared.test.js",
+          "imports": [
+            "site/render.js",
+            "site/verbs.ts",
+            "test/helpers/parse-headers.js",
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "frequency",
+            "home-listen",
+            "home-rows",
+            "listening-chart",
+            "listening-count",
+            "listening-recent",
+            "social-footer",
+            "watching-count",
+            "watching-scene",
+            "watching-strip",
+            "watching-toggles",
+            "wave-counts"
+          ]
+        },
+        {
+          "file": "test/url-safety.test.js",
+          "imports": [
+            "lib/safe-url.js",
+            "test/helpers/run-build.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/verbs.test.js",
+          "imports": [
+            "site/verbs.ts",
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "birds1",
+            "frequency",
+            "home-rows",
+            "social-footer",
+            "unshared-hub"
+          ]
+        },
+        {
+          "file": "test/visual/axe.spec.js",
+          "imports": [
+            "test/visual/prepare.js"
+          ],
+          "features": [
+            "birds1",
+            "unshared-hub",
+            "watching-toggles"
+          ]
+        },
+        {
+          "file": "test/visual/pages.spec.js",
+          "imports": [
+            "test/visual/prepare.js"
+          ],
+          "features": [
+            "birds1",
+            "unshared-hub",
+            "watching-toggles"
+          ]
+        },
+        {
+          "file": "test/visual/scale.spec.js",
+          "imports": [
+            "test/visual/prepare.js"
+          ],
+          "features": [
+            "birds1",
+            "unshared-hub",
+            "watching-toggles"
+          ]
+        },
+        {
+          "file": "test/w3c-coverage.test.js",
+          "imports": [
+            "test/helpers/run-build.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/wave-scope.test.js",
+          "imports": [
+            "site/render.js",
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "frequency",
+            "home-listen",
+            "home-rows",
+            "listening-chart",
+            "listening-count",
+            "listening-recent",
+            "social-footer",
+            "watching-count",
+            "watching-scene",
+            "watching-strip",
+            "watching-toggles",
+            "wave-counts"
+          ]
+        },
+        {
+          "file": "test/worker-config.test.js",
+          "imports": [],
+          "features": []
+        },
+        {
+          "file": "test/worker-csp-report.test.js",
+          "imports": [
+            "test/helpers/worker-env.js",
+            "workers/csp-report/src/index.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/worker-geo.test.js",
+          "imports": [
+            "test/helpers/worker-env.js",
+            "workers/geo/src/index.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/worker-listening.test.js",
+          "imports": [
+            "lib/lastfm.js",
+            "test/helpers/worker-env.js",
+            "workers/listening/src/index.js"
+          ],
+          "features": [
+            "home-listen",
+            "listening-chart",
+            "listening-recent"
+          ]
+        },
+        {
+          "file": "test/worker-rebuild.test.js",
+          "imports": [
+            "workers/rebuild/src/index.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/worker-simplify.test.js",
+          "imports": [
+            "workers/lib/simplify.js"
+          ],
+          "features": []
+        },
+        {
+          "file": "test/worker-transport.test.js",
+          "imports": [
+            "test/helpers/worker-env.js",
+            "workers/lib/transport.js"
+          ],
+          "features": [
+            "listening-recent"
+          ]
+        },
+        {
+          "file": "test/workflow-permissions.test.js",
+          "imports": [],
+          "features": []
+        }
+      ]
+    },
+    "simplification": {
+      "provenance": [
+        ".github/dependabot.yml",
+        ".github/workflows/build.yml",
+        ".gitignore",
+        ".htmlvalidate.json",
+        ".nvmrc",
+        "asset-budget.json",
+        "build.js",
+        "concepts/README.md",
+        "concepts/birds1/birds1.css",
+        "concepts/birds1/birds1.js",
+        "concepts/birds1/index.html",
+        "concepts/entries.js",
+        "concepts/flock-model.js",
+        "concepts/hub.css",
+        "concepts/hub.js",
+        "intel/curated.json",
+        "lib/asset-budget.js",
+        "lib/cover-mirror.js",
+        "lib/cover-pixels.js",
+        "lib/cover-settle.js",
+        "lib/covers.js",
+        "lib/csp-policy.js",
+        "lib/design-tokens.js",
+        "lib/emit/assets.js",
+        "lib/emit/csp.js",
+        "lib/emit/feeds.js",
+        "lib/emit/index.js",
+        "lib/format.js",
+        "lib/lastfm.js",
+        "lib/letterboxd.js",
+        "lib/listen-line.js",
+        "lib/listening.js",
+        "lib/posters.js",
+        "lib/publish-unshared.js",
+        "lib/safe-url.js",
+        "lib/watches.js",
+        "package.json",
+        "playwright.config.js",
+        "scripts/check-asset-budget.js",
+        "scripts/check-design-tokens.js",
+        "scripts/deploy-workers.js",
+        "scripts/git-hooks/pre-commit",
+        "scripts/intel.js",
+        "scripts/optimize-media.js",
+        "scripts/pages-prebuild.sh",
+        "scripts/sync-media.js",
+        "scripts/visual-serve.js",
+        "scripts/wrangler-bin.js",
+        "site.config.js",
+        "site/render.js",
+        "site/social-icons.js",
+        "site/tokens.css",
+        "site/tsconfig.json",
+        "site/verbs.ts",
+        "static/_headers",
+        "static/_redirects",
+        "static/favicon.svg",
+        "static/fonts/OFL.txt",
+        "static/poster-prefs.js",
+        "static/station.css",
+        "static/station.js",
+        "test/accessibility.test.js",
+        "test/album-tiles.test.js",
+        "test/asset-budget.test.js",
+        "test/asset-contract.test.js",
+        "test/asset-headers.test.js",
+        "test/build-validation.test.js",
+        "test/chart-grid.test.js",
+        "test/client-hardening.test.js",
+        "test/contrast.test.js",
+        "test/cover-pixels.test.js",
+        "test/cover-settle.test.js",
+        "test/covers.test.js",
+        "test/csp-headers.test.js",
+        "test/design-tokens.test.js",
+        "test/emit-units.test.js",
+        "test/feed-standards.test.js",
+        "test/film-count.test.js",
+        "test/fixtures/lastfm-cache/lastfm.json",
+        "test/fixtures/lastfm-periods.json",
+        "test/fixtures/letterboxd-rss.xml",
+        "test/fixtures/visual/fonts/LICENSE",
+        "test/fixtures/visual/lastfm.json",
+        "test/fixtures/visual/letterboxd.json",
+        "test/flock-model.test.js",
+        "test/headers-golden.test.js",
+        "test/helpers/parse-headers.js",
+        "test/helpers/run-build.js",
+        "test/helpers/worker-env.js",
+        "test/home-listen.test.js",
+        "test/home-preview.test.js",
+        "test/intel.test.js",
+        "test/lastfm-codec.test.js",
+        "test/letterboxd.test.js",
+        "test/links.test.js",
+        "test/listening-periods.test.js",
+        "test/listening-snapshot.test.js",
+        "test/listening.test.js",
+        "test/media.test.js",
+        "test/pages-prebuild.test.js",
+        "test/poster-controls.test.js",
+        "test/posters.test.js",
+        "test/prerender-safety.test.js",
+        "test/privacy.test.js",
+        "test/progressive-enhancement.test.js",
+        "test/publish-unshared.test.js",
+        "test/scrobble-count-parity.test.js",
+        "test/secrets-history.test.js",
+        "test/security-remediation.test.js",
+        "test/socials.test.js",
+        "test/sync-media-wrangler.test.js",
+        "test/unshared.test.js",
+        "test/url-safety.test.js",
+        "test/verbs.test.js",
+        "test/visual/axe.spec.js",
+        "test/visual/pages.spec.js",
+        "test/visual/prepare.js",
+        "test/visual/scale.spec.js",
+        "test/w3c-coverage.test.js",
+        "test/wave-scope.test.js",
+        "test/worker-config.test.js",
+        "test/worker-csp-report.test.js",
+        "test/worker-geo.test.js",
+        "test/worker-listening.test.js",
+        "test/worker-rebuild.test.js",
+        "test/worker-simplify.test.js",
+        "test/worker-transport.test.js",
+        "test/workflow-permissions.test.js",
+        "workers/csp-report/src/index.js",
+        "workers/csp-report/wrangler.toml",
+        "workers/geo/src/index.js",
+        "workers/geo/wrangler.toml",
+        "workers/lib/simplify.js",
+        "workers/lib/transport.js",
+        "workers/listening/src/index.js",
+        "workers/listening/wrangler.toml",
+        "workers/package.json",
+        "workers/rebuild/src/index.js",
+        "workers/rebuild/wrangler.toml"
+      ],
+      "classesOnlyInCss": [
+        {
+          "class": "home-link",
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "class": "kicker",
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "class": "lede",
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "class": "outlinks",
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "class": "redaction",
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "class": "redaction-bar",
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "class": "redaction-body",
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "class": "redaction-hint",
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "class": "status",
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "class": "time",
+          "files": [
+            "static/station.css"
+          ]
+        },
+        {
+          "class": "verb-nav",
+          "files": [
+            "static/station.css"
+          ]
+        }
+      ],
+      "unusedTokens": [
+        "--signal",
+        "--space-desk-feed",
+        "--space-incident",
+        "--space-incident-desk",
+        "--space-incident-grid"
+      ],
+      "unreferencedModules": [],
+      "testOnlyModules": []
+    }
+  }
+}

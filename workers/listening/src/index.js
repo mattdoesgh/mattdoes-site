@@ -5,9 +5,9 @@
 //   GET /api/listening/recent   → playcount + 25 most recent tracks
 //   GET /api/listening/charts   → top albums for the last month, covers only
 //
-// /now and /recent are called client-side by /now-playing.js (topbar pill)
-// and /listening-live.js (the /listening/ page). Response shapes for those
-// two are unchanged. /charts is fetched by the Pages build (lib/listening.js).
+// /now and /recent are called by static/station.js (home line, and the
+// recent list on /listening/). There is no now-playing.js or
+// listening-live.js. /charts is fetched by the Pages build (lib/listening.js).
 // The page does not call it from the browser, so connect-src stays 'self'.
 //
 // Producer / reader split:
@@ -480,7 +480,7 @@ async function writeCache(env, key, data) {
 }
 
 // ── payload contract (C7) ───────────────────────────────────────────────
-// The static clients (static/listening-live.js, static/now-playing.js) treat
+// static/station.js treats
 // the *presence of a truthy `reason` field* as "this is an error/fallback
 // payload — do not overwrite the live UI; keep whatever is on screen".
 //

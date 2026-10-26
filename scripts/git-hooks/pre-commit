@@ -1,0 +1,5 @@
+#!/bin/sh
+# Opt-in. Install with: npm run intel:hook
+# Not installed by CI or by npm install.
+cd "$(git rev-parse --show-toplevel)" || exit 1
+node scripts/intel.js --check

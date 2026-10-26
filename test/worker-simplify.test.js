@@ -1,7 +1,7 @@
-// Pins workers/lib/simplify.js — the RDP polygon simplifier shared by the
-// geo Worker and scripts/bake-home-geojson.js. Both surfaces depend on the
-// same collapse rules (drop degenerate rings, demote single-poly
-// MultiPolygons, null out non-polygons), so they are pinned here directly.
+// Pins workers/lib/simplify.js — the RDP polygon simplifier the geo
+// Worker uses for Nominatim polygons. Collapse rules (drop degenerate
+// rings, demote single-poly MultiPolygons, null out non-polygons) are
+// pinned here directly. The home-map bake script is not in this repo.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
