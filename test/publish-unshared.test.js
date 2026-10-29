@@ -62,6 +62,14 @@ test('every unshared entry resolves to a built page', () => {
   assert.equal(doc.querySelector('p.lede'), null);
   assert.equal(doc.querySelector('.outlinks'), null);
   assert.equal(doc.querySelector('footer'), null);
+  assert.equal(doc.querySelector('a.profile'), null);
+  assert.equal(doc.querySelectorAll('.album-tile').length, 24);
+  assert.equal(doc.querySelectorAll('.tracks a').length, 24);
+  assert.equal(doc.querySelector('.album-tile')?.getAttribute('href'), 'https://suno.com/song/77e2f911-595d-416a-9e5a-f14beea308ff');
+  assert.equal(doc.querySelector('.album-cap'), null);
+  assert.ok(hub.indexOf('class="album-grid"') < hub.indexOf('class="tracks"'));
+  assert.ok(hub.indexOf('class="tracks"') < hub.indexOf('aria-label="unshared"'));
+  assert.equal(fs.existsSync(path.join(dir, 'unshared', 'songs', '77e2f911-595d-416a-9e5a-f14beea308ff.jpg')), true);
   assert.equal(hub.includes('Fun is unshared'), false);
   assert.equal(hub.includes('mailto:'), false);
   assert.doesNotMatch(hub, /music\.apple\.com|spotify\.com|bandcamp\.com|noindex/i);
@@ -80,6 +88,7 @@ test('every unshared entry resolves to a built page', () => {
     const built = fs.readFileSync(page, 'utf8');
     const builtDoc = new JSDOM(built).window.document;
     assert.doesNotMatch(built, /noindex|mailto:|music\.apple\.com|spotify\.com|bandcamp\.com/i);
+    assert.equal(built.includes('suno.com'), false);
     assert.equal(builtDoc.querySelector('h1')?.textContent, 'birds1');
     assert.equal(builtDoc.querySelector('a.home')?.textContent, 'matt does');
     assert.equal(builtDoc.querySelector('a.home')?.getAttribute('href'), '/');

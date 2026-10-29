@@ -693,7 +693,7 @@ export function renderListen(ctx) {
   });
 }
 
-/** The published hub. It has no socials, mailbox, or player. */
+/** The published hub. Song art is the committed Suno snapshot. No mailbox or player. */
 export function renderUnshared(ctx) {
   return renderHubDocument(ctx && ctx.siteUrl);
 }

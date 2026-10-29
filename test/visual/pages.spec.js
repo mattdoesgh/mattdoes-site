@@ -17,6 +17,19 @@ for (const [name, url] of pages) {
     const width = info.project.use.viewport.width;
     await page.goto(url);
     await page.evaluate(() => document.fonts.ready);
+    if (url === '/unshared/') {
+      await page.evaluate(async () => {
+        const imgs = [...document.images];
+        await Promise.all(imgs.map((img) => {
+          if (img.complete && img.naturalWidth > 0) return img.decode().catch(() => {});
+          img.loading = 'eager';
+          return new Promise((resolve) => {
+            img.addEventListener('load', () => resolve(), { once: true });
+            img.addEventListener('error', () => resolve(), { once: true });
+          });
+        }));
+      });
+    }
     await expect(page).toHaveScreenshot(`${name}-${width}.png`, { fullPage: true });
   });
 }
@@ -25,6 +38,20 @@ test('the unshared row is birds1', async ({ page }) => {
   await page.goto('/unshared/');
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator('h1')).toHaveText('matt does unshared');
+  const cover = page.locator('.album-tile').first();
+  await expect(cover).toHaveAttribute('href', 'https://suno.com/song/77e2f911-595d-416a-9e5a-f14beea308ff');
+  await expect(cover.locator('img')).toHaveAttribute('alt', 'funerally yours');
+  const coverBox = await cover.boundingBox();
+  expect(coverBox.height).toBeGreaterThanOrEqual(44);
+  const hitsCover = await cover.evaluate((el) => {
+    const box = el.getBoundingClientRect();
+    const x = box.left + box.width / 2;
+    const y = box.top + box.height / 2;
+    return el.contains(document.elementFromPoint(x, y));
+  });
+  expect(hitsCover).toBe(true);
+  await expect(page.locator('.tracks a').first()).toHaveText('funerally yours');
+  await expect(page.locator('.album-cap')).toHaveCount(0);
   const row = page.locator('a.verb');
   await expect(row).toHaveText('birds1');
   await expect(row).toHaveAttribute('href', '/unshared/birds1/');
