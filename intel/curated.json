@@ -242,7 +242,7 @@
       "verified-at": "71cd155e401fb238fb14e83480a3c3d425e754ef",
       "route": "/",
       "anchors": ["aria-label=\"verbs\"", "class=\"verb-kicker\"", "class=\"verb-row home-suno\""],
-      "text": "Home is the verb list. The visible words are matt does plus the registry label. Unshared is not in that list. A third row uses the same size and gap as the verbs. Its heading unshared does suno opens /unshared/, and three wavy titles open their songs. The latest film sits on the letterboxd row, with no underline.",
+      "text": "Home is the verb list. The visible words are matt does plus the registry label. Unshared is not in that list. A third row uses the same size and gap as the verbs. Its heading unshared opens /unshared/, and three wavy titles open their songs. The latest film sits on the letterboxd row, with no underline.",
       "risks": ["Adding a verb puts it on the home menu unless it is filtered out like unshared."],
       "devices": ["The kicker is hidden at the 800px hover window. Check 390 and 1280 before moving it."]
     },

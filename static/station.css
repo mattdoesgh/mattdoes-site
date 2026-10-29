@@ -408,7 +408,7 @@ body[data-polarity="flip"] .sign {
 
   .home-suno-sign {
     font-size: var(--type-verb-phone);
-    line-height: 1.05;
+    line-height: 0.9;
   }
 
   .home-suno-titles a {
