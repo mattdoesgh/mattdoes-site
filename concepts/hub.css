@@ -99,7 +99,7 @@ main {
   margin: var(--space-0);
   min-width: 0;
   /* Anton draws outside the tight line box. The padding keeps the
-     profile link out from under that hit area. */
+     chart out from under that hit area. */
   padding-bottom: 0.4em;
   font-size: var(--type-sign);
   line-height: 0.9;
@@ -111,40 +111,77 @@ main {
   color: inherit;
 }
 
-.mast {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  min-width: 0;
+/* Listening chart. Five columns, square covers, no caption. */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: var(--space-feed);
 }
 
-.profile {
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--hit);
-  margin: var(--space-0);
-  padding: var(--space-0) var(--space-cap);
-  font-family: var(--display);
-  font-weight: var(--weight-regular);
-  font-size: var(--type-kicker);
-  letter-spacing: var(--track-none);
-  line-height: 1;
-  color: var(--ink);
+.album-tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: inherit;
   text-decoration: none;
-  background: transparent;
+  background: var(--black);
   -webkit-tap-highlight-color: transparent;
 }
 
-.profile:hover,
-.profile:focus-visible {
-  background: var(--black);
-  color: var(--pink);
+.album-tile picture {
+  display: contents;
 }
 
-/* The inlined focus ring stays pink on this pink page. Black keeps it visible. */
-.profile:focus-visible {
-  outline-color: var(--black);
+.album-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  color: transparent;
+}
+
+.tracks {
+  list-style: none;
+  margin: var(--space-tracks);
+  padding: var(--space-0);
+}
+
+.tracks li {
+  display: flex;
+  align-items: stretch;
+  margin: var(--space-0);
+  padding: var(--space-track);
+  border-top: var(--line-rule);
+}
+
+.tracks .what {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  font-family: var(--display);
+  font-weight: var(--weight-regular);
+  font-size: var(--type-title);
+  line-height: 0.88;
+  letter-spacing: var(--track-none);
+  overflow-wrap: anywhere;
+}
+
+.tracks a {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  min-height: var(--hit);
+  color: inherit;
+  text-decoration: none;
+}
+
+.tracks a:hover,
+.tracks a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.08em;
 }
 
 .verbs {
@@ -189,13 +226,12 @@ main {
     min-height: var(--hit-phone);
   }
 
-  .verb:active,
-  .profile:active {
+  .verb:active {
     background: var(--black);
     color: var(--pink);
   }
 
-  .profile {
+  .tracks a {
     min-height: var(--hit-phone);
   }
 }
@@ -245,5 +281,18 @@ main {
     min-height: 1.75em;
     padding: var(--space-verb-pad-desk);
     font-size: var(--type-verb-desk);
+  }
+
+  .album-grid {
+    margin-top: var(--space-desk-block);
+  }
+
+  .tracks {
+    margin-top: var(--space-desk-block);
+  }
+
+  .tracks .what {
+    font-size: var(--type-title-desk);
+    overflow-wrap: break-word;
   }
 }

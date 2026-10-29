@@ -1,18 +1,15 @@
 // The Unshared hub. One registry row becomes one label link.
-// Profile links from unsharedProfiles sit under the heading.
+// Published Suno songs are the cover grid and the title list.
+
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { siteConfig } from '../site.config.js';
 import { esc } from '../lib/safe-url.js';
-import { unsharedProfiles } from '../site/verbs.ts';
+import { loadSunoSongs, renderSunoSongs } from '../lib/suno-songs.js';
 import { unsharedEntries, unsharedHref } from './entries.js';
 
-function profileLinks() {
-  return unsharedProfiles.map((item) => {
-    const href = esc(item.href);
-    const label = esc(item.label);
-    return `<a class="profile" href="${href}" rel="me noopener">${label}</a>`;
-  }).join('\n        ');
-}
+const SONGS = path.join(path.dirname(fileURLToPath(import.meta.url)), 'suno', 'songs.json');
 
 /**
  * @param {string} [siteUrl]
@@ -26,6 +23,7 @@ export function renderHubDocument(siteUrl = siteConfig.url) {
     const label = esc(entry.label);
     return `<li class="verb-row"><a class="verb" href="${href}"><span class="verb-label">${label}</span></a></li>`;
   }).join('\n          ');
+  const songs = renderSunoSongs(loadSunoSongs(SONGS));
   return `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -43,10 +41,8 @@ export function renderHubDocument(siteUrl = siteConfig.url) {
   <body data-polarity="flip">
     <a class="skip-link" href="#main">Skip to content</a>
     <main id="main">
-      <div class="mast">
-        <h1 class="sign"><a href="/">matt does unshared</a></h1>
-        ${profileLinks()}
-      </div>
+      <h1 class="sign"><a href="/">matt does unshared</a></h1>
+      ${songs}
       <nav aria-label="unshared">
         <ol class="verbs">
           ${rows}

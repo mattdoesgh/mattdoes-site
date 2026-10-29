@@ -63,10 +63,9 @@ test('every built page footer has the social hrefs and names', () => {
       assert.equal(html.includes('mailto:'), false, rel);
       assert.doesNotMatch(html, /music\.apple\.com|spotify\.com|bandcamp\.com/i, rel);
       if (rel === 'unshared/index.html') {
-        const suno = doc.querySelector('a.profile');
-        assert.equal(suno?.textContent, 'suno', rel);
-        assert.equal(suno?.getAttribute('href'), 'https://suno.com/@unshared', rel);
-        assert.equal(suno?.getAttribute('rel'), 'me noopener', rel);
+        assert.equal(doc.querySelector('a.profile'), null, rel);
+        assert.equal(html.includes('https://suno.com/@unshared'), false, rel);
+        assert.match(html, /href="https:\/\/suno\.com\/song\/[0-9a-f-]{36}"/, rel);
       } else {
         assert.equal(html.includes('suno.com'), false, rel);
       }

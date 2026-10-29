@@ -8,7 +8,7 @@ import { buildFixtureVault, readDist } from './helpers/run-build.js';
 import { parseHeadersFile, headerValues } from './helpers/parse-headers.js';
 import fs from 'node:fs';
 import path from 'node:path';
-import { unsharedPlayer, unsharedContact, unsharedEnabled, unsharedProfiles, validateSocials } from '../site/verbs.ts';
+import { unsharedPlayer, unsharedContact, unsharedEnabled } from '../site/verbs.ts';
 import { bandcampSlot, contactBlock, renderFrequency, renderUnshared } from '../site/render.js';
 
 let distDir;
@@ -53,17 +53,23 @@ test('unshared has no contact mailto and the hub is the built page', () => {
   assert.equal(doc.querySelector('p.lede'), null);
   assert.equal(html.includes('mailto:'), false);
   assert.equal(html.includes('Fun is unshared'), false);
-  assert.deepEqual(unsharedProfiles.map((item) => ({ label: item.label, href: item.href })), [
-    { label: 'suno', href: 'https://suno.com/@unshared' },
-  ]);
-  assert.doesNotThrow(() => validateSocials(unsharedProfiles));
-  const suno = doc.querySelector('a.profile');
-  assert.equal(suno?.textContent, 'suno');
-  assert.equal(suno?.getAttribute('href'), 'https://suno.com/@unshared');
-  assert.equal(suno?.getAttribute('rel'), 'me noopener');
-  assert.equal(suno?.getAttribute('target'), null);
-  assert.ok(html.indexOf('</h1>') < html.indexOf('https://suno.com/@unshared'));
-  assert.ok(html.indexOf('https://suno.com/@unshared') < html.indexOf('aria-label="unshared"'));
+  assert.equal(doc.querySelector('a.profile'), null);
+  assert.equal(html.includes('https://suno.com/@unshared'), false);
+  const covers = [...doc.querySelectorAll('.album-tile')];
+  const titles = [...doc.querySelectorAll('.tracks a')];
+  assert.equal(covers.length, 24);
+  assert.equal(titles.length, 24);
+  assert.equal(covers[0].getAttribute('href'), 'https://suno.com/song/77e2f911-595d-416a-9e5a-f14beea308ff');
+  assert.equal(covers[0].getAttribute('rel'), 'noopener noreferrer');
+  assert.equal(covers[0].querySelector('img')?.getAttribute('alt'), 'funerally yours');
+  assert.equal(covers[0].querySelector('img')?.getAttribute('loading'), null);
+  assert.equal(covers[5].querySelector('img')?.getAttribute('loading'), 'lazy');
+  assert.equal(titles[0].textContent, 'funerally yours');
+  assert.equal(titles.at(-1).textContent, 'zen');
+  assert.ok(html.indexOf('</h1>') < html.indexOf('class="album-grid"'));
+  assert.ok(html.indexOf('class="album-grid"') < html.indexOf('class="tracks"'));
+  assert.ok(html.indexOf('class="tracks"') < html.indexOf('aria-label="unshared"'));
+  assert.equal(html.includes('cdn2.suno.ai'), false);
 
   const birds = fs.readFileSync(path.join(distDir, 'unshared', 'birds1', 'index.html'), 'utf8');
   const birdsDoc = new JSDOM(birds).window.document;
@@ -84,7 +90,8 @@ test('unshared has no contact mailto and the hub is the built page', () => {
     const text = fs.readFileSync(path.join(distDir, rel), 'utf8');
     assert.doesNotMatch(text, /music\.apple\.com|open\.spotify\.com|bandcamp\.com|mailto:/i, rel);
     if (rel === 'unshared/index.html') {
-      assert.match(text, /href="https:\/\/suno\.com\/@unshared"/);
+      assert.match(text, /href="https:\/\/suno\.com\/song\/77e2f911-595d-416a-9e5a-f14beea308ff"/);
+      assert.equal(text.includes('https://suno.com/@unshared'), false);
     } else {
       assert.equal(text.includes('suno.com'), false, rel);
     }

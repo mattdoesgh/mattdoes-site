@@ -338,10 +338,10 @@
       "id": "unshared-hub",
       "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "route": "/unshared/",
-      "anchors": ["aria-label=\"unshared\"", "unsharedEntries", "unsharedProfiles"],
-      "text": "The hub is one row per concepts/entries.js slug, without an unshared does prefix. The first row is birds1. unsharedProfiles prints one lowercase link under the heading. The suno link is https://suno.com/@unshared with rel=\"me noopener\". The page is in the sitemap and off the home menu. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
-      "risks": ["Publish fails when the page or the stylesheet is missing."],
-      "devices": ["The row hit target is at least 44px. The profile link hit target is at least 44px."]
+      "anchors": ["aria-label=\"unshared\"", "unsharedEntries", "https://suno.com/song/"],
+      "text": "The hub is one row per concepts/entries.js slug, without an unshared does prefix. The first row is birds1. Published Suno songs are a five-column cover grid, the same markup as the listening chart and without a caption, then a lowercase title list. Each cover and title links to https://suno.com/song/<id>. The art is the committed snapshot from npm run suno:sync. The page is in the sitemap and off the home menu. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
+      "risks": ["Publish fails when the page or the stylesheet is missing.", "A song without a committed cover is omitted. The page does not fetch Suno."],
+      "devices": ["The row hit target is at least 44px. Cover slots follow the listening chart, about 72 CSS px on a phone. Check the grid at 390 and 1280."]
     },
     {
       "id": "birds1",
