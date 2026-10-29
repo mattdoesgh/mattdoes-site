@@ -222,7 +222,7 @@ test('home links to the unshared hub and no built file names the mailto', () => 
   assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), true);
   const home = readDist(distDir, 'index.html');
   const homeDoc = new JSDOM(home).window.document;
-  assert.equal(homeDoc.querySelector('.home-suno a[href="/unshared/"]')?.textContent, 'unshared does suno');
+  assert.equal(homeDoc.querySelector('.home-suno a[href="/unshared/"]')?.textContent, 'unshared');
   const files = [];
   const walk = (dir) => {
     for (const name of fs.readdirSync(dir)) {
