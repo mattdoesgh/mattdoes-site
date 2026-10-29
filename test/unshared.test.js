@@ -66,7 +66,8 @@ test('unshared has no contact mailto and the hub is the built page', () => {
   assert.equal(covers[0].querySelector('img')?.getAttribute('alt'), 'funerally yours');
   assert.equal(titles[0].getAttribute('aria-label'), 'funerally yours');
   assert.equal(titles[0].querySelector('.song-wave')?.getAttribute('aria-hidden'), 'true');
-  assert.equal(titles[0].querySelectorAll('.song-wave span').length, 'funerally yours'.length);
+  assert.deepEqual([...titles[0].querySelectorAll('.song-word')].map((word) => word.textContent), ['funerally', 'yours']);
+  assert.equal([...titles[0].querySelectorAll('.song-word')].some((word) => word.textContent.includes(' ')), false);
   assert.equal(covers[0].querySelector('img')?.getAttribute('loading'), null);
   assert.equal(covers[5].querySelector('img')?.getAttribute('loading'), 'lazy');
   assert.equal(titles[0].textContent, 'funerally yours');

@@ -159,18 +159,19 @@ main {
 .tracks .what {
   display: flex;
   align-items: center;
+  width: 100%;
   min-width: 0;
   font-family: var(--display);
   font-weight: var(--weight-regular);
   font-size: var(--type-title);
-  line-height: 0.88;
+  line-height: 1.7;
   letter-spacing: var(--track-none);
-  overflow-wrap: anywhere;
 }
 
 .tracks a {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
   min-height: var(--hit);
@@ -184,48 +185,59 @@ main {
   text-underline-offset: 0.08em;
 }
 
-/* Travelling sine. Eight letters is one wavelength, then it repeats.
-   The nth-child offsets are the same sine, held still when motion is reduced. */
+/* One wavelength every eight letters. A word never breaks.
+   Row gap clears the 0.28em sine so wrapped lines do not meet. */
 .song-wave {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
+  width: 100%;
   max-width: 100%;
+  row-gap: 0.7em;
 }
 
-.song-wave span {
+.song-word {
+  display: inline-flex;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.song-gap {
   white-space: pre;
+}
+
+.song-word > span {
   animation-name: song-wave;
   animation-duration: var(--wave-period);
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
 
-.song-wave span:nth-child(8n+2),
-.song-wave span:nth-child(8n+4) {
+.song-word > span:nth-child(8n+2),
+.song-word > span:nth-child(8n+4) {
   transform: translateY(-0.2em);
 }
 
-.song-wave span:nth-child(8n+3) {
+.song-word > span:nth-child(8n+3) {
   transform: translateY(-0.28em);
 }
 
-.song-wave span:nth-child(8n+6),
-.song-wave span:nth-child(8n+8) {
+.song-word > span:nth-child(8n+6),
+.song-word > span:nth-child(8n+8) {
   transform: translateY(0.2em);
 }
 
-.song-wave span:nth-child(8n+7) {
+.song-word > span:nth-child(8n+7) {
   transform: translateY(0.28em);
 }
 
-.song-wave span:nth-child(8n+2) { animation-delay: calc(var(--wave-period) * -0.125); }
-.song-wave span:nth-child(8n+3) { animation-delay: calc(var(--wave-period) * -0.25); }
-.song-wave span:nth-child(8n+4) { animation-delay: calc(var(--wave-period) * -0.375); }
-.song-wave span:nth-child(8n+5) { animation-delay: calc(var(--wave-period) * -0.5); }
-.song-wave span:nth-child(8n+6) { animation-delay: calc(var(--wave-period) * -0.625); }
-.song-wave span:nth-child(8n+7) { animation-delay: calc(var(--wave-period) * -0.75); }
-.song-wave span:nth-child(8n+8) { animation-delay: calc(var(--wave-period) * -0.875); }
+.song-word > span:nth-child(8n+2) { animation-delay: calc(var(--wave-period) * -0.125); }
+.song-word > span:nth-child(8n+3) { animation-delay: calc(var(--wave-period) * -0.25); }
+.song-word > span:nth-child(8n+4) { animation-delay: calc(var(--wave-period) * -0.375); }
+.song-word > span:nth-child(8n+5) { animation-delay: calc(var(--wave-period) * -0.5); }
+.song-word > span:nth-child(8n+6) { animation-delay: calc(var(--wave-period) * -0.625); }
+.song-word > span:nth-child(8n+7) { animation-delay: calc(var(--wave-period) * -0.75); }
+.song-word > span:nth-child(8n+8) { animation-delay: calc(var(--wave-period) * -0.875); }
 
 @keyframes song-wave {
   0%,
@@ -248,7 +260,7 @@ main {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .song-wave span {
+  .song-word > span {
     animation: none;
   }
 }

@@ -328,9 +328,9 @@ export function renderHome(ctx) {
         <p class="verb-kicker" aria-hidden="true">${esc(kicker)}</p>
         <ol class="verbs">
         ${items}
+        ${renderHomeSuno(loadSunoSongs(path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'concepts', 'suno', 'songs.json')))}
         </ol>
-      </nav>
-      ${renderHomeSuno(loadSunoSongs(path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'concepts', 'suno', 'songs.json')))}`,
+      </nav>`,
   });
 }
 

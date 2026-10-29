@@ -72,6 +72,7 @@ test('a title waves in hidden letters and keeps its accessible name', () => {
   const wave = link?.querySelector('.song-wave');
   assert.equal(wave?.getAttribute('aria-hidden'), 'true');
   assert.equal(wave?.textContent, 'funerally yours');
+  assert.deepEqual([...wave.querySelectorAll('.song-word')].map((word) => word.textContent), ['funerally', 'yours']);
   assert.equal(link?.querySelector('[style]'), null);
   const home = renderHomeSuno(songs);
   const homeDoc = new JSDOM(`<body>${home}</body>`).window.document;

@@ -302,6 +302,59 @@ body[data-polarity="flip"] .sign {
   }
 }
 
+.home-suno {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-phone-row);
+  min-width: 0;
+}
+
+.home-suno-sign {
+  margin: var(--space-0);
+  min-width: 0;
+  max-width: 100%;
+  font-family: var(--display);
+  font-weight: var(--weight-regular);
+  font-size: var(--type-verb);
+  line-height: 0.9;
+  overflow-wrap: break-word;
+}
+
+.home-suno-sign a,
+.home-suno-titles a {
+  color: var(--pink);
+  text-decoration: none;
+}
+
+.home-suno-titles {
+  list-style: none;
+  margin: var(--space-0);
+  padding: var(--space-0);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.home-suno-titles a {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: var(--hit);
+  font-family: var(--body);
+  font-size: var(--type-preview);
+  line-height: 1.35;
+}
+
+.home-suno-titles a:hover,
+.home-suno-titles a:focus-visible,
+.home-suno-sign a:hover,
+.home-suno-sign a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.08em;
+}
+
 /* Narrow screens without hover. One small kicker, then the verbs.
    "letterboxd" is 4.14em in Anton, so the size stays inside 360 and 390. */
 @media (hover: none) and (max-width: 1023px) {
@@ -353,6 +406,15 @@ body[data-polarity="flip"] .sign {
     -webkit-tap-highlight-color: transparent;
   }
 
+  .home-suno-sign {
+    font-size: var(--type-verb-phone);
+    line-height: 1.05;
+  }
+
+  .home-suno-titles a {
+    min-height: var(--hit-phone);
+  }
+
   .verb:active {
     background: var(--pink);
     color: var(--black);
@@ -369,64 +431,6 @@ body[data-polarity="flip"] .sign {
     margin-top: var(--space-0);
     padding-top: var(--space-0);
   }
-
-  .home-suno-titles a {
-    min-height: var(--hit-phone);
-  }
-}
-
-.home-suno {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-row);
-  min-width: 0;
-  max-width: 100%;
-  margin-top: auto;
-}
-
-.home-suno-sign {
-  margin: var(--space-0);
-  font-family: var(--display);
-  font-weight: var(--weight-regular);
-  font-size: var(--type-kicker);
-  line-height: 0.9;
-  letter-spacing: var(--track-none);
-}
-
-.home-suno-sign a,
-.home-suno-titles a {
-  color: var(--pink);
-  text-decoration: none;
-}
-
-.home-suno-titles {
-  list-style: none;
-  margin: var(--space-0);
-  padding: var(--space-0);
-  min-width: 0;
-  max-width: 100%;
-}
-
-.home-suno-titles a {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  max-width: 100%;
-  min-height: var(--hit);
-  font-family: var(--display);
-  font-weight: var(--weight-regular);
-  font-size: var(--type-kicker);
-  line-height: 1;
-  letter-spacing: var(--track-none);
-}
-
-.home-suno-titles a:hover,
-.home-suno-titles a:focus-visible,
-.home-suno-sign a:hover,
-.home-suno-sign a:focus-visible {
-  text-decoration: underline;
-  text-underline-offset: 0.08em;
 }
 
 /* Hover windows under the desktop breakpoint. The preview stays pink and
@@ -729,29 +733,40 @@ html[data-posters="off"] .axis-across {
 .wave span:nth-child(8) { animation-delay: calc(var(--wave-period) * -0.875); }
 .wave span:nth-child(9) { animation-delay: calc(var(--wave-period) * -1); }
 
-/* Song titles. Same sine as the count words, repeating every eight letters. */
+/* Song titles. A word stays one line. The sine repeats every four letters. */
 .song-wave {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
+  width: 100%;
   max-width: 100%;
+  row-gap: 0.7em;
 }
 
-.song-wave span {
+.song-word {
+  display: flex;
+  flex: none;
+  white-space: nowrap;
+}
+
+.song-gap {
   white-space: pre;
+}
+
+.song-word > span {
   animation: wave-travel var(--wave-period) linear infinite;
 }
 
-.song-wave span:nth-child(4n+2) {
+.song-word > span:nth-child(4n+2) {
   transform: translateY(-0.28em);
   animation-delay: calc(var(--wave-period) * -0.25);
 }
 
-.song-wave span:nth-child(4n+3) {
+.song-word > span:nth-child(4n+3) {
   animation-delay: calc(var(--wave-period) * -0.5);
 }
 
-.song-wave span:nth-child(4n+4) {
+.song-word > span:nth-child(4n+4) {
   transform: translateY(0.28em);
   animation-delay: calc(var(--wave-period) * -0.75);
 }
@@ -1228,7 +1243,7 @@ html.is-locked body {
     animation: none;
   }
 
-  .song-wave span {
+  .song-word > span {
     animation: none;
   }
 }
@@ -1286,6 +1301,18 @@ html.is-locked body {
     padding: var(--space-verb-pad-desk);
     overflow: hidden;
     font-size: var(--type-verb-desk);
+  }
+
+  .home-suno-sign {
+    font-size: var(--type-verb-desk);
+    line-height: 0.86;
+  }
+
+  .home-suno-titles a {
+    font-family: var(--display);
+    font-size: var(--type-preview-desk);
+    line-height: 1.15;
+    padding-block: 0.55em;
   }
 
   .verb-prefix {
