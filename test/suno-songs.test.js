@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
 
-import { HOME_SUNO_TITLES, renderHomeSuno, renderSunoSongs, selectPublicSongs, songsFromSnapshot } from '../lib/suno-songs.js';
+import { renderHomeSuno, renderSunoSongs, selectPublicSongs, songsFromSnapshot } from '../lib/suno-songs.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const COVERS = path.join(ROOT, 'concepts', 'suno', 'covers');
@@ -74,8 +74,9 @@ test('a title waves in hidden letters and keeps its accessible name', () => {
   assert.equal(wave?.textContent, 'funerally yours');
   assert.deepEqual([...wave.querySelectorAll('.song-word')].map((word) => word.textContent), ['funerally', 'yours']);
   assert.equal(link?.querySelector('[style]'), null);
-  const home = renderHomeSuno(songs);
+  const home = renderHomeSuno();
   const homeDoc = new JSDOM(`<body>${home}</body>`).window.document;
-  assert.equal(homeDoc.querySelectorAll('.home-suno-titles a').length, HOME_SUNO_TITLES);
+  assert.equal(homeDoc.querySelector('.home-suno-titles'), null);
+  assert.equal(homeDoc.querySelector('.home-suno-sign a')?.textContent, 'unshared');
   assert.equal(homeDoc.querySelector('.home-suno-sign a')?.getAttribute('href'), '/unshared/');
 });

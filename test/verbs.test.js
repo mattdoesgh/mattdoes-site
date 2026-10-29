@@ -213,7 +213,7 @@ test('nothing public is built outside the registry except / and /404', () => {
   const homeDoc = new JSDOM(home).window.document;
   assert.equal(homeDoc.querySelector('a.verb[href="/unshared/"]'), null);
   assert.equal(homeDoc.querySelector('.home-suno-sign a')?.getAttribute('href'), '/unshared/');
-  assert.equal(homeDoc.querySelectorAll('.home-suno-titles a').length, 3);
+  assert.equal(homeDoc.querySelector('.home-suno-titles'), null);
   assert.doesNotMatch(home, /frequency|lucia|luciadoes/i);
 });
 

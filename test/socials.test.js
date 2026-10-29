@@ -71,7 +71,7 @@ test('every built page footer has the social hrefs and names', () => {
       }
       continue;
     }
-    if (rel !== 'index.html') assert.equal(html.includes('suno.com'), false, rel);
+    assert.equal(html.includes('suno.com'), false, rel);
     const footer = doc.querySelector('footer.site-footer');
     assert.ok(footer, rel);
     const links = [...footer.querySelectorAll('nav.socials a')];

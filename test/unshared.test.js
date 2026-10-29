@@ -95,7 +95,7 @@ test('unshared has no contact mailto and the hub is the built page', () => {
   for (const rel of ['index.html', 'watching/index.html', 'listening/index.html', '404.html', 'unshared/index.html', 'unshared/birds1/index.html']) {
     const text = fs.readFileSync(path.join(distDir, rel), 'utf8');
     assert.doesNotMatch(text, /music\.apple\.com|open\.spotify\.com|bandcamp\.com|mailto:/i, rel);
-    if (rel === 'unshared/index.html' || rel === 'index.html') {
+    if (rel === 'unshared/index.html') {
       assert.match(text, /href="https:\/\/suno\.com\/song\/77e2f911-595d-416a-9e5a-f14beea308ff"/);
       assert.equal(text.includes('https://suno.com/@unshared'), false);
     } else {
