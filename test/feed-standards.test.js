@@ -1,4 +1,4 @@
-// The post Atom feed is retired with journal and making.
+// The site does not publish a post Atom feed.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';

@@ -38,8 +38,8 @@
     },
     {
       "path": ".github/workflows/build.yml",
-      "sha256": "05e3b6fd8599b159ceb84056a90f7b89d4c652208bdf47d2713a1c38a5e1d862",
-      "gitBlob": "ce479b55c477375908d53c70e2d7a07cb0a58887"
+      "sha256": "50dd3277e9a4ebf2bf1d03ae1a63c7a6441fc9ec9bef5ad4183750377a2da187",
+      "gitBlob": "14aa06ca4686b54ad9a4d490cec45bc77dff0afc"
     },
     {
       "path": ".gitignore",
@@ -78,8 +78,8 @@
     },
     {
       "path": "concepts/birds1/birds1.js",
-      "sha256": "6247ab0d8de2869f6177a61b77fbd2f956c925ead65dcde44415ab727119e954",
-      "gitBlob": "e8f72a148687384c40e31d3c44967660d3d98cd9"
+      "sha256": "ae0f995b8197e8107ba3853ce01faf7c7489e8ef078f96a412ea1adcfeca906b",
+      "gitBlob": "09b7cba20bcbe14996bdd6a10359497c9b6cc831"
     },
     {
       "path": "concepts/birds1/index.html",
@@ -108,7 +108,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "6b357d503173f386a659153ad34efb84cf28ee787ab37e5e9dae13c301ac277b",
+      "sha256": "3ef05038a4f5be53b749de89de21923e06e829dfc1ded74aaf61aaf84ba29d2f",
       "gitBlob": null
     },
     {
@@ -148,13 +148,13 @@
     },
     {
       "path": "lib/emit/assets.js",
-      "sha256": "9bad7c177611aa3f0ed2e6a7ae579379a166f1c2f27530f6f41d97e76b0e2822",
-      "gitBlob": "f53403dc848c3a54beb06eb0ae5f6230abf0c0fb"
+      "sha256": "3b8ee708169b3ea9fd7723d997be98688f033298ce340edc5b4e9ead224e362a",
+      "gitBlob": "6d930e6f7551238f47f655d517c4ba2496dbcabf"
     },
     {
       "path": "lib/emit/csp.js",
-      "sha256": "055cbecdd5dad1a09737a07fb7eec8263ebc6293c9a04489fa0859ac2338a613",
-      "gitBlob": "5e921886787c22b0813d853a6aa7c31005e5a94d"
+      "sha256": "8bda91e2b6c3d29fbdf6b5a91a84a186fa61a9096136c9a60c514ba75df4ea00",
+      "gitBlob": "bbbcc3c5d86d2f16b89f1988ed0770c05e45c9f1"
     },
     {
       "path": "lib/emit/feeds.js",
@@ -173,8 +173,8 @@
     },
     {
       "path": "lib/lastfm.js",
-      "sha256": "7721c6096efd9433b1a69b1d9064846f1b6af48634619e364f688cf38a889bcb",
-      "gitBlob": "8c0b2268a206680f830e0bf867c1f401596d8a93"
+      "sha256": "a4894ecc2ed19e43743541cfebb680cf8622a0a5e7c7bb0d586cb350c2ea3f47",
+      "gitBlob": "cab9757248fb9698ffc9d582c1b7c5bae54b6012"
     },
     {
       "path": "lib/letterboxd.js",
@@ -188,8 +188,8 @@
     },
     {
       "path": "lib/listening.js",
-      "sha256": "82173ca4b66ccf6ad9acafabe7c0245f097c4419bdd4b9a9af8fa234bf97515a",
-      "gitBlob": "78c7ce442c7e9040d964084ae5ad606329ba9d8f"
+      "sha256": "e873b3d18fede9c3db2c7497ef4f74c768560105e974042083d875cdebd0efc3",
+      "gitBlob": "55c0819999ca22720ffaa25bc705bdccd0170a90"
     },
     {
       "path": "lib/posters.js",
@@ -213,8 +213,8 @@
     },
     {
       "path": "package.json",
-      "sha256": "d66ea17da21f45da662a1f93a458f72389a184931d6d45de29a440403dbdfaad",
-      "gitBlob": "f1bb77c9e2b06cdd816b4e24951701f5207f1c67"
+      "sha256": "90e47cb49c500bc83adb416e12087a44d3697abdc7443b95b1adf9d42881ec0c",
+      "gitBlob": "e6a02dcc4d128332575003b35abcf8be52dd7942"
     },
     {
       "path": "playwright.config.js",
@@ -247,6 +247,11 @@
       "gitBlob": "b5955cf2f8e48900015dd10a593ff54e310f3c7c"
     },
     {
+      "path": "scripts/lint-comments.js",
+      "sha256": "baba15c93ec2ed0102c3515c121ae5cf1c0dc9134e92bc3e373b971d9291bfc2",
+      "gitBlob": "bea49a954dd3ec0737e58702ea27d2d63f8c5dfb"
+    },
+    {
       "path": "scripts/optimize-media.js",
       "sha256": "cdbef474cda0e90182c3f7a9391fa20c7d737b18c42dab5fd11bbd8543f32101",
       "gitBlob": "c358a28c284225cdda54e3826d67f0fb5b1d6392"
@@ -273,8 +278,8 @@
     },
     {
       "path": "site.config.js",
-      "sha256": "45c7dcc4c25a96283b8346be6cee21b5f668d49d16368a25312ec5417b08159f",
-      "gitBlob": "f15be39ccc7f64490f5cab647c7bc9388e4852cb"
+      "sha256": "05aba34a4f73dc43b420b1ffa76a74c209042f61ad2f91de44f401bc4402e802",
+      "gitBlob": "34ae299c4ef2c1510f14b1972b445ede2e4335c2"
     },
     {
       "path": "site/render.js",
@@ -288,8 +293,8 @@
     },
     {
       "path": "site/tokens.css",
-      "sha256": "5978e0f2fded3189c3a9ab6f138883c1e1b8d6c2b4fcac078253b792b4a1c94a",
-      "gitBlob": "105b527070abf5609f8b80ee31a548a790263156"
+      "sha256": "49163ba11fe5df662a1aab9aab498428335a5bc9b56cf7efcd22eb30fcda73d4",
+      "gitBlob": "016b90a1e36f5aa9c13aa0f4aaf4394ae7c86939"
     },
     {
       "path": "site/tsconfig.json",
@@ -298,18 +303,18 @@
     },
     {
       "path": "site/verbs.ts",
-      "sha256": "7b2eed65da1c0bc8ee9c3eda507bc92b175aef505e914565ff1b1b9661c3192c",
-      "gitBlob": "55631d4109db62f528c6c6ef8d9853cdb27a8ee0"
+      "sha256": "ddb5194d08e8deb05311da4c6e9dd21a1becd87a5119f16a2c791eb81f521e5a",
+      "gitBlob": "e78a3618165a0099b2dc1e46619f84c5cba65813"
     },
     {
       "path": "static/_headers",
-      "sha256": "7c9e689ad1be4665bf4310c6354b87bee576366bf537f8fd8bdba9d6a1e1157e",
-      "gitBlob": "501b0d148cdaafe75935d9122bf4a39abf355682"
+      "sha256": "9a318bc6b2780a32503c0787b5403af24285c0007752a55b2c751c76bede9fa6",
+      "gitBlob": "f640b39526b4549cf03d81815222e09b8be1da30"
     },
     {
       "path": "static/_redirects",
-      "sha256": "67e6fbe6440c66d23ce6be5cc5e381d163cfa4d701e75f7e6cf58767a9e14e61",
-      "gitBlob": "c594a3b3a82c51a4b5a1e2f3571c137504f21755"
+      "sha256": "3343bf703f34c60b8f4c379981fee681282c2d5581569c4eb5d85d5aa8d2baa4",
+      "gitBlob": "adaac45a3419b7c81c6e65a2bcfab9aef42c6d0f"
     },
     {
       "path": "static/favicon.svg",
@@ -363,8 +368,8 @@
     },
     {
       "path": "test/build-validation.test.js",
-      "sha256": "820d64905570085443b77d87976125a1ab5e3d8b37d0e0afa01bfc9637416027",
-      "gitBlob": "ec57aebd715dbc6977dfb5756146fb61c4d5751d"
+      "sha256": "e7d1c3d556a418683ec369ea0c62311329b6bbe4a34f63728f2f3a45db3a2922",
+      "gitBlob": "b17dbf1bbd376d43daf00255ec72ff325305fbd8"
     },
     {
       "path": "test/chart-grid.test.js",
@@ -413,8 +418,8 @@
     },
     {
       "path": "test/feed-standards.test.js",
-      "sha256": "4fcf951eeba0d7171c88b5b8a3cf648ee4afa03c2e24bae7577463e4557cf08e",
-      "gitBlob": "24c92b8b66a2579cb0be031dc707724bf1e8072e"
+      "sha256": "995f1682e02f98943cddf93699d9fa325df2eaf2747f3fb2a140d21502f0d4d1",
+      "gitBlob": "8f323410e40211fd9385b616ffccb887ed014e7f"
     },
     {
       "path": "test/film-count.test.js",
@@ -507,6 +512,11 @@
       "gitBlob": "568671d9024f07cf55a710a9072ebc2d55e20a62"
     },
     {
+      "path": "test/lint-comments.test.js",
+      "sha256": "703f0fca5882a0ebcad6beaddb092763f77bf7fd52813c031d983b171622b3b1",
+      "gitBlob": "6aa2d049e0a4aa423e5c35b14286890dde5ef854"
+    },
+    {
       "path": "test/listening-periods.test.js",
       "sha256": "82698b976c2932fea7ca28dcd6294bf2c39b82878c5df056524e4294fe2b7b04",
       "gitBlob": "3d1f10dd9023715bcc66c6f784bddf58ff43ba89"
@@ -548,13 +558,13 @@
     },
     {
       "path": "test/privacy.test.js",
-      "sha256": "5a6103ba8d41f11c928197afdd5acefb0657e73066097fb52fc6cd715973df2c",
-      "gitBlob": "fb543db734c0a00fa634482c0acadd21b0bfd971"
+      "sha256": "1068de7e15888bf0dd776fc2741e7ea1a8b648789667365bb49725cc3e24ea24",
+      "gitBlob": "4af471f37f8bcf1be8c23d035b32d51e4f080d29"
     },
     {
       "path": "test/progressive-enhancement.test.js",
-      "sha256": "d02d33c20847ebc33ef4dc923749e1c23fa52b7af64369bf6a90d127d091ab02",
-      "gitBlob": "4f38026820d1d910b985dd41bcb901502f8986d3"
+      "sha256": "18835eb7dd07f0fb530f209c0adcd2a2151e2ca623a2906fa30a3cfb65af5429",
+      "gitBlob": "19ca75e4936f158490929db168bdb5fbf47fddf9"
     },
     {
       "path": "test/publish-unshared.test.js",
@@ -618,13 +628,13 @@
     },
     {
       "path": "test/visual/scale.spec.js",
-      "sha256": "46694594e3a37a616493b93af48180fe13fd82c56219a5c6d9ce7c26197cadd7",
-      "gitBlob": "c38b9909250051029b61ad7be5dcb1da9f74b113"
+      "sha256": "1f42e7876205bfcf68c73603c83ddf29205945eb444bed44d2343b61b4d26054",
+      "gitBlob": "767a7acad613131809a9c0463bfd0d1e813fcb49"
     },
     {
       "path": "test/w3c-coverage.test.js",
-      "sha256": "1b48e7cd365cc1b1a6ed1e6cb6dfa1a2857e70caf64c6f44b5f8e9c2950001ac",
-      "gitBlob": "1b17285f2e94a2472e4fe0adb4e386384dea1782"
+      "sha256": "e3ae1933a53abcf8206678abcdabfbbbb7657430d404afd24c5886d63ea444a0",
+      "gitBlob": "bc1172f14d56d9c8bb0f302e6b8e900f010d37f6"
     },
     {
       "path": "test/wave-scope.test.js",
@@ -653,8 +663,8 @@
     },
     {
       "path": "test/worker-transport.test.js",
-      "sha256": "e711a0244c8ca29663b52a1d12d4d8c9c6a7bf6f9e1d0509c6cd0db211a44fa1",
-      "gitBlob": "c487f3ed89158f1ee53a24176c106e0c5d87562f"
+      "sha256": "d3af64ef3c38874f3df8143e7c85a7f36a10091084f93c7247821a8ee2e8924e",
+      "gitBlob": "749492339bf0aba2a195e2cd3b27a5fe96fe57fe"
     },
     {
       "path": "test/workflow-permissions.test.js",
@@ -678,8 +688,8 @@
     },
     {
       "path": "workers/listening/src/index.js",
-      "sha256": "aa7bb4b7a07b2cb99f5c8010a96e0e64a5176309c435b58170f6f3e240975e42",
-      "gitBlob": "b98343b3c4543663caa0834ebf72e935e07e826d"
+      "sha256": "b23becb99ff82cee507b10ce0f41e9d51eef7c39f26293f3dc33ae10b1473dab",
+      "gitBlob": "52090905448d090ec3b89538b175cd74949931c3"
     },
     {
       "path": "workers/listening/wrangler.toml",
@@ -952,6 +962,7 @@
         "scripts/check-design-tokens.js",
         "scripts/deploy-workers.js",
         "scripts/intel.js",
+        "scripts/lint-comments.js",
         "scripts/optimize-media.js",
         "scripts/sync-media.js",
         "scripts/visual-serve.js",
@@ -990,6 +1001,7 @@
         "test/lastfm-codec.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
+        "test/lint-comments.test.js",
         "test/listening-periods.test.js",
         "test/listening-snapshot.test.js",
         "test/listening.test.js",
@@ -1408,6 +1420,10 @@
           "to": "test/helpers/run-build.js"
         },
         {
+          "from": "test/lint-comments.test.js",
+          "to": "scripts/lint-comments.js"
+        },
+        {
           "from": "test/listening-periods.test.js",
           "to": "test/helpers/run-build.js"
         },
@@ -1743,6 +1759,9 @@
         "scripts/intel.js": [
           "test/intel.test.js"
         ],
+        "scripts/lint-comments.js": [
+          "test/lint-comments.test.js"
+        ],
         "scripts/wrangler-bin.js": [
           "scripts/deploy-workers.js",
           "scripts/sync-media.js",
@@ -1983,6 +2002,7 @@
         "scripts/check-design-tokens.js",
         "scripts/deploy-workers.js",
         "scripts/intel.js",
+        "scripts/lint-comments.js",
         "scripts/optimize-media.js",
         "scripts/pages-prebuild.sh",
         "scripts/sync-media.js",
@@ -2022,6 +2042,7 @@
         "test/lastfm-codec.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
+        "test/lint-comments.test.js",
         "test/listening-periods.test.js",
         "test/listening-snapshot.test.js",
         "test/listening.test.js",
@@ -2278,6 +2299,7 @@
         "scripts/check-design-tokens.js",
         "scripts/deploy-workers.js",
         "scripts/intel.js",
+        "scripts/lint-comments.js",
         "scripts/optimize-media.js",
         "scripts/sync-media.js",
         "scripts/visual-serve.js",
@@ -2317,6 +2339,7 @@
         "test/lastfm-codec.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
+        "test/lint-comments.test.js",
         "test/listening-periods.test.js",
         "test/listening-snapshot.test.js",
         "test/listening.test.js",
@@ -3630,6 +3653,7 @@
         "scripts/deploy-workers.js",
         "scripts/git-hooks/pre-commit",
         "scripts/intel.js",
+        "scripts/lint-comments.js",
         "scripts/optimize-media.js",
         "scripts/pages-prebuild.sh",
         "scripts/sync-media.js",
@@ -3682,6 +3706,7 @@
         "test/lastfm-codec.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
+        "test/lint-comments.test.js",
         "test/listening-periods.test.js",
         "test/listening-snapshot.test.js",
         "test/listening.test.js",
@@ -3838,8 +3863,8 @@
             },
             {
               "path": "workers/listening/src/index.js",
-              "sha256": "aa7bb4b7a07b2cb99f5c8010a96e0e64a5176309c435b58170f6f3e240975e42",
-              "gitBlob": "b98343b3c4543663caa0834ebf72e935e07e826d"
+              "sha256": "b23becb99ff82cee507b10ce0f41e9d51eef7c39f26293f3dc33ae10b1473dab",
+              "gitBlob": "52090905448d090ec3b89538b175cd74949931c3"
             },
             {
               "path": "workers/listening/wrangler.toml",
@@ -4119,13 +4144,13 @@
           "provenance": [
             {
               "path": "lib/listening.js",
-              "sha256": "82173ca4b66ccf6ad9acafabe7c0245f097c4419bdd4b9a9af8fa234bf97515a",
-              "gitBlob": "78c7ce442c7e9040d964084ae5ad606329ba9d8f"
+              "sha256": "e873b3d18fede9c3db2c7497ef4f74c768560105e974042083d875cdebd0efc3",
+              "gitBlob": "55c0819999ca22720ffaa25bc705bdccd0170a90"
             },
             {
               "path": "site.config.js",
-              "sha256": "45c7dcc4c25a96283b8346be6cee21b5f668d49d16368a25312ec5417b08159f",
-              "gitBlob": "f15be39ccc7f64490f5cab647c7bc9388e4852cb"
+              "sha256": "05aba34a4f73dc43b420b1ffa76a74c209042f61ad2f91de44f401bc4402e802",
+              "gitBlob": "34ae299c4ef2c1510f14b1972b445ede2e4335c2"
             },
             {
               "path": "site/render.js",
@@ -4134,8 +4159,8 @@
             },
             {
               "path": "workers/listening/src/index.js",
-              "sha256": "aa7bb4b7a07b2cb99f5c8010a96e0e64a5176309c435b58170f6f3e240975e42",
-              "gitBlob": "b98343b3c4543663caa0834ebf72e935e07e826d"
+              "sha256": "b23becb99ff82cee507b10ce0f41e9d51eef7c39f26293f3dc33ae10b1473dab",
+              "gitBlob": "52090905448d090ec3b89538b175cd74949931c3"
             },
             {
               "path": "workers/listening/wrangler.toml",
@@ -4200,8 +4225,8 @@
             },
             {
               "path": "lib/listening.js",
-              "sha256": "82173ca4b66ccf6ad9acafabe7c0245f097c4419bdd4b9a9af8fa234bf97515a",
-              "gitBlob": "78c7ce442c7e9040d964084ae5ad606329ba9d8f"
+              "sha256": "e873b3d18fede9c3db2c7497ef4f74c768560105e974042083d875cdebd0efc3",
+              "gitBlob": "55c0819999ca22720ffaa25bc705bdccd0170a90"
             },
             {
               "path": "site/render.js",
@@ -4210,8 +4235,8 @@
             },
             {
               "path": "static/_headers",
-              "sha256": "7c9e689ad1be4665bf4310c6354b87bee576366bf537f8fd8bdba9d6a1e1157e",
-              "gitBlob": "501b0d148cdaafe75935d9122bf4a39abf355682"
+              "sha256": "9a318bc6b2780a32503c0787b5403af24285c0007752a55b2c751c76bede9fa6",
+              "gitBlob": "f640b39526b4549cf03d81815222e09b8be1da30"
             },
             {
               "path": "static/station.js",
@@ -4225,8 +4250,8 @@
             },
             {
               "path": "workers/listening/src/index.js",
-              "sha256": "aa7bb4b7a07b2cb99f5c8010a96e0e64a5176309c435b58170f6f3e240975e42",
-              "gitBlob": "b98343b3c4543663caa0834ebf72e935e07e826d"
+              "sha256": "b23becb99ff82cee507b10ce0f41e9d51eef7c39f26293f3dc33ae10b1473dab",
+              "gitBlob": "52090905448d090ec3b89538b175cd74949931c3"
             },
             {
               "path": "workers/listening/wrangler.toml",
@@ -4424,8 +4449,8 @@
           "provenance": [
             {
               "path": "concepts/birds1/birds1.js",
-              "sha256": "6247ab0d8de2869f6177a61b77fbd2f956c925ead65dcde44415ab727119e954",
-              "gitBlob": "e8f72a148687384c40e31d3c44967660d3d98cd9"
+              "sha256": "ae0f995b8197e8107ba3853ce01faf7c7489e8ef078f96a412ea1adcfeca906b",
+              "gitBlob": "09b7cba20bcbe14996bdd6a10359497c9b6cc831"
             },
             {
               "path": "concepts/birds1/index.html",
@@ -4524,8 +4549,8 @@
             },
             {
               "path": "site/verbs.ts",
-              "sha256": "7b2eed65da1c0bc8ee9c3eda507bc92b175aef505e914565ff1b1b9661c3192c",
-              "gitBlob": "55631d4109db62f528c6c6ef8d9853cdb27a8ee0"
+              "sha256": "ddb5194d08e8deb05311da4c6e9dd21a1becd87a5119f16a2c791eb81f521e5a",
+              "gitBlob": "e78a3618165a0099b2dc1e46619f84c5cba65813"
             }
           ]
         }
@@ -4576,6 +4601,7 @@
         "scripts/deploy-workers.js",
         "scripts/git-hooks/pre-commit",
         "scripts/intel.js",
+        "scripts/lint-comments.js",
         "scripts/optimize-media.js",
         "scripts/pages-prebuild.sh",
         "scripts/sync-media.js",
@@ -4628,6 +4654,7 @@
         "test/lastfm-codec.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
+        "test/lint-comments.test.js",
         "test/listening-periods.test.js",
         "test/listening-snapshot.test.js",
         "test/listening.test.js",
@@ -4951,6 +4978,13 @@
             "birds1",
             "unshared-hub"
           ]
+        },
+        {
+          "file": "test/lint-comments.test.js",
+          "imports": [
+            "scripts/lint-comments.js"
+          ],
+          "features": []
         },
         {
           "file": "test/listening-periods.test.js",
@@ -5346,6 +5380,7 @@
         "scripts/deploy-workers.js",
         "scripts/git-hooks/pre-commit",
         "scripts/intel.js",
+        "scripts/lint-comments.js",
         "scripts/optimize-media.js",
         "scripts/pages-prebuild.sh",
         "scripts/sync-media.js",
@@ -5398,6 +5433,7 @@
         "test/lastfm-codec.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
+        "test/lint-comments.test.js",
         "test/listening-periods.test.js",
         "test/listening-snapshot.test.js",
         "test/listening.test.js",

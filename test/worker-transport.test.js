@@ -47,8 +47,7 @@ test('transport: errorJson() defaults to no-store with no retry-after', () => {
   assert.equal(res.status, 429);
   assert.equal(res.headers.get('cache-control'), 'no-store');
   assert.equal(res.headers.get('retry-after'),   null);
-  // The error envelope keeps the full CORS set — this is the deliberate fix
-  // that normalised the listening Worker's hand-built 429.
+  // Error responses carry the same CORS envelope as success responses.
   assert.equal(res.headers.get('access-control-allow-origin'),  ALLOWED_ORIGIN);
   assert.equal(res.headers.get('access-control-allow-methods'), 'GET, OPTIONS');
   assert.equal(res.headers.get('access-control-allow-headers'), 'content-type');

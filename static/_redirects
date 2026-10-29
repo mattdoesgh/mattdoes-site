@@ -1,8 +1,7 @@
 # Cloudflare Pages — URL redirects
 # Docs: https://developers.cloudflare.com/pages/configuration/redirects/
 #
-# This site does not keep legacy path redirects. Old URLs 404.
-# The host rule below is the pre-existing Pages apex line.
+# The only redirect in this file is www to the apex. Other paths 404.
 # The zone-level www bulk redirect is separate and is not in this repo.
 
 https://www.mattdoes.online/*  https://mattdoes.online/:splat  301

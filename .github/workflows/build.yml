@@ -49,7 +49,7 @@ jobs:
     steps:
       - name: Checkout site
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        # Notes live in content/. The build does not clone a vault.
+        # The build does not clone a vault. This checkout is the source.
 
       - name: Set up Node
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -64,6 +64,9 @@ jobs:
 
       - name: Typecheck (site)
         run: npm run typecheck
+
+      - name: Check comments
+        run: npm run check:comments
 
       - name: Build
         env:

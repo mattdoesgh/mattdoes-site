@@ -6,9 +6,9 @@
 //   GET /api/listening/charts   → top albums for the last month, covers only
 //
 // /now and /recent are called by static/station.js (home line, and the
-// recent list on /listening/). There is no now-playing.js or
-// listening-live.js. /charts is fetched by the Pages build (lib/listening.js).
-// The page does not call it from the browser, so connect-src stays 'self'.
+// recent list on /listening/). /charts is fetched by the Pages build
+// (lib/listening.js). The page does not call it from the browser, so
+// connect-src stays 'self'.
 //
 // Producer / reader split:
 //   • PRODUCER — a Durable Object (ListeningPoller) is the only caller of
@@ -35,9 +35,8 @@
 // but nothing starts it on first deploy (or if the chain ever permanently
 // breaks). A cron watchdog (wrangler.toml [triggers]) pokes the DO once a
 // minute via scheduled() → it makes NO Last.fm call; it only arms the alarm
-// if none is pending. That is the active form of the "pure reader +
-// monitoring" resilience posture: detect-and-re-arm a dropped poller without
-// ever touching the read path.
+// if none is pending. A dropped poller is re-armed without touching the
+// read path.
 //
 // Browser max-age matches how fresh the payload is: 30s for /now (the home
 // line polls about once a minute), a short minute for /recent, and a minute
@@ -106,8 +105,7 @@ const CHARTS_STALE_IF_ERROR_S = 7 * 24 * 60 * 60;
 // UTC−5, roughly March–November) and 5:00 AM US Central during standard
 // time (CST, UTC−6).
 export const CHARTS_CRON = '0 11 * * 1';
-// `charts:month` was the six-hour cache, sliced to 25. A new key so a deploy
-// does not keep serving that snapshot until the next Monday.
+// KV key charts:week. A deploy does not refresh it; the Monday cron does.
 const CHARTS_KEY         = 'charts:week';
 const CHARTS_LOCK_KEY    = 'charts:lock';
 
@@ -497,9 +495,9 @@ async function writeCache(env, key, data) {
 // Where each branch lands:
 //   • poller-written data → { playcount, tracks } / { nowPlaying, ... } —
 //     never carries `reason`. Authoritative, including empty/zero results.
-//   • reader serves a surviving KV snapshot when the poller is stalled/down —
-//     that data is a previously-successful payload with no `reason`. Correct:
-//     it is real data, just stale, so the client keeps showing it.
+//   • reader serves a surviving KV snapshot when the poller is stalled —
+//     that snapshot has no `reason`. It is real data, so the client keeps
+//     showing it.
 //   • emptyPayload() → always attaches a guaranteed-truthy `reason`. Used for
 //     missing creds (`unavailable`) and the pre-first-poll empty-KV window
 //     (`warming`). Missing required bindings fail closed with a 503 envelope
@@ -543,8 +541,7 @@ export function deriveBoth(body) {
   const recent = decodeTracks(body, { limit: RECENT_LIMIT });
 
   // now: derived from the RAW track[0] @attr.nowplaying flag (not the
-  // filtered `tracks` array), preserving the exact shape the old per-kind
-  // refresh produced.
+  // filtered `tracks` array).
   const raw = body?.recenttracks?.track || [];
   const t   = Array.isArray(raw) ? raw[0] : raw;
   const now = (t && t['@attr']?.nowplaying) ? trackToNow(t) : finishedNow(recent);

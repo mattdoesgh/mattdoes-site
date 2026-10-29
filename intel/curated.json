@@ -4,31 +4,31 @@
   "decisions": [
     {
       "id": "tokens-only",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["site/tokens.css", "lib/design-tokens.js", "STYLE.md"],
       "text": "site/tokens.css is the only place a raw color, font stack, or font size is written. Pages use var(--token). The build keeps the polarity colors, the font stacks, and --row-size live and inlines the rest. Pink is #F7C8D8."
     },
     {
       "id": "strict-csp",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["lib/csp-policy.js", "static/_headers"],
       "text": "CSP is strict: no unsafe-inline. HSTS is one year, without includeSubDomains and without preload. X-Frame-Options is DENY. COOP is same-origin. COEP is omitted because posters and the analytics beacon do not send CORP."
     },
     {
       "id": "live-audio",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["concepts/birds1/birds1.js"],
       "text": "Visitors are not served stored audio. birds1 synthesizes sound with Web Audio. Do not add an audio file."
     },
     {
       "id": "registry",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["site/verbs.ts"],
       "text": "site/verbs.ts is the registry. An unknown source or a missing renderer fails the build. /unshared/ stays off the home menu. Old paths are not redirected."
     },
     {
       "id": "frequency-offline",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["site/verbs.ts", "site/render.js", "lib/emit/index.js"],
       "text": "/frequency/ is a noindex secret. It stays out of the registry and the sitemap, and it stays offline while SECRET_PATHS is empty. The prize mailto lives only in renderFrequency. Do not copy that address into docs, the index, or a public page."
     },
@@ -46,7 +46,7 @@
     },
     {
       "id": "fluid-type",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["site/tokens.css"],
       "text": "Type and spacing scale with clamp() tokens. Poster settings are about half the films numeral (--type-setting) and still grow a 44px tap target by padding and a negative margin."
     },
@@ -58,32 +58,32 @@
     },
     {
       "id": "geo-retired",
-      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["scripts/deploy-workers.js", "README.md", "AGENTS.md"],
       "text": "The mattdoes-geo worker was retired on Oct 25 2026 with Matt's approval. No page called /api/geo/lookup. The worker, the GEO_CACHE KV binding, and the GEO_RL rate limit are not in the repo. Do not add them back."
     },
     {
       "id": "actions-pin",
-      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": [".github/workflows/build.yml"],
       "text": "GitHub Actions stay pinned to a full commit SHA, with permissions contents: read."
     },
     {
       "id": "zero-spend",
-      "verified-at": "a612febceb4f186b1f7b595a0a4e9ae466236b5e",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["package.json"],
       "text": "Zero spend. No new runtime dependency. Dev-only tooling has to be a plain Node script."
     },
     {
       "id": "email-obfuscation",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "external": true,
       "paths": ["static/_headers"],
       "text": "Cloudflare Email Obfuscation stays on. It is a dashboard setting, not a file. The CSP comment in static/_headers admits the decoder. Do not turn obfuscation off to chase a CSP warning."
     },
     {
       "id": "safe-area",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": [
         "site/tokens.css",
         "site/render.js",
@@ -101,6 +101,17 @@
       "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
       "paths": ["workers/listening/wrangler.toml", "workers/rebuild/wrangler.toml"],
       "text": "The monthly album chart refreshes Monday 11:00 UTC. Covers are on R2 at media.mattdoes.online. The listening worker must deploy before the Pages build that reads the charts key. mattdoes-rebuild posts the Pages deploy hook every six hours, and listening asks it to rebuild after the Monday refresh."
+    },
+    {
+      "id": "comment-lint",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
+      "paths": [
+        "scripts/lint-comments.js",
+        "package.json",
+        ".github/workflows/build.yml",
+        "AGENTS.md"
+      ],
+      "text": "Comments state a constraint that is still true: a browser quirk, a CSP rule, a spec fact, or a security invariant. They do not narrate a conversation, a person, a pull request, or a past version. scripts/lint-comments.js fails the check on that pattern list. A line that must keep a matching phrase carries lint-comments-allow. Banning every comment is a separate choice."
     }
   ],
   "rejected": [
@@ -124,19 +135,19 @@
     },
     {
       "id": "period-switcher",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["lib/lastfm.js"],
       "text": "The listening chart is the last month only. LISTENING_PERIODS has one id. Do not add a period switcher."
     },
     {
       "id": "legacy-redirects",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["static/_redirects"],
       "text": "/watch and /movies are not redirected. They 404. The only redirect in the repo is www to the apex."
     },
     {
       "id": "doc-sprawl",
-      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["AGENTS.md", "README.md"],
       "text": "Docs were trimmed on purpose. Do not add a parallel guide. Extend AGENTS.md, this file, or the generated index."
     },
@@ -156,13 +167,13 @@
     },
     {
       "id": "offline-flags",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["lib/listening.js", "lib/watches.js"],
       "text": "LISTENING_OFFLINE=1 and LETTERBOXD_OFFLINE=1 skip the network for tests and CI. The production Pages build does not set them."
     },
     {
       "id": "home-menu",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["site/verbs.ts"],
       "text": "The home menu is verbCatalog minus unshared. Publishing /unshared/ does not put it on the home list."
     }
@@ -182,13 +193,13 @@
     },
     {
       "id": "toggle-size",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["site/tokens.css", "static/station.css"],
       "text": "Poster settings were resized four times. The settled target is compact, about half the films numeral, still tappable, and fluid. Do not reopen that size without a preview at both viewports."
     },
     {
       "id": "cover-placeholder",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["lib/covers.js", "lib/lastfm.js"],
       "text": "A placeholder question-mark cover and a wrong cover were fixed by dropping blank art and backfilling. Albums without a real cover stay off the grid."
     },
@@ -214,13 +225,13 @@
     },
     {
       "id": "hit-targets",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["site/tokens.css"],
       "text": "--hit floors at 44px and --hit-phone at 48px. Poster settings use --hit-setting (44px) via padding, not a covering pseudo-element."
     },
     {
       "id": "one-pr",
-      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["AGENTS.md"],
       "text": "One concern per pull request. Do not merge. Security changes need Matt's yes. Never paste secrets."
     }
@@ -237,7 +248,7 @@
     },
     {
       "id": "home-listen",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "route": "/",
       "anchors": ["preview listen-line", "now listening"],
       "endpoints": ["/api/listening/now"],
@@ -287,7 +298,7 @@
     },
     {
       "id": "listening-chart",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "route": "/listening/",
       "anchors": ["class=\"album-grid\"", "class=\"album-tile\""],
       "endpoints": ["/api/listening/charts"],
@@ -297,7 +308,7 @@
     },
     {
       "id": "listening-recent",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "route": "/listening/",
       "anchors": ["class=\"recent-label\"", "id=\"tracks\""],
       "endpoints": ["/api/listening/recent"],
@@ -334,7 +345,7 @@
     },
     {
       "id": "birds1",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "route": "/unshared/birds1/",
       "anchors": ["id=\"field\"", "id=\"play\"", "from '../flock-model.js'"],
       "text": "birds1 is the generative flock. The heading has no space. A small matt does link sits above it and goes home. The canvas is a cube seen corner-on as a hexagon, with a faint lattice. Drag is pitch and yaw only. Pinch zooms. Tap selects. Idle play solos birds. Sound is live Web Audio, including a digital-wind layer. There is no /unshared/ambient/ route.",
@@ -352,7 +363,7 @@
     },
     {
       "id": "social-footer",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "route": "/",
       "anchors": ["rel=\"me noopener\"", "lastfmSocialEnabled"],
       "text": "The footer is a row of social marks. last.fm stays hidden while lastfmSocialEnabled is false. The icon function can remain. Links are https profile URLs and do not point at unshared.",

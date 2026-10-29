@@ -33,6 +33,7 @@ Feature ids and routes are in `intel/index.json`. Intent, rejected approaches, a
 - Do not invent watches or posts. A poster that is not mirrored is omitted.
 - `site/verbs.ts` is the registry. An unknown source or a missing renderer fails the build. `/unshared/` stays off the home menu. `/frequency/` is a noindex secret: it is not in the registry or the sitemap, and it stays offline while `SECRET_PATHS` is empty. Old paths are not redirected. Do not copy the prize mailto out of `renderFrequency`.
 - Do not add a guide beside this file. Extend this file, a curated entry, or the generator.
+- Do not write a comment that narrates a conversation, a person, or a past version. A browser quirk, a CSP constraint, a spec rule, or a security invariant can stay. `npm run check:comments` enforces it.
 - One concern per pull request. Do not merge.
 
 ## Verify
