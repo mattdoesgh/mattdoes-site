@@ -241,8 +241,8 @@
       "id": "home-rows",
       "verified-at": "765f7e446cf53f15f8e0f1f3ddf0d7b18ff882d2",
       "route": "/",
-      "anchors": ["aria-label=\"verbs\"", "class=\"verb-kicker\""],
-      "text": "Home is the verb list. The visible words are matt does plus the registry label. Unshared is not in the list. The latest film sits on the letterboxd row, with no underline.",
+      "anchors": ["aria-label=\"verbs\"", "class=\"verb-kicker\"", "class=\"home-suno\""],
+      "text": "Home is the verb list. The visible words are matt does plus the registry label. Unshared is not in that list. Under the verbs, three wavy Unshared titles open their songs and unshared does suno opens /unshared/. The latest film sits on the letterboxd row, with no underline.",
       "risks": ["Adding a verb puts it on the home menu unless it is filtered out like unshared."],
       "devices": ["The kicker is hidden at the 800px hover window. Check 390 and 1280 before moving it."]
     },
@@ -338,10 +338,10 @@
       "id": "unshared-hub",
       "verified-at": "765f7e446cf53f15f8e0f1f3ddf0d7b18ff882d2",
       "route": "/unshared/",
-      "anchors": ["aria-label=\"unshared\"", "unsharedEntries", "https://suno.com/song/"],
-      "text": "The hub is one row per concepts/entries.js slug, without an unshared does prefix. The first row is birds1. Published Suno songs are a five-column cover grid, the same markup as the listening chart and without a caption, then a lowercase title list. Each cover and title links to https://suno.com/song/<id>. The art is the committed snapshot from npm run suno:sync. The page is in the sitemap and off the home menu. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
-      "risks": ["Publish fails when the page or the stylesheet is missing.", "A song without a committed cover is omitted. The page does not fetch Suno."],
-      "devices": ["The row hit target is at least 44px. Cover slots follow the listening chart, about 72 CSS px on a phone. Check the grid at 390 and 1280."]
+      "anchors": ["aria-label=\"unshared\"", "unsharedEntries", "https://suno.com/song/", "class=\"song-wave\""],
+      "text": "The hub heading is unshared does suno and links home. The first row is birds1, with no unshared does prefix on that row. Published Suno songs are a five-column cover grid, the same markup as the listening chart and without a caption, then a lowercase title list. Each title is a song-wave: letters travel on a sine, the link aria-label is the full title, and the letters are aria-hidden. Reduced motion stops the animation and keeps a static sine. Each cover and title links to https://suno.com/song/<id>. The art is the committed snapshot from npm run suno:sync. The page is in the sitemap and off the home verb list. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
+      "risks": ["Publish fails when the page or the stylesheet is missing.", "A song without a committed cover is omitted. The page does not fetch Suno.", "The count wave stays scrobbles and films. Song titles use song-wave."],
+      "devices": ["The row hit target is at least 44px. Cover slots follow the listening chart, about 72 CSS px on a phone. The wave is transform only. Check the grid at 390 and 1280."]
     },
     {
       "id": "birds1",

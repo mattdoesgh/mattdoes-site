@@ -184,6 +184,75 @@ main {
   text-underline-offset: 0.08em;
 }
 
+/* Travelling sine. Eight letters is one wavelength, then it repeats.
+   The nth-child offsets are the same sine, held still when motion is reduced. */
+.song-wave {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  max-width: 100%;
+}
+
+.song-wave span {
+  white-space: pre;
+  animation-name: song-wave;
+  animation-duration: var(--wave-period);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.song-wave span:nth-child(8n+2),
+.song-wave span:nth-child(8n+4) {
+  transform: translateY(-0.2em);
+}
+
+.song-wave span:nth-child(8n+3) {
+  transform: translateY(-0.28em);
+}
+
+.song-wave span:nth-child(8n+6),
+.song-wave span:nth-child(8n+8) {
+  transform: translateY(0.2em);
+}
+
+.song-wave span:nth-child(8n+7) {
+  transform: translateY(0.28em);
+}
+
+.song-wave span:nth-child(8n+2) { animation-delay: calc(var(--wave-period) * -0.125); }
+.song-wave span:nth-child(8n+3) { animation-delay: calc(var(--wave-period) * -0.25); }
+.song-wave span:nth-child(8n+4) { animation-delay: calc(var(--wave-period) * -0.375); }
+.song-wave span:nth-child(8n+5) { animation-delay: calc(var(--wave-period) * -0.5); }
+.song-wave span:nth-child(8n+6) { animation-delay: calc(var(--wave-period) * -0.625); }
+.song-wave span:nth-child(8n+7) { animation-delay: calc(var(--wave-period) * -0.75); }
+.song-wave span:nth-child(8n+8) { animation-delay: calc(var(--wave-period) * -0.875); }
+
+@keyframes song-wave {
+  0%,
+  100% { transform: translateY(0); }
+  6.25% { transform: translateY(-0.107em); }
+  12.5% { transform: translateY(-0.198em); }
+  18.75% { transform: translateY(-0.259em); }
+  25% { transform: translateY(-0.28em); }
+  31.25% { transform: translateY(-0.259em); }
+  37.5% { transform: translateY(-0.198em); }
+  43.75% { transform: translateY(-0.107em); }
+  50% { transform: translateY(0); }
+  56.25% { transform: translateY(0.107em); }
+  62.5% { transform: translateY(0.198em); }
+  68.75% { transform: translateY(0.259em); }
+  75% { transform: translateY(0.28em); }
+  81.25% { transform: translateY(0.259em); }
+  87.5% { transform: translateY(0.198em); }
+  93.75% { transform: translateY(0.107em); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .song-wave span {
+    animation: none;
+  }
+}
+
 .verbs {
   list-style: none;
   margin: var(--space-0);

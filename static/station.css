@@ -369,6 +369,64 @@ body[data-polarity="flip"] .sign {
     margin-top: var(--space-0);
     padding-top: var(--space-0);
   }
+
+  .home-suno-titles a {
+    min-height: var(--hit-phone);
+  }
+}
+
+.home-suno {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-row);
+  min-width: 0;
+  max-width: 100%;
+  margin-top: auto;
+}
+
+.home-suno-sign {
+  margin: var(--space-0);
+  font-family: var(--display);
+  font-weight: var(--weight-regular);
+  font-size: var(--type-kicker);
+  line-height: 0.9;
+  letter-spacing: var(--track-none);
+}
+
+.home-suno-sign a,
+.home-suno-titles a {
+  color: var(--pink);
+  text-decoration: none;
+}
+
+.home-suno-titles {
+  list-style: none;
+  margin: var(--space-0);
+  padding: var(--space-0);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.home-suno-titles a {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  min-height: var(--hit);
+  font-family: var(--display);
+  font-weight: var(--weight-regular);
+  font-size: var(--type-kicker);
+  line-height: 1;
+  letter-spacing: var(--track-none);
+}
+
+.home-suno-titles a:hover,
+.home-suno-titles a:focus-visible,
+.home-suno-sign a:hover,
+.home-suno-sign a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.08em;
 }
 
 /* Hover windows under the desktop breakpoint. The preview stays pink and
@@ -670,6 +728,33 @@ html[data-posters="off"] .axis-across {
 .wave span:nth-child(7) { animation-delay: calc(var(--wave-period) * -0.75); }
 .wave span:nth-child(8) { animation-delay: calc(var(--wave-period) * -0.875); }
 .wave span:nth-child(9) { animation-delay: calc(var(--wave-period) * -1); }
+
+/* Song titles. Same sine as the count words, repeating every eight letters. */
+.song-wave {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  max-width: 100%;
+}
+
+.song-wave span {
+  white-space: pre;
+  animation: wave-travel var(--wave-period) linear infinite;
+}
+
+.song-wave span:nth-child(4n+2) {
+  transform: translateY(-0.28em);
+  animation-delay: calc(var(--wave-period) * -0.25);
+}
+
+.song-wave span:nth-child(4n+3) {
+  animation-delay: calc(var(--wave-period) * -0.5);
+}
+
+.song-wave span:nth-child(4n+4) {
+  transform: translateY(0.28em);
+  animation-delay: calc(var(--wave-period) * -0.75);
+}
 
 @keyframes wave-travel {
   0%,
@@ -1140,6 +1225,10 @@ html.is-locked body {
   }
 
   .wave span {
+    animation: none;
+  }
+
+  .song-wave span {
     animation: none;
   }
 }

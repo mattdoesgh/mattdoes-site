@@ -29,11 +29,11 @@ export function renderHubDocument(siteUrl = siteConfig.url) {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>matt does unshared</title>
-    <meta name="description" content="matt does unshared.">
+    <title>unshared does suno</title>
+    <meta name="description" content="unshared does suno.">
     <link rel="canonical" href="${esc(canonical)}">
-    <meta property="og:title" content="matt does unshared">
-    <meta property="og:description" content="matt does unshared.">
+    <meta property="og:title" content="unshared does suno">
+    <meta property="og:description" content="unshared does suno.">
     <meta property="og:url" content="${esc(canonical)}">
     <meta property="og:type" content="website">
     <link rel="stylesheet" href="./hub.css">
@@ -41,7 +41,7 @@ export function renderHubDocument(siteUrl = siteConfig.url) {
   <body data-polarity="flip">
     <a class="skip-link" href="#main">Skip to content</a>
     <main id="main">
-      <h1 class="sign"><a href="/">matt does unshared</a></h1>
+      <h1 class="sign"><a href="/">unshared does suno</a></h1>
       ${songs}
       <nav aria-label="unshared">
         <ol class="verbs">

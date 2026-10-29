@@ -5,8 +5,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { JSDOM } from 'jsdom';
 
-import { selectPublicSongs, songsFromSnapshot } from '../lib/suno-songs.js';
+import { HOME_SUNO_TITLES, renderHomeSuno, renderSunoSongs, selectPublicSongs, songsFromSnapshot } from '../lib/suno-songs.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const COVERS = path.join(ROOT, 'concepts', 'suno', 'covers');
@@ -60,4 +61,20 @@ test('the committed snapshot is public songs with local covers', () => {
     assert.ok(song.imageSet.some((item) => item.type === 'image/webp' && item.width === 300));
     assert.ok(song.imageSet.some((item) => item.type === 'image/jpeg' && item.width === 240));
   }
+});
+
+test('a title waves in hidden letters and keeps its accessible name', () => {
+  const songs = songsFromSnapshot(JSON.parse(fs.readFileSync(path.join(ROOT, 'concepts', 'suno', 'songs.json'), 'utf8')));
+  const html = renderSunoSongs(songs.slice(0, 1));
+  const doc = new JSDOM(`<body>${html}</body>`).window.document;
+  const link = doc.querySelector('.tracks a');
+  assert.equal(link?.getAttribute('aria-label'), 'funerally yours');
+  const wave = link?.querySelector('.song-wave');
+  assert.equal(wave?.getAttribute('aria-hidden'), 'true');
+  assert.equal(wave?.textContent, 'funerally yours');
+  assert.equal(link?.querySelector('[style]'), null);
+  const home = renderHomeSuno(songs);
+  const homeDoc = new JSDOM(`<body>${home}</body>`).window.document;
+  assert.equal(homeDoc.querySelectorAll('.home-suno-titles a').length, HOME_SUNO_TITLES);
+  assert.equal(homeDoc.querySelector('.home-suno-sign a')?.getAttribute('href'), '/unshared/');
 });

@@ -37,7 +37,7 @@ for (const [name, url] of pages) {
 test('the unshared row is birds1', async ({ page }) => {
   await page.goto('/unshared/');
   await page.evaluate(() => document.fonts.ready);
-  await expect(page.locator('h1')).toHaveText('matt does unshared');
+  await expect(page.locator('h1')).toHaveText('unshared does suno');
   const cover = page.locator('.album-tile').first();
   await expect(cover).toHaveAttribute('href', 'https://suno.com/song/77e2f911-595d-416a-9e5a-f14beea308ff');
   await expect(cover.locator('img')).toHaveAttribute('alt', 'funerally yours');
@@ -56,7 +56,7 @@ test('the unshared row is birds1', async ({ page }) => {
   await expect(row).toHaveText('birds1');
   await expect(row).toHaveAttribute('href', '/unshared/birds1/');
   await expect(page.locator('.verb-prefix, .verb-kicker')).toHaveCount(0);
-  await expect(page.locator('body')).not.toContainText('unshared does');
+  await expect(page.locator('a.verb')).toHaveText('birds1');
   const box = await row.boundingBox();
   expect(box.height).toBeGreaterThanOrEqual(44);
 });
