@@ -22,13 +22,13 @@
     },
     {
       "id": "registry",
-      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "paths": ["site/verbs.ts"],
       "text": "site/verbs.ts is the registry. An unknown source or a missing renderer fails the build. /unshared/ stays off the home menu. Old paths are not redirected."
     },
     {
       "id": "frequency-offline",
-      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "paths": ["site/verbs.ts", "site/render.js", "lib/emit/index.js"],
       "text": "/frequency/ is a noindex secret. It stays out of the registry and the sitemap, and it stays offline while SECRET_PATHS is empty. The prize mailto lives only in renderFrequency. Do not copy that address into docs, the index, or a public page."
     },
@@ -40,7 +40,7 @@
     },
     {
       "id": "wave-words",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "paths": ["site/render.js", "static/station.css"],
       "text": "The wave sits only on the words that label the big counts: scrobbles and films. The numbers are outline only. Stars are black fill with a pink outline."
     },
@@ -83,7 +83,7 @@
     },
     {
       "id": "safe-area",
-      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "paths": [
         "site/tokens.css",
         "site/render.js",
@@ -153,7 +153,7 @@
     },
     {
       "id": "fixture-only-preview",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "paths": ["test/visual/pages.spec.js"],
       "text": "CI can pass while the real Pages preview has no posters, because the visual suite uses fixtures. A user-visible change is confirmed on the preview, at 390×844 and 1280×800."
     }
@@ -173,7 +173,7 @@
     },
     {
       "id": "home-menu",
-      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "paths": ["site/verbs.ts"],
       "text": "The home menu is verbCatalog minus unshared. Publishing /unshared/ does not put it on the home list."
     }
@@ -181,7 +181,7 @@
   "lessons": [
     {
       "id": "posters-missing-on-preview",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "paths": ["lib/posters.js", "test/visual/pages.spec.js"],
       "text": "The poster strip's CI passed with fixtures while the real preview had zero posters. Black boxes in a screenshot were the fixture, not the page. Compare a preview capture that was not scrolled."
     },
@@ -205,7 +205,7 @@
     },
     {
       "id": "chart-only-note",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "paths": ["site/render.js", "static/station.js"],
       "text": "A chat note called /listening/ a monthly chart with no recent list. The page still renders the recent list and station.js refreshes it from /api/listening/recent. Do not delete that list on the strength of the note."
     },
@@ -239,7 +239,7 @@
   "features": [
     {
       "id": "home-rows",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "route": "/",
       "anchors": ["aria-label=\"verbs\"", "class=\"verb-kicker\""],
       "text": "Home is the verb list. The visible words are matt does plus the registry label. Unshared is not in the list. The latest film sits on the letterboxd row, with no underline.",
@@ -248,7 +248,7 @@
     },
     {
       "id": "home-listen",
-      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "route": "/",
       "anchors": ["preview listen-line", "now listening"],
       "endpoints": ["/api/listening/now"],
@@ -260,7 +260,7 @@
     },
     {
       "id": "watching-strip",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "route": "/watching/",
       "anchors": ["class=\"film-open\"", "data-scene"],
       "text": "Recent films are a strip. The first image is eager. The rest are lazy. src stays off the img until posters are on, so an off preference does not fetch. A poster that was not mirrored is omitted.",
@@ -269,7 +269,7 @@
     },
     {
       "id": "watching-toggles",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "route": "/watching/",
       "anchors": ["data-posters-toggle", "data-axis-toggle", "data-pull"],
       "storageKeys": ["mattdoes-posters", "mattdoes-poster-axis"],
@@ -280,7 +280,7 @@
     },
     {
       "id": "watching-scene",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "route": "/watching/",
       "anchors": ["id=\"scene\"", "data-review"],
       "text": "Opening a film uses a dialog. The wide poster is not in the tree until the scene opens. The review is a data attribute, not card text.",
@@ -289,7 +289,7 @@
     },
     {
       "id": "watching-count",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "route": "/watching/",
       "anchors": ["countLine(ctx.filmCount", "parseFilmCount"],
       "text": "The films count is the public Letterboxd total, not the length of the RSS window. A missing count hides the line and does not fail the build. The word films is the wave. The number is an outline.",
@@ -298,7 +298,7 @@
     },
     {
       "id": "listening-chart",
-      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "route": "/listening/",
       "anchors": ["class=\"album-grid\"", "class=\"album-tile\""],
       "endpoints": ["/api/listening/charts"],
@@ -308,7 +308,7 @@
     },
     {
       "id": "listening-recent",
-      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "route": "/listening/",
       "anchors": ["class=\"recent-label\"", "id=\"tracks\""],
       "endpoints": ["/api/listening/recent"],
@@ -318,7 +318,7 @@
     },
     {
       "id": "listening-count",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "route": "/listening/",
       "anchors": ["countLine(ctx.playcount", "formatScrobbleCount"],
       "text": "The scrobble total is one line. The word scrobbles waves. The number is an outline. Zero or missing hides the line.",
@@ -327,7 +327,7 @@
     },
     {
       "id": "wave-counts",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "route": "",
       "anchors": ["WAVE_WORDS", "class=\"wave\""],
       "text": "Only scrobbles and films take the wave. Spoken text stays in the accessibility tree. The painted letters are aria-hidden. Reduced motion stops the animation and keeps a static sine.",
@@ -336,7 +336,7 @@
     },
     {
       "id": "unshared-hub",
-      "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "route": "/unshared/",
       "anchors": ["aria-label=\"unshared\"", "unsharedEntries", "unsharedProfiles"],
       "text": "The hub is one row per concepts/entries.js slug, without an unshared does prefix. The first row is birds1. unsharedProfiles prints one lowercase link under the heading. The suno link is https://suno.com/@unshared with rel=\"me noopener\". The page is in the sitemap and off the home menu. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
@@ -354,7 +354,7 @@
     },
     {
       "id": "frequency",
-      "verified-at": "cab07e8573729ecd34736d2ae1ffb814d882575c",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "route": "/frequency/",
       "anchors": ["function renderFrequency", "frequency-key"],
       "text": "The secret page is offline while SECRET_PATHS is empty. Emit cuts the key hook out of the shipped station.js and fails if the word frequency remains. The prize mailto stays in renderFrequency only.",
@@ -363,7 +363,7 @@
     },
     {
       "id": "social-footer",
-      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
+      "verified-at": "8cbb7656704be3eb649eb0a0c430c9f8d6d9be19",
       "route": "/",
       "anchors": ["rel=\"me noopener\"", "lastfmSocialEnabled"],
       "text": "The footer is a row of social marks. last.fm stays hidden while lastfmSocialEnabled is false. The icon function can remain. Links are https profile URLs and do not point at unshared.",
