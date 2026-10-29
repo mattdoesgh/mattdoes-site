@@ -62,6 +62,13 @@ test('every unshared entry resolves to a built page', () => {
   assert.equal(doc.querySelector('p.lede'), null);
   assert.equal(doc.querySelector('.outlinks'), null);
   assert.equal(doc.querySelector('footer'), null);
+  const suno = doc.querySelector('a.profile');
+  assert.equal(suno?.textContent, 'suno');
+  assert.equal(suno?.getAttribute('href'), 'https://suno.com/@unshared');
+  assert.equal(suno?.getAttribute('rel'), 'me noopener');
+  assert.equal(suno?.getAttribute('target'), null);
+  assert.ok(hub.indexOf('</h1>') < hub.indexOf('https://suno.com/@unshared'));
+  assert.ok(hub.indexOf('https://suno.com/@unshared') < hub.indexOf('aria-label="unshared"'));
   assert.equal(hub.includes('Fun is unshared'), false);
   assert.equal(hub.includes('mailto:'), false);
   assert.doesNotMatch(hub, /music\.apple\.com|spotify\.com|bandcamp\.com|noindex/i);
@@ -80,6 +87,7 @@ test('every unshared entry resolves to a built page', () => {
     const built = fs.readFileSync(page, 'utf8');
     const builtDoc = new JSDOM(built).window.document;
     assert.doesNotMatch(built, /noindex|mailto:|music\.apple\.com|spotify\.com|bandcamp\.com/i);
+    assert.equal(built.includes('suno.com'), false);
     assert.equal(builtDoc.querySelector('h1')?.textContent, 'birds1');
     assert.equal(builtDoc.querySelector('a.home')?.textContent, 'matt does');
     assert.equal(builtDoc.querySelector('a.home')?.getAttribute('href'), '/');

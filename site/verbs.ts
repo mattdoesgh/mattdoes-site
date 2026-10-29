@@ -46,6 +46,11 @@ const socialCatalog = [
 
 export const socials = socialCatalog.filter((item) => lastfmSocialEnabled || item.label !== 'last.fm');
 
+/** Unshared profiles. One line to add or remove a link. The hub prints the label. */
+export const unsharedProfiles = [
+  { label: 'suno', href: 'https://suno.com/@unshared' },
+] as const satisfies readonly SocialLink[];
+
 /** Add '/frequency/' to publish that page. Empty keeps it offline. */
 export const SECRET_PATHS: readonly string[] = [];
 
@@ -125,6 +130,7 @@ export function validateVerbs(
 export function assertRegistry(knownRenderers: readonly string[]): void {
   validateVerbs(verbs, knownRenderers);
   validateSocials(socials);
+  validateSocials(unsharedProfiles);
 }
 
 /** Labels stay lowercase words. Hrefs stay https profile links. */

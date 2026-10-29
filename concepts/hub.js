@@ -1,8 +1,18 @@
 // The Unshared hub. One registry row becomes one label link.
+// Profile links from unsharedProfiles sit under the heading.
 
 import { siteConfig } from '../site.config.js';
 import { esc } from '../lib/safe-url.js';
+import { unsharedProfiles } from '../site/verbs.ts';
 import { unsharedEntries, unsharedHref } from './entries.js';
+
+function profileLinks() {
+  return unsharedProfiles.map((item) => {
+    const href = esc(item.href);
+    const label = esc(item.label);
+    return `<a class="profile" href="${href}" rel="me noopener">${label}</a>`;
+  }).join('\n        ');
+}
 
 /**
  * @param {string} [siteUrl]
@@ -33,7 +43,10 @@ export function renderHubDocument(siteUrl = siteConfig.url) {
   <body data-polarity="flip">
     <a class="skip-link" href="#main">Skip to content</a>
     <main id="main">
-      <h1 class="sign"><a href="/">matt does unshared</a></h1>
+      <div class="mast">
+        <h1 class="sign"><a href="/">matt does unshared</a></h1>
+        ${profileLinks()}
+      </div>
       <nav aria-label="unshared">
         <ol class="verbs">
           ${rows}

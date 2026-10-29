@@ -1,5 +1,6 @@
 /* Unshared hub. Phone rules are the base. Desktop starts at 1024.
-   The page is the heading and the row. A tap turns the row black with pink type. */
+   The page is the heading, the profile links, and the row.
+   A tap turns a link black with pink type. */
 
 @import "../../site/tokens.css";
 
@@ -96,6 +97,10 @@ main {
 
 .sign {
   margin: var(--space-0);
+  min-width: 0;
+  /* Anton draws outside the tight line box. The padding keeps the
+     profile link out from under that hit area. */
+  padding-bottom: 0.4em;
   font-size: var(--type-sign);
   line-height: 0.9;
   overflow-wrap: break-word;
@@ -104,6 +109,42 @@ main {
 
 .sign a {
   color: inherit;
+}
+
+.mast {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.profile {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--hit);
+  margin: var(--space-0);
+  padding: var(--space-0) var(--space-cap);
+  font-family: var(--display);
+  font-weight: var(--weight-regular);
+  font-size: var(--type-kicker);
+  letter-spacing: var(--track-none);
+  line-height: 1;
+  color: var(--ink);
+  text-decoration: none;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.profile:hover,
+.profile:focus-visible {
+  background: var(--black);
+  color: var(--pink);
+}
+
+/* The inlined focus ring stays pink on this pink page. Black keeps it visible. */
+.profile:focus-visible {
+  outline-color: var(--black);
 }
 
 .verbs {
@@ -148,9 +189,14 @@ main {
     min-height: var(--hit-phone);
   }
 
-  .verb:active {
+  .verb:active,
+  .profile:active {
     background: var(--black);
     color: var(--pink);
+  }
+
+  .profile {
+    min-height: var(--hit-phone);
   }
 }
 

@@ -693,7 +693,7 @@ export function renderListen(ctx) {
   });
 }
 
-/** The published hub. It has no socials, mailbox, or player. */
+/** The published hub. Profile links come from the registry. No mailbox or player. */
 export function renderUnshared(ctx) {
   return renderHubDocument(ctx && ctx.siteUrl);
 }

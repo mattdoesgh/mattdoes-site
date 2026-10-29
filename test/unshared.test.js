@@ -8,7 +8,7 @@ import { buildFixtureVault, readDist } from './helpers/run-build.js';
 import { parseHeadersFile, headerValues } from './helpers/parse-headers.js';
 import fs from 'node:fs';
 import path from 'node:path';
-import { unsharedPlayer, unsharedContact, unsharedEnabled } from '../site/verbs.ts';
+import { unsharedPlayer, unsharedContact, unsharedEnabled, unsharedProfiles, validateSocials } from '../site/verbs.ts';
 import { bandcampSlot, contactBlock, renderFrequency, renderUnshared } from '../site/render.js';
 
 let distDir;
@@ -53,6 +53,17 @@ test('unshared has no contact mailto and the hub is the built page', () => {
   assert.equal(doc.querySelector('p.lede'), null);
   assert.equal(html.includes('mailto:'), false);
   assert.equal(html.includes('Fun is unshared'), false);
+  assert.deepEqual(unsharedProfiles.map((item) => ({ label: item.label, href: item.href })), [
+    { label: 'suno', href: 'https://suno.com/@unshared' },
+  ]);
+  assert.doesNotThrow(() => validateSocials(unsharedProfiles));
+  const suno = doc.querySelector('a.profile');
+  assert.equal(suno?.textContent, 'suno');
+  assert.equal(suno?.getAttribute('href'), 'https://suno.com/@unshared');
+  assert.equal(suno?.getAttribute('rel'), 'me noopener');
+  assert.equal(suno?.getAttribute('target'), null);
+  assert.ok(html.indexOf('</h1>') < html.indexOf('https://suno.com/@unshared'));
+  assert.ok(html.indexOf('https://suno.com/@unshared') < html.indexOf('aria-label="unshared"'));
 
   const birds = fs.readFileSync(path.join(distDir, 'unshared', 'birds1', 'index.html'), 'utf8');
   const birdsDoc = new JSDOM(birds).window.document;
@@ -72,6 +83,11 @@ test('unshared has no contact mailto and the hub is the built page', () => {
   for (const rel of ['index.html', 'watching/index.html', 'listening/index.html', '404.html', 'unshared/index.html', 'unshared/birds1/index.html']) {
     const text = fs.readFileSync(path.join(distDir, rel), 'utf8');
     assert.doesNotMatch(text, /music\.apple\.com|open\.spotify\.com|bandcamp\.com|mailto:/i, rel);
+    if (rel === 'unshared/index.html') {
+      assert.match(text, /href="https:\/\/suno\.com\/@unshared"/);
+    } else {
+      assert.equal(text.includes('suno.com'), false, rel);
+    }
   }
 });
 

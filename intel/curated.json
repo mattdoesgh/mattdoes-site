@@ -338,10 +338,10 @@
       "id": "unshared-hub",
       "verified-at": "5abe81e12f0fc75830dc437771aa9713f9725156",
       "route": "/unshared/",
-      "anchors": ["aria-label=\"unshared\"", "unsharedEntries"],
-      "text": "The hub is one row per concepts/entries.js slug, without an unshared does prefix. The first row is birds1. It is in the sitemap and off the home menu. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
+      "anchors": ["aria-label=\"unshared\"", "unsharedEntries", "unsharedProfiles"],
+      "text": "The hub is one row per concepts/entries.js slug, without an unshared does prefix. The first row is birds1. unsharedProfiles prints one lowercase link under the heading. The suno link is https://suno.com/@unshared with rel=\"me noopener\". The page is in the sitemap and off the home menu. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
       "risks": ["Publish fails when the page or the stylesheet is missing."],
-      "devices": ["The row hit target is at least 44px."]
+      "devices": ["The row hit target is at least 44px. The profile link hit target is at least 44px."]
     },
     {
       "id": "birds1",

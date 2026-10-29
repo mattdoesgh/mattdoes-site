@@ -98,17 +98,17 @@
     },
     {
       "path": "concepts/hub.css",
-      "sha256": "9f897718c5a620cfc5fb66752756f9e20bac176ad470503232eafc7c3dded629",
-      "gitBlob": "4b26165c0b963abcbed51c09753d58ffd30f9721"
+      "sha256": "4fae67814cebf02774fabf318bb4ed964794ef8d18891a83749d7d4cb98b8f08",
+      "gitBlob": "50dfb07673d652cd8ea8458c2e09f2c6f33291d9"
     },
     {
       "path": "concepts/hub.js",
-      "sha256": "41a9864351f0354c17f59ca06c8d19b978954d530d31dc66da269b66bdd19ab6",
-      "gitBlob": "12216e3838c5f23be9c547ee8ac1f6f870b20728"
+      "sha256": "3b039e3367801f57574706fe39a0c9a077250b9161532a7fecbd7399b588d1c9",
+      "gitBlob": "22ae9ebbae32ce0c1cc392446bc0e22e8afc807d"
     },
     {
       "path": "intel/curated.json",
-      "sha256": "3ef05038a4f5be53b749de89de21923e06e829dfc1ded74aaf61aaf84ba29d2f",
+      "sha256": "22bfc5b54bd63be6d5de4c56257e5bdff137b5d08ef08af6c25c654cfb44ab00",
       "gitBlob": null
     },
     {
@@ -283,8 +283,8 @@
     },
     {
       "path": "site/render.js",
-      "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
-      "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
+      "sha256": "afc83fd5d4c53dad7ebc6101b9efcb7e8d8356fb1b4b0769e8db3895e15adcf4",
+      "gitBlob": "7229803eacaf01f217af71e27dcaa0e10ea5dcd2"
     },
     {
       "path": "site/social-icons.js",
@@ -303,8 +303,8 @@
     },
     {
       "path": "site/verbs.ts",
-      "sha256": "ddb5194d08e8deb05311da4c6e9dd21a1becd87a5119f16a2c791eb81f521e5a",
-      "gitBlob": "e78a3618165a0099b2dc1e46619f84c5cba65813"
+      "sha256": "0b08f8e0c270f54e51993a3ab914f0994c8a1d3f196e9591f3d5f880ad7bd321",
+      "gitBlob": "1a572c9c23db544bf6bffb1dddb99c41c9d5752b"
     },
     {
       "path": "static/_headers",
@@ -568,8 +568,8 @@
     },
     {
       "path": "test/publish-unshared.test.js",
-      "sha256": "cba37efc973de1f8ee641bb223a5aeed5c0c52962601153ac2d4266ca60c3231",
-      "gitBlob": "3b4d8b2a15c6a953588d4a3627ee36185960f082"
+      "sha256": "5a189b9503dee349df5062e2c2f20221f71c3857687de9764925f593a5eab808",
+      "gitBlob": "692e539005ac88f16e25cc6aefb238d3dd7a025d"
     },
     {
       "path": "test/scrobble-count-parity.test.js",
@@ -588,8 +588,8 @@
     },
     {
       "path": "test/socials.test.js",
-      "sha256": "7b32cda886cd1d7eedc846d28da07c8412dca039c5f522c6d0f391afc6ab93f3",
-      "gitBlob": "168fa66bcba124de74ae6b478f0115c9f45728a6"
+      "sha256": "e0f07c86f0f4c1becd415d9c02ad2f2bf35215b74b4a56735959ec1044139730",
+      "gitBlob": "0f203ec0ecc11d12f671e39156ceca6ddb478df0"
     },
     {
       "path": "test/sync-media-wrangler.test.js",
@@ -598,8 +598,8 @@
     },
     {
       "path": "test/unshared.test.js",
-      "sha256": "4535762e13a681615587bb457ec7aec33af64106ad51768b3b861fcf9b819f95",
-      "gitBlob": "3309a68b411a01a757af20ed69b594b33af1f00c"
+      "sha256": "0720fa55e876b85320f2985e4de2034dbe844da1c5dcda9797d5ee55ec5631d6",
+      "gitBlob": "619755a7bd4679ca679b473bdce2418648238705"
     },
     {
       "path": "test/url-safety.test.js",
@@ -618,8 +618,8 @@
     },
     {
       "path": "test/visual/pages.spec.js",
-      "sha256": "db6ee77f116a213c43ac8dd97ced7091480925ebde41a2da512fc544eb803f00",
-      "gitBlob": "9322a71efa13980b7d7112cddc172e7df44afec0"
+      "sha256": "02ae395daab5e6c69d7e549e421f0e418b8e19a9bc4637c428a35a3d935eafd3",
+      "gitBlob": "d6d834d68d3ea3c0683ca24667651d1ad8d495c0"
     },
     {
       "path": "test/visual/prepare.js",
@@ -1078,6 +1078,10 @@
         {
           "from": "concepts/hub.js",
           "to": "site.config.js"
+        },
+        {
+          "from": "concepts/hub.js",
+          "to": "site/verbs.ts"
         },
         {
           "from": "lib/cover-settle.js",
@@ -1794,6 +1798,7 @@
         ],
         "site/verbs.ts": [
           "build.js",
+          "concepts/hub.js",
           "lib/emit/feeds.js",
           "lib/emit/index.js",
           "scripts/intel.js",
@@ -2713,6 +2718,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "concepts/hub.css",
             "static/station.css"
           ]
         },
@@ -3392,6 +3398,7 @@
           "referencedInTokens": false,
           "files": [
             "concepts/birds1/birds1.css",
+            "concepts/hub.css",
             "static/station.css"
           ]
         },
@@ -3780,8 +3787,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
-              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
+              "sha256": "afc83fd5d4c53dad7ebc6101b9efcb7e8d8356fb1b4b0769e8db3895e15adcf4",
+              "gitBlob": "7229803eacaf01f217af71e27dcaa0e10ea5dcd2"
             }
           ]
         },
@@ -3853,8 +3860,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
-              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
+              "sha256": "afc83fd5d4c53dad7ebc6101b9efcb7e8d8356fb1b4b0769e8db3895e15adcf4",
+              "gitBlob": "7229803eacaf01f217af71e27dcaa0e10ea5dcd2"
             },
             {
               "path": "static/station.js",
@@ -3908,8 +3915,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
-              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
+              "sha256": "afc83fd5d4c53dad7ebc6101b9efcb7e8d8356fb1b4b0769e8db3895e15adcf4",
+              "gitBlob": "7229803eacaf01f217af71e27dcaa0e10ea5dcd2"
             },
             {
               "path": "static/station.js",
@@ -3983,8 +3990,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
-              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
+              "sha256": "afc83fd5d4c53dad7ebc6101b9efcb7e8d8356fb1b4b0769e8db3895e15adcf4",
+              "gitBlob": "7229803eacaf01f217af71e27dcaa0e10ea5dcd2"
             },
             {
               "path": "static/poster-prefs.js",
@@ -4033,8 +4040,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
-              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
+              "sha256": "afc83fd5d4c53dad7ebc6101b9efcb7e8d8356fb1b4b0769e8db3895e15adcf4",
+              "gitBlob": "7229803eacaf01f217af71e27dcaa0e10ea5dcd2"
             },
             {
               "path": "static/station.js",
@@ -4090,8 +4097,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
-              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
+              "sha256": "afc83fd5d4c53dad7ebc6101b9efcb7e8d8356fb1b4b0769e8db3895e15adcf4",
+              "gitBlob": "7229803eacaf01f217af71e27dcaa0e10ea5dcd2"
             }
           ]
         },
@@ -4154,8 +4161,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
-              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
+              "sha256": "afc83fd5d4c53dad7ebc6101b9efcb7e8d8356fb1b4b0769e8db3895e15adcf4",
+              "gitBlob": "7229803eacaf01f217af71e27dcaa0e10ea5dcd2"
             },
             {
               "path": "workers/listening/src/index.js",
@@ -4230,8 +4237,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
-              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
+              "sha256": "afc83fd5d4c53dad7ebc6101b9efcb7e8d8356fb1b4b0769e8db3895e15adcf4",
+              "gitBlob": "7229803eacaf01f217af71e27dcaa0e10ea5dcd2"
             },
             {
               "path": "static/_headers",
@@ -4300,8 +4307,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
-              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
+              "sha256": "afc83fd5d4c53dad7ebc6101b9efcb7e8d8356fb1b4b0769e8db3895e15adcf4",
+              "gitBlob": "7229803eacaf01f217af71e27dcaa0e10ea5dcd2"
             }
           ]
         },
@@ -4338,8 +4345,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
-              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
+              "sha256": "afc83fd5d4c53dad7ebc6101b9efcb7e8d8356fb1b4b0769e8db3895e15adcf4",
+              "gitBlob": "7229803eacaf01f217af71e27dcaa0e10ea5dcd2"
             }
           ]
         },
@@ -4348,17 +4355,25 @@
           "route": "/unshared/",
           "anchors": [
             "aria-label=\"unshared\"",
-            "unsharedEntries"
+            "unsharedEntries",
+            "unsharedProfiles"
           ],
           "anchorFiles": {
             "aria-label=\"unshared\"": [
-              "concepts/hub.js"
+              "concepts/hub.js",
+              "test/publish-unshared.test.js",
+              "test/unshared.test.js"
             ],
             "unsharedEntries": [
               "concepts/entries.js",
               "concepts/hub.js",
               "lib/publish-unshared.js",
               "test/publish-unshared.test.js"
+            ],
+            "unsharedProfiles": [
+              "concepts/hub.js",
+              "site/verbs.ts",
+              "test/unshared.test.js"
             ]
           },
           "storageKeys": [],
@@ -4368,12 +4383,15 @@
             "concepts/entries.js",
             "concepts/hub.js",
             "lib/publish-unshared.js",
-            "test/publish-unshared.test.js"
+            "site/verbs.ts",
+            "test/publish-unshared.test.js",
+            "test/unshared.test.js"
           ],
           "sources": [
             "concepts/entries.js",
             "concepts/hub.js",
-            "lib/publish-unshared.js"
+            "lib/publish-unshared.js",
+            "site/verbs.ts"
           ],
           "tests": [
             "test/csp-headers.test.js",
@@ -4382,6 +4400,7 @@
             "test/progressive-enhancement.test.js",
             "test/publish-unshared.test.js",
             "test/socials.test.js",
+            "test/unshared.test.js",
             "test/verbs.test.js",
             "test/visual/axe.spec.js",
             "test/visual/pages.spec.js",
@@ -4395,13 +4414,18 @@
             },
             {
               "path": "concepts/hub.js",
-              "sha256": "41a9864351f0354c17f59ca06c8d19b978954d530d31dc66da269b66bdd19ab6",
-              "gitBlob": "12216e3838c5f23be9c547ee8ac1f6f870b20728"
+              "sha256": "3b039e3367801f57574706fe39a0c9a077250b9161532a7fecbd7399b588d1c9",
+              "gitBlob": "22ae9ebbae32ce0c1cc392446bc0e22e8afc807d"
             },
             {
               "path": "lib/publish-unshared.js",
               "sha256": "d3582ea6e99258b81b94ecc1b9b6aac07a9cb0384664d6af957bda8dced87557",
               "gitBlob": "798fc2adc9ca0e948cd4ad0bdf12bc79a7353671"
+            },
+            {
+              "path": "site/verbs.ts",
+              "sha256": "0b08f8e0c270f54e51993a3ab914f0994c8a1d3f196e9591f3d5f880ad7bd321",
+              "gitBlob": "1a572c9c23db544bf6bffb1dddb99c41c9d5752b"
             }
           ]
         },
@@ -4500,8 +4524,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
-              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
+              "sha256": "afc83fd5d4c53dad7ebc6101b9efcb7e8d8356fb1b4b0769e8db3895e15adcf4",
+              "gitBlob": "7229803eacaf01f217af71e27dcaa0e10ea5dcd2"
             },
             {
               "path": "static/station.js",
@@ -4519,6 +4543,7 @@
           ],
           "anchorFiles": {
             "rel=\"me noopener\"": [
+              "concepts/hub.js",
               "site/render.js"
             ],
             "lastfmSocialEnabled": [
@@ -4530,11 +4555,13 @@
           "endpoints": [],
           "constants": {},
           "files": [
+            "concepts/hub.js",
             "site/render.js",
             "site/verbs.ts",
             "test/socials.test.js"
           ],
           "sources": [
+            "concepts/hub.js",
             "site/render.js",
             "site/verbs.ts"
           ],
@@ -4543,14 +4570,19 @@
           ],
           "provenance": [
             {
+              "path": "concepts/hub.js",
+              "sha256": "3b039e3367801f57574706fe39a0c9a077250b9161532a7fecbd7399b588d1c9",
+              "gitBlob": "22ae9ebbae32ce0c1cc392446bc0e22e8afc807d"
+            },
+            {
               "path": "site/render.js",
-              "sha256": "2b515fecf23e1a1f6a7d56ea311b2b90edd7cb66984f0328bd4ebfeea6e0fce2",
-              "gitBlob": "3865e83829e64199fbd53698f5941c0abf307fd1"
+              "sha256": "afc83fd5d4c53dad7ebc6101b9efcb7e8d8356fb1b4b0769e8db3895e15adcf4",
+              "gitBlob": "7229803eacaf01f217af71e27dcaa0e10ea5dcd2"
             },
             {
               "path": "site/verbs.ts",
-              "sha256": "ddb5194d08e8deb05311da4c6e9dd21a1becd87a5119f16a2c791eb81f521e5a",
-              "gitBlob": "e78a3618165a0099b2dc1e46619f84c5cba65813"
+              "sha256": "0b08f8e0c270f54e51993a3ab914f0994c8a1d3f196e9591f3d5f880ad7bd321",
+              "gitBlob": "1a572c9c23db544bf6bffb1dddb99c41c9d5752b"
             }
           ]
         }
@@ -4742,7 +4774,8 @@
             "test/helpers/run-build.js"
           ],
           "features": [
-            "social-footer"
+            "social-footer",
+            "unshared-hub"
           ]
         },
         {
@@ -5195,6 +5228,7 @@
             "listening-count",
             "listening-recent",
             "social-footer",
+            "unshared-hub",
             "watching-count",
             "watching-scene",
             "watching-strip",

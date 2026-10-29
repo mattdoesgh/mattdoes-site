@@ -25,6 +25,19 @@ test('the unshared row is birds1', async ({ page }) => {
   await page.goto('/unshared/');
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator('h1')).toHaveText('matt does unshared');
+  const suno = page.locator('a.profile');
+  await expect(suno).toHaveText('suno');
+  await expect(suno).toHaveAttribute('href', 'https://suno.com/@unshared');
+  await expect(suno).toHaveAttribute('rel', 'me noopener');
+  const sunoBox = await suno.boundingBox();
+  expect(sunoBox.height).toBeGreaterThanOrEqual(44);
+  const hitsSuno = await suno.evaluate((el) => {
+    const box = el.getBoundingClientRect();
+    const x = box.left + box.width / 2;
+    const y = box.top + box.height / 2;
+    return document.elementFromPoint(x, y) === el;
+  });
+  expect(hitsSuno).toBe(true);
   const row = page.locator('a.verb');
   await expect(row).toHaveText('birds1');
   await expect(row).toHaveAttribute('href', '/unshared/birds1/');

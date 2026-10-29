@@ -1,5 +1,5 @@
-// Footer socials come from the registry and appear on every built page.
-// Profile URLs stay out of the page body. They belong in this footer only.
+// Footer socials come from the registry and appear on every built page
+// outside /unshared/. Those hrefs stay in the footer.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -62,8 +62,17 @@ test('every built page footer has the social hrefs and names', () => {
       assert.equal(doc.querySelector('.outlinks'), null, rel);
       assert.equal(html.includes('mailto:'), false, rel);
       assert.doesNotMatch(html, /music\.apple\.com|spotify\.com|bandcamp\.com/i, rel);
+      if (rel === 'unshared/index.html') {
+        const suno = doc.querySelector('a.profile');
+        assert.equal(suno?.textContent, 'suno', rel);
+        assert.equal(suno?.getAttribute('href'), 'https://suno.com/@unshared', rel);
+        assert.equal(suno?.getAttribute('rel'), 'me noopener', rel);
+      } else {
+        assert.equal(html.includes('suno.com'), false, rel);
+      }
       continue;
     }
+    assert.equal(html.includes('suno.com'), false, rel);
     const footer = doc.querySelector('footer.site-footer');
     assert.ok(footer, rel);
     const links = [...footer.querySelectorAll('nav.socials a')];
