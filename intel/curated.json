@@ -101,6 +101,17 @@
       "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
       "paths": ["workers/listening/wrangler.toml", "workers/rebuild/wrangler.toml"],
       "text": "The monthly album chart refreshes Monday 11:00 UTC. Covers are on R2 at media.mattdoes.online. The listening worker must deploy before the Pages build that reads the charts key. mattdoes-rebuild posts the Pages deploy hook every six hours, and listening asks it to rebuild after the Monday refresh."
+    },
+    {
+      "id": "comment-lint",
+      "verified-at": "b8dbb3afa38d4a685856060366e50fafc7f1bb21",
+      "paths": [
+        "scripts/lint-comments.js",
+        "package.json",
+        ".github/workflows/build.yml",
+        "AGENTS.md"
+      ],
+      "text": "Comments state a constraint that is still true: a browser quirk, a CSP rule, a spec fact, or a security invariant. They do not narrate a conversation, a person, a pull request, or a past version. scripts/lint-comments.js fails the check on that pattern list. A line that must keep a matching phrase carries lint-comments-allow. Banning every comment is a separate choice."
     }
   ],
   "rejected": [

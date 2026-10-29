@@ -33,7 +33,7 @@ export interface SocialLink {
   readonly href: string;
 }
 
-/** Set true to show the last.fm logo in the footer again. The icon stays. */
+/** Set true to show the last.fm logo in the footer. The icon stays. */
 export const lastfmSocialEnabled = false;
 
 const socialCatalog = [
@@ -46,7 +46,7 @@ const socialCatalog = [
 
 export const socials = socialCatalog.filter((item) => lastfmSocialEnabled || item.label !== 'last.fm');
 
-/** Add '/frequency/' to bring that page back. Empty keeps it offline. */
+/** Add '/frequency/' to publish that page. Empty keeps it offline. */
 export const SECRET_PATHS: readonly string[] = [];
 
 /**

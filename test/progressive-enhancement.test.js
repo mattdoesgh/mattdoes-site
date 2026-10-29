@@ -1,4 +1,4 @@
-// Retired writing routes stay unpublished and unredirected.
+// journal, making, and blog are not published and are not redirected.
 // /listening/ is a real page without JavaScript.
 // A redirect source must not be a real page. An empty or missing _redirects file passes.
 

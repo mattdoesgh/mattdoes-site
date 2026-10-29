@@ -1,5 +1,4 @@
-// The page does not store a visitor location. The geo worker was retired
-// on Oct 25 2026. No page called it.
+// The page does not store a visitor location.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';

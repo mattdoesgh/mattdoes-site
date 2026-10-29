@@ -1,7 +1,4 @@
 // site.config.js — build settings the render and the fetchers read.
-// The home map, the status pill, and the per-section bios are gone.
-// The geo worker was retired on Oct 25 2026. No page called it.
-// There is no GeoJSON bake script. Do not add one back here.
 
 /**
  * @typedef {object} SiteConfig
@@ -27,9 +24,8 @@ export const siteConfig = {
   url:   'https://mattdoes.online',
 
   // Last.fm integration for /listening/.
-  // IMPORTANT: username is intentionally not set here to keep it out of the
-  // public repo. Set LASTFM_USERNAME (and LASTFM_API_KEY) as Cloudflare Pages
-  // env vars. The listing page also hides the username from its left rail.
+  // Username is blank here so it stays out of the public repo. Set
+  // LASTFM_USERNAME and LASTFM_API_KEY as Cloudflare Pages env vars.
   //
   // These settings govern the *build-time* snapshot rendered into the static
   // HTML. Recent plays stay live through workers/listening. The monthly

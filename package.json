@@ -12,6 +12,7 @@
     "audit": "npm audit --audit-level=moderate",
     "check:assets": "node scripts/check-asset-budget.js",
     "check:tokens": "node scripts/check-design-tokens.js",
+    "check:comments": "node scripts/lint-comments.js",
     "intel": "node scripts/intel.js",
     "intel:check": "node scripts/intel.js --check",
     "intel:touch": "node scripts/intel.js --touch",

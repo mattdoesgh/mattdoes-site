@@ -12,8 +12,8 @@
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
   Origin-Agent-Cluster: ?1
-  # The page no longer calls geolocation. Every powerful feature is denied,
-  # plus the interest-cohort / browsing-topics opt-outs.
+  # Every powerful feature is denied, plus the interest-cohort and
+  # browsing-topics opt-outs.
   Permissions-Policy: accelerometer=(), browsing-topics=(), camera=(), clipboard-read=(), clipboard-write=(), display-capture=(), geolocation=(), gyroscope=(), hid=(), interest-cohort=(), magnetometer=(), microphone=(), midi=(), payment=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), sync-xhr=(), usb=(), xr-spatial-tracking=()
   # max-age only. includeSubDomains waits until every hostname, including
   # media.mattdoes.online, is confirmed HTTPS. preload is omitted because
@@ -52,9 +52,9 @@
 
 # ── Fonts ───────────────────────────────────────────────────────────────
 # Stable filenames, cached for a year. Hashed CSS and JS are not listed
-# here: Emit writes one exact rule per real file (ADR 0013). Do not add
-# `/*.css` or `/*.js` — Pages would attach this cache policy to the HTML
-# document it used to serve for a missing hash.
+# here. Emit writes one exact rule per real file. Do not add `/*.css` or
+# `/*.js`. Pages would attach this cache policy to the HTML document
+# served for a missing hash.
 
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
@@ -71,9 +71,7 @@
   X-Content-Type-Options: nosniff
 
 # ── Build-baked data ────────────────────────────────────────────────────
-# Day-long edge cache, 1h browser cache. Re-baked GeoJSON propagates with
-# the next deploy (Pages purges the edge); browsers revalidate hourly so
-# returning visitors pick up changes without a hard refresh.
+# Day-long edge cache, one-hour browser cache, for a geojson path.
 /*.geojson
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
   CDN-Cache-Control: public, max-age=86400, stale-while-revalidate=604800
