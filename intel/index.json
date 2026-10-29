@@ -113,7 +113,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "6fd9114ab404378d643d5d00298091ecc3c90a7b441c16d97d28aa18ae472d17",
+      "sha256": "db078ea3cabc54dc77c4b1276cf04465bb82121537245770c73a069d1eed622a",
       "gitBlob": null
     },
     {
@@ -628,8 +628,8 @@
     },
     {
       "path": "test/verbs.test.js",
-      "sha256": "a5de32e40c19d2cec6539894e3ae25679f03a3711d52772a49172cc26d578436",
-      "gitBlob": "6277f1339f7b715c2bf10c0332545e93156819d9"
+      "sha256": "ed0dfe33b90b426e6c398ee235d4301063253e68b36d78c5d0b5d56824a24208",
+      "gitBlob": "6698808afe13c1ffb3751cdd2e986bd1802e20e0"
     },
     {
       "path": "test/visual/axe.spec.js",
