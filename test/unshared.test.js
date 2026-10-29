@@ -48,7 +48,9 @@ test('unshared has no contact mailto and the hub is the built page', () => {
 
   const html = renderUnshared({ siteUrl: 'https://mattdoes.online' });
   const doc = new JSDOM(html).window.document;
-  assert.equal(doc.querySelector('h1')?.textContent, 'matt does unshared');
+  assert.equal(doc.querySelector('title')?.textContent, 'unshared does suno');
+  assert.equal(doc.querySelector('h1')?.textContent, 'unshared does suno');
+  assert.equal(doc.querySelector('meta[name="description"]')?.getAttribute('content'), 'unshared does suno.');
   assert.equal(doc.querySelector('.outlinks'), null);
   assert.equal(doc.querySelector('p.lede'), null);
   assert.equal(html.includes('mailto:'), false);
@@ -62,6 +64,10 @@ test('unshared has no contact mailto and the hub is the built page', () => {
   assert.equal(covers[0].getAttribute('href'), 'https://suno.com/song/77e2f911-595d-416a-9e5a-f14beea308ff');
   assert.equal(covers[0].getAttribute('rel'), 'noopener noreferrer');
   assert.equal(covers[0].querySelector('img')?.getAttribute('alt'), 'funerally yours');
+  assert.equal(titles[0].getAttribute('aria-label'), 'funerally yours');
+  assert.equal(titles[0].querySelector('.song-wave')?.getAttribute('aria-hidden'), 'true');
+  assert.deepEqual([...titles[0].querySelectorAll('.song-word')].map((word) => word.textContent), ['funerally', 'yours']);
+  assert.equal([...titles[0].querySelectorAll('.song-word')].some((word) => word.textContent.includes(' ')), false);
   assert.equal(covers[0].querySelector('img')?.getAttribute('loading'), null);
   assert.equal(covers[5].querySelector('img')?.getAttribute('loading'), 'lazy');
   assert.equal(titles[0].textContent, 'funerally yours');
@@ -89,7 +95,7 @@ test('unshared has no contact mailto and the hub is the built page', () => {
   for (const rel of ['index.html', 'watching/index.html', 'listening/index.html', '404.html', 'unshared/index.html', 'unshared/birds1/index.html']) {
     const text = fs.readFileSync(path.join(distDir, rel), 'utf8');
     assert.doesNotMatch(text, /music\.apple\.com|open\.spotify\.com|bandcamp\.com|mailto:/i, rel);
-    if (rel === 'unshared/index.html') {
+    if (rel === 'unshared/index.html' || rel === 'index.html') {
       assert.match(text, /href="https:\/\/suno\.com\/song\/77e2f911-595d-416a-9e5a-f14beea308ff"/);
       assert.equal(text.includes('https://suno.com/@unshared'), false);
     } else {

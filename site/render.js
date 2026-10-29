@@ -7,6 +7,9 @@ import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 import { formatScrobbleCount } from '../lib/format.js';
 import { CHART_SPARES, LISTENING_PERIODS, TOP_LIMIT, albumImageUrl, albumsWithCovers, cleanCoverSet, coverVariantUrl, musicUrl } from '../lib/lastfm.js';
 import { staticListen } from '../lib/listen-line.js';
+import { loadSunoSongs, renderHomeSuno } from '../lib/suno-songs.js';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const LUCIA_MAIL = 'mailto:luciadoes@mail.grokbot.com';
 
@@ -325,6 +328,7 @@ export function renderHome(ctx) {
         <p class="verb-kicker" aria-hidden="true">${esc(kicker)}</p>
         <ol class="verbs">
         ${items}
+        ${renderHomeSuno(loadSunoSongs(path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'concepts', 'suno', 'songs.json')))}
         </ol>
       </nav>`,
   });

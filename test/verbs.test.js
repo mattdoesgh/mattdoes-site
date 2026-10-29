@@ -210,15 +210,19 @@ test('nothing public is built outside the registry except / and /404', () => {
   assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'birds1', 'index.html')), true);
   assert.equal(fs.existsSync(path.join(distDir, 'frequency', 'index.html')), false);
   const home = readDist(distDir, 'index.html');
-  assert.equal(home.includes('/unshared/'), false);
+  const homeDoc = new JSDOM(home).window.document;
+  assert.equal(homeDoc.querySelector('a.verb[href="/unshared/"]'), null);
+  assert.equal(homeDoc.querySelector('.home-suno-sign a')?.getAttribute('href'), '/unshared/');
+  assert.equal(homeDoc.querySelectorAll('.home-suno-titles a').length, 3);
   assert.doesNotMatch(home, /frequency|lucia|luciadoes/i);
 });
 
-test('the home page does not link to unshared, and no built file names the mailto', () => {
+test('home links to the unshared hub and no built file names the mailto', () => {
   assert.equal(unsharedEnabled, true);
   assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'index.html')), true);
   const home = readDist(distDir, 'index.html');
-  assert.equal(home.includes('/unshared/'), false);
+  const homeDoc = new JSDOM(home).window.document;
+  assert.equal(homeDoc.querySelector('.home-suno a[href="/unshared/"]')?.textContent, 'unshared does suno');
   const files = [];
   const walk = (dir) => {
     for (const name of fs.readdirSync(dir)) {
@@ -234,7 +238,7 @@ test('the home page does not link to unshared, and no built file names the mailt
     const rel = path.relative(distDir, file);
     assert.equal(text.includes('luciadoes+unshared@'), false, rel);
     const name = rel.split(path.sep).join('/');
-    if (name === 'sitemap.xml' || name.startsWith('unshared/')) continue;
+    if (name === 'sitemap.xml' || name === 'index.html' || name.startsWith('unshared/')) continue;
     assert.equal(text.includes('/unshared/'), false, rel);
   }
 });

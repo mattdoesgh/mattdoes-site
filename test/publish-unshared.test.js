@@ -56,8 +56,8 @@ test('every unshared entry resolves to a built page', () => {
   const hubPath = path.join(dir, 'unshared', 'index.html');
   const hub = fs.readFileSync(hubPath, 'utf8');
   const doc = new JSDOM(hub).window.document;
-  assert.equal(doc.querySelector('title')?.textContent, 'matt does unshared');
-  assert.equal(doc.querySelector('h1')?.textContent, 'matt does unshared');
+  assert.equal(doc.querySelector('title')?.textContent, 'unshared does suno');
+  assert.equal(doc.querySelector('h1')?.textContent, 'unshared does suno');
   assert.equal(doc.querySelector('h1 a')?.getAttribute('href'), '/');
   assert.equal(doc.querySelector('p.lede'), null);
   assert.equal(doc.querySelector('.outlinks'), null);
@@ -73,10 +73,10 @@ test('every unshared entry resolves to a built page', () => {
   assert.equal(hub.includes('Fun is unshared'), false);
   assert.equal(hub.includes('mailto:'), false);
   assert.doesNotMatch(hub, /music\.apple\.com|spotify\.com|bandcamp\.com|noindex/i);
-  assert.equal(doc.querySelector('meta[name="description"]')?.getAttribute('content'), 'matt does unshared.');
+  assert.equal(doc.querySelector('meta[name="description"]')?.getAttribute('content'), 'unshared does suno.');
   assert.equal(doc.querySelector('link[rel="canonical"]')?.getAttribute('href'), 'https://mattdoes.online/unshared/');
   assert.equal(doc.querySelector('.verb-kicker'), null);
-  assert.equal(hub.includes('unshared does'), false);
+  assert.equal(doc.querySelector('a.verb')?.textContent, 'birds1');
 
   const rowHrefs = hrefs(hub, 'a.verb');
   assert.ok(unsharedEntries.length > 0);

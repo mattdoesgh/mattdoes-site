@@ -98,13 +98,13 @@
     },
     {
       "path": "concepts/hub.css",
-      "sha256": "83bd965357bcb3d66cd52c523bfd5a5e016d06d7050ed364ce095572ae780be4",
-      "gitBlob": "95fe84d397f3db9adc26b834827dd8927d49e641"
+      "sha256": "0918e75c8f501b1f5f1baac4b21752c098ce3ae3e92fe440a6acc6d79bd3eedd",
+      "gitBlob": "d63b72262a0d157e128c9f0f24de6e2557aec539"
     },
     {
       "path": "concepts/hub.js",
-      "sha256": "d89d0eb88da44039c527778cb6365bf200914916707955ffb7f2caf506d98aba",
-      "gitBlob": "9e0d66b518dfdc1d3ab965394f1d340518a6b081"
+      "sha256": "95008396226173c30a789c220565e3606b8d5d3aaa07c715e9a5256ba382f81e",
+      "gitBlob": "c26d9da55dfe7840d6cd40cd760379953371e525"
     },
     {
       "path": "concepts/suno/songs.json",
@@ -113,7 +113,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "9fe0f2a7e6ae5f644b876e19d3e79d3aaecb111e19cf848beded9b1088770a5b",
+      "sha256": "5131f12577d02682e943742b6cff130f1519c2cdf7b9d85c2c6dd0d237abf189",
       "gitBlob": null
     },
     {
@@ -213,8 +213,8 @@
     },
     {
       "path": "lib/suno-songs.js",
-      "sha256": "48ee9e653d192e3bf00e40080dfc0e8172e9cdba84b6c80030c45a41f66928c4",
-      "gitBlob": "e2044b94dba2ab04999145be7263f61bdb408876"
+      "sha256": "916c5b438b20244bed3d670ac344716f20d6a31ab6008751e8a01d7c77f7d347",
+      "gitBlob": "f874fdd450f6a10c48e13a4c00e41e699fdb9afa"
     },
     {
       "path": "lib/watches.js",
@@ -298,8 +298,8 @@
     },
     {
       "path": "site/render.js",
-      "sha256": "71e29ec7613ec8fb602ac9fcda1d2ca7b6cb92e588d1a668211a96f9d25fa2c3",
-      "gitBlob": "475d7f4134da0f16dd3fae19bd7ffa34bd24f9ec"
+      "sha256": "00377a6eb0ff7a75c449b570fb75bc40c4c5b31a58ed1d00d5548b4f14f5e5db",
+      "gitBlob": "ab1faa06aae743e7f035013a2cb3393a2be9cac0"
     },
     {
       "path": "site/social-icons.js",
@@ -348,8 +348,8 @@
     },
     {
       "path": "static/station.css",
-      "sha256": "790e2d7860f457e223d1731045bbce5b83af4c16cff4f4407cb3334513484f1b",
-      "gitBlob": "7d67108958ba6cc1e222ce5f24f9d9e2b106dc97"
+      "sha256": "d58d8f345b678f39a25294459ca6a52281fe5cba2d40164451971198435ec921",
+      "gitBlob": "d9e2b0cd88cfd1f0a638c680aab9338bcdd5a6d0"
     },
     {
       "path": "static/station.js",
@@ -578,13 +578,13 @@
     },
     {
       "path": "test/progressive-enhancement.test.js",
-      "sha256": "18835eb7dd07f0fb530f209c0adcd2a2151e2ca623a2906fa30a3cfb65af5429",
-      "gitBlob": "19ca75e4936f158490929db168bdb5fbf47fddf9"
+      "sha256": "c1957fb4dc292890ddfea93bfdde62e3e221ae6deb25228df580198fac522dd6",
+      "gitBlob": "b6491183af70a82966d491b328de308a969b9c21"
     },
     {
       "path": "test/publish-unshared.test.js",
-      "sha256": "f883b14bc9298bbceacf7236428fd52f6f70f81a4916e2477bb0ef17702fc87e",
-      "gitBlob": "e14a466659186f020264a07ecc10ab836c4cd524"
+      "sha256": "494e1df6d97406ae34675d9dbc47f5aacb9bd5bf56a40fb592ebe2b562b4e497",
+      "gitBlob": "0ef2cd4c9318dbf7220cf03b4a8a0aa1c201f29c"
     },
     {
       "path": "test/scrobble-count-parity.test.js",
@@ -603,13 +603,13 @@
     },
     {
       "path": "test/socials.test.js",
-      "sha256": "b1c395e3d462de1f463569dcf0294e7759c46140d8a791dc5004326f9e342394",
-      "gitBlob": "8fa7059aa18b859d1bbf1ae1a7f58f76ad9cc0aa"
+      "sha256": "5a7fde140b4b220cb582a1ee736d5efa5ecd2fd8f3f2b825d8b51dd8d4d715bd",
+      "gitBlob": "e7dadccb33e77034f25a818dbf51a37268574aed"
     },
     {
       "path": "test/suno-songs.test.js",
-      "sha256": "b51d93f756218748f1ad88deb2b3c3ba45824b203f2e6daa2f92342443422ab7",
-      "gitBlob": "eb4142d73eef8e3ba77473ca61c264aec7cfdcda"
+      "sha256": "94a9130ac3169689ad77a936c8e0872910f612fc1027b63a20bb38eb2d63566e",
+      "gitBlob": "16a2cbf3ca292e180c3c50e86dba92cb0716b3a3"
     },
     {
       "path": "test/sync-media-wrangler.test.js",
@@ -618,8 +618,8 @@
     },
     {
       "path": "test/unshared.test.js",
-      "sha256": "fb87637cfe402012cb6a3c7fba0245b492c7547e4c490c3a60c16d6111bd20e1",
-      "gitBlob": "639003b798ec3a0c777507c4277abc19b99fc9f3"
+      "sha256": "fa370b23f8c0f4ef08e000db766e53e863bbda9ab5de0e57fa362a2a75aab449",
+      "gitBlob": "a89a76a22baba9bbddc41846145d1582c4a545e0"
     },
     {
       "path": "test/url-safety.test.js",
@@ -628,8 +628,8 @@
     },
     {
       "path": "test/verbs.test.js",
-      "sha256": "117a4764407eaecc46c39c1cd6af9e908abba78daf1ee52314ea1084686dfab0",
-      "gitBlob": "cef5036e0fc14b63d3dc6d773ef3bfc4654dd710"
+      "sha256": "ed0dfe33b90b426e6c398ee235d4301063253e68b36d78c5d0b5d56824a24208",
+      "gitBlob": "6698808afe13c1ffb3751cdd2e986bd1802e20e0"
     },
     {
       "path": "test/visual/axe.spec.js",
@@ -638,8 +638,8 @@
     },
     {
       "path": "test/visual/pages.spec.js",
-      "sha256": "b3a293e0eec121991855a3cf0388c9f67c2033c8c36e243fb52ad1385a12a251",
-      "gitBlob": "5a144e1ffa06db2ee34d864e63e8bab95f308ea6"
+      "sha256": "ae2d8e6c3f226221a8ec20e8ed8b74b7a76b0caac50570dc7c4a4bdc205ddf0c",
+      "gitBlob": "21a835d59166c769ed1292ca33a6421fc6a3fed6"
     },
     {
       "path": "test/visual/prepare.js",
@@ -1261,6 +1261,10 @@
         },
         {
           "from": "site/render.js",
+          "to": "lib/suno-songs.js"
+        },
+        {
+          "from": "site/render.js",
           "to": "site/social-icons.js"
         },
         {
@@ -1800,6 +1804,7 @@
         "lib/suno-songs.js": [
           "concepts/hub.js",
           "scripts/suno-sync.js",
+          "site/render.js",
           "test/suno-songs.test.js"
         ],
         "lib/watches.js": [
@@ -3642,6 +3647,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "concepts/hub.css",
             "static/station.css"
           ]
         },
@@ -3821,7 +3827,8 @@
           "route": "/",
           "anchors": [
             "aria-label=\"verbs\"",
-            "class=\"verb-kicker\""
+            "class=\"verb-kicker\"",
+            "class=\"verb-row home-suno\""
           ],
           "anchorFiles": {
             "aria-label=\"verbs\"": [
@@ -3830,16 +3837,21 @@
             ],
             "class=\"verb-kicker\"": [
               "site/render.js"
+            ],
+            "class=\"verb-row home-suno\"": [
+              "lib/suno-songs.js"
             ]
           },
           "storageKeys": [],
           "endpoints": [],
           "constants": {},
           "files": [
+            "lib/suno-songs.js",
             "site/render.js",
             "test/verbs.test.js"
           ],
           "sources": [
+            "lib/suno-songs.js",
             "site/render.js"
           ],
           "tests": [
@@ -3847,9 +3859,14 @@
           ],
           "provenance": [
             {
+              "path": "lib/suno-songs.js",
+              "sha256": "916c5b438b20244bed3d670ac344716f20d6a31ab6008751e8a01d7c77f7d347",
+              "gitBlob": "f874fdd450f6a10c48e13a4c00e41e699fdb9afa"
+            },
+            {
               "path": "site/render.js",
-              "sha256": "71e29ec7613ec8fb602ac9fcda1d2ca7b6cb92e588d1a668211a96f9d25fa2c3",
-              "gitBlob": "475d7f4134da0f16dd3fae19bd7ffa34bd24f9ec"
+              "sha256": "00377a6eb0ff7a75c449b570fb75bc40c4c5b31a58ed1d00d5548b4f14f5e5db",
+              "gitBlob": "ab1faa06aae743e7f035013a2cb3393a2be9cac0"
             }
           ]
         },
@@ -3921,8 +3938,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "71e29ec7613ec8fb602ac9fcda1d2ca7b6cb92e588d1a668211a96f9d25fa2c3",
-              "gitBlob": "475d7f4134da0f16dd3fae19bd7ffa34bd24f9ec"
+              "sha256": "00377a6eb0ff7a75c449b570fb75bc40c4c5b31a58ed1d00d5548b4f14f5e5db",
+              "gitBlob": "ab1faa06aae743e7f035013a2cb3393a2be9cac0"
             },
             {
               "path": "static/station.js",
@@ -3976,8 +3993,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "71e29ec7613ec8fb602ac9fcda1d2ca7b6cb92e588d1a668211a96f9d25fa2c3",
-              "gitBlob": "475d7f4134da0f16dd3fae19bd7ffa34bd24f9ec"
+              "sha256": "00377a6eb0ff7a75c449b570fb75bc40c4c5b31a58ed1d00d5548b4f14f5e5db",
+              "gitBlob": "ab1faa06aae743e7f035013a2cb3393a2be9cac0"
             },
             {
               "path": "static/station.js",
@@ -4051,8 +4068,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "71e29ec7613ec8fb602ac9fcda1d2ca7b6cb92e588d1a668211a96f9d25fa2c3",
-              "gitBlob": "475d7f4134da0f16dd3fae19bd7ffa34bd24f9ec"
+              "sha256": "00377a6eb0ff7a75c449b570fb75bc40c4c5b31a58ed1d00d5548b4f14f5e5db",
+              "gitBlob": "ab1faa06aae743e7f035013a2cb3393a2be9cac0"
             },
             {
               "path": "static/poster-prefs.js",
@@ -4061,8 +4078,8 @@
             },
             {
               "path": "static/station.css",
-              "sha256": "790e2d7860f457e223d1731045bbce5b83af4c16cff4f4407cb3334513484f1b",
-              "gitBlob": "7d67108958ba6cc1e222ce5f24f9d9e2b106dc97"
+              "sha256": "d58d8f345b678f39a25294459ca6a52281fe5cba2d40164451971198435ec921",
+              "gitBlob": "d9e2b0cd88cfd1f0a638c680aab9338bcdd5a6d0"
             }
           ]
         },
@@ -4101,8 +4118,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "71e29ec7613ec8fb602ac9fcda1d2ca7b6cb92e588d1a668211a96f9d25fa2c3",
-              "gitBlob": "475d7f4134da0f16dd3fae19bd7ffa34bd24f9ec"
+              "sha256": "00377a6eb0ff7a75c449b570fb75bc40c4c5b31a58ed1d00d5548b4f14f5e5db",
+              "gitBlob": "ab1faa06aae743e7f035013a2cb3393a2be9cac0"
             },
             {
               "path": "static/station.js",
@@ -4158,8 +4175,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "71e29ec7613ec8fb602ac9fcda1d2ca7b6cb92e588d1a668211a96f9d25fa2c3",
-              "gitBlob": "475d7f4134da0f16dd3fae19bd7ffa34bd24f9ec"
+              "sha256": "00377a6eb0ff7a75c449b570fb75bc40c4c5b31a58ed1d00d5548b4f14f5e5db",
+              "gitBlob": "ab1faa06aae743e7f035013a2cb3393a2be9cac0"
             }
           ]
         },
@@ -4227,8 +4244,8 @@
             },
             {
               "path": "lib/suno-songs.js",
-              "sha256": "48ee9e653d192e3bf00e40080dfc0e8172e9cdba84b6c80030c45a41f66928c4",
-              "gitBlob": "e2044b94dba2ab04999145be7263f61bdb408876"
+              "sha256": "916c5b438b20244bed3d670ac344716f20d6a31ab6008751e8a01d7c77f7d347",
+              "gitBlob": "f874fdd450f6a10c48e13a4c00e41e699fdb9afa"
             },
             {
               "path": "site.config.js",
@@ -4237,8 +4254,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "71e29ec7613ec8fb602ac9fcda1d2ca7b6cb92e588d1a668211a96f9d25fa2c3",
-              "gitBlob": "475d7f4134da0f16dd3fae19bd7ffa34bd24f9ec"
+              "sha256": "00377a6eb0ff7a75c449b570fb75bc40c4c5b31a58ed1d00d5548b4f14f5e5db",
+              "gitBlob": "ab1faa06aae743e7f035013a2cb3393a2be9cac0"
             },
             {
               "path": "workers/listening/src/index.js",
@@ -4313,8 +4330,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "71e29ec7613ec8fb602ac9fcda1d2ca7b6cb92e588d1a668211a96f9d25fa2c3",
-              "gitBlob": "475d7f4134da0f16dd3fae19bd7ffa34bd24f9ec"
+              "sha256": "00377a6eb0ff7a75c449b570fb75bc40c4c5b31a58ed1d00d5548b4f14f5e5db",
+              "gitBlob": "ab1faa06aae743e7f035013a2cb3393a2be9cac0"
             },
             {
               "path": "static/_headers",
@@ -4383,8 +4400,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "71e29ec7613ec8fb602ac9fcda1d2ca7b6cb92e588d1a668211a96f9d25fa2c3",
-              "gitBlob": "475d7f4134da0f16dd3fae19bd7ffa34bd24f9ec"
+              "sha256": "00377a6eb0ff7a75c449b570fb75bc40c4c5b31a58ed1d00d5548b4f14f5e5db",
+              "gitBlob": "ab1faa06aae743e7f035013a2cb3393a2be9cac0"
             }
           ]
         },
@@ -4421,8 +4438,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "71e29ec7613ec8fb602ac9fcda1d2ca7b6cb92e588d1a668211a96f9d25fa2c3",
-              "gitBlob": "475d7f4134da0f16dd3fae19bd7ffa34bd24f9ec"
+              "sha256": "00377a6eb0ff7a75c449b570fb75bc40c4c5b31a58ed1d00d5548b4f14f5e5db",
+              "gitBlob": "ab1faa06aae743e7f035013a2cb3393a2be9cac0"
             }
           ]
         },
@@ -4432,7 +4449,8 @@
           "anchors": [
             "aria-label=\"unshared\"",
             "unsharedEntries",
-            "https://suno.com/song/"
+            "https://suno.com/song/",
+            "class=\"song-wave\""
           ],
           "anchorFiles": {
             "aria-label=\"unshared\"": [
@@ -4452,6 +4470,9 @@
               "test/suno-songs.test.js",
               "test/unshared.test.js",
               "test/visual/pages.spec.js"
+            ],
+            "class=\"song-wave\"": [
+              "lib/suno-songs.js"
             ]
           },
           "storageKeys": [],
@@ -4495,8 +4516,8 @@
             },
             {
               "path": "concepts/hub.js",
-              "sha256": "d89d0eb88da44039c527778cb6365bf200914916707955ffb7f2caf506d98aba",
-              "gitBlob": "9e0d66b518dfdc1d3ab965394f1d340518a6b081"
+              "sha256": "95008396226173c30a789c220565e3606b8d5d3aaa07c715e9a5256ba382f81e",
+              "gitBlob": "c26d9da55dfe7840d6cd40cd760379953371e525"
             },
             {
               "path": "lib/publish-unshared.js",
@@ -4505,8 +4526,8 @@
             },
             {
               "path": "lib/suno-songs.js",
-              "sha256": "48ee9e653d192e3bf00e40080dfc0e8172e9cdba84b6c80030c45a41f66928c4",
-              "gitBlob": "e2044b94dba2ab04999145be7263f61bdb408876"
+              "sha256": "916c5b438b20244bed3d670ac344716f20d6a31ab6008751e8a01d7c77f7d347",
+              "gitBlob": "f874fdd450f6a10c48e13a4c00e41e699fdb9afa"
             }
           ]
         },
@@ -4605,8 +4626,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "71e29ec7613ec8fb602ac9fcda1d2ca7b6cb92e588d1a668211a96f9d25fa2c3",
-              "gitBlob": "475d7f4134da0f16dd3fae19bd7ffa34bd24f9ec"
+              "sha256": "00377a6eb0ff7a75c449b570fb75bc40c4c5b31a58ed1d00d5548b4f14f5e5db",
+              "gitBlob": "ab1faa06aae743e7f035013a2cb3393a2be9cac0"
             },
             {
               "path": "static/station.js",
@@ -4649,8 +4670,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "71e29ec7613ec8fb602ac9fcda1d2ca7b6cb92e588d1a668211a96f9d25fa2c3",
-              "gitBlob": "475d7f4134da0f16dd3fae19bd7ffa34bd24f9ec"
+              "sha256": "00377a6eb0ff7a75c449b570fb75bc40c4c5b31a58ed1d00d5548b4f14f5e5db",
+              "gitBlob": "ab1faa06aae743e7f035013a2cb3393a2be9cac0"
             },
             {
               "path": "site/verbs.ts",
@@ -5287,6 +5308,7 @@
             "lib/suno-songs.js"
           ],
           "features": [
+            "home-rows",
             "listening-chart",
             "unshared-hub"
           ]
