@@ -338,10 +338,10 @@
       "id": "unshared-hub",
       "verified-at": "b7cf78b44cd1ec2ccbb2304fba17af3eb0e9646b",
       "route": "/unshared/",
-      "anchors": ["aria-label=\"unshared\"", "unsharedEntries", "https://suno.com/song/", "class=\"song-wave\""],
-      "text": "The hub heading is unshared does suno and links home. The first row is birds1, with no unshared does prefix on that row. Published Suno songs are a five-column cover grid, the same markup as the listening chart and without a caption, then a lowercase title list. Each title is a song-wave: letters travel on a sine and wrap only between words, the link aria-label is the full title, and the letters are aria-hidden. Reduced motion stops the animation and keeps a static sine. Each cover and title links to https://suno.com/song/<id>. The art is the committed snapshot from npm run suno:sync. The page is in the sitemap and off the home verb list. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
+      "anchors": ["aria-label=\"unshared\"", "unsharedEntries", "https://suno.com/song/", "class=\"song-wave\"", "animation-name: song-wave"],
+      "text": "The hub heading is unshared does suno and links home. The first row is birds1, with no unshared does prefix on that row. Published Suno songs are a five-column cover grid, the same markup as the listening chart and without a caption, then a lowercase title list. Each title is a song-wave: letters sit flat and wrap only between words, the link aria-label is the full title, and the letters are aria-hidden. The sine plays while the link is hovered on a device that hovers, while it is focus-visible, and while it is pressed. Reduced motion keeps the letters flat. Each cover and title links to https://suno.com/song/<id>. The art is the committed snapshot from npm run suno:sync. The page is in the sitemap and off the home verb list. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
       "risks": ["Publish fails when the page or the stylesheet is missing.", "A song without a committed cover is omitted. The page does not fetch Suno.", "The count wave stays scrobbles and films. Song titles use song-wave."],
-      "devices": ["The row hit target is at least 44px. Cover slots follow the listening chart, about 72 CSS px on a phone. The wave is transform only. Check the grid at 390 and 1280."]
+      "devices": ["The row hit target is at least 44px. Cover slots follow the listening chart, about 72 CSS px on a phone. The wave is transform only and must not shift layout. Check the grid at 390 and 1280."]
     },
     {
       "id": "birds1",

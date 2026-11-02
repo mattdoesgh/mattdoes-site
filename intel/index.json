@@ -98,8 +98,8 @@
     },
     {
       "path": "concepts/hub.css",
-      "sha256": "0918e75c8f501b1f5f1baac4b21752c098ce3ae3e92fe440a6acc6d79bd3eedd",
-      "gitBlob": "d63b72262a0d157e128c9f0f24de6e2557aec539"
+      "sha256": "97b4d0dcd19b8bcb20e2183c1ae3db14606d6360586024e05d9b03549518d3e4",
+      "gitBlob": "64b1b828eb9e3041fdaca26771f0abbe32a573ce"
     },
     {
       "path": "concepts/hub.js",
@@ -113,7 +113,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "ca09c78217fda7950ae0a2caab486f74eeef4637f27e3431d6b4b384b96ff410",
+      "sha256": "2d16f11f97f8281c1c085d731a940b6725291e7b33f40b18d2c1890d39ed22a1",
       "gitBlob": null
     },
     {
@@ -618,8 +618,8 @@
     },
     {
       "path": "test/unshared.test.js",
-      "sha256": "c8e0ceaa36a04616057529a8bd5ba8ca591f06337db515435e5856afdfbc4928",
-      "gitBlob": "93178dc3f5bbd738fc2a18874abf579a3bf3faa4"
+      "sha256": "60f012d2e0227b02b5ec8ab9b2de70f5811ea7e701b69f4e0a3a06bf19c01a0b",
+      "gitBlob": "2bc2b0bdec5c023d1f3fb8c4c725e82d99594983"
     },
     {
       "path": "test/url-safety.test.js",
@@ -638,8 +638,8 @@
     },
     {
       "path": "test/visual/pages.spec.js",
-      "sha256": "ae2d8e6c3f226221a8ec20e8ed8b74b7a76b0caac50570dc7c4a4bdc205ddf0c",
-      "gitBlob": "21a835d59166c769ed1292ca33a6421fc6a3fed6"
+      "sha256": "670d5d50e7dc364afe17a08aa789db8f7fa37b86d95013588aa31af118d60abc",
+      "gitBlob": "ac7a6bdafef5ca4db573509bf798e443712a0bde"
     },
     {
       "path": "test/visual/prepare.js",
@@ -4450,7 +4450,8 @@
             "aria-label=\"unshared\"",
             "unsharedEntries",
             "https://suno.com/song/",
-            "class=\"song-wave\""
+            "class=\"song-wave\"",
+            "animation-name: song-wave"
           ],
           "anchorFiles": {
             "aria-label=\"unshared\"": [
@@ -4473,6 +4474,9 @@
             ],
             "class=\"song-wave\"": [
               "lib/suno-songs.js"
+            ],
+            "animation-name: song-wave": [
+              "concepts/hub.css"
             ]
           },
           "storageKeys": [],
@@ -4480,6 +4484,7 @@
           "constants": {},
           "files": [
             "concepts/entries.js",
+            "concepts/hub.css",
             "concepts/hub.js",
             "lib/publish-unshared.js",
             "lib/suno-songs.js",
@@ -4490,6 +4495,7 @@
           ],
           "sources": [
             "concepts/entries.js",
+            "concepts/hub.css",
             "concepts/hub.js",
             "lib/publish-unshared.js",
             "lib/suno-songs.js"
@@ -4513,6 +4519,11 @@
               "path": "concepts/entries.js",
               "sha256": "0cbd1a2176de312104a25a0c08e6a44652c27b4600c0155a44bde4401f43ca35",
               "gitBlob": "d6c2a40c561f11bf9dd6b126a2189772fa0d71ac"
+            },
+            {
+              "path": "concepts/hub.css",
+              "sha256": "97b4d0dcd19b8bcb20e2183c1ae3db14606d6360586024e05d9b03549518d3e4",
+              "gitBlob": "64b1b828eb9e3041fdaca26771f0abbe32a573ce"
             },
             {
               "path": "concepts/hub.js",
