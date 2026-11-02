@@ -186,7 +186,9 @@ main {
 }
 
 /* One wavelength every eight letters. A word never breaks.
-   Row gap clears the 0.28em sine so wrapped lines do not meet. */
+   Letters sit on the baseline until the link is hovered, focused, or pressed.
+   Hover is limited to (hover: hover) so a tap does not leave the wave running.
+   Row gap clears the 0.28em sine so a playing wave does not meet the next line. */
 .song-wave {
   display: flex;
   flex-wrap: wrap;
@@ -206,31 +208,6 @@ main {
   white-space: pre;
 }
 
-.song-word > span {
-  animation-name: song-wave;
-  animation-duration: var(--wave-period);
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-
-.song-word > span:nth-child(8n+2),
-.song-word > span:nth-child(8n+4) {
-  transform: translateY(-0.2em);
-}
-
-.song-word > span:nth-child(8n+3) {
-  transform: translateY(-0.28em);
-}
-
-.song-word > span:nth-child(8n+6),
-.song-word > span:nth-child(8n+8) {
-  transform: translateY(0.2em);
-}
-
-.song-word > span:nth-child(8n+7) {
-  transform: translateY(0.28em);
-}
-
 .song-word > span:nth-child(8n+2) { animation-delay: calc(var(--wave-period) * -0.125); }
 .song-word > span:nth-child(8n+3) { animation-delay: calc(var(--wave-period) * -0.25); }
 .song-word > span:nth-child(8n+4) { animation-delay: calc(var(--wave-period) * -0.375); }
@@ -238,6 +215,23 @@ main {
 .song-word > span:nth-child(8n+6) { animation-delay: calc(var(--wave-period) * -0.625); }
 .song-word > span:nth-child(8n+7) { animation-delay: calc(var(--wave-period) * -0.75); }
 .song-word > span:nth-child(8n+8) { animation-delay: calc(var(--wave-period) * -0.875); }
+
+@media (hover: hover) {
+  .tracks a:hover .song-word > span {
+    animation-name: song-wave;
+    animation-duration: var(--wave-period);
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+}
+
+.tracks a:focus-visible .song-word > span,
+.tracks a:active .song-word > span {
+  animation-name: song-wave;
+  animation-duration: var(--wave-period);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
 
 @keyframes song-wave {
   0%,
@@ -260,7 +254,9 @@ main {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .song-word > span {
+  .tracks a:hover .song-word > span,
+  .tracks a:focus-visible .song-word > span,
+  .tracks a:active .song-word > span {
     animation: none;
   }
 }

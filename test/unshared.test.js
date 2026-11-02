@@ -8,6 +8,7 @@ import { buildFixtureVault, readDist } from './helpers/run-build.js';
 import { parseHeadersFile, headerValues } from './helpers/parse-headers.js';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { unsharedPlayer, unsharedContact, unsharedEnabled } from '../site/verbs.ts';
 import { bandcampSlot, contactBlock, renderFrequency, renderUnshared } from '../site/render.js';
 
@@ -118,6 +119,44 @@ test('a configured email renders the contact mailto', () => {
   const doc = new JSDOM(`<body>${html}</body>`).window.document;
   assert.equal(doc.querySelector('h2')?.textContent, 'Contact');
   assert.equal(doc.querySelector('a')?.getAttribute('href'), 'mailto:person@example.com');
+});
+
+test('song titles wave only on hover, focus, or press', () => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const css = fs.readFileSync(path.join(root, 'concepts', 'hub.css'), 'utf8');
+  const song = css.slice(css.indexOf('.song-wave {'), css.indexOf('.verbs {'));
+  const hoverAt = song.indexOf('@media (hover: hover)');
+  const focusAt = song.indexOf('.tracks a:focus-visible .song-word > span');
+  const framesAt = song.indexOf('@keyframes song-wave');
+  const reducedAt = song.indexOf('@media (prefers-reduced-motion: reduce)');
+  assert.ok(hoverAt > 0 && focusAt > hoverAt && framesAt > focusAt && reducedAt > framesAt);
+
+  const beforeHover = song.slice(0, hoverAt);
+  assert.match(beforeHover, /\.song-word \{[^}]*white-space:\s*nowrap/);
+  assert.doesNotMatch(beforeHover, /animation-name\s*:/);
+  assert.doesNotMatch(beforeHover, /translateY/);
+
+  const hover = song.slice(hoverAt, focusAt);
+  assert.match(hover, /\.tracks a:hover \.song-word > span \{[^}]*animation-name:\s*song-wave/);
+  assert.match(hover, /animation-duration:\s*var\(--wave-period\)/);
+  assert.match(hover, /animation-timing-function:\s*linear/);
+  assert.match(hover, /animation-iteration-count:\s*infinite/);
+  assert.doesNotMatch(hover, /:focus-visible|:active/);
+
+  const focus = song.slice(focusAt, framesAt);
+  assert.match(focus, /\.tracks a:focus-visible \.song-word > span,\s*\.tracks a:active \.song-word > span \{[^}]*animation-name:\s*song-wave/);
+  assert.doesNotMatch(focus, /opacity|top:|left:|width:|height:|margin|padding|transition/);
+
+  const frames = song.slice(framesAt, reducedAt);
+  assert.match(frames, /transform:\s*translateY\(-0\.28em\)/);
+  assert.match(frames, /transform:\s*translateY\(0\.28em\)/);
+  assert.doesNotMatch(frames, /opacity|width:|height:|top:|left:|margin|padding|filter|transition/);
+
+  const reduced = song.slice(reducedAt);
+  assert.match(reduced, /\.tracks a:hover \.song-word > span/);
+  assert.match(reduced, /\.tracks a:focus-visible \.song-word > span/);
+  assert.match(reduced, /\.tracks a:active \.song-word > span/);
+  assert.match(reduced, /animation:\s*none/);
 });
 
 test('a configured Bandcamp URL renders the player slot', () => {
