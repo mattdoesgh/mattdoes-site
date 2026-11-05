@@ -140,14 +140,13 @@
     syncImages();
     var postersBtn = document.querySelector('[data-posters-toggle]');
     var axisBtn = document.querySelector('[data-axis-toggle]');
+    // The visible words are the accessible name. aria-pressed is the state.
     if (postersBtn) {
       postersBtn.setAttribute('aria-pressed', state.posters === 'on' ? 'true' : 'false');
-      postersBtn.setAttribute('aria-label', 'posters ' + state.posters);
     }
     if (axisBtn) {
       var shown = state.posters === 'off' ? 'down' : state.axis;
       axisBtn.setAttribute('aria-pressed', shown === 'down' ? 'true' : 'false');
-      axisBtn.setAttribute('aria-label', 'layout ' + shown);
       if (state.posters === 'off') axisBtn.setAttribute('aria-disabled', 'true');
       else axisBtn.removeAttribute('aria-disabled');
     }
