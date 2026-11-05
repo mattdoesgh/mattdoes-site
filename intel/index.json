@@ -113,7 +113,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "4d9cd1e793773a1cafa09663d3b1ae0f25c803d04014b09fcf6b742022b761f5",
+      "sha256": "331d35a05b1619ea38da19727f82c1a42c6959d51c52130bfa432a6934da6c2a",
       "gitBlob": null
     },
     {
@@ -718,8 +718,8 @@
     },
     {
       "path": "workers/package.json",
-      "sha256": "b859b275dbbff35f80f135ed52fffc7674cfab2e6e4dcd4f20ba35815bcbe90d",
-      "gitBlob": "660a5aaffa968e231541382870d368f7c587c91d"
+      "sha256": "f61c73a14e6d49cdbfaecffd5cae66f1b79d7cd8b535658812ba5e9e547d4c3b",
+      "gitBlob": "5f752db1a68b3a520da17eb80af218e812e5ce8a"
     },
     {
       "path": "workers/rebuild/src/index.js",
