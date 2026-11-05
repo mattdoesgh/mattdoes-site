@@ -7,6 +7,7 @@ import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 import { formatScrobbleCount } from '../lib/format.js';
 import { CHART_SPARES, LISTENING_PERIODS, TOP_LIMIT, albumImageUrl, albumsWithCovers, cleanCoverSet, coverVariantUrl, musicUrl } from '../lib/lastfm.js';
 import { staticListen } from '../lib/listen-line.js';
+import { renderHomeSuno } from '../lib/suno-songs.js';
 
 const LUCIA_MAIL = 'mailto:luciadoes@mail.grokbot.com';
 
@@ -325,6 +326,7 @@ export function renderHome(ctx) {
         <p class="verb-kicker" aria-hidden="true">${esc(kicker)}</p>
         <ol class="verbs">
         ${items}
+        ${renderHomeSuno()}
         </ol>
       </nav>`,
   });
@@ -693,7 +695,7 @@ export function renderListen(ctx) {
   });
 }
 
-/** The published hub. It has no socials, mailbox, or player. */
+/** The published hub. Song art is the committed Suno snapshot. No mailbox or player. */
 export function renderUnshared(ctx) {
   return renderHubDocument(ctx && ctx.siteUrl);
 }

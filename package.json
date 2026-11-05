@@ -22,6 +22,7 @@
     "pretest": "NODE_ENV=production LISTENING_OFFLINE=1 LETTERBOXD_OFFLINE=1 SITE_URL=https://mattdoes.online node build.js",
     "test": "node --test \"test/**/*.test.js\"",
     "deploy:workers": "node scripts/deploy-workers.js",
+    "suno:sync": "node scripts/suno-sync.js",
     "optimize-media": "node scripts/optimize-media.js",
     "sync-media": "node --env-file-if-exists=.env scripts/sync-media.js"
   },

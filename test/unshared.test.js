@@ -8,6 +8,7 @@ import { buildFixtureVault, readDist } from './helpers/run-build.js';
 import { parseHeadersFile, headerValues } from './helpers/parse-headers.js';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { unsharedPlayer, unsharedContact, unsharedEnabled } from '../site/verbs.ts';
 import { bandcampSlot, contactBlock, renderFrequency, renderUnshared } from '../site/render.js';
 
@@ -48,11 +49,34 @@ test('unshared has no contact mailto and the hub is the built page', () => {
 
   const html = renderUnshared({ siteUrl: 'https://mattdoes.online' });
   const doc = new JSDOM(html).window.document;
-  assert.equal(doc.querySelector('h1')?.textContent, 'matt does unshared');
+  assert.equal(doc.querySelector('title')?.textContent, 'unshared does suno');
+  assert.equal(doc.querySelector('h1')?.textContent, 'unshared does suno');
+  assert.equal(doc.querySelector('meta[name="description"]')?.getAttribute('content'), 'unshared does suno.');
   assert.equal(doc.querySelector('.outlinks'), null);
   assert.equal(doc.querySelector('p.lede'), null);
   assert.equal(html.includes('mailto:'), false);
   assert.equal(html.includes('Fun is unshared'), false);
+  assert.equal(doc.querySelector('a.profile'), null);
+  assert.equal(html.includes('https://suno.com/@unshared'), false);
+  const covers = [...doc.querySelectorAll('.album-tile')];
+  const titles = [...doc.querySelectorAll('.tracks a')];
+  assert.equal(covers.length, 24);
+  assert.equal(titles.length, 24);
+  assert.equal(covers[0].getAttribute('href'), 'https://suno.com/song/77e2f911-595d-416a-9e5a-f14beea308ff');
+  assert.equal(covers[0].getAttribute('rel'), 'noopener noreferrer');
+  assert.equal(covers[0].querySelector('img')?.getAttribute('alt'), 'funerally yours');
+  assert.equal(titles[0].getAttribute('aria-label'), 'funerally yours');
+  assert.equal(titles[0].querySelector('.song-wave')?.getAttribute('aria-hidden'), 'true');
+  assert.deepEqual([...titles[0].querySelectorAll('.song-word')].map((word) => word.textContent), ['funerally', 'yours']);
+  assert.equal([...titles[0].querySelectorAll('.song-word')].some((word) => word.textContent.includes(' ')), false);
+  assert.equal(covers[0].querySelector('img')?.getAttribute('loading'), null);
+  assert.equal(covers[5].querySelector('img')?.getAttribute('loading'), 'lazy');
+  assert.equal(titles[0].textContent, 'funerally yours');
+  assert.equal(titles.at(-1).textContent, 'zen');
+  assert.ok(html.indexOf('</h1>') < html.indexOf('class="album-grid"'));
+  assert.ok(html.indexOf('class="album-grid"') < html.indexOf('class="tracks"'));
+  assert.ok(html.indexOf('class="tracks"') < html.indexOf('aria-label="unshared"'));
+  assert.equal(html.includes('cdn2.suno.ai'), false);
 
   const birds = fs.readFileSync(path.join(distDir, 'unshared', 'birds1', 'index.html'), 'utf8');
   const birdsDoc = new JSDOM(birds).window.document;
@@ -72,6 +96,12 @@ test('unshared has no contact mailto and the hub is the built page', () => {
   for (const rel of ['index.html', 'watching/index.html', 'listening/index.html', '404.html', 'unshared/index.html', 'unshared/birds1/index.html']) {
     const text = fs.readFileSync(path.join(distDir, rel), 'utf8');
     assert.doesNotMatch(text, /music\.apple\.com|open\.spotify\.com|bandcamp\.com|mailto:/i, rel);
+    if (rel === 'unshared/index.html') {
+      assert.match(text, /href="https:\/\/suno\.com\/song\/77e2f911-595d-416a-9e5a-f14beea308ff"/);
+      assert.equal(text.includes('https://suno.com/@unshared'), false);
+    } else {
+      assert.equal(text.includes('suno.com'), false, rel);
+    }
   }
 });
 
@@ -89,6 +119,44 @@ test('a configured email renders the contact mailto', () => {
   const doc = new JSDOM(`<body>${html}</body>`).window.document;
   assert.equal(doc.querySelector('h2')?.textContent, 'Contact');
   assert.equal(doc.querySelector('a')?.getAttribute('href'), 'mailto:person@example.com');
+});
+
+test('song titles wave only on hover, focus, or press', () => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const css = fs.readFileSync(path.join(root, 'concepts', 'hub.css'), 'utf8');
+  const song = css.slice(css.indexOf('.song-wave {'), css.indexOf('.verbs {'));
+  const hoverAt = song.indexOf('@media (hover: hover)');
+  const focusAt = song.indexOf('.tracks a:focus-visible .song-word > span');
+  const framesAt = song.indexOf('@keyframes song-wave');
+  const reducedAt = song.indexOf('@media (prefers-reduced-motion: reduce)');
+  assert.ok(hoverAt > 0 && focusAt > hoverAt && framesAt > focusAt && reducedAt > framesAt);
+
+  const beforeHover = song.slice(0, hoverAt);
+  assert.match(beforeHover, /\.song-word \{[^}]*white-space:\s*nowrap/);
+  assert.doesNotMatch(beforeHover, /animation-name\s*:/);
+  assert.doesNotMatch(beforeHover, /translateY/);
+
+  const hover = song.slice(hoverAt, focusAt);
+  assert.match(hover, /\.tracks a:hover \.song-word > span \{[^}]*animation-name:\s*song-wave/);
+  assert.match(hover, /animation-duration:\s*var\(--wave-period\)/);
+  assert.match(hover, /animation-timing-function:\s*linear/);
+  assert.match(hover, /animation-iteration-count:\s*infinite/);
+  assert.doesNotMatch(hover, /:focus-visible|:active/);
+
+  const focus = song.slice(focusAt, framesAt);
+  assert.match(focus, /\.tracks a:focus-visible \.song-word > span,\s*\.tracks a:active \.song-word > span \{[^}]*animation-name:\s*song-wave/);
+  assert.doesNotMatch(focus, /opacity|top:|left:|width:|height:|margin|padding|transition/);
+
+  const frames = song.slice(framesAt, reducedAt);
+  assert.match(frames, /transform:\s*translateY\(-0\.28em\)/);
+  assert.match(frames, /transform:\s*translateY\(0\.28em\)/);
+  assert.doesNotMatch(frames, /opacity|width:|height:|top:|left:|margin|padding|filter|transition/);
+
+  const reduced = song.slice(reducedAt);
+  assert.match(reduced, /\.tracks a:hover \.song-word > span/);
+  assert.match(reduced, /\.tracks a:focus-visible \.song-word > span/);
+  assert.match(reduced, /\.tracks a:active \.song-word > span/);
+  assert.match(reduced, /animation:\s*none/);
 });
 
 test('a configured Bandcamp URL renders the player slot', () => {
