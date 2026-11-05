@@ -113,7 +113,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "6bb425dbefab2cb1e79befcee5426e9c8f432443676318dfba2bdbd7a6a2abc7",
+      "sha256": "48d95ae43f5d1d209b163c997690e5aad5dca6534068c3960bef203cd3b15b15",
       "gitBlob": null
     },
     {
@@ -223,8 +223,8 @@
     },
     {
       "path": "package.json",
-      "sha256": "3a62859bc567109d0a293a0acb0debe9d2bbf686264ea3db6b3bc8fd5ad65cf3",
-      "gitBlob": "949539a31215130ba2c4596754762a6bab1094d5"
+      "sha256": "35bf421da890f2c8d2d5cc4064366610ce54d43fe8737758652d675576d33ea8",
+      "gitBlob": "72d32ed8e0c927fe1d612da70c3f9d2e113b2c9d"
     },
     {
       "path": "playwright.config.js",
