@@ -52,7 +52,7 @@
     },
     {
       "id": "wrangler-pin",
-      "verified-at": "f8d0ae6a60fb1b6b530d430c5d283d028e1e197f",
+      "verified-at": "e37520a2a93425a2a5158d7edc417c3ac77e58d6",
       "paths": ["workers/package-lock.json", "scripts/wrangler-bin.js", "scripts/deploy-workers.js"],
       "text": "Wrangler stays at the version in workers/package-lock.json. Do not run npx wrangler. Keep the CSP_RL binding."
     },
@@ -70,7 +70,7 @@
     },
     {
       "id": "zero-spend",
-      "verified-at": "765f7e446cf53f15f8e0f1f3ddf0d7b18ff882d2",
+      "verified-at": "e37520a2a93425a2a5158d7edc417c3ac77e58d6",
       "paths": ["package.json"],
       "text": "Zero spend. No new runtime dependency. Dev-only tooling has to be a plain Node script."
     },
@@ -104,7 +104,7 @@
     },
     {
       "id": "comment-lint",
-      "verified-at": "765f7e446cf53f15f8e0f1f3ddf0d7b18ff882d2",
+      "verified-at": "e37520a2a93425a2a5158d7edc417c3ac77e58d6",
       "paths": [
         "scripts/lint-comments.js",
         "package.json",
