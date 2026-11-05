@@ -52,7 +52,7 @@
     },
     {
       "id": "wrangler-pin",
-      "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
+      "verified-at": "f8d0ae6a60fb1b6b530d430c5d283d028e1e197f",
       "paths": ["workers/package-lock.json", "scripts/wrangler-bin.js", "scripts/deploy-workers.js"],
       "text": "Wrangler stays at the version in workers/package-lock.json. Do not run npx wrangler. Keep the CSP_RL binding."
     },
