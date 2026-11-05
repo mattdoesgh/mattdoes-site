@@ -30,6 +30,10 @@ body {
   height: 100dvh;
   overflow: hidden;
   padding: var(--space-page);
+  padding-top: var(--space-page-top);
+  padding-right: var(--space-page-right);
+  padding-bottom: var(--space-page-bottom);
+  padding-left: var(--space-page-left);
   background: var(--field);
   color: var(--ink);
   font-family: var(--body);
@@ -280,6 +284,10 @@ input[type="range"]::-moz-range-thumb {
 @media (min-width: 1024px) {
   body {
     padding: var(--space-page-desk);
+    padding-top: var(--space-page-desk-top);
+    padding-right: var(--space-page-desk-right);
+    padding-bottom: var(--space-page-desk-bottom);
+    padding-left: var(--space-page-desk-left);
   }
 
   .sign {

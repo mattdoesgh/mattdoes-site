@@ -8,7 +8,7 @@
 // ⚠ Deploy coupling: this file is bundled into every Worker that imports it.
 // Editing it (or any other module a Worker bundles) means redeploying ALL
 // workers. From the repo root, `npm run deploy:workers` deploys listening,
-// geo, csp-report, and rebuild with the wrangler pin in
+// csp-report, and rebuild with the wrangler pin in
 // workers/package-lock.json.
 
 export const ALLOWED_ORIGIN = 'https://mattdoes.online';
@@ -143,7 +143,7 @@ export function withCache(response, cacheControl, origin = ALLOWED_ORIGIN) {
  * CORS preflight response (OPTIONS).
  *
  * @param {string} [origin]
- * @param {string} [methods] allowed methods. Listening and geo are GET;
+ * @param {string} [methods] allowed methods. Listening is GET;
  *   the CSP report collector allows POST.
  * @returns {Response}
  */

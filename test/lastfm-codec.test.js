@@ -8,7 +8,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  albumImageUrl, albumsWithCovers, decodeTopAlbums, decodeTopArtists, decodeTrack, decodeTracks,
+  albumImageUrl, albumsWithCovers, coverVariantUrl, decodeTopAlbums, decodeTopArtists, decodeTrack, decodeTracks,
   lastfmError, musicUrl, recentTracksUrl, topAlbumsUrl, topArtistsUrl,
 } from '../lib/lastfm.js';
 
@@ -174,6 +174,7 @@ test('lastfm: album art keeps the largest real Last.fm cover', () => {
   const grey = 'https://lastfm.freetls.fastly.net/i/u/300x300/4128a6eb29f94943c9d206c08e625904.png';
   const legacy = 'https://lastfm.freetls.fastly.net/i/u/300x300/c6f59c1e5e7240a4c0d427abd71f3dbb.jpg';
   const mirrored = 'https://media.mattdoes.online/covers/0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef.jpg';
+  const avif = 'https://media.mattdoes.online/covers/0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef.avif';
   assert.equal(albumImageUrl(star), '');
   assert.equal(albumImageUrl(grey), '');
   assert.equal(albumImageUrl(legacy), '');
@@ -185,6 +186,11 @@ test('lastfm: album art keeps the largest real Last.fm cover', () => {
   assert.equal(albumImageUrl(large), large);
   assert.equal(albumImageUrl(current), current);
   assert.equal(albumImageUrl(mirrored), mirrored);
+  assert.equal(albumImageUrl(avif), '');
+  assert.equal(coverVariantUrl(avif), avif);
+  assert.equal(coverVariantUrl(mirrored), mirrored);
+  assert.equal(coverVariantUrl(`${avif}?x=1`), '');
+  assert.equal(coverVariantUrl('https://evil.example/covers/' + 'ab'.repeat(32) + '.avif'), '');
   const albums = decodeTopAlbums({
     topalbums: {
       album: [

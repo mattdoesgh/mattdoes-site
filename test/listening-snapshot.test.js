@@ -45,6 +45,44 @@ const SAMPLE_TRACK = {
   nowPlaying: false,
 };
 
+test('snapshot: a fresh cache keeps mirrored cover variants and drops the rest', async () => {
+  const restoreEnv = cleanEnv();
+  process.env.LISTENING_OFFLINE = '1';
+  const cacheDir = makeTempDir('mattdoes-cache-');
+  const avif = `https://media.mattdoes.online/covers/${'ab'.repeat(32)}.avif`;
+  const jpeg = `https://media.mattdoes.online/covers/${'cd'.repeat(32)}.jpg`;
+  fs.writeFileSync(path.join(cacheDir, 'lastfm.json'), JSON.stringify({
+    tracks: [SAMPLE_TRACK],
+    playcount: 10,
+    periods: {
+      '1month': {
+        albums: [{
+          name: 'Konoyo',
+          artist: 'Tim Hecker',
+          playcount: 3,
+          url: 'https://www.last.fm/music/Tim+Hecker/Konoyo',
+          image: jpeg,
+          imageSet: [
+            { url: avif, width: 240, type: 'image/avif' },
+            { url: 'https://evil.example/a.avif', width: 240, type: 'image/avif' },
+            { url: avif, width: 240, type: 'image/avif' },
+            { url: jpeg, width: 300, type: 'image/jpeg' },
+          ],
+        }],
+      },
+    },
+  }));
+  try {
+    const snap = await fetchListeningSnapshot({ siteUrl: 'https://example.test', cacheDir });
+    const album = snap.periods['1month'].albums[0];
+    assert.equal(album.image, jpeg);
+    assert.deepEqual(album.imageSet, [
+      { url: avif, width: 240, type: 'image/avif' },
+      { url: jpeg, width: 300, type: 'image/jpeg' },
+    ]);
+  } finally { restoreEnv(); }
+});
+
 test('snapshot: uses the Worker payload and writes it to the cache', async () => {
   const restoreEnv = cleanEnv();
   const cacheDir = makeTempDir('mattdoes-cache-');

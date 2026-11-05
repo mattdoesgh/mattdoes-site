@@ -1,27 +1,6 @@
-// Audit backlog: "W3C coverage — Revisit disabled html-validate WCAG rules".
-// Covers audit findings #9, #13, #15 (W3C / standards side).
-//
-// html-validate config — the audit asked to revisit the four disabled
-//      rules now that the accent control is a real <fieldset> with a
-//      <legend> and authored inline styles were migrated to classes:
-//        - wcag/h71  RE-ENABLED  (the <fieldset> now has a <legend>)
-//        - wcag/h32  RE-ENABLED  (form/control structure is now valid)
-//        - no-raw-characters  RE-ENABLED  (output is clean)
-//        - no-inline-style  KEPT OFF  — Shiki emits `style="--shiki-…"`
-//          custom-property declarations on every highlighted token; this is
-//          generated, not authored, presentation. (html-validate's default
-//          no-inline-style ignores custom-property-only style attributes, but
-//          the rule is left off deliberately so a future Shiki upgrade that
-//          emits literal declarations does not break the build.)
-//        - attribute-empty-style  KEPT OFF  — pages are rendered by React
-//         , and renderToStaticMarkup serializes boolean attributes
-//          as `hidden=""` (e.g. the idle now-playing pill) with no bare-form
-//          option. `hidden=""` and `hidden` are semantically identical valid
-//          HTML5; this joins the sibling serialization-style rules already off
-//          (attribute-boolean-style, void-style) for the same reason.
-//      This test asserts the config matches that decision, and that the
-//      generated fixture output still passes html-validate with the three
-//      re-enabled rules ON.
+// html-validate pins. wcag/h71, wcag/h32, no-raw-characters, and
+// no-inline-style stay on. attribute-empty-style stays off because the
+// pages emit empty attributes such as alt="".
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -41,20 +20,16 @@ test('.htmlvalidate.json keeps the intended rule decisions', () => {
     fs.readFileSync(path.join(REPO_ROOT, '.htmlvalidate.json'), 'utf8'));
   const rules = cfg.rules || {};
 
-  // Re-enabled rules must NOT be present as "off" (or absent → default on).
+  // Absent means the recommended default, which is on.
   for (const rule of ['wcag/h71', 'wcag/h32', 'no-raw-characters']) {
-    assert.notEqual(rules[rule], 'off',
-      `${rule} should be re-enabled (not "off") — see the comment in this file`);
+    assert.notEqual(rules[rule], 'off', `${rule} stays on`);
   }
 
-  // no-inline-style re-enabled — Shiki tokens use build-time CSS classes.
-  assert.notEqual(rules['no-inline-style'], 'off',
-    'no-inline-style should be re-enabled (Shiki uses CSS classes)');
+  assert.notEqual(rules['no-inline-style'], 'off', 'no-inline-style stays on');
 
-  // attribute-empty-style stays off — React serializes boolean attributes as
-  // `hidden=""` (renderToStaticMarkup has no bare-form option).
+  // attribute-empty-style stays off. The pages emit empty attributes such as alt="".
   assert.equal(rules['attribute-empty-style'], 'off',
-    'attribute-empty-style must stay disabled (React boolean-attr serialization)');
+    'attribute-empty-style stays off');
 });
 
 test('the fixture build still passes html-validate with the tightened rules', () => {

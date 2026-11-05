@@ -1,5 +1,4 @@
-// The build no longer reads notes. The registry guards are the input check,
-// and the in-repo tree still builds.
+// The registry guards are the input check, and the in-repo tree builds.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';

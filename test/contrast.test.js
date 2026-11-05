@@ -41,12 +41,12 @@ const flip = props(block(tokens, 'body[data-polarity="flip"]'));
 test('field and ink clear AA on both polarities', () => {
   const field = resolve(root, root, '--field');
   const ink = resolve(root, root, '--ink');
-  const signal = resolve(root, root, '--signal');
+  const pink = resolve(root, root, '--pink');
   assert.equal(field.toLowerCase(), '#000000');
   assert.equal(ink.toLowerCase(), '#ffffff');
-  assert.equal(signal.toLowerCase(), '#f7c8d8');
+  assert.equal(pink.toLowerCase(), '#f7c8d8');
   assert.ok(wcagContrast(ink, field) >= 4.5, 'white on black');
-  assert.ok(wcagContrast(signal, field) >= 4.5, 'pink on black');
+  assert.ok(wcagContrast(pink, field) >= 4.5, 'pink on black');
   assert.equal(resolve(flip, root, '--field').toLowerCase(), '#f7c8d8');
   assert.equal(resolve(flip, root, '--ink').toLowerCase(), '#000000');
   assert.ok(wcagContrast(resolve(flip, root, '--ink'), resolve(flip, root, '--field')) >= 4.5, 'black on pink');

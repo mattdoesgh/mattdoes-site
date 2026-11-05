@@ -5,8 +5,9 @@ import { renderHubDocument } from '../concepts/hub.js';
 import { socialIcon } from './social-icons.js';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 import { formatScrobbleCount } from '../lib/format.js';
-import { CHART_SPARES, LISTENING_PERIODS, TOP_LIMIT, albumImageUrl, albumsWithCovers, musicUrl } from '../lib/lastfm.js';
+import { CHART_SPARES, LISTENING_PERIODS, TOP_LIMIT, albumImageUrl, albumsWithCovers, cleanCoverSet, coverVariantUrl, musicUrl } from '../lib/lastfm.js';
 import { staticListen } from '../lib/listen-line.js';
+import { renderHomeSuno } from '../lib/suno-songs.js';
 
 const LUCIA_MAIL = 'mailto:luciadoes@mail.grokbot.com';
 
@@ -221,7 +222,7 @@ function shell({
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>${esc(title)}</title>
     <meta name="description" content="${esc(description)}">
     <link rel="canonical" href="${esc(canonical)}">
@@ -325,6 +326,7 @@ export function renderHome(ctx) {
         <p class="verb-kicker" aria-hidden="true">${esc(kicker)}</p>
         <ol class="verbs">
         ${items}
+        ${renderHomeSuno()}
         </ol>
       </nav>`,
   });
@@ -381,7 +383,7 @@ function film(watch, index) {
   const loading = index === 0 ? 'eager' : 'lazy';
   const priority = index === 0 ? ' fetchpriority="high"' : '';
   const still = poster
-    ? `<img src="${esc(poster)}" alt=""${dims} loading="${loading}" decoding="async"${priority}>`
+    ? `<img data-src="${esc(poster)}" alt=""${dims} loading="${loading}" decoding="async"${priority}>`
     : '';
   const review = watch.review ? ` data-review="${esc(String(watch.review).replace(/\s+/g, ' ').trim())}"` : '';
   const year = watch.year ? ` data-year="${esc(watch.year)}"` : '';
@@ -478,6 +480,17 @@ function watchHead(count) {
       </div>`;
 }
 
+/**
+ * The live region speaks a layout change. The pull hint is visual only.
+ * Both sit after the scene so the feed's next sibling stays the dialog.
+ *
+ * @returns {string}
+ */
+function watchStatus() {
+  return `<p class="layout-live" aria-live="polite"></p>
+      <p class="pull-hint" aria-hidden="true"><span class="pull-hint-label">pull for down</span><span class="pull-hint-bar"></span></p>`;
+}
+
 export function renderWatch(ctx) {
   const watches = Array.isArray(ctx.watches) ? ctx.watches : [];
   const verb = verbByRenderer('watch');
@@ -499,7 +512,8 @@ export function renderWatch(ctx) {
     main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
       ${watchHead(count)}
       ${feed}
-      ${scene(watches)}`,
+      ${scene(watches)}
+      ${watchStatus()}`,
   });
 }
 
@@ -530,6 +544,55 @@ function albumLabel(name, artist) {
   return artist ? `${name} — ${artist}` : name;
 }
 
+// Five columns. Phone padding is --space-page. Desktop padding is the
+// horizontal half of --space-page-desk. The descriptors are device pixels
+// of that box: about 215 at 390×DPR 3, about 485 at 1280×DPR 2.
+const COVER_SIZES = '(min-width: 1024px) calc((100vw - max(clamp(1.25rem, 2vw, 2.4rem), env(safe-area-inset-left, 0px)) - max(clamp(1.25rem, 2vw, 2.4rem), env(safe-area-inset-right, 0px))) / 5), calc((100vw - max(clamp(1rem, 3vw, 2.75rem), env(safe-area-inset-left, 0px)) - max(clamp(1rem, 3vw, 2.75rem), env(safe-area-inset-right, 0px))) / 5)';
+
+/**
+ * srcset candidates for one type, narrowest first. A type other than JPEG
+ * is omitted unless it includes the 300px file, so desktop does not upscale
+ * the phone file.
+ *
+ * @param {{ url: string, width: number, type: string }[]} set
+ * @param {string} type
+ * @returns {string}
+ */
+function coverSrcset(set, type) {
+  const items = set.filter((item) => item.type === type).sort((a, b) => a.width - b.width);
+  if (type !== 'image/jpeg' && !items.some((item) => item.width >= 300)) return '';
+  if (type === 'image/jpeg' && !items.some((item) => item.width < 300)) return '';
+  return items.map((item) => `${item.url} ${item.width}w`).join(', ');
+}
+
+/**
+ * The baseline JPEG, plus picture sources when width variants exist.
+ * width and height stay 300 so the slot does not move.
+ *
+ * @param {string} image
+ * @param {unknown} imageSet
+ * @param {string} label
+ * @returns {string}
+ */
+function coverImg(image, imageSet, label) {
+  const plain = `<img src="${esc(image)}" alt="${esc(label)}" width="300" height="300" loading="lazy" decoding="async">`;
+  const mirrored = coverVariantUrl(image);
+  if (!mirrored || !mirrored.endsWith('.jpg')) return plain;
+  const set = cleanCoverSet(imageSet);
+  if (!set.some((item) => item.type === 'image/jpeg' && item.url === mirrored && item.width === 300)) {
+    set.push({ url: mirrored, width: 300, type: 'image/jpeg' });
+  }
+  const sources = ['image/avif', 'image/webp'].map((type) => {
+    const srcset = coverSrcset(set, type);
+    return srcset ? `<source type="${type}" srcset="${esc(srcset)}" sizes="${COVER_SIZES}">` : '';
+  }).join('');
+  const jpegSet = coverSrcset(set, 'image/jpeg');
+  const srcset = jpegSet ? ` srcset="${esc(jpegSet)}" sizes="${COVER_SIZES}"` : '';
+  const img = `<img src="${esc(mirrored)}"${srcset} alt="${esc(label)}" width="300" height="300" loading="lazy" decoding="async">`;
+  if (!sources && !srcset) return plain;
+  return sources ? `<picture>${sources}${img}</picture>` : img;
+}
+
 /**
  * One cover tile. Albums with no real art are omitted. Play counts are not printed.
  *
@@ -548,7 +611,7 @@ function albumTile(row, spare = false) {
   const cap = `<span class="album-cap"><span class="album-name">${esc(name)}</span>${
     artist ? `<span class="album-by">${esc(artist)}</span>` : ''
   }</span>`;
-  const img = `<img src="${esc(image)}" alt="${esc(label)}" width="300" height="300" loading="lazy" decoding="async">`;
+  const img = coverImg(image, row?.imageSet, label);
   const title = ` title="${esc(label)}"`;
   const hidden = spare ? ' hidden' : '';
   if (href) return `<a class="album-tile"${hidden} href="${esc(href)}"${relFor(href)}${title}>${img}${cap}</a>`;
@@ -632,7 +695,7 @@ export function renderListen(ctx) {
   });
 }
 
-/** The published hub. It has no socials, mailbox, or player. */
+/** The published hub. Song art is the committed Suno snapshot. No mailbox or player. */
 export function renderUnshared(ctx) {
   return renderHubDocument(ctx && ctx.siteUrl);
 }

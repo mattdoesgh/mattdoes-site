@@ -2,6 +2,8 @@
 
 [matt does online](https://mattdoes.online). Static pages from `site/verbs.ts`, on Cloudflare Pages, with same-origin Workers under `/api/`.
 
+Agents start at [AGENTS.md](AGENTS.md). The generated map is [intel/index.json](intel/index.json).
+
 ## run, test, build, deploy
 
 ```
@@ -21,6 +23,5 @@ npm run deploy:workers
 ## workers
 
 - `mattdoes-listening` — `/api/listening/now`, `/api/listening/recent`, `/api/listening/charts`
-- `mattdoes-geo` — `/api/geo/lookup`. The page does not call it.
 - `mattdoes-csp-report` — `/api/csp-report`
 - `mattdoes-rebuild` — no route. A six-hour cron POSTs the Pages deploy hook. Listening asks for that rebuild after the Monday 11:00 UTC chart refresh.

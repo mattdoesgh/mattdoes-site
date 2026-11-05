@@ -448,7 +448,7 @@ function maybeAuto() {
   if (reduce) paint();
 }
 
-// PannerNode no longer applies doppler, so pitch follows radial speed.
+// PannerNode does not apply doppler, so pitch follows radial speed.
 // A solo bird covers about one world-unit a second, which is a clear shift
 // against a speed of sound of 7.
 function doppler(bird, cam) {

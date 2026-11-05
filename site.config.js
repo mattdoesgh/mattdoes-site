@@ -1,24 +1,9 @@
-// site.config.js — build settings and per-section copy.
-// Leave any string empty to omit that element from the rendered page.
+// site.config.js — build settings the render and the fetchers read.
 
 /**
- * @typedef {object} SiteSection
- * @property {string} [who]    left-rail heading
- * @property {string} [bio]    left-rail subtitle
- * @property {string} [intro]  lede above the listing
- *
  * @typedef {object} SiteConfig
  * @property {string} title
  * @property {string} url     canonical origin, no trailing slash
- * @property {{
- *   listening: SiteSection,
- * }} sections
- * @property {string} footerText
- * @property {{
- *   home: { lat: number, lng: number, label: string },
- *   endpoint: string,
- * }} geo
- * @property {string} status   manual override for the topbar status pill
  * @property {{
  *   username: string,    // intentionally blank in the repo — set via env
  *   limit: number,       // # of recent tracks to render
@@ -38,45 +23,9 @@ export const siteConfig = {
   title: 'mattdoes.online',
   url:   'https://mattdoes.online',
 
-  // Per-section labels. Page components may use `who` as a concise title;
-  // descriptions stay empty because the writing itself explains each section.
-  sections: {
-    listening: {
-      who:   'listening',
-      bio:   '',
-      intro: '',
-    },
-  },
-
-  // Footer text on generic pages. Empty string = render nothing.
-  footerText: '© 2026 · mattdoes.online',
-
-  // Animated GeoJSON background.
-  // - `home` is the city baked into static/home.geojson at build time
-  //   (see scripts/bake-home-geojson.js). Lat/lng are used by the bake
-  //   step and at runtime as a fallback when reverse-geocoding fails.
-  // - `endpoint` is a same-origin path served by workers/geo, which
-  //   reverse-geocodes a visitor's coords to a city polygon. Same-origin
-  //   keeps connect-src 'self' working — no CSP changes needed.
-  geo: {
-    home: {
-      lat:   29.7604,
-      lng:  -95.3698,
-      label: 'Houston, TX',
-    },
-    endpoint: '/api/geo/lookup',
-  },
-
-  // Status pill in the topbar. When `status` is empty and a Last.fm track is
-  // currently playing at build time, build.js injects 'now: <artist — track>'
-  // automatically. Set a fixed string here to override that with a static
-  // site-notice pill (rendered by PageShell; the live poller leaves it alone).
-  status: '',
-
   // Last.fm integration for /listening/.
-  // IMPORTANT: username is intentionally not set here to keep it out of the
-  // public repo. Set LASTFM_USERNAME (and LASTFM_API_KEY) as Cloudflare Pages
-  // env vars. The listing page also hides the username from its left rail.
+  // Username is blank here so it stays out of the public repo. Set
+  // LASTFM_USERNAME and LASTFM_API_KEY as Cloudflare Pages env vars.
   //
   // These settings govern the *build-time* snapshot rendered into the static
   // HTML. Recent plays stay live through workers/listening. The monthly

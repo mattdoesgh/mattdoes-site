@@ -1,4 +1,4 @@
-// Fluid type and the poster settings across the widths Matt asked for.
+// Fluid type and the poster settings across the width list below.
 // 640 is a 1280px window at 200% zoom: the layout viewport halves.
 
 import { test, expect } from 'playwright/test';

@@ -43,7 +43,8 @@ const doc = new JSDOM(renderWatch(ctx)).window.document;
 test('a mirrored poster is a lazy-capable strip image and the wide file stays closed', () => {
   const img = doc.querySelector('.film-open img');
   const opener = img.closest('.film-open');
-  assert.equal(img.getAttribute('src'), 'https://media.mattdoes.online/posters/abc.jpg');
+  assert.equal(img.hasAttribute('src'), false);
+  assert.equal(img.getAttribute('data-src'), 'https://media.mattdoes.online/posters/abc.jpg');
   assert.equal(img.getAttribute('alt'), '');
   assert.equal(img.getAttribute('width'), '300');
   assert.equal(img.getAttribute('height'), '450');
@@ -67,7 +68,8 @@ test('a mirrored poster is a lazy-capable strip image and the wide file stays cl
 test('an unmirrored poster is omitted', () => {
   const films = [...doc.querySelectorAll('.film')];
   assert.equal(films.length, 2);
-  assert.equal(films[0].querySelector('img')?.getAttribute('src'), 'https://media.mattdoes.online/posters/abc.jpg');
+  assert.equal(films[0].querySelector('img')?.getAttribute('data-src'), 'https://media.mattdoes.online/posters/abc.jpg');
+  assert.equal(films[0].querySelector('img')?.hasAttribute('src'), false);
   assert.equal(films[1].querySelector('img'), null);
   assert.equal(films[1].querySelector('.name')?.textContent, 'No Still');
   assert.doesNotMatch(doc.body.textContent, /No still on file|Evidence/);

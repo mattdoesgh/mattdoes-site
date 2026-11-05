@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Deploy listening, geo, csp-report, and rebuild with the wrangler binary
+// Deploy listening, csp-report, and rebuild with the wrangler binary
 // pinned in workers/package-lock.json. Run from the repo root:
 // npm run deploy:workers
 
@@ -10,7 +10,7 @@ import { resolveWranglerBin } from './wrangler-bin.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const bin = resolveWranglerBin(root);
-const workers = ['listening', 'geo', 'csp-report', 'rebuild'];
+const workers = ['listening', 'csp-report', 'rebuild'];
 
 for (const name of workers) {
   const res = spawnSync(process.execPath, [bin, 'deploy'], {

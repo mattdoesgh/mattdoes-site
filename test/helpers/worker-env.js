@@ -1,5 +1,6 @@
-// Test helper — minimal stubs for the Cloudflare Worker runtime so the geo
-// and listening Workers can be exercised under node:test without wrangler.
+// Test helper — minimal stubs for the Cloudflare Worker runtime so the
+// listening Worker and the other Workers can be exercised under node:test
+// without wrangler.
 //
 // Provides: an in-memory KV namespace, an ExecutionContext stub, a Cache API
 // stub, and an installer for the global `caches` object.
