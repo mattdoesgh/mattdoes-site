@@ -61,6 +61,97 @@ test('the unshared row is birds1', async ({ page }) => {
   expect(box.height).toBeGreaterThanOrEqual(44);
 });
 
+test('song titles wave only while hovered or focused', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop', 'hover-capable window');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/unshared/');
+  await page.evaluate(() => document.fonts.ready);
+  const link = page.locator('.tracks a').first();
+  await link.evaluate((el) => el.addEventListener('click', (event) => event.preventDefault()));
+  const letter = link.locator('.song-word span').nth(2);
+  const motion = async () => letter.evaluate((el) => {
+    const style = getComputedStyle(el);
+    return {
+      name: style.animationName,
+      duration: Number.parseFloat(style.animationDuration) || 0,
+      timing: style.animationTimingFunction,
+      iteration: style.animationIterationCount,
+      transform: style.transform,
+    };
+  });
+  const layout = () => link.evaluate((el) => ({ w: el.offsetWidth, h: el.offsetHeight }));
+
+  const resting = await motion();
+  expect(resting.name).toBe('none');
+  expect(resting.transform).toBe('none');
+  const flat = await link.locator('.song-word span').evaluateAll((els) => els.map((el) => getComputedStyle(el).transform));
+  expect(flat.every((value) => value === 'none')).toBe(true);
+  const box = await layout();
+
+  await link.focus();
+  const focused = await motion();
+  expect(focused.name).toBe('song-wave');
+  expect(focused.duration).toBeGreaterThanOrEqual(2);
+  expect(focused.duration).toBeLessThanOrEqual(3);
+  expect(focused.timing).toBe('linear');
+  expect(focused.iteration).toBe('infinite');
+  expect(focused.transform === 'none' || focused.transform.startsWith('matrix(')).toBe(true);
+  expect(await layout()).toEqual(box);
+  await page.evaluate(() => { document.activeElement?.blur(); });
+  expect((await motion()).name).toBe('none');
+
+  await link.hover();
+  expect((await motion()).name).toBe('song-wave');
+  expect(await layout()).toEqual(box);
+  const heading = await page.locator('h1').boundingBox();
+  await page.mouse.move(heading.x + 4, heading.y + 4);
+  expect((await motion()).name).toBe('none');
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await link.hover();
+  const point = await link.boundingBox();
+  await page.mouse.move(point.x + 8, point.y + point.height / 2);
+  await page.mouse.down();
+  const reduced = await motion();
+  expect(reduced.name).toBe('none');
+  expect(reduced.transform).toBe('none');
+  await page.mouse.up();
+});
+
+test('a press waves a song title when the device does not hover', async ({ page }, info) => {
+  test.skip(info.project.name !== 'phone', 'touch window');
+  const client = await page.context().newCDPSession(page);
+  await client.send('Emulation.setEmulatedMedia', {
+    features: [
+      { name: 'hover', value: 'none' },
+      { name: 'pointer', value: 'coarse' },
+      { name: 'any-hover', value: 'none' },
+      { name: 'any-pointer', value: 'coarse' },
+      { name: 'prefers-reduced-motion', value: 'no-preference' },
+      { name: 'prefers-color-scheme', value: 'dark' },
+    ],
+  });
+  await page.goto('/unshared/');
+  await page.evaluate(() => document.fonts.ready);
+  expect(await page.evaluate(() => window.matchMedia('(hover: hover)').matches)).toBe(false);
+  const link = page.locator('.tracks a').first();
+  await link.evaluate((el) => el.addEventListener('click', (event) => event.preventDefault()));
+  const letter = link.locator('.song-word span').nth(2);
+  const name = () => letter.evaluate((el) => getComputedStyle(el).animationName);
+  const layout = () => link.evaluate((el) => ({ w: el.offsetWidth, h: el.offsetHeight }));
+  expect(await name()).toBe('none');
+  const box = await layout();
+  const point = await link.boundingBox();
+  await page.mouse.move(point.x + 8, point.y + point.height / 2);
+  expect(await name()).toBe('none');
+  await page.mouse.down();
+  expect(await name()).toBe('song-wave');
+  expect(await layout()).toEqual(box);
+  await page.mouse.up();
+  await page.evaluate(() => { document.activeElement?.blur(); });
+  expect(await name()).toBe('none');
+});
+
 test('birds1', async ({ page }, info) => {
   await page.addInitScript(() => {
     let seed = 1;
