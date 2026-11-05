@@ -38,8 +38,8 @@
     },
     {
       "path": ".github/workflows/build.yml",
-      "sha256": "50dd3277e9a4ebf2bf1d03ae1a63c7a6441fc9ec9bef5ad4183750377a2da187",
-      "gitBlob": "14aa06ca4686b54ad9a4d490cec45bc77dff0afc"
+      "sha256": "3a55384326db036d9332a77f72d0c8bf2606108bdf9742da7e463fbbf5868952",
+      "gitBlob": "1e39b9f0b7eb940a6f959618a896fbf1c52c98b4"
     },
     {
       "path": ".gitignore",
@@ -113,7 +113,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "2ae0fcc702487c5fc0d054e0030284d1da669ff680aba3655209859bd355a6e8",
+      "sha256": "4d9cd1e793773a1cafa09663d3b1ae0f25c803d04014b09fcf6b742022b761f5",
       "gitBlob": null
     },
     {
@@ -688,8 +688,8 @@
     },
     {
       "path": "test/workflow-permissions.test.js",
-      "sha256": "a5cf9489569d466d7ee1bb10315f372c8d2b1b421c9b3c44b0a34d97de193323",
-      "gitBlob": "5a653951bb49a27a6c3a3bf9d58e9df7936d971b"
+      "sha256": "877e12134292cc9333da1b352b3173437cbef13631de05796f87e4b5485652b7",
+      "gitBlob": "d8ed507cfe866f6cd77582c5367f76075869367e"
     },
     {
       "path": "workers/csp-report/src/index.js",
