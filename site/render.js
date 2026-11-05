@@ -456,14 +456,15 @@ function posterPrefsTag(assets) {
 }
 
 /**
- * Posters on or off, and the strip's direction. The longer label is an
- * invisible sizer so the hit area does not jump. Defaults match the
- * server HTML: posters on, across.
+ * Posters on or off, and the strip's direction. Both words of each switch
+ * are visible. A zero-width space separates those words so the accessible
+ * name can contain them in order. aria-pressed is the state. Defaults match
+ * the server HTML: posters on, across.
  *
  * @returns {string}
  */
 function posterControls() {
-  return `<span class="poster-controls" role="group" aria-label="poster strip"><button type="button" class="poster-switch" data-posters-toggle aria-pressed="true" aria-controls="feed" aria-label="posters on"><span class="poster-key">posters</span><span class="poster-track"><span class="poster-seg poster-on">on</span><span class="poster-seg poster-off">off</span></span></button><button type="button" class="poster-switch" data-axis-toggle aria-pressed="false" aria-controls="feed" aria-label="layout across"><span class="poster-key">layout</span><span class="poster-track"><span class="poster-seg axis-across">across</span><span class="poster-seg axis-down">down</span></span></button></span>`;
+  return `<span class="poster-controls" role="group" aria-label="poster strip"><button type="button" class="poster-switch" data-posters-toggle aria-pressed="true" aria-controls="feed" aria-label="posters on off"><span class="poster-key">posters\u200B</span><span class="poster-track"><span class="poster-seg poster-on">on\u200B</span><span class="poster-seg poster-off">off</span></span></button><button type="button" class="poster-switch" data-axis-toggle aria-pressed="false" aria-controls="feed" aria-label="layout across down"><span class="poster-key">layout\u200B</span><span class="poster-track"><span class="poster-seg axis-across">across\u200B</span><span class="poster-seg axis-down">down</span></span></button></span>`;
 }
 
 /**
