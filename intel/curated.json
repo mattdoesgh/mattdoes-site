@@ -104,7 +104,7 @@
     },
     {
       "id": "comment-lint",
-      "verified-at": "e37520a2a93425a2a5158d7edc417c3ac77e58d6",
+      "verified-at": "90d9b0bf0b30dfead3f85e83734abb040b820d51",
       "paths": [
         "scripts/lint-comments.js",
         "package.json",
