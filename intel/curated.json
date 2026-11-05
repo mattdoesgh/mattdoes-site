@@ -70,7 +70,7 @@
     },
     {
       "id": "zero-spend",
-      "verified-at": "991592447cf276a50ac827020bd41b337ea96846",
+      "verified-at": "5e3b32e69dcca914c43d7243d52d0ae627f1b3c8",
       "paths": ["package.json"],
       "text": "Zero spend. No new runtime dependency. Dev-only tooling has to be a plain Node script."
     },
@@ -104,7 +104,7 @@
     },
     {
       "id": "comment-lint",
-      "verified-at": "991592447cf276a50ac827020bd41b337ea96846",
+      "verified-at": "5e3b32e69dcca914c43d7243d52d0ae627f1b3c8",
       "paths": [
         "scripts/lint-comments.js",
         "package.json",
