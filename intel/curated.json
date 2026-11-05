@@ -274,7 +274,7 @@
       "anchors": ["data-posters-toggle", "data-axis-toggle", "data-pull"],
       "storageKeys": ["mattdoes-posters", "mattdoes-poster-axis"],
       "constantsFrom": ["static/poster-prefs.js"],
-      "text": "Two stacked switches sit at the right of the films count. Posters off is a vertical text list: title, stars, rewatch, no images. Across is aria-disabled while posters are off, and the saved axis is kept. A deliberate pull switches across to down only from the bottom: the touch and wheel thresholds are the constants in poster-prefs.js. The hint is hidden under reduced motion. The script runs from the head so the choice is on the document element before first paint.",
+      "text": "Two stacked switches sit at the right of the films count. Each switch shows both words, separated by a zero-width space, and its accessible name is those words in that order. aria-pressed is the state. Posters off is a vertical text list: title, stars, rewatch, no images. Across is aria-disabled while posters are off, and the saved axis is kept. A deliberate pull switches across to down only from the bottom: the touch and wheel thresholds are the constants in poster-prefs.js. The hint is hidden under reduced motion. The script runs from the head so the choice is on the document element before first paint.",
       "risks": ["An absolute ::before hit area covered the page on iPhone. #193.", "Invalid localStorage values must be deleted, not applied.", "Do not resize the switches without both viewports. The settled size is about half the numeral."],
       "devices": ["iOS text-size-adjust must stay 100%. The tap spare grows away from the other switch, via padding and a negative margin."]
     },

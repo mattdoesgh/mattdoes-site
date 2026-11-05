@@ -355,9 +355,9 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
   const axis = page.locator('[data-axis-toggle]');
   const feed = page.locator('#feed');
   await expect(posters).toHaveAttribute('aria-pressed', 'true');
-  await expect(posters).toHaveAttribute('aria-label', 'posters on');
+  await expect(posters).toHaveAttribute('aria-label', 'posters on off');
   await expect(axis).toHaveAttribute('aria-pressed', 'false');
-  await expect(axis).toHaveAttribute('aria-label', 'layout across');
+  await expect(axis).toHaveAttribute('aria-label', 'layout across down');
   await expect(page.locator('.poster-on')).toBeVisible();
   await expect(page.locator('.poster-off')).toBeVisible();
   await expect(page.locator('.axis-across')).toBeVisible();
@@ -432,7 +432,7 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
   const axisWidth = places.axis.w;
   await posters.click();
   await expect(posters).toHaveAttribute('aria-pressed', 'false');
-  await expect(posters).toHaveAttribute('aria-label', 'posters off');
+  await expect(posters).toHaveAttribute('aria-label', 'posters on off');
   await expect(page.locator('.poster-on')).toBeVisible();
   await expect(page.locator('.poster-off')).toBeVisible();
   const offFill = await page.locator('.poster-off').evaluate((el) => getComputedStyle(el).backgroundColor);
@@ -442,7 +442,7 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
   await expect(feed).toBeVisible();
   await expect(axis).toHaveAttribute('aria-disabled', 'true');
   await expect(axis).toHaveAttribute('aria-pressed', 'true');
-  await expect(axis).toHaveAttribute('aria-label', 'layout down');
+  await expect(axis).toHaveAttribute('aria-label', 'layout across down');
   const listed = await feed.evaluate((el) => {
     const style = getComputedStyle(el);
     const img = el.querySelector('img');
@@ -473,12 +473,12 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
   await posters.click();
   await expect(axis).not.toHaveAttribute('aria-disabled');
   await expect(axis).toHaveAttribute('aria-pressed', 'false');
-  await expect(axis).toHaveAttribute('aria-label', 'layout across');
+  await expect(axis).toHaveAttribute('aria-label', 'layout across down');
   await expect(feed).toBeVisible();
 
   await axis.click();
   await expect(axis).toHaveAttribute('aria-pressed', 'true');
-  await expect(axis).toHaveAttribute('aria-label', 'layout down');
+  await expect(axis).toHaveAttribute('aria-label', 'layout across down');
   await expect(page.locator('.axis-down')).toBeVisible();
   await expect(page.locator('.axis-across')).toBeVisible();
   const downFill = await page.locator('.axis-down').evaluate((el) => getComputedStyle(el).backgroundColor);
@@ -589,9 +589,9 @@ test('posters off keeps the header and comes back', async ({ page }, info) => {
   await page.reload();
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator('[data-posters-toggle]')).toHaveAttribute('aria-pressed', 'false');
-  await expect(page.locator('[data-posters-toggle]')).toHaveAttribute('aria-label', 'posters off');
+  await expect(page.locator('[data-posters-toggle]')).toHaveAttribute('aria-label', 'posters on off');
   await expect(page.locator('[data-axis-toggle]')).toHaveAttribute('aria-disabled', 'true');
-  await expect(page.locator('[data-axis-toggle]')).toHaveAttribute('aria-label', 'layout down');
+  await expect(page.locator('[data-axis-toggle]')).toHaveAttribute('aria-label', 'layout across down');
   await expect(page.locator('#feed')).toBeVisible();
   await expect(page.locator('.film .name', { hasText: 'The Insider' })).toBeVisible();
   await expect(page.locator('.film', { hasText: 'The Insider' }).locator('.flag')).toHaveText('rewatch');
@@ -662,7 +662,7 @@ test('posters off keeps the header and comes back', async ({ page }, info) => {
   await page.locator('[data-posters-toggle]').click();
   await expect(page.locator('#feed')).toBeVisible();
   await expect(page.locator('[data-posters-toggle]')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('[data-axis-toggle]')).toHaveAttribute('aria-label', 'layout across');
+  await expect(page.locator('[data-axis-toggle]')).toHaveAttribute('aria-label', 'layout across down');
   await expect(page.locator('.film-open img').first()).toHaveAttribute('src', /posters\/visual-/);
   await page.locator('.film-open img').evaluateAll((imgs) => Promise.all(imgs.map((img) => (img.decode ? img.decode() : img.complete).catch?.() || Promise.resolve())));
   await page.evaluate(() => {

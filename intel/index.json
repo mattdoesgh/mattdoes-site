@@ -113,7 +113,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "331d35a05b1619ea38da19727f82c1a42c6959d51c52130bfa432a6934da6c2a",
+      "sha256": "0728decb93fce3513a3ffce192fa54cabe46da66c643a9ca07f4b3e49a4d0e44",
       "gitBlob": null
     },
     {
@@ -223,8 +223,8 @@
     },
     {
       "path": "package.json",
-      "sha256": "8753804019e8ee981d53e1e7d05fcda819fe5dc496bbfcf7999e2c05287931c8",
-      "gitBlob": "58dbe74c668b72d5baefc8ee3163b97a6ac30f9e"
+      "sha256": "3a62859bc567109d0a293a0acb0debe9d2bbf686264ea3db6b3bc8fd5ad65cf3",
+      "gitBlob": "949539a31215130ba2c4596754762a6bab1094d5"
     },
     {
       "path": "playwright.config.js",
@@ -298,8 +298,8 @@
     },
     {
       "path": "site/render.js",
-      "sha256": "d73cebc45c87ac0dadbdef4c76c0c41d3df985707e528edef9c26deb692c2227",
-      "gitBlob": "5493de690c4d9f40605116049e4066733a3f35c2"
+      "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
+      "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
     },
     {
       "path": "site/social-icons.js",
@@ -343,8 +343,8 @@
     },
     {
       "path": "static/poster-prefs.js",
-      "sha256": "db42e4554507f56dbe68178b099b3f0b2a91e5df5b86f8b11915cde69199b035",
-      "gitBlob": "343a52ed3ba071b7ff4b99c4be644ae04baee558"
+      "sha256": "8f033e88446ebebd43ad5b0efdfebfd68c93a2f39dedef93c439b77b608f76b2",
+      "gitBlob": "965bc6221de82c09184e3c170e6fa0a307dce1b8"
     },
     {
       "path": "static/station.css",
@@ -558,8 +558,8 @@
     },
     {
       "path": "test/poster-controls.test.js",
-      "sha256": "120711d764f2b0e724ba906602ab6df1dd18af11b707c140c38a8f4e54c6a964",
-      "gitBlob": "05e271d435b9b143d4412b8b5b9fe504b28e5d50"
+      "sha256": "33923a359e21214e3292ec8031f1fce32c469e1f0cece4b07bef335ab033535e",
+      "gitBlob": "f2147e4462b5d2dc9084f9a33f85d2775c0ffa79"
     },
     {
       "path": "test/posters.test.js",
@@ -638,8 +638,8 @@
     },
     {
       "path": "test/visual/pages.spec.js",
-      "sha256": "670d5d50e7dc364afe17a08aa789db8f7fa37b86d95013588aa31af118d60abc",
-      "gitBlob": "ac7a6bdafef5ca4db573509bf798e443712a0bde"
+      "sha256": "b65c934b6972d4a931628979732d41b3c987129e5f2d5b5fed386d9e98a3961f",
+      "gitBlob": "b49227c39d62c28b312d67ad8ccbbb1ee2ba213a"
     },
     {
       "path": "test/visual/prepare.js",
@@ -3865,8 +3865,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "d73cebc45c87ac0dadbdef4c76c0c41d3df985707e528edef9c26deb692c2227",
-              "gitBlob": "5493de690c4d9f40605116049e4066733a3f35c2"
+              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
+              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
             }
           ]
         },
@@ -3938,8 +3938,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "d73cebc45c87ac0dadbdef4c76c0c41d3df985707e528edef9c26deb692c2227",
-              "gitBlob": "5493de690c4d9f40605116049e4066733a3f35c2"
+              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
+              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
             },
             {
               "path": "static/station.js",
@@ -3993,8 +3993,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "d73cebc45c87ac0dadbdef4c76c0c41d3df985707e528edef9c26deb692c2227",
-              "gitBlob": "5493de690c4d9f40605116049e4066733a3f35c2"
+              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
+              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
             },
             {
               "path": "static/station.js",
@@ -4068,13 +4068,13 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "d73cebc45c87ac0dadbdef4c76c0c41d3df985707e528edef9c26deb692c2227",
-              "gitBlob": "5493de690c4d9f40605116049e4066733a3f35c2"
+              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
+              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
             },
             {
               "path": "static/poster-prefs.js",
-              "sha256": "db42e4554507f56dbe68178b099b3f0b2a91e5df5b86f8b11915cde69199b035",
-              "gitBlob": "343a52ed3ba071b7ff4b99c4be644ae04baee558"
+              "sha256": "8f033e88446ebebd43ad5b0efdfebfd68c93a2f39dedef93c439b77b608f76b2",
+              "gitBlob": "965bc6221de82c09184e3c170e6fa0a307dce1b8"
             },
             {
               "path": "static/station.css",
@@ -4118,8 +4118,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "d73cebc45c87ac0dadbdef4c76c0c41d3df985707e528edef9c26deb692c2227",
-              "gitBlob": "5493de690c4d9f40605116049e4066733a3f35c2"
+              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
+              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
             },
             {
               "path": "static/station.js",
@@ -4175,8 +4175,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "d73cebc45c87ac0dadbdef4c76c0c41d3df985707e528edef9c26deb692c2227",
-              "gitBlob": "5493de690c4d9f40605116049e4066733a3f35c2"
+              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
+              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
             }
           ]
         },
@@ -4254,8 +4254,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "d73cebc45c87ac0dadbdef4c76c0c41d3df985707e528edef9c26deb692c2227",
-              "gitBlob": "5493de690c4d9f40605116049e4066733a3f35c2"
+              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
+              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
             },
             {
               "path": "workers/listening/src/index.js",
@@ -4330,8 +4330,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "d73cebc45c87ac0dadbdef4c76c0c41d3df985707e528edef9c26deb692c2227",
-              "gitBlob": "5493de690c4d9f40605116049e4066733a3f35c2"
+              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
+              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
             },
             {
               "path": "static/_headers",
@@ -4400,8 +4400,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "d73cebc45c87ac0dadbdef4c76c0c41d3df985707e528edef9c26deb692c2227",
-              "gitBlob": "5493de690c4d9f40605116049e4066733a3f35c2"
+              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
+              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
             }
           ]
         },
@@ -4438,8 +4438,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "d73cebc45c87ac0dadbdef4c76c0c41d3df985707e528edef9c26deb692c2227",
-              "gitBlob": "5493de690c4d9f40605116049e4066733a3f35c2"
+              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
+              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
             }
           ]
         },
@@ -4637,8 +4637,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "d73cebc45c87ac0dadbdef4c76c0c41d3df985707e528edef9c26deb692c2227",
-              "gitBlob": "5493de690c4d9f40605116049e4066733a3f35c2"
+              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
+              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
             },
             {
               "path": "static/station.js",
@@ -4681,8 +4681,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "d73cebc45c87ac0dadbdef4c76c0c41d3df985707e528edef9c26deb692c2227",
-              "gitBlob": "5493de690c4d9f40605116049e4066733a3f35c2"
+              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
+              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
             },
             {
               "path": "site/verbs.ts",
