@@ -113,8 +113,48 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "49c5679c9c61e1f06109565d2136c91f98e24eb87b1269209391bddef77a1d67",
+      "sha256": "e5a5d0b79d50dc5f14f5224369c733bfae503adbb3af1718c4e7286f43208478",
       "gitBlob": null
+    },
+    {
+      "path": "learning/arrays-page.js",
+      "sha256": "8dc28d54485f520ac8e9426b86fae8549c6046a2924818199873ba527325d485",
+      "gitBlob": "21ee35a70d2e908266058280c8ccdac67fdafce0"
+    },
+    {
+      "path": "learning/arrays/arrays.js",
+      "sha256": "06f45cba18a0adc6036a53c37efda6377e7dca8fd2659436fffefcf087d36fd6",
+      "gitBlob": "286e5f112d0d8173e85f0214eb1171aac52b3747"
+    },
+    {
+      "path": "learning/curriculum.d.ts",
+      "sha256": "2a3192d2b7d3e0f5b984e4ad2f9e6b058112ea121d6431c13d155fa89c055e65",
+      "gitBlob": "e5cea3dff40c09643d5704e0b0fe2a301559253a"
+    },
+    {
+      "path": "learning/curriculum.js",
+      "sha256": "f10581023deb64f5afcbc02ebb79ef6376449d977213ccc6b34bdbef0a208f71",
+      "gitBlob": "542d2b6a9869db1666cae35284b3aa438c744cc2"
+    },
+    {
+      "path": "learning/hub.js",
+      "sha256": "146f1645235bb4bc19391d5792d9ac7728a92b80f9f9394153a758591c92169e",
+      "gitBlob": "2fc735228f72bcd70711fd643b80704de8a49fec"
+    },
+    {
+      "path": "learning/learning.css",
+      "sha256": "cf05537ac939a03e4c212f57b94d3bfcae0c3ac44fcea4211755928e454b4655",
+      "gitBlob": "0ceee084213c0470fe831afbe82a3bffc3e03349"
+    },
+    {
+      "path": "learning/model.js",
+      "sha256": "4947efc2db70d34a3f201994bc41ed268004d8d5769d62feda139ed79b6f2608",
+      "gitBlob": "c1af9dcba7a50011442f919a12fd20752decd975"
+    },
+    {
+      "path": "learning/shell.js",
+      "sha256": "1813f1b5ae4898de8b1c8cf702fd4b092664f82c0ad1987414bf3d8b50fd3268",
+      "gitBlob": "a776ccd44d925444e3ba3880388fbdc150db02ea"
     },
     {
       "path": "lib/asset-budget.js",
@@ -148,8 +188,8 @@
     },
     {
       "path": "lib/design-tokens.js",
-      "sha256": "6ffb55808ec39e92ac3cb05c62ade0d53cd2559967f3c0b439f68d6eb0cd8455",
-      "gitBlob": "ad680cadcd96ca0f4180166b40ed73927f35c146"
+      "sha256": "c10051303273ce00b21e490579f5874e434c3c4823cf4871e5ce399d2ba9d30f",
+      "gitBlob": "b79744c773da9bb55023dd38c436387d79db68ec"
     },
     {
       "path": "lib/emit/assets.js",
@@ -163,13 +203,13 @@
     },
     {
       "path": "lib/emit/feeds.js",
-      "sha256": "df7723aad447c4d3da46557ae80e0ee4a29bdce942d38c00814c15541fbc3d9a",
-      "gitBlob": "6d04807974cd67ae8d3aab0f9ebc0febb745205c"
+      "sha256": "caa23cd8720507c94b4e7fb5fae11c27b3d9c1c3f267443400633fed62a80272",
+      "gitBlob": "2b6d8a4390ecb23ebef25236887f99cb2d392f21"
     },
     {
       "path": "lib/emit/index.js",
-      "sha256": "5d203b7a97735f5eacc4cd4807cd2961f25f2bb6f5ca8b1cd71ff64d9c1d5aeb",
-      "gitBlob": "8e69f3d5302f029674aff1572993ba7da166c3a8"
+      "sha256": "e6d5fac1f6506410f15f091cab19c51f9239837337cdf35c6f67a63c6dcf5f93",
+      "gitBlob": "dfbeeac7110149e77b6c6fcab20dada14e99cdcd"
     },
     {
       "path": "lib/format.js",
@@ -200,6 +240,11 @@
       "path": "lib/posters.js",
       "sha256": "ca0afe92d398b8f8ba64312ff4009fcbc5508e4db2226409a9ae17156b9a8658",
       "gitBlob": "af65d54a085b9c7fabed8429a6c9fd3f3acd7d88"
+    },
+    {
+      "path": "lib/publish-learning.js",
+      "sha256": "afb41b371d0d555943830792a333a973a404def8da9f22c1a688a258907a319d",
+      "gitBlob": "0c5206501e00d18c4999a191e78bc5e18b2bb444"
     },
     {
       "path": "lib/publish-unshared.js",
@@ -253,8 +298,8 @@
     },
     {
       "path": "scripts/intel.js",
-      "sha256": "44be0158ee6c5412c8c127824d0a9e47bfbe53be955372c0c1f3e6d5f2a0cecb",
-      "gitBlob": "b5955cf2f8e48900015dd10a593ff54e310f3c7c"
+      "sha256": "a46103b8e810ee6313052c6a5491ae00d86fe91e3ba5e732bf6a0310e78c0ba8",
+      "gitBlob": "bb2eab6d60ba591ef71abf025957f529319d3e7e"
     },
     {
       "path": "scripts/lint-comments.js",
@@ -298,8 +343,8 @@
     },
     {
       "path": "site/render.js",
-      "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
-      "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
+      "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
+      "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
     },
     {
       "path": "site/social-icons.js",
@@ -318,8 +363,8 @@
     },
     {
       "path": "site/verbs.ts",
-      "sha256": "ddb5194d08e8deb05311da4c6e9dd21a1becd87a5119f16a2c791eb81f521e5a",
-      "gitBlob": "e78a3618165a0099b2dc1e46619f84c5cba65813"
+      "sha256": "5e38c611e5f34d32067b9c38a7cc6f2c7a5a3ca7401d6f7ec51b500de84e962e",
+      "gitBlob": "d1d0a8e36feec8aa8938d2cc77ed7c386607a00e"
     },
     {
       "path": "static/_headers",
@@ -418,18 +463,18 @@
     },
     {
       "path": "test/csp-headers.test.js",
-      "sha256": "164763d646681b3914eb66da3ec891475bd99796bcb5bf87336415ef3f8b0b2f",
-      "gitBlob": "b7ba53822ce46d8481afbca6fead4835db59ccff"
+      "sha256": "19483a50723d1f11c8d0b7354cbe780d7dfb41268088e17248f5bd2037f59ed5",
+      "gitBlob": "6a8113c1a107ccb2deed153bfd86f701270940f1"
     },
     {
       "path": "test/design-tokens.test.js",
-      "sha256": "53eb8889ccccc7e6fe0b14030cf1c630c757daded7da313892abd5f9bddf5b88",
-      "gitBlob": "7f558affda2afa17773e5758b09f2936e1464260"
+      "sha256": "92c4584644b2fa17dc46300a916a8efe8c49e6dcf27eee4bfa08dd199a98c0dc",
+      "gitBlob": "c70b17ee2656c1b3aab9822dff569b3c38c83ae8"
     },
     {
       "path": "test/emit-units.test.js",
-      "sha256": "b07dc5653db6f67c087489a9d9edb54d818a827450eda21dfcd18d58dce2f972",
-      "gitBlob": "955b00f18dabd831c9ec7d0666c9935dd925c3af"
+      "sha256": "0f004e631a4bea2940f59462a039c2c38577c051b04ac26214a9be8836eb6205",
+      "gitBlob": "3cf44b83195c906e867ccaa8c4d410861b183252"
     },
     {
       "path": "test/feed-standards.test.js",
@@ -515,6 +560,11 @@
       "path": "test/lastfm-codec.test.js",
       "sha256": "333914187f9c15f6129191c152f93e82512583330422a0a5d5d90bdf53db7579",
       "gitBlob": "d02e5c11a379171c3fa13f09913d080fb2bce8fd"
+    },
+    {
+      "path": "test/learning.test.js",
+      "sha256": "d1ee7a2fca2a754686dd8576d6a4f8c7dcb6ff84089dc4ddbd716a6a22b2d17c",
+      "gitBlob": "0aec2050b6793bd251329df9dbe1252eaced08ae"
     },
     {
       "path": "test/letterboxd.test.js",
@@ -628,18 +678,18 @@
     },
     {
       "path": "test/verbs.test.js",
-      "sha256": "8df49799803a320b7503aed2777d83920c1be9434f86d91c5d353a4dc941d1f2",
-      "gitBlob": "a1c6f814b9bb90cb2e8815218f30f8313690f719"
+      "sha256": "9ab8f899beeb6592502930324ee3eb15463222d9ac5c181a05898ba18a5159ce",
+      "gitBlob": "c4ef7b76a5c0167cf992d9fbad39938dea81c4b2"
     },
     {
       "path": "test/visual/axe.spec.js",
-      "sha256": "38be5e9fdbbf41269581934b622044a6c4803ceed9036f124b89d97e0f6ee03b",
-      "gitBlob": "b2ed659258c415cb7461e91cd4179f134b2016a7"
+      "sha256": "3e69aec23b927d16f8a77bd8247a56532d240bacecfcf55bcb33e21b352707df",
+      "gitBlob": "be5a8d857952e3b65a32d27a172508defe0603b8"
     },
     {
       "path": "test/visual/pages.spec.js",
-      "sha256": "b65c934b6972d4a931628979732d41b3c987129e5f2d5b5fed386d9e98a3961f",
-      "gitBlob": "b49227c39d62c28b312d67ad8ccbbb1ee2ba213a"
+      "sha256": "efab356ae217e901912ae154bdcc5d469fa8a394dce14649ea560944707daa8d",
+      "gitBlob": "ac52c36f5e4ab565dde95ba0a42a240c24c1c20c"
     },
     {
       "path": "test/visual/prepare.js",
@@ -648,8 +698,8 @@
     },
     {
       "path": "test/visual/scale.spec.js",
-      "sha256": "1f42e7876205bfcf68c73603c83ddf29205945eb444bed44d2343b61b4d26054",
-      "gitBlob": "767a7acad613131809a9c0463bfd0d1e813fcb49"
+      "sha256": "aef9cc3ab7d3b5984a662d87225ed48f2b611e25eda4b58aadb00ab68e58be6b",
+      "gitBlob": "eb6d2df428a33f911beda11d04fe6859d0da98a4"
     },
     {
       "path": "test/w3c-coverage.test.js",
@@ -745,8 +795,17 @@
         "concepts/hub.js",
         "concepts/suno/songs.json",
         "intel/curated.json",
+        "learning/arrays-page.js",
+        "learning/arrays/arrays.js",
+        "learning/curriculum.d.ts",
+        "learning/curriculum.js",
+        "learning/hub.js",
+        "learning/learning.css",
+        "learning/model.js",
+        "learning/shell.js",
         "lib/emit/index.js",
         "lib/listening.js",
+        "lib/publish-learning.js",
         "lib/publish-unshared.js",
         "site/render.js",
         "site/verbs.ts",
@@ -825,6 +884,57 @@
           "endpoints": [],
           "files": [
             "site/render.js"
+          ]
+        },
+        {
+          "path": "/learning/",
+          "published": true,
+          "inSitemap": false,
+          "render": "renderLearningHub",
+          "page": "learning/hub.js",
+          "scripts": [],
+          "styles": [
+            "learning/learning.css",
+            "site/tokens.css"
+          ],
+          "data": [
+            "learning/curriculum.js",
+            "learning/shell.js"
+          ],
+          "endpoints": [],
+          "files": [
+            "learning/curriculum.js",
+            "learning/hub.js",
+            "learning/learning.css",
+            "learning/shell.js",
+            "site/tokens.css"
+          ]
+        },
+        {
+          "path": "/learning/arrays/",
+          "published": true,
+          "inSitemap": false,
+          "render": "renderArraysDocument",
+          "page": "learning/arrays-page.js",
+          "scripts": [
+            "learning/arrays/arrays.js"
+          ],
+          "styles": [
+            "learning/learning.css",
+            "site/tokens.css"
+          ],
+          "data": [
+            "learning/model.js",
+            "learning/shell.js"
+          ],
+          "endpoints": [],
+          "files": [
+            "learning/arrays-page.js",
+            "learning/arrays/arrays.js",
+            "learning/learning.css",
+            "learning/model.js",
+            "learning/shell.js",
+            "site/tokens.css"
           ]
         },
         {
@@ -958,6 +1068,13 @@
         "concepts/flock-model.js",
         "concepts/hub.js",
         "intel/curated.json",
+        "learning/arrays-page.js",
+        "learning/arrays/arrays.js",
+        "learning/curriculum.d.ts",
+        "learning/curriculum.js",
+        "learning/hub.js",
+        "learning/model.js",
+        "learning/shell.js",
         "lib/asset-budget.js",
         "lib/cover-mirror.js",
         "lib/cover-pixels.js",
@@ -975,6 +1092,7 @@
         "lib/listen-line.js",
         "lib/listening.js",
         "lib/posters.js",
+        "lib/publish-learning.js",
         "lib/publish-unshared.js",
         "lib/safe-url.js",
         "lib/suno-songs.js",
@@ -1022,6 +1140,7 @@
         "test/home-preview.test.js",
         "test/intel.test.js",
         "test/lastfm-codec.test.js",
+        "test/learning.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
         "test/lint-comments.test.js",
@@ -1108,6 +1227,54 @@
           "to": "site.config.js"
         },
         {
+          "from": "learning/arrays-page.js",
+          "to": "learning/arrays/arrays.js"
+        },
+        {
+          "from": "learning/arrays-page.js",
+          "to": "learning/model.js"
+        },
+        {
+          "from": "learning/arrays-page.js",
+          "to": "learning/shell.js"
+        },
+        {
+          "from": "learning/arrays-page.js",
+          "to": "lib/safe-url.js"
+        },
+        {
+          "from": "learning/arrays/arrays.js",
+          "to": "learning/model.js"
+        },
+        {
+          "from": "learning/hub.js",
+          "to": "learning/curriculum.js"
+        },
+        {
+          "from": "learning/hub.js",
+          "to": "learning/shell.js"
+        },
+        {
+          "from": "learning/hub.js",
+          "to": "lib/safe-url.js"
+        },
+        {
+          "from": "learning/shell.js",
+          "to": "lib/safe-url.js"
+        },
+        {
+          "from": "learning/shell.js",
+          "to": "site.config.js"
+        },
+        {
+          "from": "learning/shell.js",
+          "to": "site/social-icons.js"
+        },
+        {
+          "from": "learning/shell.js",
+          "to": "site/verbs.ts"
+        },
+        {
           "from": "lib/cover-settle.js",
           "to": "lib/cover-mirror.js"
         },
@@ -1157,6 +1324,10 @@
         },
         {
           "from": "lib/emit/index.js",
+          "to": "lib/publish-learning.js"
+        },
+        {
+          "from": "lib/emit/index.js",
           "to": "lib/publish-unshared.js"
         },
         {
@@ -1182,6 +1353,18 @@
         {
           "from": "lib/listening.js",
           "to": "site.config.js"
+        },
+        {
+          "from": "lib/publish-learning.js",
+          "to": "learning/arrays-page.js"
+        },
+        {
+          "from": "lib/publish-learning.js",
+          "to": "learning/curriculum.js"
+        },
+        {
+          "from": "lib/publish-learning.js",
+          "to": "learning/hub.js"
         },
         {
           "from": "lib/publish-unshared.js",
@@ -1218,6 +1401,10 @@
         {
           "from": "scripts/intel.js",
           "to": "concepts/entries.js"
+        },
+        {
+          "from": "scripts/intel.js",
+          "to": "learning/curriculum.js"
         },
         {
           "from": "scripts/intel.js",
@@ -1270,6 +1457,10 @@
         {
           "from": "site/render.js",
           "to": "site/verbs.ts"
+        },
+        {
+          "from": "site/verbs.ts",
+          "to": "learning/curriculum.js"
         },
         {
           "from": "test/accessibility.test.js",
@@ -1450,6 +1641,42 @@
         {
           "from": "test/lastfm-codec.test.js",
           "to": "lib/lastfm.js"
+        },
+        {
+          "from": "test/learning.test.js",
+          "to": "learning/arrays-page.js"
+        },
+        {
+          "from": "test/learning.test.js",
+          "to": "learning/arrays/arrays.js"
+        },
+        {
+          "from": "test/learning.test.js",
+          "to": "learning/curriculum.js"
+        },
+        {
+          "from": "test/learning.test.js",
+          "to": "learning/hub.js"
+        },
+        {
+          "from": "test/learning.test.js",
+          "to": "learning/model.js"
+        },
+        {
+          "from": "test/learning.test.js",
+          "to": "lib/design-tokens.js"
+        },
+        {
+          "from": "test/learning.test.js",
+          "to": "site/render.js"
+        },
+        {
+          "from": "test/learning.test.js",
+          "to": "site/verbs.ts"
+        },
+        {
+          "from": "test/learning.test.js",
+          "to": "test/helpers/run-build.js"
         },
         {
           "from": "test/letterboxd.test.js",
@@ -1706,6 +1933,34 @@
           "lib/publish-unshared.js",
           "site/render.js"
         ],
+        "learning/arrays-page.js": [
+          "lib/publish-learning.js",
+          "test/learning.test.js"
+        ],
+        "learning/arrays/arrays.js": [
+          "learning/arrays-page.js",
+          "test/learning.test.js"
+        ],
+        "learning/curriculum.js": [
+          "learning/hub.js",
+          "lib/publish-learning.js",
+          "scripts/intel.js",
+          "site/verbs.ts",
+          "test/learning.test.js"
+        ],
+        "learning/hub.js": [
+          "lib/publish-learning.js",
+          "test/learning.test.js"
+        ],
+        "learning/model.js": [
+          "learning/arrays-page.js",
+          "learning/arrays/arrays.js",
+          "test/learning.test.js"
+        ],
+        "learning/shell.js": [
+          "learning/arrays-page.js",
+          "learning/hub.js"
+        ],
         "lib/asset-budget.js": [
           "scripts/check-asset-budget.js",
           "test/asset-budget.test.js"
@@ -1739,6 +1994,7 @@
           "scripts/check-design-tokens.js",
           "scripts/intel.js",
           "test/design-tokens.test.js",
+          "test/learning.test.js",
           "test/publish-unshared.test.js"
         ],
         "lib/emit/assets.js": [
@@ -1790,12 +2046,18 @@
           "build.js",
           "test/posters.test.js"
         ],
+        "lib/publish-learning.js": [
+          "lib/emit/index.js"
+        ],
         "lib/publish-unshared.js": [
           "lib/emit/index.js",
           "test/publish-unshared.test.js"
         ],
         "lib/safe-url.js": [
           "concepts/hub.js",
+          "learning/arrays-page.js",
+          "learning/hub.js",
+          "learning/shell.js",
           "lib/emit/feeds.js",
           "lib/suno-songs.js",
           "site/render.js",
@@ -1826,6 +2088,7 @@
         "site.config.js": [
           "build.js",
           "concepts/hub.js",
+          "learning/shell.js",
           "lib/emit/index.js",
           "lib/listening.js",
           "lib/watches.js"
@@ -1837,6 +2100,7 @@
           "test/film-count.test.js",
           "test/home-listen.test.js",
           "test/home-preview.test.js",
+          "test/learning.test.js",
           "test/media.test.js",
           "test/poster-controls.test.js",
           "test/posters.test.js",
@@ -1845,16 +2109,19 @@
           "test/wave-scope.test.js"
         ],
         "site/social-icons.js": [
+          "learning/shell.js",
           "site/render.js",
           "test/socials.test.js"
         ],
         "site/verbs.ts": [
           "build.js",
+          "learning/shell.js",
           "lib/emit/feeds.js",
           "lib/emit/index.js",
           "scripts/intel.js",
           "site/render.js",
           "test/build-validation.test.js",
+          "test/learning.test.js",
           "test/publish-unshared.test.js",
           "test/socials.test.js",
           "test/unshared.test.js",
@@ -1880,6 +2147,7 @@
           "test/headers-golden.test.js",
           "test/home-listen.test.js",
           "test/home-preview.test.js",
+          "test/learning.test.js",
           "test/links.test.js",
           "test/listening-periods.test.js",
           "test/listening-snapshot.test.js",
@@ -2033,6 +2301,13 @@
         "concepts/flock-model.js",
         "concepts/hub.js",
         "intel/curated.json",
+        "learning/arrays-page.js",
+        "learning/arrays/arrays.js",
+        "learning/curriculum.d.ts",
+        "learning/curriculum.js",
+        "learning/hub.js",
+        "learning/model.js",
+        "learning/shell.js",
         "lib/asset-budget.js",
         "lib/cover-mirror.js",
         "lib/cover-pixels.js",
@@ -2050,6 +2325,7 @@
         "lib/listen-line.js",
         "lib/listening.js",
         "lib/posters.js",
+        "lib/publish-learning.js",
         "lib/publish-unshared.js",
         "lib/safe-url.js",
         "lib/suno-songs.js",
@@ -2098,6 +2374,7 @@
         "test/home-preview.test.js",
         "test/intel.test.js",
         "test/lastfm-codec.test.js",
+        "test/learning.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
         "test/lint-comments.test.js",
@@ -2333,6 +2610,13 @@
         "concepts/hub.css",
         "concepts/hub.js",
         "intel/curated.json",
+        "learning/arrays-page.js",
+        "learning/arrays/arrays.js",
+        "learning/curriculum.js",
+        "learning/hub.js",
+        "learning/learning.css",
+        "learning/model.js",
+        "learning/shell.js",
         "lib/asset-budget.js",
         "lib/cover-mirror.js",
         "lib/cover-pixels.js",
@@ -2350,6 +2634,7 @@
         "lib/listen-line.js",
         "lib/listening.js",
         "lib/posters.js",
+        "lib/publish-learning.js",
         "lib/publish-unshared.js",
         "lib/safe-url.js",
         "lib/suno-songs.js",
@@ -2398,6 +2683,7 @@
         "test/home-preview.test.js",
         "test/intel.test.js",
         "test/lastfm-codec.test.js",
+        "test/learning.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
         "test/lint-comments.test.js",
@@ -2448,6 +2734,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2460,6 +2747,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2472,6 +2760,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2494,6 +2783,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2514,6 +2804,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2536,6 +2827,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2554,6 +2846,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2566,6 +2859,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2576,6 +2870,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2587,6 +2882,7 @@
           "referencedInTokens": false,
           "files": [
             "concepts/birds1/birds1.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2598,6 +2894,7 @@
           "referencedInTokens": false,
           "files": [
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2629,6 +2926,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2638,7 +2936,9 @@
           "live": true,
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
-          "files": []
+          "files": [
+            "learning/learning.css"
+          ]
         },
         {
           "name": "--motion",
@@ -2659,6 +2959,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2671,6 +2972,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2683,6 +2985,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2695,6 +2998,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2707,6 +3011,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css",
             "test/home-preview.test.js",
             "test/verbs.test.js"
@@ -2733,6 +3038,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2753,6 +3059,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css",
             "test/listening-periods.test.js"
           ]
@@ -2766,6 +3073,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2776,6 +3084,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2859,6 +3168,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2911,6 +3221,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2953,6 +3264,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2973,6 +3285,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2985,6 +3298,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -2997,6 +3311,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3009,6 +3324,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3021,6 +3337,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3033,6 +3350,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3053,6 +3371,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3065,6 +3384,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3077,6 +3397,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3137,6 +3458,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3197,6 +3519,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": true,
           "files": [
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3209,6 +3532,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3229,6 +3553,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3376,6 +3701,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3418,6 +3744,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3459,6 +3786,7 @@
           "referencedInTokens": false,
           "files": [
             "concepts/birds1/birds1.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3469,6 +3797,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3480,6 +3809,7 @@
           "referencedInTokens": false,
           "files": [
             "concepts/birds1/birds1.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3553,6 +3883,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3574,6 +3905,7 @@
           "referencedInTokens": false,
           "files": [
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3660,6 +3992,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "learning/learning.css",
             "static/station.css"
           ]
         },
@@ -3670,13 +4003,12 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": true,
           "files": [
+            "learning/learning.css",
             "static/station.css"
           ]
         }
       ],
-      "unused": [
-        "--mono"
-      ]
+      "unused": []
     },
     "features": {
       "provenance": [
@@ -3697,6 +4029,14 @@
         "concepts/hub.js",
         "concepts/suno/songs.json",
         "intel/curated.json",
+        "learning/arrays-page.js",
+        "learning/arrays/arrays.js",
+        "learning/curriculum.d.ts",
+        "learning/curriculum.js",
+        "learning/hub.js",
+        "learning/learning.css",
+        "learning/model.js",
+        "learning/shell.js",
         "lib/asset-budget.js",
         "lib/cover-mirror.js",
         "lib/cover-pixels.js",
@@ -3714,6 +4054,7 @@
         "lib/listen-line.js",
         "lib/listening.js",
         "lib/posters.js",
+        "lib/publish-learning.js",
         "lib/publish-unshared.js",
         "lib/safe-url.js",
         "lib/suno-songs.js",
@@ -3777,6 +4118,7 @@
         "test/home-preview.test.js",
         "test/intel.test.js",
         "test/lastfm-codec.test.js",
+        "test/learning.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
         "test/lint-comments.test.js",
@@ -3865,8 +4207,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
-              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
+              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
+              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
             }
           ]
         },
@@ -3938,8 +4280,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
-              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
+              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
+              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
             },
             {
               "path": "static/station.js",
@@ -3993,8 +4335,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
-              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
+              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
+              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
             },
             {
               "path": "static/station.js",
@@ -4068,8 +4410,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
-              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
+              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
+              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
             },
             {
               "path": "static/poster-prefs.js",
@@ -4118,8 +4460,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
-              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
+              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
+              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
             },
             {
               "path": "static/station.js",
@@ -4175,8 +4517,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
-              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
+              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
+              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
             }
           ]
         },
@@ -4254,8 +4596,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
-              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
+              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
+              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
             },
             {
               "path": "workers/listening/src/index.js",
@@ -4330,8 +4672,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
-              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
+              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
+              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
             },
             {
               "path": "static/_headers",
@@ -4400,8 +4742,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
-              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
+              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
+              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
             }
           ]
         },
@@ -4438,8 +4780,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
-              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
+              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
+              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
             }
           ]
         },
@@ -4632,13 +4974,13 @@
           "provenance": [
             {
               "path": "lib/emit/index.js",
-              "sha256": "5d203b7a97735f5eacc4cd4807cd2961f25f2bb6f5ca8b1cd71ff64d9c1d5aeb",
-              "gitBlob": "8e69f3d5302f029674aff1572993ba7da166c3a8"
+              "sha256": "e6d5fac1f6506410f15f091cab19c51f9239837337cdf35c6f67a63c6dcf5f93",
+              "gitBlob": "dfbeeac7110149e77b6c6fcab20dada14e99cdcd"
             },
             {
               "path": "site/render.js",
-              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
-              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
+              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
+              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
             },
             {
               "path": "static/station.js",
@@ -4656,7 +4998,9 @@
           ],
           "anchorFiles": {
             "rel=\"me noopener\"": [
-              "site/render.js"
+              "learning/shell.js",
+              "site/render.js",
+              "test/learning.test.js"
             ],
             "lastfmSocialEnabled": [
               "site/verbs.ts",
@@ -4667,27 +5011,174 @@
           "endpoints": [],
           "constants": {},
           "files": [
+            "learning/shell.js",
             "site/render.js",
             "site/verbs.ts",
+            "test/learning.test.js",
             "test/socials.test.js"
           ],
           "sources": [
+            "learning/shell.js",
             "site/render.js",
             "site/verbs.ts"
           ],
           "tests": [
+            "test/learning.test.js",
             "test/socials.test.js"
           ],
           "provenance": [
             {
+              "path": "learning/shell.js",
+              "sha256": "1813f1b5ae4898de8b1c8cf702fd4b092664f82c0ad1987414bf3d8b50fd3268",
+              "gitBlob": "a776ccd44d925444e3ba3880388fbdc150db02ea"
+            },
+            {
               "path": "site/render.js",
-              "sha256": "4ad2b34c0cad6eb8b4588417c3aaf67c0733cbd69d66509466f88a29cc78a29d",
-              "gitBlob": "c456dd13207335822aae1d15066d3226a6b03fa3"
+              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
+              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
             },
             {
               "path": "site/verbs.ts",
-              "sha256": "ddb5194d08e8deb05311da4c6e9dd21a1becd87a5119f16a2c791eb81f521e5a",
-              "gitBlob": "e78a3618165a0099b2dc1e46619f84c5cba65813"
+              "sha256": "5e38c611e5f34d32067b9c38a7cc6f2c7a5a3ca7401d6f7ec51b500de84e962e",
+              "gitBlob": "d1d0a8e36feec8aa8938d2cc77ed7c386607a00e"
+            }
+          ]
+        },
+        {
+          "id": "learning-hub",
+          "route": "/learning/",
+          "anchors": [
+            "learningOnHome",
+            "matt does learning",
+            "lesson-next"
+          ],
+          "anchorFiles": {
+            "learningOnHome": [
+              "lib/emit/feeds.js",
+              "site/render.js",
+              "site/verbs.ts",
+              "test/learning.test.js"
+            ],
+            "matt does learning": [
+              "learning/hub.js",
+              "test/learning.test.js"
+            ],
+            "lesson-next": [
+              "learning/hub.js",
+              "learning/learning.css",
+              "test/learning.test.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [],
+          "constants": {},
+          "files": [
+            "learning/hub.js",
+            "learning/learning.css",
+            "lib/emit/feeds.js",
+            "site/render.js",
+            "site/verbs.ts",
+            "test/learning.test.js"
+          ],
+          "sources": [
+            "learning/hub.js",
+            "learning/learning.css",
+            "lib/emit/feeds.js",
+            "site/render.js",
+            "site/verbs.ts"
+          ],
+          "tests": [
+            "test/csp-headers.test.js",
+            "test/emit-units.test.js",
+            "test/learning.test.js",
+            "test/visual/axe.spec.js",
+            "test/visual/pages.spec.js",
+            "test/visual/scale.spec.js"
+          ],
+          "provenance": [
+            {
+              "path": "learning/hub.js",
+              "sha256": "146f1645235bb4bc19391d5792d9ac7728a92b80f9f9394153a758591c92169e",
+              "gitBlob": "2fc735228f72bcd70711fd643b80704de8a49fec"
+            },
+            {
+              "path": "learning/learning.css",
+              "sha256": "cf05537ac939a03e4c212f57b94d3bfcae0c3ac44fcea4211755928e454b4655",
+              "gitBlob": "0ceee084213c0470fe831afbe82a3bffc3e03349"
+            },
+            {
+              "path": "lib/emit/feeds.js",
+              "sha256": "caa23cd8720507c94b4e7fb5fae11c27b3d9c1c3f267443400633fed62a80272",
+              "gitBlob": "2b6d8a4390ecb23ebef25236887f99cb2d392f21"
+            },
+            {
+              "path": "site/render.js",
+              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
+              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
+            },
+            {
+              "path": "site/verbs.ts",
+              "sha256": "5e38c611e5f34d32067b9c38a7cc6f2c7a5a3ca7401d6f7ec51b500de84e962e",
+              "gitBlob": "d1d0a8e36feec8aa8938d2cc77ed7c386607a00e"
+            }
+          ]
+        },
+        {
+          "id": "learning-arrays",
+          "route": "/learning/arrays/",
+          "anchors": [
+            "data-lesson=\"arrays\"",
+            "compare every pair",
+            "reveal hint"
+          ],
+          "anchorFiles": {
+            "data-lesson=\"arrays\"": [
+              "learning/arrays-page.js",
+              "learning/arrays/arrays.js"
+            ],
+            "compare every pair": [
+              "learning/arrays-page.js",
+              "learning/model.js"
+            ],
+            "reveal hint": [
+              "learning/arrays-page.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [],
+          "constants": {},
+          "files": [
+            "learning/arrays-page.js",
+            "learning/arrays/arrays.js",
+            "learning/model.js"
+          ],
+          "sources": [
+            "learning/arrays-page.js",
+            "learning/arrays/arrays.js",
+            "learning/model.js"
+          ],
+          "tests": [
+            "test/csp-headers.test.js",
+            "test/learning.test.js",
+            "test/visual/axe.spec.js",
+            "test/visual/pages.spec.js",
+            "test/visual/scale.spec.js"
+          ],
+          "provenance": [
+            {
+              "path": "learning/arrays-page.js",
+              "sha256": "8dc28d54485f520ac8e9426b86fae8549c6046a2924818199873ba527325d485",
+              "gitBlob": "21ee35a70d2e908266058280c8ccdac67fdafce0"
+            },
+            {
+              "path": "learning/arrays/arrays.js",
+              "sha256": "06f45cba18a0adc6036a53c37efda6377e7dca8fd2659436fffefcf087d36fd6",
+              "gitBlob": "286e5f112d0d8173e85f0214eb1171aac52b3747"
+            },
+            {
+              "path": "learning/model.js",
+              "sha256": "4947efc2db70d34a3f201994bc41ed268004d8d5769d62feda139ed79b6f2608",
+              "gitBlob": "c1af9dcba7a50011442f919a12fd20752decd975"
             }
           ]
         }
@@ -4712,6 +5203,14 @@
         "concepts/hub.js",
         "concepts/suno/songs.json",
         "intel/curated.json",
+        "learning/arrays-page.js",
+        "learning/arrays/arrays.js",
+        "learning/curriculum.d.ts",
+        "learning/curriculum.js",
+        "learning/hub.js",
+        "learning/learning.css",
+        "learning/model.js",
+        "learning/shell.js",
         "lib/asset-budget.js",
         "lib/cover-mirror.js",
         "lib/cover-pixels.js",
@@ -4729,6 +5228,7 @@
         "lib/listen-line.js",
         "lib/listening.js",
         "lib/posters.js",
+        "lib/publish-learning.js",
         "lib/publish-unshared.js",
         "lib/safe-url.js",
         "lib/suno-songs.js",
@@ -4792,6 +5292,7 @@
         "test/home-preview.test.js",
         "test/intel.test.js",
         "test/lastfm-codec.test.js",
+        "test/learning.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
         "test/lint-comments.test.js",
@@ -4883,6 +5384,7 @@
             "test/helpers/run-build.js"
           ],
           "features": [
+            "learning-hub",
             "social-footer"
           ]
         },
@@ -4899,6 +5401,7 @@
             "frequency",
             "home-listen",
             "home-rows",
+            "learning-hub",
             "listening-chart",
             "listening-count",
             "listening-recent",
@@ -4940,6 +5443,7 @@
             "frequency",
             "home-listen",
             "home-rows",
+            "learning-hub",
             "listening-chart",
             "listening-count",
             "listening-recent",
@@ -4969,6 +5473,8 @@
           "features": [
             "birds1",
             "home-listen",
+            "learning-arrays",
+            "learning-hub",
             "listening-recent",
             "unshared-hub"
           ]
@@ -4990,6 +5496,7 @@
           "features": [
             "birds1",
             "frequency",
+            "learning-hub",
             "unshared-hub"
           ]
         },
@@ -5013,6 +5520,7 @@
             "frequency",
             "home-listen",
             "home-rows",
+            "learning-hub",
             "listening-chart",
             "listening-count",
             "listening-recent",
@@ -5054,6 +5562,7 @@
             "frequency",
             "home-listen",
             "home-rows",
+            "learning-hub",
             "listening-chart",
             "listening-count",
             "listening-recent",
@@ -5075,6 +5584,7 @@
             "frequency",
             "home-listen",
             "home-rows",
+            "learning-hub",
             "listening-chart",
             "listening-count",
             "listening-recent",
@@ -5099,6 +5609,36 @@
             "lib/lastfm.js"
           ],
           "features": []
+        },
+        {
+          "file": "test/learning.test.js",
+          "imports": [
+            "learning/arrays-page.js",
+            "learning/arrays/arrays.js",
+            "learning/curriculum.js",
+            "learning/hub.js",
+            "learning/model.js",
+            "lib/design-tokens.js",
+            "site/render.js",
+            "site/verbs.ts",
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "frequency",
+            "home-listen",
+            "home-rows",
+            "learning-arrays",
+            "learning-hub",
+            "listening-chart",
+            "listening-count",
+            "listening-recent",
+            "social-footer",
+            "watching-count",
+            "watching-scene",
+            "watching-strip",
+            "watching-toggles",
+            "wave-counts"
+          ]
         },
         {
           "file": "test/letterboxd.test.js",
@@ -5167,6 +5707,7 @@
             "frequency",
             "home-listen",
             "home-rows",
+            "learning-hub",
             "listening-chart",
             "listening-count",
             "listening-recent",
@@ -5193,6 +5734,7 @@
             "frequency",
             "home-listen",
             "home-rows",
+            "learning-hub",
             "listening-chart",
             "listening-count",
             "listening-recent",
@@ -5214,6 +5756,7 @@
             "frequency",
             "home-listen",
             "home-rows",
+            "learning-hub",
             "listening-chart",
             "listening-count",
             "listening-recent",
@@ -5267,6 +5810,7 @@
             "frequency",
             "home-listen",
             "home-rows",
+            "learning-hub",
             "listening-chart",
             "listening-count",
             "listening-recent",
@@ -5309,6 +5853,7 @@
             "test/helpers/run-build.js"
           ],
           "features": [
+            "learning-hub",
             "social-footer",
             "unshared-hub"
           ]
@@ -5343,6 +5888,7 @@
             "frequency",
             "home-listen",
             "home-rows",
+            "learning-hub",
             "listening-chart",
             "listening-count",
             "listening-recent",
@@ -5373,6 +5919,7 @@
             "birds1",
             "frequency",
             "home-rows",
+            "learning-hub",
             "social-footer",
             "unshared-hub"
           ]
@@ -5384,6 +5931,8 @@
           ],
           "features": [
             "birds1",
+            "learning-arrays",
+            "learning-hub",
             "unshared-hub",
             "watching-toggles"
           ]
@@ -5395,6 +5944,8 @@
           ],
           "features": [
             "birds1",
+            "learning-arrays",
+            "learning-hub",
             "unshared-hub",
             "watching-toggles"
           ]
@@ -5406,6 +5957,8 @@
           ],
           "features": [
             "birds1",
+            "learning-arrays",
+            "learning-hub",
             "unshared-hub",
             "watching-toggles"
           ]
@@ -5427,6 +5980,7 @@
             "frequency",
             "home-listen",
             "home-rows",
+            "learning-hub",
             "listening-chart",
             "listening-count",
             "listening-recent",
@@ -5507,6 +6061,14 @@
         "concepts/hub.js",
         "concepts/suno/songs.json",
         "intel/curated.json",
+        "learning/arrays-page.js",
+        "learning/arrays/arrays.js",
+        "learning/curriculum.d.ts",
+        "learning/curriculum.js",
+        "learning/hub.js",
+        "learning/learning.css",
+        "learning/model.js",
+        "learning/shell.js",
         "lib/asset-budget.js",
         "lib/cover-mirror.js",
         "lib/cover-pixels.js",
@@ -5524,6 +6086,7 @@
         "lib/listen-line.js",
         "lib/listening.js",
         "lib/posters.js",
+        "lib/publish-learning.js",
         "lib/publish-unshared.js",
         "lib/safe-url.js",
         "lib/suno-songs.js",
@@ -5587,6 +6150,7 @@
         "test/home-preview.test.js",
         "test/intel.test.js",
         "test/lastfm-codec.test.js",
+        "test/learning.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
         "test/lint-comments.test.js",
@@ -5632,9 +6196,7 @@
         "workers/rebuild/wrangler.toml"
       ],
       "classesOnlyInCss": [],
-      "unusedTokens": [
-        "--mono"
-      ],
+      "unusedTokens": [],
       "unreferencedModules": [],
       "testOnlyModules": []
     }

@@ -2,6 +2,8 @@
 // The slug is the URL. The label is the visible words after "matt does".
 // `/` and `/404` are the shell. `/frequency/` stays out of this list.
 
+import { publishedLearningPaths } from '../learning/curriculum.js';
+
 export const DATA_SOURCES = ['letterboxd', 'listening', 'static'] as const;
 export type DataSource = (typeof DATA_SOURCES)[number];
 
@@ -17,6 +19,9 @@ export interface Verb {
 
 /** Publish /unshared/ and its entries. The home menu stays the other verbs. */
 export const unsharedEnabled = true;
+
+/** When true, `/` lists learning beside the other verbs. False leaves `/` unchanged. */
+export const learningOnHome = false;
 
 export const verbCatalog = [
   { slug: 'watching', label: 'letterboxd', source: 'letterboxd', renderer: 'watch' },
@@ -80,13 +85,15 @@ export function verbPath(slug: string): string {
   return `/${slug}/`;
 }
 
-/** Public crawl paths. Secrets are not included. Unshared stays off the home menu. */
+/** Public crawl paths. Secrets are not included. Unshared stays off the home menu.
+ *  Learning stays out of this list while learningOnHome is false. */
 const UNSHARED_PATHS = ['/unshared/', '/unshared/birds1/'] as const;
 
 export function sitemapPaths(): readonly string[] {
   const paths = ['/', ...verbs.map((verb) => verbPath(verb.slug))];
-  if (!unsharedEnabled) return paths;
-  return [...paths, ...UNSHARED_PATHS];
+  const listed = unsharedEnabled ? [...paths, ...UNSHARED_PATHS] : paths;
+  if (!learningOnHome) return listed;
+  return [...listed, ...publishedLearningPaths()];
 }
 
 export function validateVerbs(

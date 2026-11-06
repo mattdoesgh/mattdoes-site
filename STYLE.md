@@ -28,6 +28,7 @@ Spacing is the `--space-*` scale, fluid `clamp()` values of rem and vw. Borders 
 - Pink `#F7C8D8` on black.
 - Lowercase `matt does <verb>` labels. The data source is named plainly.
 - No grid lines. No flavor text. No numbering.
+- No subheading or standfirst under a page title or a section heading. `h1.sign` goes straight into the content.
 - No unfold or wipe animations.
 - Hover hit areas stay stable.
 - The phone layout stays clean.

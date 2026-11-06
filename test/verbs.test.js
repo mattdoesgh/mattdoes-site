@@ -195,6 +195,8 @@ test('nothing public is built outside the registry except / and /404', () => {
     ...SECRET_PATHS.map((route) => `${route.replace(/^\//, '').replace(/\/$/, '')}/index.html`),
     'unshared/index.html',
     'unshared/birds1/index.html',
+    'learning/index.html',
+    'learning/arrays/index.html',
   ]);
   const html = listDistHtml(distDir).map((file) => path.relative(distDir, file).split(path.sep).join('/'));
   assert.deepEqual(html.filter((file) => !allowed.has(file)), []);

@@ -5,7 +5,7 @@ import { test, expect } from 'playwright/test';
 import { prepare } from './prepare.js';
 
 const widths = [320, 390, 640, 768, 1024, 1280, 1440, 1920];
-const pages = ['/', '/watching/', '/listening/', '/unshared/', '/unshared/birds1/', '/404.html'];
+const pages = ['/', '/watching/', '/listening/', '/unshared/', '/unshared/birds1/', '/learning/', '/learning/arrays/', '/404.html'];
 
 test.beforeEach(async ({ page }, info) => {
   await prepare(page, { phone: info.project.name === 'phone' });

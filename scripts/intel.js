@@ -20,6 +20,7 @@ import { fileURLToPath } from 'node:url';
 import { parseTokens, LIVE_TOKENS } from '../lib/design-tokens.js';
 import { verbCatalog, SECRET_PATHS, unsharedEnabled, sitemapPaths, socials } from '../site/verbs.ts';
 import { unsharedEntries } from '../concepts/entries.js';
+import { publishedLessons } from '../learning/curriculum.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const INDEX_PATH = path.join(ROOT, 'intel', 'index.json');
@@ -230,6 +231,42 @@ function buildRoutes(corpus) {
     }, corpus));
   }
 
+  mustMention('learning/hub.js', ['learningTracks'], corpus);
+  mustMention('learning/arrays-page.js', ['data-lesson="arrays"'], corpus);
+  routes.push(page({
+    path: '/learning/',
+    published: true,
+    inSitemap: sitemap.has('/learning/'),
+    render: 'renderLearningHub',
+    page: 'learning/hub.js',
+    scripts: [],
+    styles: ['learning/learning.css', 'site/tokens.css'],
+    data: ['learning/curriculum.js', 'learning/shell.js'],
+    endpoints: [],
+  }, corpus));
+  const lessonPages = {
+    arrays: { render: 'renderArraysDocument', page: 'learning/arrays-page.js' },
+  };
+  for (const lesson of publishedLessons()) {
+    const recipe = lessonPages[lesson.slug];
+    const script = `learning/${lesson.slug}/${lesson.slug}.js`;
+    if (!recipe || !fs.existsSync(abs(script)) || !fs.existsSync(abs(recipe.page))) {
+      throw new Error(`intel: learning lesson "${lesson.slug}" has no page`);
+    }
+    const urlPath = `/learning/${lesson.slug}/`;
+    routes.push(page({
+      path: urlPath,
+      published: true,
+      inSitemap: sitemap.has(urlPath),
+      render: recipe.render,
+      page: recipe.page,
+      scripts: [script],
+      styles: ['learning/learning.css', 'site/tokens.css'],
+      data: ['learning/model.js', 'learning/shell.js'],
+      endpoints: [],
+    }, corpus));
+  }
+
   if (unsharedEnabled) {
     mustMention('concepts/hub.js', ['unsharedEntries'], corpus);
     for (const entry of unsharedEntries) {
@@ -317,7 +354,7 @@ function localImports(file, corpus) {
 }
 
 function buildModules(corpus) {
-  const code = corpus.files.filter((file) => /\.(js|ts)$/.test(file));
+  const code = corpus.files.filter((file) => /\.(js|ts)$/.test(file) && !file.endsWith('.d.ts'));
   const edges = [];
   const unresolved = [];
   for (const file of code) {
@@ -371,6 +408,7 @@ function buildModules(corpus) {
   const production = (file) => file.startsWith('lib/')
     || file.startsWith('site/')
     || file.startsWith('concepts/')
+    || file.startsWith('learning/')
     || file.startsWith('workers/')
     || file.startsWith('static/')
     || file.startsWith('scripts/');
@@ -649,9 +687,12 @@ function sectionSources(name, corpus) {
   if (name === 'routes') {
     return [
       'site/verbs.ts', 'site/render.js', 'concepts/entries.js', 'concepts/hub.js',
-      'lib/publish-unshared.js', 'lib/emit/index.js', 'static/station.js',
+      'lib/publish-unshared.js', 'lib/publish-learning.js', 'lib/emit/index.js', 'static/station.js',
       'static/poster-prefs.js', 'lib/listening.js',
-      ...corpus.files.filter((file) => file.startsWith('concepts/') && file.includes('/')),
+      ...corpus.files.filter((file) => (
+        (file.startsWith('concepts/') && file.includes('/'))
+        || file.startsWith('learning/')
+      )),
     ];
   }
   if (name === 'modules') return corpus.files.filter((file) => /\.(js|ts|html)$/.test(file));

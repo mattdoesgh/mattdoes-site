@@ -6,6 +6,8 @@ const pages = [
   ['watching', '/watching/'],
   ['listening', '/listening/'],
   ['unshared', '/unshared/'],
+  ['learning', '/learning/'],
+  ['arrays', '/learning/arrays/'],
 ];
 
 test.beforeEach(async ({ page }, info) => {
