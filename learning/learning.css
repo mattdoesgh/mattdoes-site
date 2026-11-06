@@ -129,7 +129,6 @@ main {
   overflow-wrap: anywhere;
 }
 
-.deck,
 .hint,
 .outcome {
   max-width: var(--measure);

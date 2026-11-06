@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
 
-import { buildFixtureVault, readDist, REPO_ROOT } from './helpers/run-build.js';
+import { buildFixtureVault, listDistHtml, readDist, REPO_ROOT } from './helpers/run-build.js';
 import { learningOnHome, sitemapPaths, verbs } from '../site/verbs.ts';
 import { learningHomeRow } from '../site/render.js';
 import { learningTracks, publishedLearningPaths } from '../learning/curriculum.js';
@@ -67,7 +67,10 @@ test('the curriculum is ordered, with one open lesson and none done', () => {
   assert.equal(lessons.some((lesson) => lesson.status === 'done'), false);
   const open = lessons.filter((lesson) => lesson.status === 'open');
   assert.deepEqual(open.map((lesson) => lesson.label), ['arrays & big-o']);
-  assert.deepEqual(publishedLearningPaths(), sitemapPaths().filter((route) => route.startsWith('/learning/')));
+  assert.deepEqual(publishedLearningPaths(), ['/learning/', '/learning/arrays/']);
+  assert.equal(sitemapPaths().some((route) => route.startsWith('/learning/')), false);
+  const sitemap = readDist(distDir, 'sitemap.xml');
+  assert.equal(sitemap.includes('/learning/'), false);
   const hub = new JSDOM(renderLearningHub('https://mattdoes.online')).window.document;
   const rows = [...hub.querySelectorAll('.lesson-row')];
   assert.deepEqual(rows.map((row) => row.textContent), lessons.map((lesson) => lesson.label));
@@ -186,6 +189,8 @@ test('the arrays page steps, reveals hints, and checks growth without solution c
   binary.checked = true;
   binary.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
   assert.equal(array.querySelector('[data-target]').hasAttribute('hidden'), false);
+  assert.match(array.querySelector('[data-outcome]').textContent, /range\(0, 1000, 3\)/);
+  assert.match(array.querySelector('[data-count]').textContent, /^\d+ slots$/);
   const binaryReads = binarySteps(searchData(), 999).length;
   for (let i = 0; i < binaryReads; i += 1) stepArray();
   assert.match(array.querySelector('[data-outcome]').textContent, /999/);
@@ -197,11 +202,15 @@ test('the arrays page steps, reveals hints, and checks growth without solution c
   const linear = array.querySelector('input[value="linear"]');
   linear.checked = true;
   linear.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+  assert.match(array.querySelector('[data-outcome]').textContent, /range\(0, 1000, 3\): 334 numbers/);
+  assert.match(array.querySelector('[data-outcome]').textContent, /1000 is missing/);
+  assert.equal(array.querySelector('[data-count]').textContent, '334 slots');
   const linearReads = linearSteps(searchData(), 1000).length;
   for (let i = 0; i < linearReads + 1; i += 1) stepArray();
   assert.match(array.querySelector('[data-outcome]').textContent, /not in the list/);
   array.querySelector('[data-act="reset"]').click();
-  assert.match(array.querySelector('[data-count]').textContent, /0 reads/);
+  assert.equal(array.querySelector('[data-count]').textContent, '334 slots');
+  assert.match(array.querySelector('[data-outcome]').textContent, /range\(0, 1000, 3\)/);
 
   const reveal = document.querySelector('[data-reveal]');
   assert.equal(document.querySelectorAll('[data-hint]:not([hidden])').length, 1);
@@ -221,6 +230,40 @@ test('the arrays page steps, reveals hints, and checks growth without solution c
   const client = fs.readFileSync(path.join(REPO_ROOT, 'learning', 'arrays', 'arrays.js'), 'utf8');
   assert.doesNotMatch(client, /\.style\b/);
   assert.doesNotMatch(client, /setAttribute\(\s*['"]style['"]/);
+});
+
+test('titles go straight into the content and no page uses a deck', () => {
+  const style = fs.readFileSync(path.join(REPO_ROOT, 'STYLE.md'), 'utf8');
+  assert.match(style, /No subheading or standfirst/);
+  const css = fs.readFileSync(path.join(REPO_ROOT, 'learning', 'learning.css'), 'utf8');
+  assert.equal(css.includes('.deck'), false);
+  const contentLine = new Set(['total', 'layout-live']);
+  for (const file of listDistHtml(distDir)) {
+    const rel = path.relative(distDir, file);
+    const html = fs.readFileSync(file, 'utf8');
+    assert.equal(html.includes('class="deck"'), false, rel);
+    const doc = new JSDOM(html).window.document;
+    const mast = doc.querySelector('.mast');
+    const afterMast = mast?.nextElementSibling;
+    if (afterMast) {
+      assert.notEqual(afterMast.tagName, 'P', rel);
+      assert.equal(afterMast.classList.contains('deck'), false, rel);
+    }
+    for (const sign of doc.querySelectorAll('h1.sign')) {
+      if (sign.closest('.mast')) continue;
+      const next = sign.nextElementSibling;
+      if (!next) continue;
+      assert.equal(next.classList.contains('deck'), false, rel);
+      if (next.tagName !== 'P') continue;
+      const kept = [...next.classList].some((name) => contentLine.has(name));
+      assert.equal(kept, true, rel);
+    }
+  }
+  const hub = new JSDOM(readDist(distDir, 'learning/index.html')).window.document;
+  assert.equal(hub.querySelector('h1.sign')?.nextElementSibling?.tagName, 'NAV');
+  const lesson = new JSDOM(readDist(distDir, 'learning/arrays/index.html')).window.document;
+  assert.equal(lesson.querySelector('.mast')?.nextElementSibling?.tagName, 'SECTION');
+  assert.equal(lesson.querySelector('h2')?.nextElementSibling?.classList.contains('deck'), false);
 });
 
 test('learning sources stay inside the token set', () => {

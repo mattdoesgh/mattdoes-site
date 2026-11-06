@@ -39,7 +39,6 @@ export function renderLearningHub(siteUrl) {
     title: 'matt does learning',
     description: 'matt does learning.',
     main: `<h1 class="sign"><a href="/">matt does learning</a></h1>
-      <p class="deck">a link is ready. a quiet row is next.</p>
       <nav aria-label="learning">
         ${tracks}
       </nav>`,

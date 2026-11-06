@@ -4,18 +4,13 @@
 import { esc } from '../lib/safe-url.js';
 import { relFor } from '../lib/safe-url.js';
 import {
-  DISTINCT_SAMPLE,
   DUPLICATE_SAMPLE,
   GROWTH_CHOICES,
   HINTS,
   SEARCH_HIT,
   SEARCH_MISS,
   appendFrames,
-  binarySteps,
-  duplicateActions,
   growthResult,
-  linearSteps,
-  searchData,
 } from './model.js';
 import { renderLearningDocument } from './shell.js';
 import './arrays/arrays.js';
@@ -115,44 +110,10 @@ function emptySlots(count) {
 }
 
 /**
- * @returns {string}
- */
-function searchSummary() {
-  const data = searchData();
-  const hitIndex = data.indexOf(SEARCH_HIT);
-  const linearHit = linearSteps(data, SEARCH_HIT).length;
-  const binaryHit = binarySteps(data, SEARCH_HIT).length;
-  const linearMiss = linearSteps(data, SEARCH_MISS).length;
-  const binaryMiss = binarySteps(data, SEARCH_MISS).length;
-  return `sorted data is range(0, 1000, 3): ${data.length} numbers. ${SEARCH_HIT} is at index ${hitIndex}. linear search reads ${linearHit} slots. binary search reads ${binaryHit}. ${SEARCH_MISS} is missing. linear search still reads ${linearMiss} slots. binary search stops after ${binaryMiss} halves.`;
-}
-
-/**
- * @param {number} pairCount
- * @param {number} setCount
- * @returns {string}
- */
-function duplicateSummary(pairCount, setCount) {
-  const distinctPairs = duplicateActions('distinct', 'pairs').length;
-  const distinctSet = duplicateActions('distinct', 'set').length;
-  return `duplicate ${formatList(DUPLICATE_SAMPLE)}: ${pairCount} pair checks, ${setCount} set checks. all distinct ${formatList(DISTINCT_SAMPLE)}: ${distinctPairs} pair checks, ${distinctSet} set checks.`;
-}
-
-/**
- * @param {number[]} values
- * @returns {string}
- */
-function formatList(values) {
-  return `[${values.join(', ')}]`;
-}
-
-/**
  * @param {string} [siteUrl]
  * @returns {string}
  */
 export function renderArraysDocument(siteUrl) {
-  const pairCount = duplicateActions('duplicate', 'pairs').length;
-  const setCount = duplicateActions('duplicate', 'set').length;
   const appendEnd = appendFrames().at(-1);
   const hints = HINTS.map((hint, index) => (
     `<p class="hint" data-hint${index === 0 ? '' : ' hidden'}>${esc(hint)}</p>`
@@ -176,12 +137,8 @@ export function renderArraysDocument(siteUrl) {
         <a class="home" href="/learning/">learning</a>
         <h1 class="sign"><a href="/">arrays &amp; big-o</a></h1>
       </div>
-      <p class="deck">big-o is how the work grows as n grows. constants drop out: 3n + 5 is o(n). an array stores items side by side, so a[i] is o(1). a python list is a dynamic array. when it fills, it copies into a bigger block. that copy is o(n), and it is rare enough that append averages to o(1). that average is amortized o(1). insert away from the end shifts later items, so it is o(n). binary search needs sorted data and halves the range, so it is o(log n).</p>
-      <p class="deck">reading: grokking algorithms, chapter 1, and the memory and arrays parts of chapter 2.</p>
-
       <section class="lesson-block" data-lesson="arrays">
         <h2>contains duplicate</h2>
-        <p class="deck">${esc(duplicateSummary(pairCount, setCount))}</p>
         <div class="stepper" data-stepper="duplicate">
           <fieldset>
             <legend>approach</legend>
@@ -223,7 +180,6 @@ export function renderArraysDocument(siteUrl) {
             <label class="choice"><input type="radio" name="array-target" value="${SEARCH_HIT}" checked> ${SEARCH_HIT}</label>
             <label class="choice"><input type="radio" name="array-target" value="${SEARCH_MISS}"> missing ${SEARCH_MISS}</label>
           </fieldset>
-          <p class="deck">${esc(searchSummary())}</p>
           <div class="panel is-selected" data-panel="append">
             <ol class="slots" data-slots>
               ${emptySlots(startSlots)}
@@ -273,14 +229,14 @@ export function renderArraysDocument(siteUrl) {
         </table>
 
         <h2 id="coach">coach</h2>
-        <p class="deck">solve <a href="${esc(LEETCODE)}"${relFor(LEETCODE)}>contains duplicate</a> two ways, a slow one and a fast one. write the time and the space big-o for each.</p>
+        <p>solve <a href="${esc(LEETCODE)}"${relFor(LEETCODE)}>contains duplicate</a> two ways, a slow one and a fast one. write the time and the space big-o for each.</p>
         <div class="hints">
             ${hints}
         </div>
         <button type="button" class="control" data-reveal>reveal hint</button>
         <fieldset>
           <legend>growth</legend>
-          <p class="deck">a is o(n). b is o(n²). n grows from 1,000 to 10,000. how many times more work does each one do?</p>
+          <p>a is o(n). b is o(n²). n grows from 1,000 to 10,000. how many times more work does each one do?</p>
             ${growth}
         </fieldset>
         <p class="outcome" data-growth-result role="status">pick one.</p>

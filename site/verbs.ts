@@ -85,12 +85,14 @@ export function verbPath(slug: string): string {
   return `/${slug}/`;
 }
 
-/** Public crawl paths. Secrets are not included. Unshared and learning stay off the home menu. */
+/** Public crawl paths. Secrets are not included. Unshared stays off the home menu.
+ *  Learning stays out of this list while learningOnHome is false. */
 const UNSHARED_PATHS = ['/unshared/', '/unshared/birds1/'] as const;
 
 export function sitemapPaths(): readonly string[] {
   const paths = ['/', ...verbs.map((verb) => verbPath(verb.slug))];
   const listed = unsharedEnabled ? [...paths, ...UNSHARED_PATHS] : paths;
+  if (!learningOnHome) return listed;
   return [...listed, ...publishedLearningPaths()];
 }
 

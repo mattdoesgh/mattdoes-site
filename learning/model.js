@@ -230,6 +230,20 @@ export function insertFrames() {
 }
 
 /**
+ * @param {number[]} data
+ * @param {number} target
+ * @param {number} reads
+ * @param {string} name
+ * @returns {string}
+ */
+function searchLead(data, target, reads, name) {
+  const place = data.includes(target)
+    ? `${target} is at index ${data.indexOf(target)}.`
+    : `${target} is missing.`;
+  return `range(0, 1000, 3): ${data.length} numbers. ${place} ${name} reads ${reads} slots.`;
+}
+
+/**
  * @param {number} target
  * @returns {object[]}
  */
@@ -239,7 +253,8 @@ export function linearFrames(target) {
   const frames = [{
     kind: 'start',
     target,
-    note: `linear search for ${target} starts at index 0 and walks forward. that is o(n).`,
+    total: steps.length,
+    note: searchLead(data, target, steps.length, 'linear search'),
   }];
   for (const step of steps) {
     frames.push({
@@ -271,11 +286,12 @@ export function binaryFrames(target) {
   const frames = [{
     kind: 'start',
     target,
+    total: steps.length,
     lo: 0,
     hi: data.length - 1,
     loValue: data[0],
     hiValue: data[data.length - 1],
-    note: `binary search for ${target} keeps a sorted range and checks the middle. each step cuts the range in half. that is o(log n). the list has to be sorted.`,
+    note: searchLead(data, target, steps.length, 'binary search'),
   }];
   for (const step of steps) {
     let note = `${step.value} equals ${target} at index ${step.mid}.`;

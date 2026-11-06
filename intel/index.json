@@ -113,18 +113,18 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "50989d210431948395a0d090b0095d4cdeaa1e7ce6e966cef798a6a2bc93de1e",
+      "sha256": "02bca74b03f4267e7d590e3d8b592a7fd32fe60b0d4dba09801bd8b5ffa4f38e",
       "gitBlob": null
     },
     {
       "path": "learning/arrays-page.js",
-      "sha256": "934e05d51b68b0b82b43efd8e634f18a425cacb2f1ee3be6d42fce7ad68d5c15",
-      "gitBlob": "06efa2409222fa314c5366865478b0539219389a"
+      "sha256": "8dc28d54485f520ac8e9426b86fae8549c6046a2924818199873ba527325d485",
+      "gitBlob": "21ee35a70d2e908266058280c8ccdac67fdafce0"
     },
     {
       "path": "learning/arrays/arrays.js",
-      "sha256": "56e6bca066e8037269961b2e8c4b5412ecffc06f0ab86c94602257896c1fe788",
-      "gitBlob": "4e2b5c8546abb6a8a70a027afdc2a93accedda24"
+      "sha256": "06f45cba18a0adc6036a53c37efda6377e7dca8fd2659436fffefcf087d36fd6",
+      "gitBlob": "286e5f112d0d8173e85f0214eb1171aac52b3747"
     },
     {
       "path": "learning/curriculum.d.ts",
@@ -138,18 +138,18 @@
     },
     {
       "path": "learning/hub.js",
-      "sha256": "494eac2d7a944cd383e30df41fe1f408dc8efe57967e831704b005424c6dce1e",
-      "gitBlob": "470e01867468d9d8dee270f5b2ee1491b143c17f"
+      "sha256": "146f1645235bb4bc19391d5792d9ac7728a92b80f9f9394153a758591c92169e",
+      "gitBlob": "2fc735228f72bcd70711fd643b80704de8a49fec"
     },
     {
       "path": "learning/learning.css",
-      "sha256": "6b53530d15e69355f8d29cce1afa6dde21d0bc3bd7a0e135e90a7004fa8aa07f",
-      "gitBlob": "eeffccb00830db7df2ea857b77bcddcacf6b709e"
+      "sha256": "cf05537ac939a03e4c212f57b94d3bfcae0c3ac44fcea4211755928e454b4655",
+      "gitBlob": "0ceee084213c0470fe831afbe82a3bffc3e03349"
     },
     {
       "path": "learning/model.js",
-      "sha256": "14481b9de0a1d64d03324a28e5355bc0571e6781150458a48a2177c3cc9c85d9",
-      "gitBlob": "dbd009f76deebfe59cc824a1a2a8c4f9d3fd02c1"
+      "sha256": "4947efc2db70d34a3f201994bc41ed268004d8d5769d62feda139ed79b6f2608",
+      "gitBlob": "c1af9dcba7a50011442f919a12fd20752decd975"
     },
     {
       "path": "learning/shell.js",
@@ -203,8 +203,8 @@
     },
     {
       "path": "lib/emit/feeds.js",
-      "sha256": "ce6a00d5b2fb0ae234e15a1f7a9303667fbdad9ce117b5f59f0f93e34c9f1d77",
-      "gitBlob": "988f02156795eea8c7b79e9f9147ba86534593d9"
+      "sha256": "caa23cd8720507c94b4e7fb5fae11c27b3d9c1c3f267443400633fed62a80272",
+      "gitBlob": "2b6d8a4390ecb23ebef25236887f99cb2d392f21"
     },
     {
       "path": "lib/emit/index.js",
@@ -363,8 +363,8 @@
     },
     {
       "path": "site/verbs.ts",
-      "sha256": "cc21d37fd152bbe7100afdbb3993de279a30899c5f8794037004fb42a9471f3d",
-      "gitBlob": "dad395001b8e439655e86bc0a334d446b07c7948"
+      "sha256": "5e38c611e5f34d32067b9c38a7cc6f2c7a5a3ca7401d6f7ec51b500de84e962e",
+      "gitBlob": "d1d0a8e36feec8aa8938d2cc77ed7c386607a00e"
     },
     {
       "path": "static/_headers",
@@ -473,8 +473,8 @@
     },
     {
       "path": "test/emit-units.test.js",
-      "sha256": "cdedd7d19003455b8e39329a0cad1a3dc69189e9c2f2f6770c75fcaf820a1ec8",
-      "gitBlob": "6e82610284232459194689f14937abdd4ed7e1cc"
+      "sha256": "0f004e631a4bea2940f59462a039c2c38577c051b04ac26214a9be8836eb6205",
+      "gitBlob": "3cf44b83195c906e867ccaa8c4d410861b183252"
     },
     {
       "path": "test/feed-standards.test.js",
@@ -563,8 +563,8 @@
     },
     {
       "path": "test/learning.test.js",
-      "sha256": "a951aa3cba1eee7cd96589117c3efd4334613ffd3076e74557083f4692d0bca9",
-      "gitBlob": "a6f7a227d1323bab33113ff51f53671e326ebe19"
+      "sha256": "d1ee7a2fca2a754686dd8576d6a4f8c7dcb6ff84089dc4ddbd716a6a22b2d17c",
+      "gitBlob": "0aec2050b6793bd251329df9dbe1252eaced08ae"
     },
     {
       "path": "test/letterboxd.test.js",
@@ -889,7 +889,7 @@
         {
           "path": "/learning/",
           "published": true,
-          "inSitemap": true,
+          "inSitemap": false,
           "render": "renderLearningHub",
           "page": "learning/hub.js",
           "scripts": [],
@@ -913,7 +913,7 @@
         {
           "path": "/learning/arrays/",
           "published": true,
-          "inSitemap": true,
+          "inSitemap": false,
           "render": "renderArraysDocument",
           "page": "learning/arrays-page.js",
           "scripts": [
@@ -5039,8 +5039,8 @@
             },
             {
               "path": "site/verbs.ts",
-              "sha256": "cc21d37fd152bbe7100afdbb3993de279a30899c5f8794037004fb42a9471f3d",
-              "gitBlob": "dad395001b8e439655e86bc0a334d446b07c7948"
+              "sha256": "5e38c611e5f34d32067b9c38a7cc6f2c7a5a3ca7401d6f7ec51b500de84e962e",
+              "gitBlob": "d1d0a8e36feec8aa8938d2cc77ed7c386607a00e"
             }
           ]
         },
@@ -5054,6 +5054,7 @@
           ],
           "anchorFiles": {
             "learningOnHome": [
+              "lib/emit/feeds.js",
               "site/render.js",
               "site/verbs.ts",
               "test/learning.test.js"
@@ -5074,6 +5075,7 @@
           "files": [
             "learning/hub.js",
             "learning/learning.css",
+            "lib/emit/feeds.js",
             "site/render.js",
             "site/verbs.ts",
             "test/learning.test.js"
@@ -5081,6 +5083,7 @@
           "sources": [
             "learning/hub.js",
             "learning/learning.css",
+            "lib/emit/feeds.js",
             "site/render.js",
             "site/verbs.ts"
           ],
@@ -5095,13 +5098,18 @@
           "provenance": [
             {
               "path": "learning/hub.js",
-              "sha256": "494eac2d7a944cd383e30df41fe1f408dc8efe57967e831704b005424c6dce1e",
-              "gitBlob": "470e01867468d9d8dee270f5b2ee1491b143c17f"
+              "sha256": "146f1645235bb4bc19391d5792d9ac7728a92b80f9f9394153a758591c92169e",
+              "gitBlob": "2fc735228f72bcd70711fd643b80704de8a49fec"
             },
             {
               "path": "learning/learning.css",
-              "sha256": "6b53530d15e69355f8d29cce1afa6dde21d0bc3bd7a0e135e90a7004fa8aa07f",
-              "gitBlob": "eeffccb00830db7df2ea857b77bcddcacf6b709e"
+              "sha256": "cf05537ac939a03e4c212f57b94d3bfcae0c3ac44fcea4211755928e454b4655",
+              "gitBlob": "0ceee084213c0470fe831afbe82a3bffc3e03349"
+            },
+            {
+              "path": "lib/emit/feeds.js",
+              "sha256": "caa23cd8720507c94b4e7fb5fae11c27b3d9c1c3f267443400633fed62a80272",
+              "gitBlob": "2b6d8a4390ecb23ebef25236887f99cb2d392f21"
             },
             {
               "path": "site/render.js",
@@ -5110,8 +5118,8 @@
             },
             {
               "path": "site/verbs.ts",
-              "sha256": "cc21d37fd152bbe7100afdbb3993de279a30899c5f8794037004fb42a9471f3d",
-              "gitBlob": "dad395001b8e439655e86bc0a334d446b07c7948"
+              "sha256": "5e38c611e5f34d32067b9c38a7cc6f2c7a5a3ca7401d6f7ec51b500de84e962e",
+              "gitBlob": "d1d0a8e36feec8aa8938d2cc77ed7c386607a00e"
             }
           ]
         },
@@ -5151,7 +5159,6 @@
           ],
           "tests": [
             "test/csp-headers.test.js",
-            "test/emit-units.test.js",
             "test/learning.test.js",
             "test/visual/axe.spec.js",
             "test/visual/pages.spec.js",
@@ -5160,18 +5167,18 @@
           "provenance": [
             {
               "path": "learning/arrays-page.js",
-              "sha256": "934e05d51b68b0b82b43efd8e634f18a425cacb2f1ee3be6d42fce7ad68d5c15",
-              "gitBlob": "06efa2409222fa314c5366865478b0539219389a"
+              "sha256": "8dc28d54485f520ac8e9426b86fae8549c6046a2924818199873ba527325d485",
+              "gitBlob": "21ee35a70d2e908266058280c8ccdac67fdafce0"
             },
             {
               "path": "learning/arrays/arrays.js",
-              "sha256": "56e6bca066e8037269961b2e8c4b5412ecffc06f0ab86c94602257896c1fe788",
-              "gitBlob": "4e2b5c8546abb6a8a70a027afdc2a93accedda24"
+              "sha256": "06f45cba18a0adc6036a53c37efda6377e7dca8fd2659436fffefcf087d36fd6",
+              "gitBlob": "286e5f112d0d8173e85f0214eb1171aac52b3747"
             },
             {
               "path": "learning/model.js",
-              "sha256": "14481b9de0a1d64d03324a28e5355bc0571e6781150458a48a2177c3cc9c85d9",
-              "gitBlob": "dbd009f76deebfe59cc824a1a2a8c4f9d3fd02c1"
+              "sha256": "4947efc2db70d34a3f201994bc41ed268004d8d5769d62feda139ed79b6f2608",
+              "gitBlob": "c1af9dcba7a50011442f919a12fd20752decd975"
             }
           ]
         }
@@ -5489,7 +5496,6 @@
           "features": [
             "birds1",
             "frequency",
-            "learning-arrays",
             "learning-hub",
             "unshared-hub"
           ]

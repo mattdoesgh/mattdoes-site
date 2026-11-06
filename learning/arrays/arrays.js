@@ -191,7 +191,7 @@ function bootArray(root) {
       paintReadout(targetCell, 'target', String(target));
       if (frame.kind === 'read' && indexCell) indexCell.classList.add('is-i');
       if (frame.kind === 'read' && valueCell) valueCell.classList.add(frame.found ? 'is-hit' : 'is-j');
-      count.textContent = `${reads} reads`;
+      count.textContent = frame.kind === 'start' ? `${frame.total} slots` : `${reads} reads`;
     }
     if (panel && mode === 'binary') {
       const loCell = panel.querySelector('[data-end="lo"]');
@@ -203,7 +203,7 @@ function bootArray(root) {
       if (frame.kind === 'half' && loCell) loCell.classList.add('is-i');
       if (frame.kind === 'half' && hiCell) hiCell.classList.add('is-j');
       if (frame.kind === 'half' && midCell) midCell.classList.add(frame.next === 'found' ? 'is-hit' : 'is-write');
-      count.textContent = `${reads} reads`;
+      count.textContent = frame.kind === 'start' ? `${frame.total} slots` : `${reads} reads`;
     }
     outcome.textContent = frame.note;
   };
