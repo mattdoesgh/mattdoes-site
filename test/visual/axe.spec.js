@@ -12,6 +12,8 @@ const paths = [
   '/listening/',
   '/unshared/',
   '/unshared/birds1/',
+  '/learning/',
+  '/learning/arrays/',
   '/404.html',
 ];
 

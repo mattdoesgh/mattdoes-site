@@ -4,7 +4,7 @@ import { sitemapXml, robotsTxt } from '../lib/emit/feeds.js';
 
 test('sitemapXml lists the verb routes and omits the secret page', () => {
   const xml = sitemapXml({ siteUrl: 'https://mattdoes.online' });
-  for (const route of ['/', '/watching/', '/listening/', '/unshared/', '/unshared/birds1/']) {
+  for (const route of ['/', '/watching/', '/listening/', '/unshared/', '/unshared/birds1/', '/learning/', '/learning/arrays/']) {
     assert.ok(xml.includes(`<loc>https://mattdoes.online${route}</loc>`), route);
   }
   assert.equal(xml.includes('/frequency/'), false);

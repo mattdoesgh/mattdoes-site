@@ -1,0 +1,475 @@
+/* Learning pages. Phone rules are the base. Desktop starts at 1024.
+   The field is the flipped pink. Type stays on the token scale. */
+
+@import "../../site/tokens.css";
+
+@font-face {
+  font-family: "Anton";
+  font-style: normal;
+  font-weight: var(--weight-regular);
+  font-display: swap;
+  src: url("../../static/fonts/Anton-latin.woff2") format("woff2");
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  margin: var(--space-0);
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: var(--space-page);
+  padding-top: var(--space-page-top);
+  padding-right: var(--space-page-right);
+  padding-bottom: var(--space-page-bottom);
+  padding-left: var(--space-page-left);
+  background: var(--field);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--type-body);
+  line-height: 1.45;
+}
+
+:focus {
+  outline: var(--outline-none);
+}
+
+:focus-visible {
+  outline: var(--outline-focus);
+  outline-offset: var(--outline-offset);
+}
+
+::selection {
+  background: var(--black);
+  color: var(--pink);
+}
+
+a {
+  color: inherit;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-1);
+  top: var(--space-0);
+  transform: translateY(-120%);
+  background: var(--black);
+  color: var(--pink);
+  padding: var(--space-skip);
+  z-index: 2;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  transform: none;
+  outline: var(--outline-black);
+  outline-offset: var(--outline-offset);
+}
+
+main {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.mast {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: var(--space-0);
+}
+
+.sign,
+.home,
+.lesson,
+.track h2,
+.lesson-block h2 {
+  font-family: var(--display);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--track-none);
+}
+
+.home {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--hit);
+  margin: var(--space-0);
+  padding: var(--space-cap) var(--space-0);
+  font-size: var(--type-kicker);
+  line-height: 1;
+  text-decoration: none;
+  background: var(--field);
+}
+
+.sign {
+  margin: var(--space-0);
+  max-width: 100%;
+  padding-top: 0.45em;
+  padding-bottom: 0.45em;
+  font-size: var(--type-sign);
+  line-height: 0.9;
+  overflow-wrap: anywhere;
+}
+
+.sign a {
+  color: inherit;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.deck,
+.hint,
+.outcome {
+  max-width: var(--measure);
+  margin: var(--space-md) var(--space-0);
+  overflow-wrap: anywhere;
+}
+
+.track h2,
+.lesson-block h2 {
+  margin: var(--space-section) var(--space-0) var(--space-row);
+  font-size: var(--type-title);
+  line-height: 0.95;
+  overflow-wrap: anywhere;
+}
+
+.lessons,
+.board,
+.slots,
+.seen {
+  list-style: none;
+  margin: var(--space-md) var(--space-0);
+  padding: var(--space-0);
+}
+
+.lesson-row {
+  border-top: var(--line-rule);
+}
+
+.lesson,
+.lesson-next {
+  display: flex;
+  align-items: center;
+  min-height: var(--hit);
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.lesson {
+  font-size: var(--type-list);
+  line-height: 1.05;
+  text-decoration: none;
+}
+
+.lesson-next {
+  font-family: var(--body);
+  font-size: var(--type-body);
+}
+
+.lesson:hover,
+.lesson:focus-visible,
+.home:hover,
+.home:focus-visible,
+.sign a:hover,
+.sign a:focus-visible {
+  background: var(--black);
+  color: var(--pink);
+  outline-color: var(--pink);
+}
+
+fieldset {
+  margin: var(--space-md) var(--space-0);
+  padding: var(--space-0);
+  border: var(--line-none);
+  min-width: 0;
+}
+
+legend {
+  padding: var(--space-0);
+  font-family: var(--display);
+  font-size: var(--type-kicker);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--track-none);
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-row);
+  min-height: var(--hit);
+  max-width: 100%;
+  padding: var(--space-cap) var(--space-0);
+  overflow-wrap: anywhere;
+}
+
+.choice input {
+  width: var(--hit);
+  height: var(--hit);
+  flex: 0 0 auto;
+  margin: var(--space-0);
+  accent-color: var(--ink);
+}
+
+.board,
+.slots {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-row);
+}
+
+.seen:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-row);
+}
+
+.cell,
+.slot:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: var(--hit-phone);
+  padding: var(--space-cap);
+  border: var(--line-hair);
+  background: var(--field);
+  color: var(--ink);
+  text-align: center;
+  overflow: hidden;
+}
+
+.cell-value,
+.cell-index {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.cell-value {
+  font-family: var(--mono);
+  font-size: var(--type-body);
+}
+
+.cell-index,
+.seen-label,
+.count-line {
+  font-family: var(--mono);
+  font-size: var(--type-meta);
+}
+
+.seen-label,
+.count-line {
+  margin: var(--space-row) var(--space-0);
+}
+
+.count-line {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: var(--type-kicker);
+}
+
+.cell.is-i,
+.slot.is-i,
+.cell.is-hit,
+.slot.is-hit,
+.slot.is-full,
+.slot.is-write {
+  background: var(--black);
+  color: var(--pink);
+}
+
+.cell.is-j,
+.slot.is-j,
+.slot.is-shift {
+  background: var(--white);
+  color: var(--black);
+}
+
+.slot.is-copy {
+  background: var(--black);
+  color: var(--white);
+}
+
+.stepper.is-live .panel {
+  display: none;
+}
+
+.stepper.is-live .panel.is-selected {
+  display: block;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-row);
+  margin: var(--space-md) var(--space-0);
+}
+
+.control {
+  flex: 1 1 auto;
+  min-width: var(--hit);
+  min-height: var(--hit);
+  padding: var(--space-cap) var(--space-md);
+  border: var(--line-hair);
+  background: var(--field);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--type-body);
+  font-weight: var(--weight-regular);
+  overflow-wrap: anywhere;
+}
+
+.control:hover,
+.control:focus-visible {
+  background: var(--black);
+  color: var(--pink);
+  outline-color: var(--pink);
+}
+
+.code-block,
+.code-block code {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.code-block {
+  margin: var(--space-md) var(--space-0);
+  padding: var(--space-md);
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--mono);
+  font-size: var(--type-meta);
+  line-height: 1.45;
+}
+
+.bigo {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: var(--type-meta);
+}
+
+.bigo caption {
+  padding: var(--space-0) var(--space-0) var(--space-row);
+  text-align: left;
+  font-family: var(--body);
+  font-size: var(--type-body);
+}
+
+.bigo th,
+.bigo td {
+  padding: var(--space-cap) var(--space-row);
+  border-bottom: var(--line-hair);
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.hints {
+  margin: var(--space-md) var(--space-0);
+}
+
+.site-footer {
+  flex: 0 0 auto;
+  margin-top: var(--space-footer);
+  padding-top: var(--space-1);
+  border-top: var(--line-rule);
+}
+
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-socials);
+  margin: var(--space-0);
+}
+
+.socials a {
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--hit);
+  height: var(--hit);
+  padding: var(--space-0);
+  text-decoration: none;
+}
+
+.socials svg {
+  width: var(--icon);
+  height: var(--icon);
+  display: block;
+  fill: currentColor;
+}
+
+.socials a:hover,
+.socials a:focus-visible {
+  background: var(--black);
+  color: var(--pink);
+  outline-color: var(--pink);
+}
+
+@media (hover: none) and (max-width: 1023px) {
+  .home,
+  .lesson,
+  .lesson-next,
+  .choice,
+  .control {
+    min-height: var(--hit-phone);
+  }
+
+  .choice input,
+  .socials a {
+    width: var(--hit-phone);
+    height: var(--hit-phone);
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    padding: var(--space-page-desk);
+    padding-top: var(--space-page-desk-top);
+    padding-right: var(--space-page-desk-right);
+    padding-bottom: var(--space-page-desk-bottom);
+    padding-left: var(--space-page-desk-left);
+  }
+
+  .sign {
+    font-size: var(--row-size);
+    line-height: 0.86;
+  }
+
+  .board,
+  .slots {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transform: none;
+  }
+
+  .skip-link:not(:focus) {
+    transform: translateY(-120%);
+  }
+}
