@@ -32,6 +32,15 @@ export const verbCatalog = [
 /** Home menu and verb routes. Unshared is published beside this list. */
 export const verbs = verbCatalog.filter((verb) => verb.slug !== 'unshared');
 
+/**
+ * Words that rise and sink through the water line on the home hero.
+ * Lowercase letters, spaces, and apostrophes. One line to add or remove one.
+ */
+export const surfaceWords: readonly string[] = [
+  'despise', 'hate', 'nervous', 'empty', 'unsure', 'addicted', 'lie',
+  'reflect', 'reality', 'zen', 'out', 'who am i', 'seams', 'heading home',
+];
+
 /** Footer socials. One line to add or remove a link. */
 export interface SocialLink {
   readonly label: string;
@@ -132,6 +141,17 @@ export function validateVerbs(
 export function assertRegistry(knownRenderers: readonly string[]): void {
   validateVerbs(verbs, knownRenderers);
   validateSocials(socials);
+  validateSurfaceWords(surfaceWords);
+}
+
+/** Surface words are short lowercase phrases. Nothing else is drawn. */
+export function validateSurfaceWords(list: readonly string[]): void {
+  if (!list.length) throw new Error('surface words: the list is empty');
+  for (const word of list) {
+    if (!/^[a-z][a-z' ]{0,23}$/.test(word)) {
+      throw new Error(`surface words: invalid word "${word}"`);
+    }
+  }
 }
 
 /** Labels stay lowercase words. Hrefs stay https profile links. */

@@ -12,7 +12,7 @@ const WAVE_WORDS = new Set(['scrobbles', 'films']);
 
 const ctx = {
   siteUrl: 'https://mattdoes.online',
-  assets: { 'station.css': 'station.abc12345.css', 'station.js': 'station.abc12345.js' },
+  assets: { 'station.css': 'station.abc12345.css', 'station.js': 'station.abc12345.js', 'hero.css': 'hero.abc12345.css', 'hero.js': 'hero.abc12345.js' },
   watches: [],
   tracks: [],
   periods: null,

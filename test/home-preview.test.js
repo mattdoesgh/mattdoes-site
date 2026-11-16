@@ -8,7 +8,7 @@ import { JSDOM } from 'jsdom';
 import { renderHome } from '../site/render.js';
 import { REPO_ROOT } from './helpers/run-build.js';
 
-const assets = { 'station.css': 'station.abc12345.css', 'station.js': 'station.abc12345.js' };
+const assets = { 'station.css': 'station.abc12345.css', 'station.js': 'station.abc12345.js', 'hero.css': 'hero.abc12345.css', 'hero.js': 'hero.abc12345.js' };
 
 function home(watches) {
   return renderHome({

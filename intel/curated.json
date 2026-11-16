@@ -238,11 +238,20 @@
   ],
   "features": [
     {
+      "id": "home-hero",
+      "verified-at": "43267dc5184442dcdd130ff20d9965325ddf0114",
+      "route": "/",
+      "anchors": ["data-hero", "class=\"hero-water\"", "data-words="],
+      "text": "Home opens on the name sitting on a water line. Above the line it is solid pink; below it is an outline bent by the water. surfaceWords in site/verbs.ts rise through the line and sink back; crossing it and the pointer both ripple the surface. Scrolling the pinned hero raises the water over everything, then the verb list follows. hero.js draws into the canvas and reads its colors from the computed style. Without the script, or with reduced motion before it runs, hero.css cuts the heading at the same line.",
+      "risks": ["The water line is --hero-line in tokens.css and the same fraction in hero.js. Change both.", "Reduced motion draws one still frame and does not pin the hero."],
+      "devices": ["The name is one line at 22.5vw. Check 390 and 1280. The visual suite runs with reduced motion, so it only sees the still frame."]
+    },
+    {
       "id": "home-rows",
       "verified-at": "43267dc5184442dcdd130ff20d9965325ddf0114",
       "route": "/",
       "anchors": ["aria-label=\"verbs\"", "class=\"verb-kicker\"", "class=\"verb-row home-suno\""],
-      "text": "Home is the verb list. The visible words are matt does plus the registry label. Unshared is not in that list. A third row uses the same size and gap as the verbs. Its heading unshared opens /unshared/. Song titles stay on that page. The latest film sits on the letterboxd row, with no underline.",
+      "text": "Under the hero, home is the verb list. The visible words are matt does plus the registry label. Unshared is not in that list. A third row uses the same size and gap as the verbs. Its heading unshared opens /unshared/. Song titles stay on that page. The latest film sits on the letterboxd row, with no underline.",
       "risks": ["Adding a verb puts it on the home menu unless it is filtered out like unshared."],
       "devices": ["The kicker is hidden at the 800px hover window. Check 390 and 1280 before moving it."]
     },
