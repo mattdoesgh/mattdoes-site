@@ -1,7 +1,8 @@
 /* Home hero. The name and the surface words float on a water line: the
    parts above it are solid, the parts below are outlines bent by the
    water. Words rise through the surface and sink back, and crossing it
-   leaves a ripple. So does the pointer. Scrolling raises the water until everything is under it.
+   leaves a ripple. One at a time, a word surfaces into the phrase after
+   the name and then sinks out again. So does the pointer. Scrolling raises the water until everything is under it.
    Reduced motion draws one still frame. Colors come from the computed
    style, so the palette stays in site/tokens.css. */
 (function () {
@@ -32,7 +33,12 @@
   var visible = true;
   var start = 0;
   var lastPointer = 0;
+  var nameWidth = 0;
+  var order = [];
   var STEP = 6;
+  /* One word at a time flows into the phrase: in, hold, out, rest. */
+  var CYCLE = 9;
+  var FIRST = 2.5;
 
   /* A fixed seed, so the scene is the same on every load. */
   var seed = 7;
@@ -62,7 +68,7 @@
       return {
         text: text,
         s: s,
-        alpha: 0.3 + depth * 0.45,
+        alpha: 0.45 + depth * 0.4,
         x: ((index + rand() * 0.7) / list.length) * W * 1.2,
         vx: (rand() < 0.5 ? -1 : 1) * (5 + rand() * 12) * depth,
         w: (Math.PI * 2) / (14 + rand() * 14),
@@ -76,7 +82,18 @@
     words.forEach(function (word) {
       sctx.font = word.s.toFixed(1) + 'px ' + family;
       word.width = sctx.measureText(word.text).width;
+      sctx.font = size.toFixed(1) + 'px ' + family;
+      word.full = sctx.measureText(word.text).width;
     });
+    sctx.font = size.toFixed(1) + 'px ' + family;
+    nameWidth = sctx.measureText('matt does').width;
+    order = words.map(function (_, index) { return index; });
+    for (var i = order.length - 1; i > 0; i -= 1) {
+      var j = Math.floor(rand() * (i + 1));
+      var swap = order[i];
+      order[i] = order[j];
+      order[j] = swap;
+    }
   }
 
   function progress() {
@@ -112,28 +129,65 @@
     sctx.textAlign = dctx.textAlign = align;
     sctx.globalAlpha = alpha;
     sctx.fillText(text, x, y);
-    dctx.globalAlpha = alpha * 0.06;
+    dctx.globalAlpha = alpha * 0.08;
     dctx.fillText(text, x, y);
     dctx.globalAlpha = alpha;
-    dctx.lineWidth = Math.max(1, px * 0.012);
+    dctx.lineWidth = Math.max(1.2, px * 0.014);
     dctx.strokeText(text, x, y);
+  }
+
+  function ease(v) {
+    var c = Math.min(1, Math.max(0, v));
+    return c * c * (3 - 2 * c);
+  }
+
+  /* Which word is in the phrase now, and how far: 0 drifting, 1 joined. */
+  function joining(t) {
+    if (!order.length || t < FIRST) return { index: -1, amount: 0 };
+    var k = Math.floor((t - FIRST) / CYCLE);
+    var u = (t - FIRST) / CYCLE - k;
+    var amount = u < 0.28 ? ease(u / 0.28) : u < 0.62 ? 1 : ease(1 - (u - 0.62) / 0.28);
+    return { index: order[k % order.length], amount: amount };
+  }
+
+  function lerp(a, b, v) {
+    return a + (b - a) * v;
   }
 
   function drawScene(t, rest, line) {
     sctx.clearRect(0, 0, W, H);
     dctx.clearRect(0, 0, W, H);
     sctx.fillStyle = dctx.fillStyle = dctx.strokeStyle = ink;
+    var join = joining(t);
+    var guest = join.index >= 0 ? words[join.index] : null;
+    var a = guest ? join.amount : 0;
+    var gap = size * 0.24;
+    var fit = guest ? Math.min(1, (W * 0.92) / (nameWidth + gap + guest.full)) : 1;
+    var nameSize = lerp(size, size * fit, a);
+    var total = guest ? (nameWidth + gap + guest.full) * fit : nameWidth;
+    var nameX = lerp((W - nameWidth) / 2, (W - total) / 2, a);
+    var nameY = rest + size * 0.27 + Math.sin(t * 0.55) * size * 0.015;
     for (var i = 0; i < words.length; i += 1) {
       var word = words[i];
       var span = W + word.width;
       var x = ((word.x + word.vx * t) % span + span) % span - word.width;
       var base = rest + word.bias + Math.sin(t * word.w + word.phase) * word.rise;
-      var side = base - word.s * 0.36 < line ? -1 : 1;
-      if (word.side && side !== word.side) addRipple(x + word.width / 2, t, Math.min(9, word.s * 0.08));
+      var px = word.s;
+      var alpha = word.alpha;
+      if (word === guest && a > 0) {
+        /* The path dips under the line, so a word surfaces into the phrase
+           and sinks back out of it. */
+        x = lerp(x, nameX + (nameWidth + gap) * fit, a);
+        base = lerp(base, nameY, a) + Math.sin(a * Math.PI) * size * 0.55 * (1 - a * 0.4);
+        px = lerp(word.s, size * fit, a);
+        alpha = lerp(word.alpha, 1, a);
+      }
+      var side = base - px * 0.36 < line ? -1 : 1;
+      if (word.side && side !== word.side) addRipple(x + word.width / 2, t, Math.min(12, px * 0.08));
       word.side = side;
-      paint(word.text, x, base, word.s, word.alpha, 'left');
+      paint(word.text, x, base, px, alpha, 'left');
     }
-    paint('matt does', W / 2, rest + size * 0.27 + Math.sin(t * 0.55) * size * 0.015, size, 1, 'center');
+    paint('matt does', nameX, nameY, nameSize, 1, 'left');
   }
 
   function curvePath(t, line, below) {
