@@ -1,9 +1,12 @@
 /* Home hero. The name and the surface words float on a water line: the
    parts above it are solid, the parts below are outlines bent by the
    water. Words rise through the surface and sink back, and crossing it
-   leaves a ripple. The name floats in a glass bottle on the line; one at
-   a time, a word flows in through the neck, joins the phrase inside, and
-   flows back out. So does the pointer. Scrolling raises the water until everything is under it.
+   leaves a ripple. The name floats in a glass bottle on the line, its
+   right end broken off and the shards scattered beside it; one at a time,
+   a word flows in through the break, joins the phrase inside, and flows
+   back out. The pointer ripples the water. Scrolling raises the water until
+   everything is under it, and the shards fly across and cut the words they
+   pass through. Scrolling back mends them.
    Reduced motion draws one still frame. Colors come from the computed
    style, so the palette stays in site/tokens.css. */
 (function () {
@@ -36,6 +39,7 @@
   var lastPointer = 0;
   var nameWidth = 0;
   var order = [];
+  var shards = [];
   var STEP = 6;
   /* One word at a time flows into the phrase: in, hold, out, rest. */
   var CYCLE = 9;
@@ -95,6 +99,27 @@
       order[i] = order[j];
       order[j] = swap;
     }
+    shards = [];
+    for (var k = 0; k < 14; k += 1) {
+      var n = rand() < 0.5 ? 3 : 4;
+      var pts = [];
+      for (var q = 0; q < n; q += 1) {
+        var ang = ((q + rand() * 0.6) / n) * Math.PI * 2;
+        pts.push([Math.cos(ang) * (0.45 + rand() * 0.55), Math.sin(ang) * (0.45 + rand() * 0.55)]);
+      }
+      shards.push({
+        ox: 0.1 + Math.pow(rand(), 1.6) * 1.6,
+        oy: (rand() * 2 - 1) * 1.1,
+        size: 0.12 + rand() * 0.3,
+        pts: pts,
+        rot: rand() * Math.PI * 2,
+        phase: rand() * Math.PI * 2,
+        delay: rand() * 0.22,
+        dy: rand() * 0.9 - 0.55,
+        spin: (rand() < 0.5 ? -1 : 1) * (2 + rand() * 4),
+      });
+    }
+    words.forEach(function (word) { word.cut = null; });
   }
 
   function progress() {
@@ -124,10 +149,7 @@
   }
 
   /* Each word is painted twice: solid for the air, an outline for the water. */
-  function paint(text, x, y, px, alpha, align) {
-    var font = px.toFixed(1) + 'px ' + family;
-    sctx.font = dctx.font = font;
-    sctx.textAlign = dctx.textAlign = align;
+  function stamp(text, x, y, px, alpha) {
     sctx.globalAlpha = alpha;
     sctx.fillText(text, x, y);
     dctx.globalAlpha = alpha * 0.08;
@@ -135,6 +157,43 @@
     dctx.globalAlpha = alpha;
     dctx.lineWidth = Math.max(1.2, px * 0.014);
     dctx.strokeText(text, x, y);
+  }
+
+  /* A cut word is two halves on either side of a line through its middle,
+     pushed apart along the line's normal and slid along it. */
+  function paint(text, x, y, px, alpha, align, cut) {
+    var font = px.toFixed(1) + 'px ' + family;
+    sctx.font = dctx.font = font;
+    sctx.textAlign = dctx.textAlign = align;
+    if (!cut || cut.open <= 0) {
+      stamp(text, x, y, px, alpha);
+      return;
+    }
+    var mx = x + sctx.measureText(text).width / 2;
+    var my = y - px * 0.36;
+    var dx = Math.cos(cut.angle);
+    var dy = Math.sin(cut.angle);
+    var L = px * 40;
+    var push = px * cut.gap * cut.open;
+    [-1, 1].forEach(function (s) {
+      [sctx, dctx].forEach(function (c) {
+        c.save();
+        c.translate(-dy * push * s + dx * push * 0.5 * s, dx * push * s + dy * push * 0.5 * s);
+        c.translate(mx, my);
+        c.rotate(s * 0.05 * cut.open);
+        c.translate(-mx, -my);
+        c.beginPath();
+        c.moveTo(mx - dx * L, my - dy * L);
+        c.lineTo(mx + dx * L, my + dy * L);
+        c.lineTo(mx + dx * L - dy * L * s, my + dy * L + dx * L * s);
+        c.lineTo(mx - dx * L - dy * L * s, my - dy * L + dx * L * s);
+        c.closePath();
+        c.clip();
+      });
+      stamp(text, x, y, px, alpha);
+      sctx.restore();
+      dctx.restore();
+    });
   }
 
   function ease(v) {
@@ -156,30 +215,27 @@
   }
 
   /* The bottle, in its own frame: the body is centred on the origin and
-     the open neck points right. r is the body's half height. */
+     its right end is broken off in a jagged edge. r is the half height. */
+  var BREAK = [
+    [0, -1], [-0.34, -0.72], [-0.12, -0.52], [-0.58, -0.2],
+    [-0.22, 0.04], [-0.44, 0.36], [0.04, 0.62], [-0.26, 1],
+  ];
+  var CRACKS = [
+    [[-0.34, -0.72], [-0.7, -0.86], [-0.9, -0.8]],
+    [[-0.58, -0.2], [-0.92, -0.08]],
+    [[-0.44, 0.36], [-0.76, 0.52], [-0.86, 0.8]],
+  ];
+
   function bottleShape(r, body) {
     var x0 = -body / 2;
     var x1 = body / 2;
-    var shoulder = r * 0.9;
-    var neck = r * 1.15;
-    var rn = r * 0.36;
-    var corner = r * 0.4;
-    return {
-      r: r, x0: x0, x1: x1, rn: rn, corner: corner,
-      xs: x1 + shoulder,
-      mouth: x1 + shoulder + neck,
-    };
+    return { r: r, x0: x0, x1: x1, corner: r * 0.4, mouth: x1 + r * 0.05 };
   }
 
   function bottlePath(c, b) {
     c.beginPath();
     c.moveTo(b.x0 + b.corner, -b.r);
-    c.lineTo(b.x1, -b.r);
-    c.bezierCurveTo(b.x1 + (b.xs - b.x1) * 0.6, -b.r, b.x1 + (b.xs - b.x1) * 0.5, -b.rn, b.xs, -b.rn);
-    c.lineTo(b.mouth, -b.rn);
-    c.lineTo(b.mouth, b.rn);
-    c.lineTo(b.xs, b.rn);
-    c.bezierCurveTo(b.x1 + (b.xs - b.x1) * 0.5, b.rn, b.x1 + (b.xs - b.x1) * 0.6, b.r, b.x1, b.r);
+    for (var i = 0; i < BREAK.length; i += 1) c.lineTo(b.x1 + BREAK[i][0] * b.r, BREAK[i][1] * b.r);
     c.lineTo(b.x0 + b.corner, b.r);
     c.quadraticCurveTo(b.x0, b.r, b.x0, b.r - b.corner);
     c.lineTo(b.x0, -b.r + b.corner);
@@ -187,8 +243,8 @@
     c.closePath();
   }
 
-  /* Glass: a faint body, the outline, a lip ring and one long highlight.
-     The water copy keeps only the outline. */
+  /* Glass: a faint body, the outline, cracks off the break and one long
+     highlight. The water copy keeps only the outline. */
   function paintGlass(b) {
     sctx.globalAlpha = 0.07;
     bottlePath(sctx, b);
@@ -205,22 +261,63 @@
     sctx.lineCap = 'round';
     sctx.beginPath();
     sctx.moveTo(b.x0 + b.corner * 1.4, -b.r * 0.72);
-    sctx.lineTo(b.x1 - b.r * 0.2, -b.r * 0.72);
+    sctx.lineTo(b.x1 - b.r * 0.9, -b.r * 0.72);
     sctx.stroke();
-    sctx.globalAlpha = 0.9;
-    sctx.lineWidth = Math.max(1.5, b.r * 0.025);
-    sctx.strokeRect(b.mouth - b.r * 0.12, -b.rn * 1.25, b.r * 0.12, b.rn * 2.5);
+    [sctx, dctx].forEach(function (c) {
+      c.globalAlpha = 0.6;
+      c.lineWidth = Math.max(1, b.r * 0.012);
+      c.beginPath();
+      CRACKS.forEach(function (crack) {
+        crack.forEach(function (pt, i) {
+          var px = b.x1 + pt[0] * b.r;
+          var py = pt[1] * b.r;
+          if (i === 0) c.moveTo(px, py); else c.lineTo(px, py);
+        });
+      });
+      c.stroke();
+    });
   }
 
-  function drawScene(t, rest, line) {
+  function paintShard(x, y, size, rot, pts) {
+    var cos = Math.cos(rot) * size;
+    var sin = Math.sin(rot) * size;
+    [sctx, dctx].forEach(function (c) {
+      c.beginPath();
+      pts.forEach(function (pt, i) {
+        var px = x + pt[0] * cos - pt[1] * sin;
+        var py = y + pt[0] * sin + pt[1] * cos;
+        if (i === 0) c.moveTo(px, py); else c.lineTo(px, py);
+      });
+      c.closePath();
+    });
+    sctx.globalAlpha = 0.14;
+    sctx.fill();
+    sctx.globalAlpha = 0.9;
+    sctx.lineWidth = Math.max(1.2, size * 0.04);
+    sctx.stroke();
+    dctx.globalAlpha = 0.75;
+    dctx.lineWidth = Math.max(1, size * 0.03);
+    dctx.stroke();
+  }
+
+  function cutOf(word, p) {
+    if (!word.cut) return null;
+    if (p < word.cut.at) {
+      word.cut = null;
+      return null;
+    }
+    return { angle: word.cut.angle, gap: 0.12, open: ease((p - word.cut.at) / 0.1) };
+  }
+
+  function drawScene(t, rest, line, p) {
     sctx.clearRect(0, 0, W, H);
     dctx.clearRect(0, 0, W, H);
     sctx.fillStyle = dctx.fillStyle = sctx.strokeStyle = dctx.strokeStyle = ink;
 
     var r = Math.min(H * 0.17, W * 0.13);
-    var body = Math.max(r * 2.4, Math.min(W * 0.9, W - r * 1.2) - r * 2.05);
+    var body = Math.max(r * 2.4, Math.min(W * 0.82, W - r * 3.2));
     var b = bottleShape(r, body);
-    var cx = W / 2 - (b.mouth - b.x1) / 2;
+    var cx = W / 2 - r * 0.6;
     var cy = rest - r * 0.12 + Math.sin(t * 0.7) * r * 0.1;
     var tilt = Math.sin(t * 0.5) * 0.04;
     var cos = Math.cos(tilt);
@@ -244,7 +341,28 @@
     var nameX = -lerp(nameW, slotW, held) / 2;
     var baseY = nameSize * 0.36;
     var mouth = toPage(b.mouth, 0);
-    var neckPx = b.rn * 1.5;
+    var neckPx = r * 0.7;
+
+    /* The shards rest off the break, bob, and on scroll fly left across
+       the scene, spinning. */
+    var edge = toPage(b.x1, 0);
+    var unit = Math.max(r, H * 0.08);
+    var flying = shards.map(function (s) {
+      var sx = edge.x + s.ox * unit;
+      var sy = cy + s.oy * unit + Math.sin(t * 0.8 + s.phase) * r * 0.06;
+      var f = ease((p - s.delay) / 0.45);
+      var tx = -r - sx;
+      var ty = s.dy * H;
+      return {
+        x: sx + tx * f,
+        y: sy + ty * f,
+        f: f,
+        size: s.size * unit * (1 + f * 0.7),
+        rot: s.rot + Math.sin(t * 0.4 + s.phase) * 0.2 + f * s.spin,
+        angle: Math.atan2(ty, tx),
+        pts: s.pts,
+      };
+    });
 
     var inside = null;
     for (var i = 0; i < words.length; i += 1) {
@@ -277,7 +395,19 @@
       var side = base - px * 0.36 < line ? -1 : 1;
       if (word.side && side !== word.side) addRipple(x + word.width / 2, t, Math.min(12, px * 0.08));
       word.side = side;
-      paint(word.text, x, base, px, alpha, 'left');
+      if (!word.cut && p > 0) {
+        var ww2 = word.width / word.s * px;
+        for (var h = 0; h < flying.length; h += 1) {
+          var sh = flying[h];
+          if (sh.f <= 0 || sh.f >= 1) continue;
+          if (sh.x > x - sh.size && sh.x < x + ww2 + sh.size && sh.y > base - px * 0.8 - sh.size && sh.y < base + px * 0.15 + sh.size) {
+            word.cut = { at: p, angle: sh.angle };
+            break;
+          }
+        }
+        if (!word.cut && p > 0.75) word.cut = { at: 0.75, angle: flying[i % flying.length].angle };
+      }
+      paint(word.text, x, base, px, alpha, 'left', word === guest && a > 0 ? null : cutOf(word, p));
     }
 
     [sctx, dctx].forEach(function (c) {
@@ -291,7 +421,8 @@
       c.save();
       c.clip();
     });
-    paint('matt does', nameX, baseY, nameSize, 1, 'left');
+    var nameCut = { angle: -0.2, gap: 0.07, open: ease((p - 0.4) / 0.25) };
+    paint('matt does', nameX, baseY, nameSize, 1, 'left', nameCut);
     if (inside) {
       /* Through the neck and into the slot after the name. */
       var u = inside.v;
@@ -304,6 +435,8 @@
       c.restore();
       c.restore();
     });
+
+    flying.forEach(function (sh) { paintShard(sh.x, sh.y, sh.size, sh.rot, sh.pts); });
   }
 
   function curvePath(t, line, below) {
@@ -318,7 +451,7 @@
     var p = progress();
     var rest = H * 0.58; /* --hero-line */
     var line = rest - H * 0.78 * p;
-    drawScene(t, rest, line);
+    drawScene(t, rest, line, p);
 
     ctx.globalAlpha = 1;
     ctx.fillStyle = field;
