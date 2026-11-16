@@ -239,7 +239,7 @@
   "features": [
     {
       "id": "home-hero",
-      "verified-at": "b3e49c8741d1f2ad1d97c1ca17132a34729df3b6",
+      "verified-at": "b2ecba6dba8c74249d2b891907ac6b4ee721d7ca",
       "route": "/",
       "anchors": ["data-hero", "class=\"hero-water\"", "data-words="],
       "text": "Home opens on the name sitting on a water line. Above the line it is solid pink; below it is an outline bent by the water. surfaceWords in site/verbs.ts rise through the line and sink back; crossing it and the pointer both ripple the surface. The name floats inside a glass bottle that bobs and tilts on the line. Every few seconds one word flows in through the neck and joins the phrase inside, so it reads matt does plus that word; the name shrinks and slides to fit, then the word flows back out. Scrolling the pinned hero raises the water over everything, then the verb list follows. hero.js draws into the canvas and reads its colors from the computed style. Without the script, or with reduced motion before it runs, hero.css cuts the heading at the same line.",
