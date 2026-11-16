@@ -58,8 +58,8 @@
     },
     {
       "path": "asset-budget.json",
-      "sha256": "3f7a74c991166b58143877278532d77e178545b6a8ddae714e1a3ba337a5de64",
-      "gitBlob": "66d3a2463c579ca7b68028ccd7810787911abc3a"
+      "sha256": "95b183d3dfc0ae10246eceaee109285f47f35f53758f381684410c07e8fb4dba",
+      "gitBlob": "72975305bc76e489915910d88048a1980c211302"
     },
     {
       "path": "build.js",
@@ -113,7 +113,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "2a0f187e4798b33e3b93554d645b60d1c051d489b35742922984360b276b327a",
+      "sha256": "93f939455d48981c9ea4957832cf89e5cd7e5cf3ceea99265300e83b1e5d3b8a",
       "gitBlob": null
     },
     {
@@ -393,8 +393,8 @@
     },
     {
       "path": "static/hero.js",
-      "sha256": "172d4cac5380dbfe07e0dd16ceed7e09e557ba41f38bedf26dff8109fa8e2c94",
-      "gitBlob": "e3ee7916a4db5578dcfb36c7b18b6dab5ba0fd05"
+      "sha256": "996e503551b447d5eb1342c65c867e11cf26211359fae15534c7633aaeb7fa4b",
+      "gitBlob": "4229b8bc2b121c9c38245bd81ff3b62c00e87602"
     },
     {
       "path": "static/poster-prefs.js",
@@ -4254,8 +4254,8 @@
             },
             {
               "path": "static/hero.js",
-              "sha256": "172d4cac5380dbfe07e0dd16ceed7e09e557ba41f38bedf26dff8109fa8e2c94",
-              "gitBlob": "e3ee7916a4db5578dcfb36c7b18b6dab5ba0fd05"
+              "sha256": "996e503551b447d5eb1342c65c867e11cf26211359fae15534c7633aaeb7fa4b",
+              "gitBlob": "4229b8bc2b121c9c38245bd81ff3b62c00e87602"
             }
           ]
         },

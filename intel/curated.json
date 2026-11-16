@@ -239,10 +239,10 @@
   "features": [
     {
       "id": "home-hero",
-      "verified-at": "6ff0c4c299465c033b7f18a6e28e89aa319df166",
+      "verified-at": "b3e49c8741d1f2ad1d97c1ca17132a34729df3b6",
       "route": "/",
       "anchors": ["data-hero", "class=\"hero-water\"", "data-words="],
-      "text": "Home opens on the name sitting on a water line. Above the line it is solid pink; below it is an outline bent by the water. surfaceWords in site/verbs.ts rise through the line and sink back; crossing it and the pointer both ripple the surface. The name floats inside a glass bottle that bobs and tilts on the line; its right end is broken off and the shards float beside it. Every few seconds one word flows in through the break and joins the phrase inside, so it reads matt does plus that word; the name shrinks and slides to fit, then the word flows back out. Scrolling the pinned hero raises the water over everything while the shards fly left across the scene; each word a shard passes through splits in two along the shard's path, and the name splits halfway down. Scrolling back mends them. Then the verb list follows. hero.js draws into the canvas and reads its colors from the computed style. Without the script, or with reduced motion before it runs, hero.css cuts the heading at the same line.",
+      "text": "Home opens on the name sitting on a water line. Above the line it is solid pink; below it is an outline bent by the water. surfaceWords in site/verbs.ts rise through the line and sink back; crossing it and the pointer both ripple the surface. Every few seconds one word surfaces into the phrase, so it reads matt does plus that word; the name shrinks and slides to fit, then the word sinks back out. Scrolling the pinned hero raises the water over everything, then the verb list follows. hero.js draws into the canvas and reads its colors from the computed style. Without the script, or with reduced motion before it runs, hero.css cuts the heading at the same line.",
       "risks": ["The water line is --hero-line in tokens.css and the same fraction in hero.js. Change both.", "Reduced motion draws one still frame and does not pin the hero."],
       "devices": ["The name is one line at 22.5vw. Check 390 and 1280. The visual suite runs with reduced motion, so it only sees the still frame."]
     },
