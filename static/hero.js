@@ -1,8 +1,9 @@
 /* Home hero. The name and the surface words float on a water line: the
    parts above it are solid, the parts below are outlines bent by the
    water. Words rise through the surface and sink back, and crossing it
-   leaves a ripple. One at a time, a word surfaces into the phrase after
-   the name and then sinks out again. So does the pointer. Scrolling raises the water until everything is under it.
+   leaves a ripple. The name floats in a glass bottle on the line; one at
+   a time, a word flows in through the neck, joins the phrase inside, and
+   flows back out. So does the pointer. Scrolling raises the water until everything is under it.
    Reduced motion draws one still frame. Colors come from the computed
    style, so the palette stays in site/tokens.css. */
 (function () {
@@ -154,19 +155,98 @@
     return a + (b - a) * v;
   }
 
+  /* The bottle, in its own frame: the body is centred on the origin and
+     the open neck points right. r is the body's half height. */
+  function bottleShape(r, body) {
+    var x0 = -body / 2;
+    var x1 = body / 2;
+    var shoulder = r * 0.9;
+    var neck = r * 1.15;
+    var rn = r * 0.36;
+    var corner = r * 0.4;
+    return {
+      r: r, x0: x0, x1: x1, rn: rn, corner: corner,
+      xs: x1 + shoulder,
+      mouth: x1 + shoulder + neck,
+    };
+  }
+
+  function bottlePath(c, b) {
+    c.beginPath();
+    c.moveTo(b.x0 + b.corner, -b.r);
+    c.lineTo(b.x1, -b.r);
+    c.bezierCurveTo(b.x1 + (b.xs - b.x1) * 0.6, -b.r, b.x1 + (b.xs - b.x1) * 0.5, -b.rn, b.xs, -b.rn);
+    c.lineTo(b.mouth, -b.rn);
+    c.lineTo(b.mouth, b.rn);
+    c.lineTo(b.xs, b.rn);
+    c.bezierCurveTo(b.x1 + (b.xs - b.x1) * 0.5, b.rn, b.x1 + (b.xs - b.x1) * 0.6, b.r, b.x1, b.r);
+    c.lineTo(b.x0 + b.corner, b.r);
+    c.quadraticCurveTo(b.x0, b.r, b.x0, b.r - b.corner);
+    c.lineTo(b.x0, -b.r + b.corner);
+    c.quadraticCurveTo(b.x0, -b.r, b.x0 + b.corner, -b.r);
+    c.closePath();
+  }
+
+  /* Glass: a faint body, the outline, a lip ring and one long highlight.
+     The water copy keeps only the outline. */
+  function paintGlass(b) {
+    sctx.globalAlpha = 0.07;
+    bottlePath(sctx, b);
+    sctx.fill();
+    sctx.globalAlpha = 0.9;
+    sctx.lineWidth = Math.max(1.5, b.r * 0.025);
+    sctx.stroke();
+    dctx.globalAlpha = 0.8;
+    dctx.lineWidth = Math.max(1.2, b.r * 0.02);
+    bottlePath(dctx, b);
+    dctx.stroke();
+    sctx.globalAlpha = 0.5;
+    sctx.lineWidth = Math.max(2, b.r * 0.05);
+    sctx.lineCap = 'round';
+    sctx.beginPath();
+    sctx.moveTo(b.x0 + b.corner * 1.4, -b.r * 0.72);
+    sctx.lineTo(b.x1 - b.r * 0.2, -b.r * 0.72);
+    sctx.stroke();
+    sctx.globalAlpha = 0.9;
+    sctx.lineWidth = Math.max(1.5, b.r * 0.025);
+    sctx.strokeRect(b.mouth - b.r * 0.12, -b.rn * 1.25, b.r * 0.12, b.rn * 2.5);
+  }
+
   function drawScene(t, rest, line) {
     sctx.clearRect(0, 0, W, H);
     dctx.clearRect(0, 0, W, H);
-    sctx.fillStyle = dctx.fillStyle = dctx.strokeStyle = ink;
+    sctx.fillStyle = dctx.fillStyle = sctx.strokeStyle = dctx.strokeStyle = ink;
+
+    var r = Math.min(H * 0.17, W * 0.13);
+    var body = Math.max(r * 2.4, Math.min(W * 0.9, W - r * 1.2) - r * 2.05);
+    var b = bottleShape(r, body);
+    var cx = W / 2 - (b.mouth - b.x1) / 2;
+    var cy = rest - r * 0.12 + Math.sin(t * 0.7) * r * 0.1;
+    var tilt = Math.sin(t * 0.5) * 0.04;
+    var cos = Math.cos(tilt);
+    var sin = Math.sin(tilt);
+    function toPage(x, y) {
+      return { x: cx + x * cos - y * sin, y: cy + x * sin + y * cos };
+    }
+
     var join = joining(t);
     var guest = join.index >= 0 ? words[join.index] : null;
     var a = guest ? join.amount : 0;
-    var gap = size * 0.24;
-    var fit = guest ? Math.min(1, (W * 0.92) / (nameWidth + gap + guest.full)) : 1;
-    var nameSize = lerp(size, size * fit, a);
-    var total = guest ? (nameWidth + gap + guest.full) * fit : nameWidth;
-    var nameX = lerp((W - nameWidth) / 2, (W - total) / 2, a);
-    var nameY = rest + size * 0.27 + Math.sin(t * 0.55) * size * 0.015;
+    var room = body * 0.82;
+    var nameFit = Math.min(size, (room / nameWidth) * size, r * 1.9);
+    var gap = nameFit * 0.24;
+    var phrase = guest ? nameWidth / size * nameFit + gap + guest.full / size * nameFit : 0;
+    var fit = guest ? Math.min(1, room / phrase) : 1;
+    var held = a > 0.5 ? (a - 0.5) * 2 : 0;
+    var nameSize = lerp(nameFit, nameFit * fit, held);
+    var nameW = nameWidth / size * nameSize;
+    var slotW = guest ? (nameW + gap * fit + guest.full / size * nameSize) : nameW;
+    var nameX = -lerp(nameW, slotW, held) / 2;
+    var baseY = nameSize * 0.36;
+    var mouth = toPage(b.mouth, 0);
+    var neckPx = b.rn * 1.5;
+
+    var inside = null;
     for (var i = 0; i < words.length; i += 1) {
       var word = words[i];
       var span = W + word.width;
@@ -175,19 +255,55 @@
       var px = word.s;
       var alpha = word.alpha;
       if (word === guest && a > 0) {
-        /* The path dips under the line, so a word surfaces into the phrase
-           and sinks back out of it. */
-        x = lerp(x, nameX + (nameWidth + gap) * fit, a);
-        base = lerp(base, nameY, a) + Math.sin(a * Math.PI) * size * 0.55 * (1 - a * 0.4);
-        px = lerp(word.s, size * fit, a);
-        alpha = lerp(word.alpha, 1, a);
+        if (a > 0.5) {
+          inside = { word: word, v: (a - 0.5) * 2 };
+          if (!word.inside) addRipple(mouth.x, t, 8);
+          word.inside = true;
+          continue;
+        }
+        word.inside = false;
+        /* Toward the mouth, shrinking to fit the neck, along a path that
+           dips under the line. */
+        var v = a * 2;
+        var wpx = lerp(word.s, neckPx, v);
+        var ww = word.width / word.s * wpx;
+        x = lerp(x, mouth.x - ww * v, v);
+        base = lerp(base, mouth.y + wpx * 0.36, v) + Math.sin(v * Math.PI) * r * 0.8;
+        px = wpx;
+        alpha = lerp(word.alpha, 1, v);
+      } else {
+        word.inside = false;
       }
       var side = base - px * 0.36 < line ? -1 : 1;
       if (word.side && side !== word.side) addRipple(x + word.width / 2, t, Math.min(12, px * 0.08));
       word.side = side;
       paint(word.text, x, base, px, alpha, 'left');
     }
-    paint('matt does', nameX, nameY, nameSize, 1, 'left');
+
+    [sctx, dctx].forEach(function (c) {
+      c.save();
+      c.translate(cx, cy);
+      c.rotate(tilt);
+    });
+    paintGlass(b);
+    [sctx, dctx].forEach(function (c) {
+      bottlePath(c, b);
+      c.save();
+      c.clip();
+    });
+    paint('matt does', nameX, baseY, nameSize, 1, 'left');
+    if (inside) {
+      /* Through the neck and into the slot after the name. */
+      var u = inside.v;
+      var slotX = nameX + nameW + gap * fit;
+      var ipx = lerp(neckPx, nameSize, u);
+      var iw = inside.word.width / inside.word.s * ipx;
+      paint(inside.word.text, lerp(b.mouth - iw, slotX, u), lerp(ipx * 0.36, baseY, u), ipx, 1, 'left');
+    }
+    [sctx, dctx].forEach(function (c) {
+      c.restore();
+      c.restore();
+    });
   }
 
   function curvePath(t, line, below) {
