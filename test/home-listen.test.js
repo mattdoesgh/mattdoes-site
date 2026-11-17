@@ -11,7 +11,7 @@ import { renderHome } from '../site/render.js';
 import { listenPair, listenView, staticListen } from '../lib/listen-line.js';
 import { REPO_ROOT } from './helpers/run-build.js';
 
-const assets = { 'station.css': 'station.abc12345.css', 'station.js': 'station.abc12345.js' };
+const assets = { 'station.css': 'station.abc12345.css', 'station.js': 'station.abc12345.js', 'hero.css': 'hero.abc12345.css', 'hero.js': 'hero.abc12345.js' };
 const station = fs.readFileSync(path.join(REPO_ROOT, 'static', 'station.js'), 'utf8');
 
 function home(tracks) {

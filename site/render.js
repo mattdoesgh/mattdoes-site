@@ -1,6 +1,6 @@
 // Pages from site/verbs.ts. String HTML, no React.
 
-import { verbs, verbCatalog, socials, verbPath, verbHeading, learningOnHome } from './verbs.ts';
+import { verbs, verbCatalog, socials, verbPath, verbHeading, learningOnHome, surfaceWords } from './verbs.ts';
 import { renderHubDocument } from '../concepts/hub.js';
 import { socialIcon } from './social-icons.js';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
@@ -211,10 +211,22 @@ function shell({
   robots,
   main,
   blocking = '',
+  extraStyles = [],
+  extraScripts = [],
 }) {
   const css = assets['station.css'];
   const js = assets['station.js'];
   if (!css || !js) throw new Error('station.css and station.js must be in the asset map.');
+  const styleLinks = extraStyles.map((name) => {
+    const file = assets[name];
+    if (!file) throw new Error(`${name} must be in the asset map.`);
+    return `\n    <link rel="stylesheet" href="/${esc(file)}">`;
+  }).join('');
+  const scriptTags = extraScripts.map((name) => {
+    const file = assets[name];
+    if (!file) throw new Error(`${name} must be in the asset map.`);
+    return `\n    <script src="/${esc(file)}" defer></script>`;
+  }).join('');
   const canonical = `${siteUrl}${path}`;
   const polarityAttr = polarity === 'flip' ? ' data-polarity="flip"' : '';
   const robotsMeta = robots ? `\n    <meta name="robots" content="${esc(robots)}">` : '';
@@ -231,7 +243,7 @@ function shell({
     <meta property="og:description" content="${esc(description)}">
     <meta property="og:url" content="${esc(canonical)}">
     <meta property="og:type" content="website">${robotsMeta}
-    <link rel="stylesheet" href="/${esc(css)}">${blocking}
+    <link rel="stylesheet" href="/${esc(css)}">${styleLinks}${blocking}
   </head>
   <body data-root="/"${polarityAttr}>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -241,7 +253,7 @@ function shell({
     <footer class="site-footer">
       ${socialNav()}
     </footer>
-    <script src="/${esc(js)}" defer></script>
+    <script src="/${esc(js)}" defer></script>${scriptTags}
   </body>
 </html>
 `;
@@ -311,6 +323,23 @@ export function learningHomeRow(on = true) {
 }
 
 /**
+ * The name on a water line. hero.js draws the scene into the canvas: the
+ * name and the surface words rise above the line and sink below it. The
+ * heading stays the name for readers and for a page without the script.
+ *
+ * @returns {string}
+ */
+function renderHero() {
+  const words = esc(surfaceWords.join('|'));
+  return `<section class="hero" data-hero>
+        <div class="hero-pin">
+          <h1 class="hero-word"><span class="hero-above">matt does</span><span class="hero-below" aria-hidden="true">matt does</span></h1>
+          <canvas class="hero-water" aria-hidden="true" data-words="${words}"></canvas>
+        </div>
+      </section>`;
+}
+
+/**
  * @param {object} ctx
  * @returns {string}
  */
@@ -342,7 +371,10 @@ export function renderHome(ctx) {
     current: '',
     showVerbNav: false,
     robots: '',
-    main: `<nav aria-label="verbs">
+    extraStyles: ['hero.css'],
+    extraScripts: ['hero.js'],
+    main: `${renderHero()}
+      <nav aria-label="verbs">
         <p class="verb-kicker" aria-hidden="true">${esc(kicker)}</p>
         <ol class="verbs">
         ${menuRows}

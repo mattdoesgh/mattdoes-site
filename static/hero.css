@@ -1,0 +1,117 @@
+/* Home hero. The name sits on a water line: the top of each letter in the
+   air, the rest under the surface. hero.js paints the moving scene into
+   the canvas and sets data-drawn; without it the heading is drawn here,
+   cut at the same line, still. */
+
+.hero {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  margin-top: calc(-1 * var(--space-page-top));
+  margin-right: calc(-1 * var(--space-page-right));
+  margin-left: calc(-1 * var(--space-page-left));
+}
+
+/* Motion allowed: extra scroll while the scene is pinned, so the reader
+   can sink under the line before the verbs arrive. */
+.hero[data-live] {
+  height: 180vh;
+  height: 180svh;
+}
+
+.hero-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: clip;
+  background: var(--black);
+}
+
+.hero-water {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hero-word {
+  position: absolute;
+  inset: 0;
+  margin: var(--space-0);
+  color: var(--pink);
+  font-family: var(--display);
+  font-weight: var(--weight-regular);
+  font-size: var(--type-hero);
+  line-height: 0.86;
+  letter-spacing: var(--track-none);
+  pointer-events: none;
+}
+
+/* Two copies of the name. The first is the air half, the second the
+   water half, a little softer. The water line is --hero-line from the top. */
+.hero-above,
+.hero-below {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--hero-line);
+  display: block;
+  text-align: center;
+  transform: translateY(-62%);
+}
+
+.hero-above {
+  clip-path: inset(0 0 38% 0);
+}
+
+.hero-below {
+  clip-path: inset(62% 0 0 0);
+  opacity: 0.45;
+  filter: blur(1.5px);
+}
+
+.hero-pin::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--hero-line);
+  border-top: var(--line-hair);
+  color: var(--pink);
+  pointer-events: none;
+}
+
+/* The canvas owns the picture once it draws. The heading stays for readers. */
+.hero[data-drawn] .hero-word {
+  color: transparent;
+}
+
+.hero[data-drawn] .hero-below,
+.hero[data-drawn] .hero-pin::after {
+  display: none;
+}
+
+.hero + nav {
+  padding: var(--space-phone-main) var(--space-0);
+}
+
+body:has(.hero) main {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    margin-top: calc(-1 * var(--space-page-desk-top));
+    margin-right: calc(-1 * var(--space-page-desk-right));
+    margin-left: calc(-1 * var(--space-page-desk-left));
+  }
+
+  body:has(.hero) main > nav {
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: var(--space-0);
+  }
+}

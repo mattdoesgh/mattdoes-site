@@ -15,6 +15,8 @@ const css = fs.readFileSync(path.join(REPO_ROOT, 'static', 'station.css'), 'utf8
 const assets = {
   'station.css': 'station.abc12345.css',
   'station.js': 'station.abc12345.js',
+  'hero.css': 'hero.abc12345.css',
+  'hero.js': 'hero.abc12345.js',
   'poster-prefs.js': 'poster-prefs.abc12345.js',
 };
 

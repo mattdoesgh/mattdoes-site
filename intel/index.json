@@ -58,8 +58,8 @@
     },
     {
       "path": "asset-budget.json",
-      "sha256": "879fbe40d3749cfafa79595d8a8ff52a1d07dba8fba9c77ab3be56505226a721",
-      "gitBlob": "d8c2ded7dbd6b6f0caaf3c99bdb8d5070f1c0862"
+      "sha256": "95b183d3dfc0ae10246eceaee109285f47f35f53758f381684410c07e8fb4dba",
+      "gitBlob": "72975305bc76e489915910d88048a1980c211302"
     },
     {
       "path": "build.js",
@@ -113,7 +113,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "e5a5d0b79d50dc5f14f5224369c733bfae503adbb3af1718c4e7286f43208478",
+      "sha256": "93f939455d48981c9ea4957832cf89e5cd7e5cf3ceea99265300e83b1e5d3b8a",
       "gitBlob": null
     },
     {
@@ -343,8 +343,8 @@
     },
     {
       "path": "site/render.js",
-      "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
-      "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
+      "sha256": "391f91d2edfcde674a49813393086bcef025222cd35069fbcf9ce5ab59a29078",
+      "gitBlob": "9a19c2f1b63f0fc9e7691c9e7fa50cc8e07bc61b"
     },
     {
       "path": "site/social-icons.js",
@@ -353,8 +353,8 @@
     },
     {
       "path": "site/tokens.css",
-      "sha256": "49163ba11fe5df662a1aab9aab498428335a5bc9b56cf7efcd22eb30fcda73d4",
-      "gitBlob": "016b90a1e36f5aa9c13aa0f4aaf4394ae7c86939"
+      "sha256": "b19cbf22506cbbb59d653d1e23e256d8dcf553b483df4d0f0ae7e502369b7540",
+      "gitBlob": "9b0afc69ea196dc29a1a74ce86b6d13bfe84a337"
     },
     {
       "path": "site/tsconfig.json",
@@ -363,8 +363,8 @@
     },
     {
       "path": "site/verbs.ts",
-      "sha256": "5e38c611e5f34d32067b9c38a7cc6f2c7a5a3ca7401d6f7ec51b500de84e962e",
-      "gitBlob": "d1d0a8e36feec8aa8938d2cc77ed7c386607a00e"
+      "sha256": "7e7b2378c513864a5b675c37b35f1cdbe0a0bfd7cd17b50c9b4457ab478f8b82",
+      "gitBlob": "89d7827991a88e198ba9ff475c6f11c1ad3f38e9"
     },
     {
       "path": "static/_headers",
@@ -385,6 +385,16 @@
       "path": "static/fonts/OFL.txt",
       "sha256": "ee67e6ee22790b7929f1a3769ca2801d565c64b5a9096942c1adf5596de9c9e4",
       "gitBlob": "93feddee37145696e123ea65a6772cab09663f9e"
+    },
+    {
+      "path": "static/hero.css",
+      "sha256": "3dee22646f188fc59f25fb63a7be310e458ce5cca177080f225fc543a74d1a12",
+      "gitBlob": "db4bd09e587d084fa8eb2a0fba90546a1beec718"
+    },
+    {
+      "path": "static/hero.js",
+      "sha256": "996e503551b447d5eb1342c65c867e11cf26211359fae15534c7633aaeb7fa4b",
+      "gitBlob": "4229b8bc2b121c9c38245bd81ff3b62c00e87602"
     },
     {
       "path": "static/poster-prefs.js",
@@ -483,8 +493,8 @@
     },
     {
       "path": "test/film-count.test.js",
-      "sha256": "0468466e9fc5768d355c3d1c4f851e9f48bf045b7525dbe5be7122d451da2df8",
-      "gitBlob": "f97491001146be85cc0c493f92ad53d5ee07c017"
+      "sha256": "23ed414ae404d75a061f1d864ce186bb06b5ad890e3fae95807e2c07e7f49db2",
+      "gitBlob": "91240c86b550f2b1a5c4a4880d64296dbe4af928"
     },
     {
       "path": "test/fixtures/lastfm-cache/lastfm.json",
@@ -543,13 +553,13 @@
     },
     {
       "path": "test/home-listen.test.js",
-      "sha256": "8ed2ca47bc34b4ca96a22969bebaded81719d5cd7fd2dc7740b05bbdc53f91e5",
-      "gitBlob": "fecffc9bb8347a43cf02d5298a0d98a071e38e48"
+      "sha256": "71b10fe7d2e8b90a3a8a28fc0a9d59ed4beb05022ced557ea80d0e66584af696",
+      "gitBlob": "569e16847c9cadf0c87a0af2786323110bf25d7b"
     },
     {
       "path": "test/home-preview.test.js",
-      "sha256": "0cf126de844ffac2e584a66f3b9272e365b9503a03d43331f6348a4727b9386c",
-      "gitBlob": "baa4a9ca3aadc421bf558a864914876525e7ff16"
+      "sha256": "a6714441701eaf876643f7dcce870f482af079eae991f3a68af83296745b3dcc",
+      "gitBlob": "fca009abcdaeca5f1c2263e738ea31a6d656758e"
     },
     {
       "path": "test/intel.test.js",
@@ -608,8 +618,8 @@
     },
     {
       "path": "test/poster-controls.test.js",
-      "sha256": "33923a359e21214e3292ec8031f1fce32c469e1f0cece4b07bef335ab033535e",
-      "gitBlob": "f2147e4462b5d2dc9084f9a33f85d2775c0ffa79"
+      "sha256": "3475424f011e4c9a8b28705fe69ec1fa54035fdb8356a561aa5bd1734885c082",
+      "gitBlob": "a7d5019f940f4991f64b1ed8a8f938fc7e8ab259"
     },
     {
       "path": "test/posters.test.js",
@@ -708,8 +718,8 @@
     },
     {
       "path": "test/wave-scope.test.js",
-      "sha256": "d75636bd80edf66431736b18f6e51551088ee9486239caf08c85d937d5dd46b8",
-      "gitBlob": "b149aba2b401f0a9ca8042007f2f0998cf21da47"
+      "sha256": "efd32ab209f1ebe3d563299cbb1ace91a6a3c56d7ce5113ab09cd6712ba6aa33",
+      "gitBlob": "e3fb7c42fd08b11e8611883ebc0ef3ccf7c0d909"
     },
     {
       "path": "test/worker-config.test.js",
@@ -1112,6 +1122,7 @@
         "site/render.js",
         "site/social-icons.js",
         "site/verbs.ts",
+        "static/hero.js",
         "static/poster-prefs.js",
         "static/station.js",
         "test/accessibility.test.js",
@@ -2346,6 +2357,7 @@
         "site/render.js",
         "site/social-icons.js",
         "site/verbs.ts",
+        "static/hero.js",
         "static/poster-prefs.js",
         "static/station.js",
         "test/accessibility.test.js",
@@ -2654,6 +2666,8 @@
         "site/render.js",
         "site/social-icons.js",
         "site/tokens.css",
+        "static/hero.css",
+        "static/hero.js",
         "static/poster-prefs.js",
         "static/station.css",
         "static/station.js",
@@ -2735,6 +2749,7 @@
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
             "learning/learning.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -2761,6 +2776,7 @@
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
             "learning/learning.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -2794,6 +2810,16 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": true,
           "files": []
+        },
+        {
+          "name": "--hero-line",
+          "value": "58%",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/hero.css"
+          ]
         },
         {
           "name": "--hit",
@@ -2871,6 +2897,7 @@
           "referencedInTokens": false,
           "files": [
             "learning/learning.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -3012,6 +3039,7 @@
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
             "learning/learning.css",
+            "static/hero.css",
             "static/station.css",
             "test/home-preview.test.js",
             "test/verbs.test.js"
@@ -3060,6 +3088,7 @@
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
             "learning/learning.css",
+            "static/hero.css",
             "static/station.css",
             "test/listening-periods.test.js"
           ]
@@ -3325,6 +3354,7 @@
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
             "learning/learning.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -3338,6 +3368,7 @@
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
             "learning/learning.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -3351,6 +3382,7 @@
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
             "learning/learning.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -3372,6 +3404,7 @@
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
             "learning/learning.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -3385,6 +3418,7 @@
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
             "learning/learning.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -3398,6 +3432,7 @@
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
             "learning/learning.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -3408,6 +3443,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -3702,6 +3738,7 @@
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
             "learning/learning.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -3776,6 +3813,16 @@
           "referencedInTokens": false,
           "files": [
             "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-hero",
+          "value": "min(22.5vw, 58vh)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/hero.css"
           ]
         },
         {
@@ -3993,6 +4040,7 @@
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
             "learning/learning.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -4083,6 +4131,8 @@
         "static/_redirects",
         "static/favicon.svg",
         "static/fonts/OFL.txt",
+        "static/hero.css",
+        "static/hero.js",
         "static/poster-prefs.js",
         "static/station.css",
         "static/station.js",
@@ -4165,6 +4215,51 @@
       ],
       "entries": [
         {
+          "id": "home-hero",
+          "route": "/",
+          "anchors": [
+            "data-hero",
+            "class=\"hero-water\"",
+            "data-words="
+          ],
+          "anchorFiles": {
+            "data-hero": [
+              "site/render.js",
+              "static/hero.js"
+            ],
+            "class=\"hero-water\"": [
+              "site/render.js"
+            ],
+            "data-words=": [
+              "site/render.js"
+            ]
+          },
+          "storageKeys": [],
+          "endpoints": [],
+          "constants": {},
+          "files": [
+            "site/render.js",
+            "static/hero.js"
+          ],
+          "sources": [
+            "site/render.js",
+            "static/hero.js"
+          ],
+          "tests": [],
+          "provenance": [
+            {
+              "path": "site/render.js",
+              "sha256": "391f91d2edfcde674a49813393086bcef025222cd35069fbcf9ce5ab59a29078",
+              "gitBlob": "9a19c2f1b63f0fc9e7691c9e7fa50cc8e07bc61b"
+            },
+            {
+              "path": "static/hero.js",
+              "sha256": "996e503551b447d5eb1342c65c867e11cf26211359fae15534c7633aaeb7fa4b",
+              "gitBlob": "4229b8bc2b121c9c38245bd81ff3b62c00e87602"
+            }
+          ]
+        },
+        {
           "id": "home-rows",
           "route": "/",
           "anchors": [
@@ -4207,8 +4302,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
-              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
+              "sha256": "391f91d2edfcde674a49813393086bcef025222cd35069fbcf9ce5ab59a29078",
+              "gitBlob": "9a19c2f1b63f0fc9e7691c9e7fa50cc8e07bc61b"
             }
           ]
         },
@@ -4280,8 +4375,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
-              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
+              "sha256": "391f91d2edfcde674a49813393086bcef025222cd35069fbcf9ce5ab59a29078",
+              "gitBlob": "9a19c2f1b63f0fc9e7691c9e7fa50cc8e07bc61b"
             },
             {
               "path": "static/station.js",
@@ -4335,8 +4430,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
-              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
+              "sha256": "391f91d2edfcde674a49813393086bcef025222cd35069fbcf9ce5ab59a29078",
+              "gitBlob": "9a19c2f1b63f0fc9e7691c9e7fa50cc8e07bc61b"
             },
             {
               "path": "static/station.js",
@@ -4410,8 +4505,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
-              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
+              "sha256": "391f91d2edfcde674a49813393086bcef025222cd35069fbcf9ce5ab59a29078",
+              "gitBlob": "9a19c2f1b63f0fc9e7691c9e7fa50cc8e07bc61b"
             },
             {
               "path": "static/poster-prefs.js",
@@ -4460,8 +4555,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
-              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
+              "sha256": "391f91d2edfcde674a49813393086bcef025222cd35069fbcf9ce5ab59a29078",
+              "gitBlob": "9a19c2f1b63f0fc9e7691c9e7fa50cc8e07bc61b"
             },
             {
               "path": "static/station.js",
@@ -4517,8 +4612,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
-              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
+              "sha256": "391f91d2edfcde674a49813393086bcef025222cd35069fbcf9ce5ab59a29078",
+              "gitBlob": "9a19c2f1b63f0fc9e7691c9e7fa50cc8e07bc61b"
             }
           ]
         },
@@ -4596,8 +4691,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
-              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
+              "sha256": "391f91d2edfcde674a49813393086bcef025222cd35069fbcf9ce5ab59a29078",
+              "gitBlob": "9a19c2f1b63f0fc9e7691c9e7fa50cc8e07bc61b"
             },
             {
               "path": "workers/listening/src/index.js",
@@ -4672,8 +4767,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
-              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
+              "sha256": "391f91d2edfcde674a49813393086bcef025222cd35069fbcf9ce5ab59a29078",
+              "gitBlob": "9a19c2f1b63f0fc9e7691c9e7fa50cc8e07bc61b"
             },
             {
               "path": "static/_headers",
@@ -4742,8 +4837,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
-              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
+              "sha256": "391f91d2edfcde674a49813393086bcef025222cd35069fbcf9ce5ab59a29078",
+              "gitBlob": "9a19c2f1b63f0fc9e7691c9e7fa50cc8e07bc61b"
             }
           ]
         },
@@ -4780,8 +4875,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
-              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
+              "sha256": "391f91d2edfcde674a49813393086bcef025222cd35069fbcf9ce5ab59a29078",
+              "gitBlob": "9a19c2f1b63f0fc9e7691c9e7fa50cc8e07bc61b"
             }
           ]
         },
@@ -4979,8 +5074,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
-              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
+              "sha256": "391f91d2edfcde674a49813393086bcef025222cd35069fbcf9ce5ab59a29078",
+              "gitBlob": "9a19c2f1b63f0fc9e7691c9e7fa50cc8e07bc61b"
             },
             {
               "path": "static/station.js",
@@ -5034,13 +5129,13 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
-              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
+              "sha256": "391f91d2edfcde674a49813393086bcef025222cd35069fbcf9ce5ab59a29078",
+              "gitBlob": "9a19c2f1b63f0fc9e7691c9e7fa50cc8e07bc61b"
             },
             {
               "path": "site/verbs.ts",
-              "sha256": "5e38c611e5f34d32067b9c38a7cc6f2c7a5a3ca7401d6f7ec51b500de84e962e",
-              "gitBlob": "d1d0a8e36feec8aa8938d2cc77ed7c386607a00e"
+              "sha256": "7e7b2378c513864a5b675c37b35f1cdbe0a0bfd7cd17b50c9b4457ab478f8b82",
+              "gitBlob": "89d7827991a88e198ba9ff475c6f11c1ad3f38e9"
             }
           ]
         },
@@ -5113,13 +5208,13 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "9a486aaf7cc621c735657d25eaa4a540b75ad6510c75049618d0a8f19cfb6083",
-              "gitBlob": "cd1b91d670eb0cac2a5af04eda1692aece473214"
+              "sha256": "391f91d2edfcde674a49813393086bcef025222cd35069fbcf9ce5ab59a29078",
+              "gitBlob": "9a19c2f1b63f0fc9e7691c9e7fa50cc8e07bc61b"
             },
             {
               "path": "site/verbs.ts",
-              "sha256": "5e38c611e5f34d32067b9c38a7cc6f2c7a5a3ca7401d6f7ec51b500de84e962e",
-              "gitBlob": "d1d0a8e36feec8aa8938d2cc77ed7c386607a00e"
+              "sha256": "7e7b2378c513864a5b675c37b35f1cdbe0a0bfd7cd17b50c9b4457ab478f8b82",
+              "gitBlob": "89d7827991a88e198ba9ff475c6f11c1ad3f38e9"
             }
           ]
         },
@@ -5257,6 +5352,8 @@
         "static/_redirects",
         "static/favicon.svg",
         "static/fonts/OFL.txt",
+        "static/hero.css",
+        "static/hero.js",
         "static/poster-prefs.js",
         "static/station.css",
         "static/station.js",
@@ -5399,6 +5496,7 @@
           ],
           "features": [
             "frequency",
+            "home-hero",
             "home-listen",
             "home-rows",
             "learning-hub",
@@ -5441,6 +5539,7 @@
           ],
           "features": [
             "frequency",
+            "home-hero",
             "home-listen",
             "home-rows",
             "learning-hub",
@@ -5518,6 +5617,7 @@
           ],
           "features": [
             "frequency",
+            "home-hero",
             "home-listen",
             "home-rows",
             "learning-hub",
@@ -5560,6 +5660,7 @@
           ],
           "features": [
             "frequency",
+            "home-hero",
             "home-listen",
             "home-rows",
             "learning-hub",
@@ -5582,6 +5683,7 @@
           ],
           "features": [
             "frequency",
+            "home-hero",
             "home-listen",
             "home-rows",
             "learning-hub",
@@ -5625,6 +5727,7 @@
           ],
           "features": [
             "frequency",
+            "home-hero",
             "home-listen",
             "home-rows",
             "learning-arrays",
@@ -5705,6 +5808,7 @@
           ],
           "features": [
             "frequency",
+            "home-hero",
             "home-listen",
             "home-rows",
             "learning-hub",
@@ -5732,6 +5836,7 @@
           ],
           "features": [
             "frequency",
+            "home-hero",
             "home-listen",
             "home-rows",
             "learning-hub",
@@ -5754,6 +5859,7 @@
           ],
           "features": [
             "frequency",
+            "home-hero",
             "home-listen",
             "home-rows",
             "learning-hub",
@@ -5808,6 +5914,7 @@
           "features": [
             "birds1",
             "frequency",
+            "home-hero",
             "home-listen",
             "home-rows",
             "learning-hub",
@@ -5886,6 +5993,7 @@
           ],
           "features": [
             "frequency",
+            "home-hero",
             "home-listen",
             "home-rows",
             "learning-hub",
@@ -5978,6 +6086,7 @@
           ],
           "features": [
             "frequency",
+            "home-hero",
             "home-listen",
             "home-rows",
             "learning-hub",
@@ -6115,6 +6224,8 @@
         "static/_redirects",
         "static/favicon.svg",
         "static/fonts/OFL.txt",
+        "static/hero.css",
+        "static/hero.js",
         "static/poster-prefs.js",
         "static/station.css",
         "static/station.js",

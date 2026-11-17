@@ -48,7 +48,7 @@ function writeCount(cacheDir, filmCount, { stale = false, file = 'letterboxd-cou
 
 const pageCtx = {
   siteUrl: 'https://mattdoes.online',
-  assets: { 'station.css': 'station.abc12345.css', 'station.js': 'station.abc12345.js' },
+  assets: { 'station.css': 'station.abc12345.css', 'station.js': 'station.abc12345.js', 'hero.css': 'hero.abc12345.css', 'hero.js': 'hero.abc12345.js' },
   watches: [],
 };
 
