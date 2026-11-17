@@ -4,7 +4,7 @@
   "decisions": [
     {
       "id": "tokens-only",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "paths": ["site/tokens.css", "lib/design-tokens.js", "STYLE.md"],
       "text": "site/tokens.css is the only place a raw color, font stack, or font size is written. Pages use var(--token). The build keeps the polarity colors, the font stacks, and --row-size live and inlines the rest. Pink is #F7C8D8."
     },
@@ -22,13 +22,13 @@
     },
     {
       "id": "registry",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "paths": ["site/verbs.ts"],
-      "text": "site/verbs.ts is the registry. An unknown source or a missing renderer fails the build. /unshared/ stays off the home menu. /learning/ stays off that menu and out of the sitemap while learningOnHome is false. Old paths are not redirected."
+      "text": "site/verbs.ts is the registry. An unknown source or a missing renderer fails the build. /unshared/ stays off the home menu. Old paths are not redirected."
     },
     {
       "id": "frequency-offline",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "paths": ["site/verbs.ts", "site/render.js", "lib/emit/index.js"],
       "text": "/frequency/ is a noindex secret. It stays out of the registry and the sitemap, and it stays offline while SECRET_PATHS is empty. The prize mailto lives only in renderFrequency. Do not copy that address into docs, the index, or a public page."
     },
@@ -40,7 +40,7 @@
     },
     {
       "id": "wave-words",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "paths": ["site/render.js", "static/station.css"],
       "text": "The wave sits only on the words that label the big counts: scrobbles and films. The numbers are outline only. Stars are black fill with a pink outline."
     },
@@ -83,7 +83,7 @@
     },
     {
       "id": "safe-area",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "paths": [
         "site/tokens.css",
         "site/render.js",
@@ -153,7 +153,7 @@
     },
     {
       "id": "fixture-only-preview",
-      "verified-at": "43267dc5184442dcdd130ff20d9965325ddf0114",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "paths": ["test/visual/pages.spec.js"],
       "text": "CI can pass while the real Pages preview has no posters, because the visual suite uses fixtures. A user-visible change is confirmed on the preview, at 390×844 and 1280×800."
     }
@@ -173,7 +173,7 @@
     },
     {
       "id": "home-menu",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "paths": ["site/verbs.ts"],
       "text": "The home menu is verbCatalog minus unshared. Publishing /unshared/ does not put it on the home list."
     }
@@ -181,7 +181,7 @@
   "lessons": [
     {
       "id": "posters-missing-on-preview",
-      "verified-at": "43267dc5184442dcdd130ff20d9965325ddf0114",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "paths": ["lib/posters.js", "test/visual/pages.spec.js"],
       "text": "The poster strip's CI passed with fixtures while the real preview had zero posters. Black boxes in a screenshot were the fixture, not the page. Compare a preview capture that was not scrolled."
     },
@@ -205,7 +205,7 @@
     },
     {
       "id": "chart-only-note",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "paths": ["site/render.js", "static/station.js"],
       "text": "A chat note called /listening/ a monthly chart with no recent list. The page still renders the recent list and station.js refreshes it from /api/listening/recent. Do not delete that list on the strength of the note."
     },
@@ -239,7 +239,7 @@
   "features": [
     {
       "id": "home-hero",
-      "verified-at": "b3e49c8741d1f2ad1d97c1ca17132a34729df3b6",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "/",
       "anchors": ["data-hero", "class=\"hero-water\"", "data-words="],
       "text": "Home opens on the name sitting on a water line. Above the line it is solid pink; below it is an outline bent by the water. surfaceWords in site/verbs.ts rise through the line and sink back; crossing it and the pointer both ripple the surface. Every few seconds one word surfaces into the phrase, so it reads matt does plus that word; the name shrinks and slides to fit, then the word sinks back out. Scrolling the pinned hero raises the water over everything, then the verb list follows. hero.js draws into the canvas and reads its colors from the computed style. Without the script, or with reduced motion before it runs, hero.css cuts the heading at the same line.",
@@ -248,7 +248,7 @@
     },
     {
       "id": "home-rows",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "/",
       "anchors": ["aria-label=\"verbs\"", "class=\"verb-kicker\"", "class=\"verb-row home-suno\""],
       "text": "Under the hero, home is the verb list. The visible words are matt does plus the registry label. Unshared is not in that list. A third row uses the same size and gap as the verbs. Its heading unshared opens /unshared/. Song titles stay on that page. The latest film sits on the letterboxd row, with no underline.",
@@ -257,7 +257,7 @@
     },
     {
       "id": "home-listen",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "/",
       "anchors": ["preview listen-line", "now listening"],
       "endpoints": ["/api/listening/now"],
@@ -269,7 +269,7 @@
     },
     {
       "id": "watching-strip",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "/watching/",
       "anchors": ["class=\"film-open\"", "data-scene"],
       "text": "Recent films are a strip. The first image is eager. The rest are lazy. src stays off the img until posters are on, so an off preference does not fetch. A poster that was not mirrored is omitted.",
@@ -278,7 +278,7 @@
     },
     {
       "id": "watching-toggles",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "/watching/",
       "anchors": ["data-posters-toggle", "data-axis-toggle", "data-pull"],
       "storageKeys": ["mattdoes-posters", "mattdoes-poster-axis"],
@@ -289,7 +289,7 @@
     },
     {
       "id": "watching-scene",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "/watching/",
       "anchors": ["id=\"scene\"", "data-review"],
       "text": "Opening a film uses a dialog. The wide poster is not in the tree until the scene opens. The review is a data attribute, not card text.",
@@ -298,7 +298,7 @@
     },
     {
       "id": "watching-count",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "/watching/",
       "anchors": ["countLine(ctx.filmCount", "parseFilmCount"],
       "text": "The films count is the public Letterboxd total, not the length of the RSS window. A missing count hides the line and does not fail the build. The word films is the wave. The number is an outline.",
@@ -307,7 +307,7 @@
     },
     {
       "id": "listening-chart",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "/listening/",
       "anchors": ["class=\"album-grid\"", "class=\"album-tile\""],
       "endpoints": ["/api/listening/charts"],
@@ -317,7 +317,7 @@
     },
     {
       "id": "listening-recent",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "/listening/",
       "anchors": ["class=\"recent-label\"", "id=\"tracks\""],
       "endpoints": ["/api/listening/recent"],
@@ -327,7 +327,7 @@
     },
     {
       "id": "listening-count",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "/listening/",
       "anchors": ["countLine(ctx.playcount", "formatScrobbleCount"],
       "text": "The scrobble total is one line. The word scrobbles waves. The number is an outline. Zero or missing hides the line.",
@@ -336,7 +336,7 @@
     },
     {
       "id": "wave-counts",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "",
       "anchors": ["WAVE_WORDS", "class=\"wave\""],
       "text": "Only scrobbles and films take the wave. Spoken text stays in the accessibility tree. The painted letters are aria-hidden. Reduced motion stops the animation and keeps a static sine.",
@@ -363,7 +363,7 @@
     },
     {
       "id": "frequency",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "/frequency/",
       "anchors": ["function renderFrequency", "frequency-key"],
       "text": "The secret page is offline while SECRET_PATHS is empty. Emit cuts the key hook out of the shipped station.js and fails if the word frequency remains. The prize mailto stays in renderFrequency only.",
@@ -372,30 +372,12 @@
     },
     {
       "id": "social-footer",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
+      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "/",
       "anchors": ["rel=\"me noopener\"", "lastfmSocialEnabled"],
       "text": "The footer is a row of social marks. last.fm stays hidden while lastfmSocialEnabled is false. The icon function can remain. Links are https profile URLs and do not point at unshared.",
       "risks": ["Turning the last.fm mark back on is a one-line flag, not a new icon."],
       "devices": ["The footer is in the visual suite as its own shot at 390 and 1280. Those shots have no insets, so the marks stay where they were. On a phone, body padding uses the safe-area tokens and the marks clear the home indicator."]
-    },
-    {
-      "id": "learning-hub",
-      "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
-      "route": "/learning/",
-      "anchors": ["learningOnHome", "matt does learning", "lesson-next"],
-      "text": "The hub heading is matt does learning and links home. The heading goes straight into the track nav. Tracks stay in order: data structures, operating systems, ai systems. A lesson is open, done, or next. None are done. arrays & big-o is the only open row and links to /learning/arrays/. Next rows are quiet text, not links, so an unlearned lesson does not look finished. learningOnHome is false, so the home verb list does not include learning and sitemapPaths() leaves /learning/ out. The page uses the flipped pink field, a skip link, main#main, and the social footer. CSS and the lesson script stay under /learning/ and are not added to station.css or station.js.",
-      "risks": ["Putting learningOnHome true adds a home row and the sitemap entries. Leave it false until learning should appear on /.", "A next lesson must not get an href.", "Adding the lesson stylesheet to station.css would spend the global asset budget."],
-      "devices": ["Check 390 and 1280. Long track labels wrap. The open row's hit target is at least 44px, and 48px on a phone."]
-    },
-    {
-      "id": "learning-arrays",
-      "verified-at": "632e274c2d56c5fd5e3680fc772e3847ac74e6a3",
-      "route": "/learning/arrays/",
-      "anchors": ["data-lesson=\"arrays\"", "compare every pair", "reveal hint"],
-      "text": "The arrays & big-o lesson steps through contains duplicate, a dynamic array, and search. The title goes straight into the lesson. One board toggles compare every pair, o(n²), and one pass + set, o(n). The duplicate sample is [3, 8, 4, 1, 5, 9, 2, 1]: 22 pair checks and 8 set checks. The distinct sample is [3, 8, 4, 6, 5, 9, 2, 7]: 28 pair checks and 8 set checks. The other board steps append through capacities 1, 2, 4, and 8, insert shifting later slots, and linear versus binary search for 999 and the missing 1000. Selecting linear or binary search states range(0, 1000, 3) and the slot count on the outcome line. The reference is DynamicArray, linear_search, and binary_search, plus the list big-o table. The coach links to contains duplicate and reveals one question at a time. It does not ship solution code. The growth check compares o(n) and o(n²) when n grows from 1,000 to 10,000. States change through classes, hidden, and text. The client does not set element styles.",
-      "risks": ["Do not paste a contains-duplicate solution into the page.", "Index labels stay on --type-meta or larger so they do not collapse on a phone.", "The lesson script stays out of station.js."],
-      "devices": ["Phone first at 390, then 1280. 200% text and a 320-wide window must not scroll sideways. back, step, and reset use --hit and --hit-phone."]
     }
   ]
 }

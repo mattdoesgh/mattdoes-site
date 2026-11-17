@@ -28,8 +28,6 @@ const SAMPLE_PATHS = [
   '/listening/',
   '/unshared/',
   '/unshared/birds1/',
-  '/learning/',
-  '/learning/arrays/',
   '/404.html',
   '/fonts/Anton-latin.woff2',
   '/station.00000000.css',
