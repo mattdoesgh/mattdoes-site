@@ -1,6 +1,6 @@
 // Pages from site/verbs.ts. String HTML, no React.
 
-import { verbs, verbCatalog, socials, verbPath, verbHeading, learningOnHome, surfaceWords } from './verbs.ts';
+import { verbs, verbCatalog, socials, verbPath, verbHeading, surfaceWords } from './verbs.ts';
 import { renderHubDocument } from '../concepts/hub.js';
 import { socialIcon } from './social-icons.js';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
@@ -306,23 +306,6 @@ function homeDescription() {
 }
 
 /**
- * Home row for /learning/. Empty while learningOnHome is false, so `/` stays
- * the verb list.
- *
- * @param {boolean} [on]
- * @returns {string}
- */
-export function learningHomeRow(on = true) {
-  if (!on) return '';
-  const label = 'learning';
-  const heading = verbHeading(label);
-  const prefix = heading.slice(0, heading.length - label.length);
-  return `<li class="verb-row">
-          <a class="verb" href="/learning/"><span class="verb-prefix"><span>${esc(prefix)}</span></span><span class="verb-label">${esc(label)}</span></a>
-        </li>`;
-}
-
-/**
  * The name on a water line. hero.js draws the scene into the canvas: the
  * name and the surface words rise above the line and sink below it. The
  * heading stays the name for readers and for a page without the script.
@@ -359,9 +342,7 @@ export function renderHome(ctx) {
           ${preview}
         </li>`;
   }).join('\n        ');
-  const menuRows = learningOnHome
-    ? `${items}\n        ${learningHomeRow()}\n        ${renderHomeSuno()}`
-    : `${items}\n        ${renderHomeSuno()}`;
+  const menuRows = `${items}\n        ${renderHomeSuno()}`;
   return shell({
     ...ctx,
     path: '/',
