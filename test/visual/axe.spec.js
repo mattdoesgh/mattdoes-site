@@ -9,7 +9,6 @@ import { prepare } from './prepare.js';
 const paths = [
   '/',
   '/watching/',
-  '/listening/',
   '/unshared/',
   '/unshared/birds1/',
   '/404.html',

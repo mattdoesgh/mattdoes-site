@@ -131,8 +131,8 @@ jobs:
         run: npm test
 
   # Screenshot baselines of the main pages, plus axe on every page in
-  # Chromium. Fixture watches and scrobbles stand in for Letterboxd and
-  # Last.fm so a live feed cannot move the pixels. Same job as the
+  # Chromium. Fixture watches stand in for Letterboxd so a live feed
+  # cannot move the pixels. Same job as the
   # screenshots, so the accessibility check does not add a runner.
   visual:
     name: visual regression
