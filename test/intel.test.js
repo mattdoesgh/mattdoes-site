@@ -42,9 +42,8 @@ test('query facts that agents rely on stay true', () => {
   const text = serializeIndex(index);
   assert.equal(text.includes('a6ea68e07a764aeba929a865d1d33a58'), false);
   assert.equal(text.includes('luciadoes@'), false);
-  const listen = index.sections.features.entries.find((entry) => entry.id === 'home-listen');
-  assert.equal(listen.constants['lib/listen-line.js'].LISTEN_LIMIT, 48);
-  assert.equal(listen.constants['static/station.js'].LISTEN_LIMIT, 48);
+  assert.equal(index.sections.routes.entries.some((entry) => entry.path === '/listening/'), false);
+  assert.equal(index.sections.features.entries.some((entry) => entry.id.startsWith('listening-')), false);
   assert.equal(fs.existsSync(path.join(ROOT, 'lib', 'time.js')), false);
   assert.equal(fs.existsSync(path.join(ROOT, 'test', 'time.test.js')), false);
 });

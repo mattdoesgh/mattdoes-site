@@ -42,7 +42,7 @@
       "id": "wave-words",
       "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "paths": ["site/render.js", "static/station.css"],
-      "text": "The wave sits only on the words that label the big counts: scrobbles and films. The numbers are outline only. Stars are black fill with a pink outline."
+      "text": "The wave sits only on the word that labels the big count: films. The numbers are outline only. Stars are black fill with a pink outline."
     },
     {
       "id": "fluid-type",
@@ -100,7 +100,7 @@
       "id": "charts-cron",
       "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
       "paths": ["workers/listening/wrangler.toml", "workers/rebuild/wrangler.toml"],
-      "text": "The monthly album chart refreshes Monday 11:00 UTC. Covers are on R2 at media.mattdoes.online. The listening worker must deploy before the Pages build that reads the charts key. mattdoes-rebuild posts the Pages deploy hook every six hours, and listening asks it to rebuild after the Monday refresh."
+      "text": "The listening worker refreshes its monthly album chart Monday 11:00 UTC and asks mattdoes-rebuild for a Pages rebuild after it. No page reads the chart. mattdoes-rebuild posts the Pages deploy hook every six hours."
     },
     {
       "id": "comment-lint",
@@ -134,12 +134,6 @@
       "text": "No grid lines, no chips, no unfold or wipe animations, no flavor text, no numbering. No subheading or standfirst under a page title or a section heading. Lowercase labels."
     },
     {
-      "id": "period-switcher",
-      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
-      "paths": ["lib/lastfm.js"],
-      "text": "The listening chart is the last month only. LISTENING_PERIODS has one id. Do not add a period switcher."
-    },
-    {
       "id": "legacy-redirects",
       "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
       "paths": ["static/_redirects"],
@@ -168,8 +162,8 @@
     {
       "id": "offline-flags",
       "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
-      "paths": ["lib/listening.js", "lib/watches.js"],
-      "text": "LISTENING_OFFLINE=1 and LETTERBOXD_OFFLINE=1 skip the network for tests and CI. The production Pages build does not set them."
+      "paths": ["lib/watches.js"],
+      "text": "LETTERBOXD_OFFLINE=1 skips the network for tests and CI. The production Pages build does not set it."
     },
     {
       "id": "home-menu",
@@ -196,18 +190,6 @@
       "verified-at": "702cc03d1693d75aa2822fc7180bbed1b1fce684",
       "paths": ["site/tokens.css", "static/station.css"],
       "text": "Poster settings were resized four times. The settled target is compact, about half the films numeral, still tappable, and fluid. Do not reopen that size without a preview at both viewports."
-    },
-    {
-      "id": "cover-placeholder",
-      "verified-at": "c7c59be26183b08685bf9193f0e7f30de7c372b4",
-      "paths": ["lib/covers.js", "lib/lastfm.js"],
-      "text": "A placeholder question-mark cover and a wrong cover were fixed by dropping blank art and backfilling. Albums without a real cover stay off the grid."
-    },
-    {
-      "id": "chart-only-note",
-      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
-      "paths": ["site/render.js", "static/station.js"],
-      "text": "A chat note called /listening/ a monthly chart with no recent list. The page still renders the recent list and station.js refreshes it from /api/listening/recent. Do not delete that list on the strength of the note."
     },
     {
       "id": "ambient-is-birds1",
@@ -251,21 +233,9 @@
       "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "/",
       "anchors": ["aria-label=\"verbs\"", "class=\"verb-kicker\"", "class=\"verb-row home-suno\""],
-      "text": "Under the hero, home is the verb list. The visible words are matt does plus the registry label. Unshared is not in that list. A third row uses the same size and gap as the verbs. Its heading unshared opens /unshared/. Song titles stay on that page. The latest film sits on the letterboxd row, with no underline.",
+      "text": "Under the hero, home is the verb list. The visible words are matt does plus the registry label. Unshared is not in that list. The unshared row below them uses the same size and gap as the verbs. Its heading unshared opens /unshared/. Song titles stay on that page. The latest film sits on the letterboxd row, with no underline.",
       "risks": ["Adding a verb puts it on the home menu unless it is filtered out like unshared."],
       "devices": ["The kicker is hidden at the 800px hover window. Check 390 and 1280 before moving it."]
-    },
-    {
-      "id": "home-listen",
-      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
-      "route": "/",
-      "anchors": ["preview listen-line", "now listening"],
-      "endpoints": ["/api/listening/now"],
-      "constantsFrom": ["lib/listen-line.js", "static/station.js"],
-      "parity": [["lib/listen-line.js", "LISTEN_LIMIT"], ["static/station.js", "LISTEN_LIMIT"]],
-      "text": "The last.fm row's lower line is baked as last listened so a build-time now-playing flag cannot go stale with JavaScript off. station.js polls /api/listening/now about once a minute and falls back to the last track. The clip length is duplicated in the classic script and in lib/listen-line.js. The parity check keeps the two numbers equal. Do not add a bundler to share them.",
-      "risks": ["A fixture build never shows a live now-playing line. Confirm on the preview.", "A truthy reason on the payload must leave the baked line alone."],
-      "devices": ["The line is one row. A long title is clipped to LISTEN_LIMIT. Check it at 390."]
     },
     {
       "id": "watching-strip",
@@ -306,41 +276,12 @@
       "devices": ["The count and the switches share a row and wrap. Check 390 so they do not collide."]
     },
     {
-      "id": "listening-chart",
-      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
-      "route": "/listening/",
-      "anchors": ["class=\"album-grid\"", "class=\"album-tile\""],
-      "endpoints": ["/api/listening/charts"],
-      "text": "The chart is 25 albums for the last month, five across, with a few hidden spares. There is no period switcher. A cover that fails in the browser is dropped and the next spare is shown. The browser does not call /api/listening/charts. The Pages build does. The img is the 300px baseline JPEG, lazy, with width and height 300. When the media host has them, a picture adds AVIF and WebP at 240 and 300 plus a 240 JPEG, with sizes for the five-column grid. A variant that is not public is left out of the markup.",
-      "risks": ["The listening worker has to deploy before the Pages build that reads charts:week.", "A short chart is not padded with blank art.", "A format missing its 300px file is omitted so a desktop browser does not upscale the 240px file."],
-      "devices": ["The phone slot is about 72 CSS px. At DPR 3 that is about 215 device px, so the 240px file is the one to fetch. Check the grid at 390 and 1280."]
-    },
-    {
-      "id": "listening-recent",
-      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
-      "route": "/listening/",
-      "anchors": ["class=\"recent-label\"", "id=\"tracks\""],
-      "endpoints": ["/api/listening/recent"],
-      "text": "A recent list is still rendered under the chart and replaced from /api/listening/recent. The chat note that called the page chart-only is not what the code does. Leave the list until Matt changes it.",
-      "risks": ["A payload with a truthy reason must not wipe the baked list."],
-      "devices": ["The list is plain text. It should stay readable at 390 under the grid."]
-    },
-    {
-      "id": "listening-count",
-      "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
-      "route": "/listening/",
-      "anchors": ["countLine(ctx.playcount", "formatScrobbleCount"],
-      "text": "The scrobble total is one line. The word scrobbles waves. The number is an outline. Zero or missing hides the line.",
-      "risks": ["The total and the recent payload can disagree if a client applies a playcount of 0 from an error payload. The reason field is the guard."],
-      "devices": ["The outline has a 1.5px floor so it does not disappear on a phone."]
-    },
-    {
       "id": "wave-counts",
       "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "",
       "anchors": ["WAVE_WORDS", "class=\"wave\""],
-      "text": "Only scrobbles and films take the wave. Spoken text stays in the accessibility tree. The painted letters are aria-hidden. Reduced motion stops the animation and keeps a static sine.",
-      "risks": ["Adding a third waved word is a product change, not a drive-by."],
+      "text": "Only films takes the wave. Spoken text stays in the accessibility tree. The painted letters are aria-hidden. Reduced motion stops the animation and keeps a static sine.",
+      "risks": ["Adding a second waved word is a product change, not a drive-by."],
       "devices": ["The wave is transform only. It must not shift layout."]
     },
     {
@@ -374,9 +315,9 @@
       "id": "social-footer",
       "verified-at": "f0f699cd88c1c2baeceddc63989dd061a660fede",
       "route": "/",
-      "anchors": ["rel=\"me noopener\"", "lastfmSocialEnabled"],
-      "text": "The footer is a row of social marks. last.fm stays hidden while lastfmSocialEnabled is false. The icon function can remain. Links are https profile URLs and do not point at unshared.",
-      "risks": ["Turning the last.fm mark back on is a one-line flag, not a new icon."],
+      "anchors": ["rel=\"me noopener\"", "socialCatalog"],
+      "text": "The footer is a row of social marks, one per socialCatalog entry, each with an icon in site/social-icons.js. Links are https profile URLs and do not point at unshared.",
+      "risks": ["A new social needs a catalog line and an icon, or the build fails."],
       "devices": ["The footer is in the visual suite as its own shot at 390 and 1280. Those shots have no insets, so the marks stay where they were. On a phone, body padding uses the safe-area tokens and the marks clear the home indicator."]
     }
   ]

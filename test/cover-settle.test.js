@@ -3,10 +3,8 @@
 import test from 'node:test';
 import assert, { AssertionError } from 'node:assert/strict';
 import sharp from 'sharp';
-import { JSDOM } from 'jsdom';
 import { publicCoverUrl } from '../lib/cover-mirror.js';
 import { isProgressiveJpeg, settleChartCovers } from '../lib/cover-settle.js';
-import { renderListen } from '../site/render.js';
 
 const LAST = 'https://lastfm.freetls.fastly.net/i/u/300x300/real.jpg';
 const NEXT = 'https://lastfm-img.freetls.fastly.net/i/u/300x300/next.jpg';
@@ -196,48 +194,4 @@ test('a progressive JPEG with no baseline copy is replaced by the next album', a
   assert.equal(settled['1month'].albums[0].image, NEXT);
   assert.equal(isProgressiveJpeg(progressive), true);
   assert.equal(isProgressiveJpeg(baseline), false);
-});
-
-test('a mirrored cover renders srcset and keeps the 300px box', () => {
-  const hash = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
-  const jpeg = `https://media.mattdoes.online/covers/${hash}.jpg`;
-  const small = `https://media.mattdoes.online/covers/${'aa'.repeat(32)}.jpg`;
-  const avif = `https://media.mattdoes.online/covers/${'bb'.repeat(32)}.avif`;
-  const avifLarge = `https://media.mattdoes.online/covers/${'cc'.repeat(32)}.avif`;
-  const phoneOnly = `https://media.mattdoes.online/covers/${'dd'.repeat(32)}.webp`;
-  const html = renderListen({
-    siteUrl: 'https://mattdoes.online',
-    assets: { 'station.css': 'station.css', 'station.js': 'station.js' },
-    tracks: [],
-    playcount: 10,
-    periods: {
-      '1month': {
-        albums: [{
-          name: 'Konoyo',
-          artist: 'Tim Hecker',
-          url: 'https://www.last.fm/music/Tim+Hecker/Konoyo',
-          image: jpeg,
-          imageSet: [
-            { url: small, width: 240, type: 'image/jpeg' },
-            { url: avif, width: 240, type: 'image/avif' },
-            { url: avifLarge, width: 300, type: 'image/avif' },
-            { url: phoneOnly, width: 240, type: 'image/webp' },
-            { url: 'https://evil.example/x.avif', width: 300, type: 'image/avif' },
-          ],
-        }],
-      },
-    },
-  });
-  const doc = new JSDOM(html).window.document;
-  const img = doc.querySelector('.album-tile img');
-  assert.equal(img.getAttribute('src'), jpeg);
-  assert.equal(img.getAttribute('width'), '300');
-  assert.equal(img.getAttribute('height'), '300');
-  assert.equal(img.getAttribute('loading'), 'lazy');
-  assert.match(img.getAttribute('srcset'), new RegExp(`${small} 240w, ${jpeg} 300w`));
-  assert.match(img.getAttribute('sizes'), /100vw/);
-  const avifSource = doc.querySelector('source[type="image/avif"]');
-  assert.match(avifSource.getAttribute('srcset'), new RegExp(`${avif} 240w, ${avifLarge} 300w`));
-  assert.equal(doc.querySelector('source[type="image/webp"]'), null);
-  assert.doesNotMatch(html, /evil\.example/);
 });

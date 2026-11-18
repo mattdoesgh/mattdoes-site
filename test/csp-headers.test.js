@@ -25,7 +25,6 @@ const EMAIL_DECODE = '/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.m
 const SAMPLE_PATHS = [
   '/',
   '/watching/',
-  '/listening/',
   '/unshared/',
   '/unshared/birds1/',
   '/404.html',
@@ -114,11 +113,9 @@ test('beacon hosts are allowed and the rest of the policy stays strict', () => {
     assert.equal(hashes.length, 0, `${header} has no inline scripts, so script-src carries no hashes`);
     assert.deepEqual(sources(csp, 'connect-src'), directiveSources('connect-src'));
     assert.ok(sources(csp, 'connect-src').includes("'self'"),
-      `${header} connect-src 'self' covers same-origin /api/listening/* paths`);
-    assert.ok(sources(csp, 'img-src').includes('https://lastfm.freetls.fastly.net'),
-      `${header} img-src allows Last.fm album covers`);
-    assert.ok(sources(csp, 'img-src').includes('https://lastfm-img.freetls.fastly.net'),
-      `${header} img-src allows the current Last.fm cover host`);
+      `${header} connect-src 'self' covers same-origin paths`);
+    assert.equal(sources(csp, 'img-src').some((host) => /lastfm/.test(host)), false,
+      `${header} img-src has no Last.fm host`);
     assert.ok(sources(csp, 'connect-src').includes(BEACON_CONNECT));
     assert.match(sources(csp, 'default-src').join(' '), /^'self'$/);
     assert.equal(sources(csp, 'style-src').join(' '), "'self'");

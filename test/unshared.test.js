@@ -93,7 +93,7 @@ test('unshared has no contact mailto and the hub is the built page', () => {
     assert.equal(text.includes('unshared@mattdoes.online'), false, rel);
     assert.equal(text.includes('luciadoes+unshared@'), false, rel);
   }
-  for (const rel of ['index.html', 'watching/index.html', 'listening/index.html', '404.html', 'unshared/index.html', 'unshared/birds1/index.html']) {
+  for (const rel of ['index.html', 'watching/index.html', '404.html', 'unshared/index.html', 'unshared/birds1/index.html']) {
     const text = fs.readFileSync(path.join(distDir, rel), 'utf8');
     assert.doesNotMatch(text, /music\.apple\.com|open\.spotify\.com|bandcamp\.com|mailto:/i, rel);
     if (rel === 'unshared/index.html') {

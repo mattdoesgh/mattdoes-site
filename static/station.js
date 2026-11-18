@@ -1,4 +1,4 @@
-/* Keyword layer and live track refresh.
+/* Keyword layer and the watching scene.
    The trail does not need this file: the bars are native details.
    The mailto addresses are not in this file. */
 (function () {
@@ -28,90 +28,6 @@
     window.location.assign(root + 'frequency/');
   }
   /* frequency-key */
-
-  function trackItem(row) {
-    var li = document.createElement('li');
-    var what = document.createElement('span');
-    what.className = 'what';
-    var href = httpsHref(row.link);
-    var title = row.track || 'Untitled';
-    if (href) {
-      var anchor = document.createElement('a');
-      anchor.href = href;
-      anchor.rel = 'noopener noreferrer';
-      anchor.textContent = title;
-      what.appendChild(anchor);
-    } else {
-      what.textContent = title;
-    }
-    var by = document.createElement('span');
-    by.className = 'by';
-    by.textContent = row.artist || '';
-    li.append(what, by);
-    if (row.album) {
-      var album = document.createElement('span');
-      album.className = 'album';
-      album.textContent = row.album;
-      li.appendChild(album);
-    }
-    return li;
-  }
-
-  function apply(data) {
-    var tracks = Array.isArray(data.tracks) ? data.tracks : [];
-    if (tracks.length && !(Number(data.playcount) > 0)) return;
-    var live = null;
-    for (var i = 0; i < tracks.length; i += 1) {
-      var row = tracks[i];
-      if (row && row.nowPlaying && !live) live = row;
-    }
-    var list = document.getElementById('tracks');
-    if (!list || list.tagName !== 'OL') return;
-    var ordered = [];
-    if (live) ordered.push(live);
-    var rest = tracks.filter(function (row) { return row && !row.nowPlaying && row.date; });
-    rest.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
-    ordered = ordered.concat(rest).slice(0, 25);
-    list.replaceChildren();
-    for (var n = 0; n < ordered.length; n += 1) {
-      list.appendChild(trackItem(ordered[n]));
-    }
-  }
-
-  function refresh() {
-    if (typeof fetch !== 'function') return;
-    fetch('/api/listening/recent', { headers: { accept: 'application/json' } })
-      .then(function (res) { return res.ok ? res.json() : null; })
-      .then(function (data) {
-        if (!data || data.reason) return;
-        apply(data);
-      })
-      .catch(function () {});
-  }
-
-  function dropCover(grid, img) {
-    var tile = img.closest('.album-tile');
-    if (!tile || !tile.parentNode) return;
-    var wasHidden = tile.hasAttribute('hidden');
-    tile.remove();
-    if (wasHidden) return;
-    var next = grid.querySelector('.album-tile[hidden]');
-    if (next) next.removeAttribute('hidden');
-  }
-
-  function armCovers() {
-    var grid = document.querySelector('.album-grid');
-    if (!grid) return;
-    grid.addEventListener('error', function (event) {
-      var img = event.target;
-      if (!img || img.tagName !== 'IMG') return;
-      if (img.complete && img.naturalWidth === 0) dropCover(grid, img);
-    }, true);
-    var imgs = grid.querySelectorAll('img');
-    for (var i = 0; i < imgs.length; i += 1) {
-      if (imgs[i].complete && imgs[i].naturalWidth === 0) dropCover(grid, imgs[i]);
-    }
-  }
 
   function mediaPoster(link) {
     var value = httpsHref(link);
@@ -342,138 +258,11 @@
     if (history.state && history.state.scene) openScene(findOpener(history.state.scene), false);
   }
 
-  armCovers();
-
-  /* Home last.fm line. Keep the clip in step with lib/listen-line.js. */
-  var LISTEN_LIMIT = 48;
-  var LISTEN_MS = 60000;
-  var listenTimer = 0;
-  var listenGen = 0;
-
-  function clipPair(track, artist) {
-    var title = String(track || '').replace(/\s+/g, ' ').trim();
-    var name = String(artist || '').replace(/\s+/g, ' ').trim();
-    if (!title || !name) return '';
-    var pair = title + ' \u2014 ' + name;
-    if (pair.length <= LISTEN_LIMIT) return pair;
-    return pair.slice(0, LISTEN_LIMIT - 1).replace(/\s+$/, '') + '\u2026';
-  }
-
-  function musicHref(link) {
-    if (typeof link !== 'string') return '';
-    var value = link.trim();
-    if (!/^https:\/\//i.test(value) || /[\s"'<>\\]/.test(value)) return '';
-    try {
-      var url = new URL(value);
-      if (url.username || url.password || url.port) return '';
-      var host = url.hostname.toLowerCase();
-      if (host !== 'www.last.fm' && host !== 'last.fm') return '';
-      if (url.pathname.toLowerCase().indexOf('/user/') !== -1) return '';
-      return url.toString();
-    } catch (err) {
-      return '';
-    }
-  }
-
-  function paintListen(line, state, pair, link, live) {
-    var href = musicHref(link);
-    line.replaceChildren();
-    if (live) {
-      var dot = document.createElement('span');
-      dot.className = 'listen-dot';
-      dot.setAttribute('aria-hidden', 'true');
-      dot.textContent = '\u25cf';
-      line.appendChild(dot);
-      line.appendChild(document.createTextNode(' '));
-    }
-    var label = document.createElement('span');
-    label.className = 'listen-state';
-    label.textContent = state;
-    line.appendChild(label);
-    line.appendChild(document.createTextNode(' '));
-    var what = document.createElement(href ? 'a' : 'span');
-    what.className = 'listen-what';
-    what.textContent = pair;
-    if (href) {
-      what.href = href;
-      what.rel = 'noopener noreferrer';
-    }
-    line.appendChild(what);
-  }
-
-  function applyListen(data) {
-    var line = document.querySelector('.listen-line');
-    if (!line || !data || data.reason) return;
-    var state;
-    var pair;
-    var link;
-    var live = false;
-    if (data.nowPlaying) {
-      state = 'now listening';
-      pair = clipPair(data.track, data.artist);
-      link = data.link;
-      live = true;
-    } else if (data.last) {
-      state = 'last listened';
-      pair = clipPair(data.last.track, data.last.artist);
-      link = data.last.link;
-    } else {
-      return;
-    }
-    if (!pair) return;
-    paintListen(line, state, pair, link, live);
-  }
-
-  function stopListen() {
-    if (!listenTimer) return;
-    clearTimeout(listenTimer);
-    listenTimer = 0;
-  }
-
-  function scheduleListen() {
-    stopListen();
-    listenTimer = setTimeout(pullListen, LISTEN_MS);
-  }
-
-  function pullListen() {
-    stopListen();
-    if (document.hidden || typeof fetch !== 'function') return;
-    var gen = ++listenGen;
-    fetch('/api/listening/now', { headers: { accept: 'application/json' } })
-      .then(function (res) { return res && res.ok ? res.json() : null; })
-      .then(function (data) {
-        if (gen !== listenGen) return;
-        if (data) applyListen(data);
-      })
-      .catch(function () {})
-      .then(function () {
-        if (gen !== listenGen || document.hidden) return;
-        scheduleListen();
-      });
-  }
-
-  function onVisibility() {
-    if (document.hidden) {
-      stopListen();
-      listenGen += 1;
-      return;
-    }
-    pullListen();
-  }
-
-  function armListen() {
-    if (!document.querySelector('.listen-line')) return;
-    document.addEventListener('visibilitychange', onVisibility);
-    pullListen();
-  }
-
   function start() {
     /* frequency-key */
     document.addEventListener('keydown', onKey);
     /* frequency-key */
     bindScene();
-    refresh();
-    armListen();
   }
 
   if (document.prerendering) {

@@ -1,12 +1,12 @@
 // Poster strip controls on /watching/. The head script applies a stored
-// choice before the buttons exist. Listening keeps the plain count line.
+// choice before the buttons exist.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
-import { renderHome, renderListen, renderWatch } from '../site/render.js';
+import { renderHome, renderWatch } from '../site/render.js';
 import { REPO_ROOT } from './helpers/run-build.js';
 
 const script = fs.readFileSync(path.join(REPO_ROOT, 'static', 'poster-prefs.js'), 'utf8');
@@ -24,9 +24,7 @@ const ctx = {
   siteUrl: 'https://mattdoes.online',
   assets,
   watches: [],
-  tracks: [],
   filmCount: 89,
-  playcount: 120022,
 };
 
 function buttons() {
@@ -94,14 +92,10 @@ test('watching renders posters on and across, and other pages do not', () => {
   assert.match(html, /<script src="\/poster-prefs\.abc12345\.js"><\/script>/);
   assert.doesNotMatch(html.slice(prefs - 40, prefs + 80), /defer|async|type=/);
 
-  for (const htmlPage of [renderHome(ctx), renderListen(ctx)]) {
-    assert.equal(htmlPage.includes('poster-controls'), false);
-    assert.equal(htmlPage.includes('poster-prefs'), false);
-    assert.equal(htmlPage.includes('data-posters-toggle'), false);
-  }
-  const listen = new JSDOM(renderListen(ctx)).window.document;
-  assert.equal(listen.querySelector('h1')?.nextElementSibling?.className, 'total');
-  assert.equal(listen.querySelector('.poster-controls'), null);
+  const home = renderHome(ctx);
+  assert.equal(home.includes('poster-controls'), false);
+  assert.equal(home.includes('poster-prefs'), false);
+  assert.equal(home.includes('data-posters-toggle'), false);
 });
 
 test('the toggles change state, persist, and restore aria-pressed', async () => {

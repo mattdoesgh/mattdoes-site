@@ -17,17 +17,15 @@
   Permissions-Policy: accelerometer=(), browsing-topics=(), camera=(), clipboard-read=(), clipboard-write=(), display-capture=(), geolocation=(), gyroscope=(), hid=(), interest-cohort=(), magnetometer=(), microphone=(), midi=(), payment=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), sync-xhr=(), usb=(), xr-spatial-tracking=()
   # max-age only. includeSubDomains waits until every hostname, including
   # media.mattdoes.online, is confirmed HTTPS. preload is omitted because
-  # submitting the domain is effectively irreversible. The listening
-  # worker sends the same value: HSTS is host-wide, and every page fetches
-  # /api/listening/recent.
+  # submitting the domain is effectively irreversible.
   Strict-Transport-Security: max-age=31536000
   # Page CSP is assembled in lib/csp-policy.js. Each host is one line in
   # that directive's sources list. The build overwrites the two marker
   # lines below from that list, so the enforced policy and the report-only
   # twin cannot drift. Add an origin there. Do not edit the markers.
-  # connect-src 'self' already allows /api/listening/* and any later path
-  # on this host. A cross-origin fetch, image, or player host is one new
-  # line on connect-src, img-src, media-src, or frame-src.
+  # connect-src 'self' already allows any same-origin path. A cross-origin
+  # fetch, image, or player host is one new line on connect-src, img-src,
+  # media-src, or frame-src.
   # Declare each CSP header on this one rule only. Pages joins a header that
   # appears on two matching rules with a comma, and browsers then enforce both
   # policies. A path-specific rule (/, /*/, /*.html) must not repeat it.

@@ -71,14 +71,9 @@ jobs:
       - name: Build
         env:
           SITE_URL: https://mattdoes.online
-          # CI has no Last.fm creds and no cache; stay offline so the build
-          # never depends on the live Worker (lib/listening.js). The static
-          # listening snapshot is empty here — the deployed site builds with a
-          # real SITE_URL and reaches the Worker.
-          LISTENING_OFFLINE: '1'
-          # Same posture for the Letterboxd diary RSS (lib/watches.js). The
-          # production Pages build does not set this, so /watching/ is baked
-          # from the live feed there.
+          # CI stays offline for the Letterboxd diary RSS (lib/watches.js).
+          # The production Pages build does not set this, so /watching/ is
+          # baked from the live feed there.
           LETTERBOXD_OFFLINE: '1'
         run: npm run build
 

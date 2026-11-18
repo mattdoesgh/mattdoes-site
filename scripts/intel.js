@@ -52,17 +52,6 @@ const RENDERERS = {
     data: ['lib/watches.js', 'lib/posters.js', 'lib/letterboxd.js'],
     endpoints: [],
   },
-  listen: {
-    render: 'renderListen',
-    mustMention: ['albumGrid(ctx.periods)', 'listeningRows(ctx.tracks)'],
-    scripts: ['static/station.js'],
-    styles: ['static/station.css', 'site/tokens.css'],
-    data: ['lib/listening.js', 'lib/lastfm.js', 'lib/listen-line.js'],
-    endpoints: [
-      { path: '/api/listening/recent', from: 'browser', file: 'static/station.js' },
-      { path: '/api/listening/charts', from: 'build', file: 'lib/listening.js' },
-    ],
-  },
   unshared: {
     render: 'renderUnshared',
     mustMention: ['renderHubDocument'],
@@ -204,12 +193,10 @@ function buildRoutes(corpus) {
     page: renderSrc,
     scripts: ['static/station.js'],
     styles: ['static/station.css', 'site/tokens.css'],
-    data: ['lib/watches.js', 'lib/listening.js', 'lib/listen-line.js', 'lib/letterboxd.js'],
-    endpoints: endpointFacts([
-      { path: '/api/listening/now', from: 'browser', file: 'static/station.js' },
-    ], corpus),
+    data: ['lib/watches.js', 'lib/letterboxd.js'],
+    endpoints: endpointFacts([], corpus),
   }, corpus));
-  mustMention(renderSrc, ['function renderHome', 'listenPreview', 'watchPreview'], corpus);
+  mustMention(renderSrc, ['function renderHome', 'watchPreview'], corpus);
 
   for (const verb of verbCatalog) {
     const recipe = RENDERERS[verb.renderer];
@@ -650,7 +637,7 @@ function sectionSources(name, corpus) {
     return [
       'site/verbs.ts', 'site/render.js', 'concepts/entries.js', 'concepts/hub.js',
       'lib/publish-unshared.js', 'lib/emit/index.js', 'static/station.js',
-      'static/poster-prefs.js', 'lib/listening.js',
+      'static/poster-prefs.js',
       ...corpus.files.filter((file) => (
         file.startsWith('concepts/') && file.includes('/')
       )),

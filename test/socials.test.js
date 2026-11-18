@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
 import { buildFixtureVault, listDistHtml } from './helpers/run-build.js';
-import { socials, lastfmSocialEnabled, validateSocials } from '../site/verbs.ts';
+import { socials, validateSocials } from '../site/verbs.ts';
 import { socialIcon } from '../site/social-icons.js';
 
 const EXPECTED = [
@@ -21,9 +21,8 @@ let distDir;
 test.before(() => { ({ distDir } = buildFixtureVault()); });
 
 test('the registry lists the footer socials without last.fm', () => {
-  assert.equal(lastfmSocialEnabled, false);
   assert.deepEqual(socials.map((item) => ({ label: item.label, href: item.href })), EXPECTED);
-  assert.equal(socialIcon('last.fm').includes('<svg'), true);
+  assert.throws(() => socialIcon('last.fm'), /missing icon/);
   for (const item of EXPECTED) {
     const icon = socialIcon(item.label);
     assert.match(icon, /^<svg viewBox="0 0 24 24" aria-hidden="true"><path d="[^"]+"\/><\/svg>$/);
@@ -43,11 +42,11 @@ test('the registry lists the footer socials without last.fm', () => {
   ]), /must not point at unshared/);
 });
 
-test('the home last.fm verb still opens /listening/', () => {
+test('the home has no last.fm verb and /listening/ is not built', () => {
   const home = new JSDOM(fs.readFileSync(path.join(distDir, 'index.html'), 'utf8')).window.document;
-  const link = [...home.querySelectorAll('a.verb')].find((anchor) => anchor.getAttribute('href') === '/listening/');
-  assert.equal(link?.querySelector('.verb-label')?.textContent, 'last.fm');
-  assert.equal(fs.existsSync(path.join(distDir, 'listening', 'index.html')), true);
+  assert.equal(home.querySelector('a.verb[href="/listening/"]'), null);
+  assert.equal(home.querySelector('.listen-line'), null);
+  assert.equal(fs.existsSync(path.join(distDir, 'listening', 'index.html')), false);
 });
 
 test('every built page footer has the social hrefs and names', () => {

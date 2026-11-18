@@ -1,5 +1,5 @@
-// journal, making, and blog are not published and are not redirected.
-// /listening/ is a real page without JavaScript.
+// journal, making, blog, and listening are not published and are not redirected.
+// /watching/ is a real page without JavaScript.
 // A redirect source must not be a real page. An empty or missing _redirects file passes.
 
 import test from 'node:test';
@@ -12,9 +12,9 @@ import { buildFixtureVault, readDist, REPO_ROOT } from './helpers/run-build.js';
 let distDir;
 test.before(() => { ({ distDir } = buildFixtureVault()); });
 
-const RETIRED_ROUTES = ['journal', 'making', 'blog'];
+const RETIRED_ROUTES = ['journal', 'making', 'blog', 'listening'];
 
-const REAL_PAGES = ['/', '/watching/', '/listening/'];
+const REAL_PAGES = ['/', '/watching/'];
 
 function rules() {
   const file = path.join(REPO_ROOT, 'static', '_redirects');
@@ -31,8 +31,8 @@ function redirectSourceKey(src) {
   return bare === '' ? '/' : `${bare}/`;
 }
 
-test('listening is a real page without JavaScript', () => {
-  const html = readDist(distDir, 'listening/index.html');
+test('watching is a real page without JavaScript', () => {
+  const html = readDist(distDir, 'watching/index.html');
   assert.ok(!/http-equiv=["']?refresh/i.test(html));
   const doc = new JSDOM(html).window.document;
   assert.ok(doc.querySelector('main#main'));
@@ -49,7 +49,7 @@ test('the home verb list does not link to unshared', () => {
   assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'birds1', 'index.html')), true);
 });
 
-test('journal, making, and blog are not generated', () => {
+test('journal, making, blog, and listening are not generated', () => {
   for (const route of RETIRED_ROUTES) {
     assert.equal(fs.existsSync(path.join(distDir, route, 'index.html')), false);
   }
@@ -65,7 +65,7 @@ test('/posts/ and /thoughts/ are not pages and are not redirected', () => {
   const sitemap = readDist(distDir, 'sitemap.xml');
   assert.equal(sitemap.includes('/posts/'), false);
   assert.equal(sitemap.includes('/thoughts/'), false);
-  assert.ok(sitemap.includes('/listening/</loc>'));
+  assert.equal(sitemap.includes('/listening/'), false);
   assert.ok(sitemap.includes('/watching/</loc>'));
 });
 
