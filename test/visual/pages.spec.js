@@ -4,7 +4,6 @@ import { prepare } from './prepare.js';
 const pages = [
   ['home', '/'],
   ['watching', '/watching/'],
-  ['listening', '/listening/'],
   ['unshared', '/unshared/'],
 ];
 
@@ -218,10 +217,6 @@ test('a narrow hover window keeps the pink preview and no row rule', async ({ pa
   expect(starColor).toBe('rgb(247, 200, 216)');
   expect(border).toBe('0px');
   expect(kicker).toBe('none');
-  const listen = page.locator('.listen-line');
-  await expect(listen).toHaveText(/last listened\s+Fixture Track — Fixture Artist/);
-  const listenColor = await listen.evaluate((el) => getComputedStyle(el).color);
-  expect(listenColor).toBe('rgb(247, 200, 216)');
   await expect(page).toHaveScreenshot('home-800.png', { fullPage: true });
 });
 
@@ -311,7 +306,7 @@ test('a film scene opens and closes without motion', async ({ page }) => {
 test('count words travel unless motion is reduced', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop', 'one window is enough');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/listening/');
+  await page.goto('/watching/');
   await page.evaluate(() => document.fonts.ready);
   const moving = await page.locator('.wave span').nth(2).evaluate((el) => {
     const style = getComputedStyle(el);
@@ -673,26 +668,11 @@ test('posters off keeps the header and comes back', async ({ page }, info) => {
   await expect(page).toHaveScreenshot(`watching-${width}.png`, { fullPage: true });
 });
 
-test('the home listen line is one clipped row', async ({ page }) => {
+test('home has no last.fm row and no wave', async ({ page }) => {
   await page.goto('/');
   await page.evaluate(() => document.fonts.ready);
-  const line = page.locator('.listen-line');
-  await expect(line).toHaveText(/last listened\s+Fixture Track — Fixture Artist/);
-  const box = await line.evaluate((el) => {
-    const style = getComputedStyle(el);
-    const lineHeight = Number.parseFloat(style.lineHeight);
-    const height = el.getBoundingClientRect().height;
-    return {
-      whiteSpace: style.whiteSpace,
-      overflow: style.overflowX,
-      ellipsis: style.textOverflow,
-      oneLine: height <= lineHeight * 1.6,
-    };
-  });
-  expect(box.whiteSpace).toBe('nowrap');
-  expect(box.overflow).toBe('hidden');
-  expect(box.ellipsis).toBe('ellipsis');
-  expect(box.oneLine).toBe(true);
+  await expect(page.locator('a.verb[href="/listening/"]')).toHaveCount(0);
+  await expect(page.locator('.listen-line')).toHaveCount(0);
   await expect(page.locator('.wave')).toHaveCount(0);
 });
 

@@ -5,8 +5,6 @@ import { renderHubDocument } from '../concepts/hub.js';
 import { socialIcon } from './social-icons.js';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
 import { formatScrobbleCount } from '../lib/format.js';
-import { CHART_SPARES, LISTENING_PERIODS, TOP_LIMIT, albumImageUrl, albumsWithCovers, cleanCoverSet, coverVariantUrl, musicUrl } from '../lib/lastfm.js';
-import { staticListen } from '../lib/listen-line.js';
 import { renderHomeSuno } from '../lib/suno-songs.js';
 
 const LUCIA_MAIL = 'mailto:luciadoes@mail.grokbot.com';
@@ -20,20 +18,6 @@ const LUCIA_MAIL = 'mailto:luciadoes@mail.grokbot.com';
 function latestWatch(watches) {
   const list = (Array.isArray(watches) ? watches : []).filter((row) => row && row.title);
   return list.slice().sort((a, b) => String(b.watchedDate || '').localeCompare(String(a.watchedDate || '')))[0];
-}
-
-/**
- * @param {object[]} tracks
- * @returns {object[]}
- */
-function listeningRows(tracks) {
-  const rows = (Array.isArray(tracks) ? tracks : []).filter((row) => row && (row.track || row.artist));
-  const live = rows.filter((row) => row.nowPlaying);
-  const rest = rows
-    .filter((row) => !row.nowPlaying && row.date)
-    .slice()
-    .sort((a, b) => String(b.date).localeCompare(String(a.date)));
-  return [...live, ...rest].slice(0, 25);
 }
 
 /**
@@ -276,24 +260,6 @@ function watchPreview(watch) {
 }
 
 /**
- * The lower line of the last.fm row. The verb link stays the row above it,
- * so the track link is a sibling, not a nested anchor. No track means no
- * line: an empty row would be worse than the verb alone.
- *
- * @param {unknown} tracks
- * @returns {string}
- */
-function listenPreview(tracks) {
-  const line = staticListen(tracks);
-  if (!line) return '';
-  const href = musicUrl(line.link);
-  const what = href
-    ? `<a class="listen-what" href="${esc(href)}"${relFor(href)}>${esc(line.pair)}</a>`
-    : `<span class="listen-what">${esc(line.pair)}</span>`;
-  return `<span class="preview listen-line"><span class="listen-state">${esc(line.state)}</span> ${what}</span>`;
-}
-
-/**
  * Names the published verbs. Two read as "a and b"; more use a serial comma.
  *
  * @returns {string}
@@ -332,11 +298,7 @@ export function renderHome(ctx) {
   const items = verbs.map((verb) => {
     const heading = verbHeading(verb.label);
     const prefix = heading.slice(0, heading.length - verb.label.length);
-    const preview = verb.slug === 'watching'
-      ? watchPreview(recent)
-      : verb.slug === 'listening'
-        ? listenPreview(ctx.tracks)
-        : '';
+    const preview = verb.slug === 'watching' ? watchPreview(recent) : '';
     return `<li class="verb-row">
           <a class="verb" href="${verbPath(verb.slug)}"><span class="verb-prefix"><span>${esc(prefix)}</span></span><span class="verb-label">${esc(verb.label)}</span></a>
           ${preview}
@@ -550,132 +512,11 @@ export function renderWatch(ctx) {
   });
 }
 
-/**
- * @param {object} row
- * @returns {string}
- */
-function trackItem(row) {
-  const href = httpsHref(row.link);
-  const title = esc(row.track || 'Untitled');
-  const what = href ? `<a href="${esc(href)}"${relFor(href)}>${title}</a>` : title;
-  const album = row.album ? `<span class="album">${esc(row.album)}</span>` : '';
-  return `<li>
-          <span class="what">${what}</span>
-          <span class="by">${esc(row.artist || '')}</span>
-          ${album}
-        </li>`;
-}
-
-/**
- * Accessible cover label. The em dash is the separator the page speaks.
- *
- * @param {string} name
- * @param {string} artist
- * @returns {string}
- */
-function albumLabel(name, artist) {
-  return artist ? `${name} — ${artist}` : name;
-}
-
-// Five columns. Phone padding is --space-page. Desktop padding is the
-// horizontal half of --space-page-desk. The descriptors are device pixels
-// of that box: about 215 at 390×DPR 3, about 485 at 1280×DPR 2.
-const COVER_SIZES = '(min-width: 1024px) calc((100vw - max(clamp(1.25rem, 2vw, 2.4rem), env(safe-area-inset-left, 0px)) - max(clamp(1.25rem, 2vw, 2.4rem), env(safe-area-inset-right, 0px))) / 5), calc((100vw - max(clamp(1rem, 3vw, 2.75rem), env(safe-area-inset-left, 0px)) - max(clamp(1rem, 3vw, 2.75rem), env(safe-area-inset-right, 0px))) / 5)';
-
-/**
- * srcset candidates for one type, narrowest first. A type other than JPEG
- * is omitted unless it includes the 300px file, so desktop does not upscale
- * the phone file.
- *
- * @param {{ url: string, width: number, type: string }[]} set
- * @param {string} type
- * @returns {string}
- */
-function coverSrcset(set, type) {
-  const items = set.filter((item) => item.type === type).sort((a, b) => a.width - b.width);
-  if (type !== 'image/jpeg' && !items.some((item) => item.width >= 300)) return '';
-  if (type === 'image/jpeg' && !items.some((item) => item.width < 300)) return '';
-  return items.map((item) => `${item.url} ${item.width}w`).join(', ');
-}
-
-/**
- * The baseline JPEG, plus picture sources when width variants exist.
- * width and height stay 300 so the slot does not move.
- *
- * @param {string} image
- * @param {unknown} imageSet
- * @param {string} label
- * @returns {string}
- */
-function coverImg(image, imageSet, label) {
-  const plain = `<img src="${esc(image)}" alt="${esc(label)}" width="300" height="300" loading="lazy" decoding="async">`;
-  const mirrored = coverVariantUrl(image);
-  if (!mirrored || !mirrored.endsWith('.jpg')) return plain;
-  const set = cleanCoverSet(imageSet);
-  if (!set.some((item) => item.type === 'image/jpeg' && item.url === mirrored && item.width === 300)) {
-    set.push({ url: mirrored, width: 300, type: 'image/jpeg' });
-  }
-  const sources = ['image/avif', 'image/webp'].map((type) => {
-    const srcset = coverSrcset(set, type);
-    return srcset ? `<source type="${type}" srcset="${esc(srcset)}" sizes="${COVER_SIZES}">` : '';
-  }).join('');
-  const jpegSet = coverSrcset(set, 'image/jpeg');
-  const srcset = jpegSet ? ` srcset="${esc(jpegSet)}" sizes="${COVER_SIZES}"` : '';
-  const img = `<img src="${esc(mirrored)}"${srcset} alt="${esc(label)}" width="300" height="300" loading="lazy" decoding="async">`;
-  if (!sources && !srcset) return plain;
-  return sources ? `<picture>${sources}${img}</picture>` : img;
-}
-
-/**
- * One cover tile. Albums with no real art are omitted. Play counts are not printed.
- *
- * @param {object} row
- * @param {boolean} [spare]  past the visible grid; the client reveals it if a tile fails
- * @returns {string}
- */
-function albumTile(row, spare = false) {
-  const name = String(row?.name || '').trim();
-  if (!name) return '';
-  const image = albumImageUrl(row?.image);
-  if (!image) return '';
-  const artist = String(row?.artist || '').trim();
-  const label = albumLabel(name, artist);
-  const href = musicUrl(row?.url);
-  const cap = `<span class="album-cap"><span class="album-name">${esc(name)}</span>${
-    artist ? `<span class="album-by">${esc(artist)}</span>` : ''
-  }</span>`;
-  const img = coverImg(image, row?.imageSet, label);
-  const title = ` title="${esc(label)}"`;
-  const hidden = spare ? ' hidden' : '';
-  if (href) return `<a class="album-tile"${hidden} href="${esc(href)}"${relFor(href)}${title}>${img}${cap}</a>`;
-  return `<div class="album-tile"${hidden}${title}>${img}${cap}</div>`;
-}
-
-/**
- * The monthly cover grid. Other periods are not drawn. Albums with no real
- * cover are skipped and later rows fill the empty slots. A short chart ends
- * on the last real cover.
- *
- * @param {unknown} periods
- * @returns {string}
- */
-function albumGrid(periods) {
-  if (!periods || typeof periods !== 'object') return '';
-  const id = LISTENING_PERIODS[0]?.id;
-  if (!id) return '';
-  const rows = Array.isArray(periods[id]?.albums) ? periods[id].albums : [];
-  const tiles = albumsWithCovers(rows, TOP_LIMIT + CHART_SPARES)
-    .map((row, index) => albumTile(row, index >= TOP_LIMIT))
-    .filter(Boolean);
-  if (!tiles.length) return '';
-  return `<div class="album-charts"><div class="album-grid">${tiles.join('')}</div></div>`;
-}
-
 /** The only words that take the wave. Anything else stays plain. */
-const WAVE_WORDS = new Set(['scrobbles', 'films']);
+const WAVE_WORDS = new Set(['films']);
 
 /**
- * The word beside a count. Letters ride `.wave` only for scrobbles and films.
+ * The word beside a count. Letters ride `.wave` only for films.
  * The spoken copy stays in the accessibility tree; the painted letters are
  * hidden from it.
  *
@@ -699,33 +540,6 @@ function waveLabel(word) {
 function countLine(count, word) {
   if (!(Number(count) > 0)) return '';
   return `<p class="total"><span class="total-num">${esc(formatScrobbleCount(count))}</span> ${waveLabel(word)}</p>`;
-}
-
-export function renderListen(ctx) {
-  const rows = listeningRows(ctx.tracks);
-  const verb = verbByRenderer('listen');
-  const heading = verbHeading(verb.label);
-  const charts = albumGrid(ctx.periods);
-  const count = countLine(ctx.playcount, 'scrobbles');
-  const recent = rows.length ? '<h2 class="recent-label">recent</h2>' : '';
-  const list = `<ol class="tracks" id="tracks">
-        ${rows.map(trackItem).join('\n        ')}
-      </ol>`;
-  return shell({
-    ...ctx,
-    path: verbPath(verb.slug),
-    title: `${heading} · mattdoes.online`,
-    description: heading,
-    polarity: 'flip',
-    current: verb.slug,
-    showVerbNav: true,
-    robots: '',
-    main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
-      ${count}
-      ${charts}
-      ${recent}
-      ${list}`,
-  });
 }
 
 /** The published hub. Song art is the committed Suno snapshot. No mailbox or player. */
@@ -773,6 +587,5 @@ export function renderNotFound(ctx) {
 
 export const renderers = {
   watch: renderWatch,
-  listen: renderListen,
   unshared: renderUnshared,
 };

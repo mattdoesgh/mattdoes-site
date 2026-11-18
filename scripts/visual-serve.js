@@ -1,5 +1,5 @@
 // Build the site from the visual fixtures and serve that dist.
-// LISTENING_OFFLINE and LETTERBOXD_OFFLINE keep the server off the network.
+// LETTERBOXD_OFFLINE keeps the server off the network.
 // VISUAL_FIXTURE keeps the poster URLs that already point at our media host.
 
 import http from 'node:http';
@@ -15,7 +15,6 @@ const port = Number(process.env.VISUAL_PORT || 4173);
 const fixtures = path.join(root, 'test', 'fixtures', 'visual');
 const cache = fs.mkdtempSync(path.join(fs.realpathSync('/tmp'), 'mattdoes-visual-'));
 fs.copyFileSync(path.join(fixtures, 'letterboxd.json'), path.join(cache, 'letterboxd.json'));
-fs.copyFileSync(path.join(fixtures, 'lastfm.json'), path.join(cache, 'lastfm.json'));
 fs.rmSync(dist, { recursive: true, force: true });
 
 const built = spawnSync(process.execPath, ['build.js'], {
@@ -26,7 +25,6 @@ const built = spawnSync(process.execPath, ['build.js'], {
     CACHE_DIR: cache,
     SITE_URL: 'https://mattdoes.online',
     NODE_ENV: 'production',
-    LISTENING_OFFLINE: '1',
     LETTERBOXD_OFFLINE: '1',
     VISUAL_FIXTURE: '1',
   },

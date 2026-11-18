@@ -1041,3 +1041,9 @@ test('poller: the alarm calls getrecenttracks and not the chart methods', async 
     fetchStub.restore();
   }
 });
+
+test('the listening poller alarm refreshes recent tracks only', () => {
+  const alarm = ListeningPoller.prototype.alarm.toString();
+  assert.match(alarm, /refreshBoth/);
+  assert.doesNotMatch(alarm, /topArtists|topAlbums|gettop|fetchChart|charts/);
+});

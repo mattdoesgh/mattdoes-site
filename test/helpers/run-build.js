@@ -2,7 +2,7 @@
 //
 // Every build targets its own temp dist/cache dir (DIST_DIR / CACHE_DIR env
 // overrides in build.js), so test files are hermetic and can run in parallel:
-// no shared repo-root dist/, no shared .cache/lastfm.json. Tests that need
+// no shared repo-root dist/, no shared .cache/. Tests that need
 // output call buildFixtureVault()/runBuild() and read via the returned
 // distDir.
 //
@@ -23,25 +23,11 @@ export function makeTempDir(prefix = 'mattdoes-test-') {
 }
 
 /**
- * Seed a fresh temp cache dir with a fixture Last.fm cache, ready to pass as
- * runBuild's cacheDir. The copy's mtime is "now", so the build's TTL
- * freshness check (lib/listening.js) treats it as fresh.
- *
- * @param {string} fixtureJson absolute path to a fixture lastfm.json
- * @returns {string} the seeded cache dir
- */
-export function seedLastfmCache(fixtureJson) {
-  const cacheDir = makeTempDir('mattdoes-cache-');
-  fs.copyFileSync(fixtureJson, path.join(cacheDir, 'lastfm.json'));
-  return cacheDir;
-}
-
-/**
  * Run `node build.js` as a subprocess.
  *
  * @param {object}  opts
  * @param {string} [opts.distDir]   output dir (default: fresh temp dir)
- * @param {string} [opts.cacheDir]  Last.fm cache dir (default: fresh temp
+ * @param {string} [opts.cacheDir]  build cache dir (default: fresh temp
  *                                  dir, so builds never see the repo .cache)
  * @param {string} [opts.siteUrl]   SITE_URL (default https://mattdoes.online)
  * @param {Record<string,string>} [opts.env] extra env vars
@@ -59,10 +45,7 @@ export function runBuild({
     DIST_DIR: distDir,
     CACHE_DIR: cacheDir,
     SITE_URL: siteUrl,
-    // Keep build subprocesses hermetic: never let the listening snapshot
-    // reach out to the Worker/Last.fm. Tests that want listening data seed a
-    // fresh cache (seedLastfmCache), which short-circuits the network anyway.
-    LISTENING_OFFLINE: '1',
+    // Keep build subprocesses hermetic: no Letterboxd fetch.
     LETTERBOXD_OFFLINE: '1',
     ...env,
   };

@@ -65,8 +65,6 @@
   --stroke-total: 0.06em;
   /* One trip of the count-word sine. Linear through the samples. */
   --wave-period: 2.5s;
-  --type-album: clamp(1.05rem, 2.8vw, 1.65rem);
-  --type-album-by: 0.72em;
   --type-title: clamp(2rem, 6vw, 3.3rem);
   --type-nav: clamp(1.5rem, 4vw, 2.2rem);
   --row-size: clamp(4.5rem, calc((100vw - 5.6rem) / 8.55), 14rem);
@@ -100,7 +98,6 @@
   /* Fluid space. Same shape as the type scale: phone size, then rem + vw. */
   --space-tight: clamp(0.2rem, 0.179rem + 0.09vw, 0.256rem);
   --space-phone-row: clamp(0.12rem, 0.108rem + 0.05vw, 0.154rem);
-  --space-cap: clamp(0.3rem, 0.269rem + 0.13vw, 0.384rem);
   --space-row: clamp(0.35rem, 0.314rem + 0.15vw, 0.448rem);
   --space-heading: 0 0 clamp(0.4rem, 0.358rem + 0.17vw, 0.512rem);
   --space-total-gap: clamp(0.45rem, 0.403rem + 0.19vw, 0.576rem);
@@ -148,11 +145,9 @@
   --space-desk-main: clamp(0.8rem, 2vh, 1.6rem);
   --space-desk-verbs: clamp(0.6rem, 1.6vh, 1.4rem);
   --space-desk-block: clamp(1.6rem, 3vh, 2.6rem);
-  --space-desk-tracks: clamp(1.2rem, 2vw, 2rem) clamp(1.4rem, 2.4vw, 2.6rem);
   --space-footer-desk: clamp(2rem, 5vh, 4rem);
   --space-verb-gap: clamp(0.35rem, 0.314rem + 0.15vw, 0.448rem) clamp(1.25rem, 1.12rem + 0.53vw, 1.6rem);
   --space-socials: clamp(0.1rem, 0.09rem + 0.04vw, 0.128rem) clamp(0.85rem, 0.762rem + 0.36vw, 1.088rem);
-  --space-track-row: clamp(0.2rem, 0.179rem + 0.09vw, 0.256rem) clamp(0.75rem, 0.672rem + 0.32vw, 0.96rem);
 }
 
 body[data-polarity="flip"] {

@@ -173,23 +173,6 @@ body[data-polarity="flip"] .sign {
   outline-offset: var(--outline-offset);
 }
 
-/* The last.fm row's lower line. One line, clipped, so a long title cannot
-   grow the row or move the verb's hit area. The dot is paint only. */
-.listen-line {
-  display: block;
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.listen-dot {
-  color: var(--pink);
-  font-size: var(--type-flag);
-  line-height: 1;
-}
-
 .stars {
   font-family: var(--body);
   letter-spacing: var(--track-stars);
@@ -538,7 +521,7 @@ body[data-polarity="flip"] .total-label {
 
 /* Films count on the left. Poster settings stack on the right of that row.
    The count itself does not wrap. If the settings do not fit beside it,
-   they drop to the next line and stay on the right. Listening keeps .total. */
+   they drop to the next line and stay on the right. */
 .watch-head {
   display: flex;
   flex-wrap: wrap;
@@ -726,109 +709,6 @@ html[data-posters="off"] .axis-across {
   93.75% { transform: translateY(0.107em); }
 }
 
-.recent-label {
-  margin: var(--space-total);
-}
-
-.album-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  margin: var(--space-feed);
-}
-
-.album-tile {
-  position: relative;
-  display: block;
-  aspect-ratio: 1;
-  min-width: 0;
-  overflow: hidden;
-  color: inherit;
-  text-decoration: none;
-  background: var(--black);
-}
-
-.album-tile[hidden] {
-  display: none;
-}
-
-.album-tile picture {
-  display: contents;
-}
-
-.album-tile img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  color: transparent;
-}
-
-.album-cap {
-  position: absolute;
-  inset: 0;
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  gap: var(--space-tight);
-  padding: var(--space-cap);
-  overflow: hidden;
-  background: var(--black);
-  color: var(--pink);
-  text-align: center;
-  font-family: var(--display);
-  font-weight: var(--weight-regular);
-  font-size: var(--type-album);
-  line-height: 0.88;
-  letter-spacing: var(--track-none);
-  text-transform: uppercase;
-  overflow-wrap: anywhere;
-}
-
-.album-by {
-  display: block;
-  font-family: var(--body);
-  font-weight: var(--weight-regular);
-  font-size: var(--type-album-by);
-  line-height: 1.35;
-  letter-spacing: var(--track-none);
-  text-transform: none;
-}
-
-@media (hover: hover) {
-  .album-tile:hover > .album-cap,
-  .album-tile:focus-visible > .album-cap {
-    display: flex;
-  }
-}
-
-.tracks {
-  list-style: none;
-  margin: var(--space-tracks);
-  padding: var(--space-0);
-}
-
-.tracks li {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-track-row);
-  padding: var(--space-track);
-  border-top: var(--line-rule);
-}
-
-.tracks .by,
-.tracks .album {
-  font-family: var(--body);
-  font-weight: var(--weight-regular);
-  font-size: var(--type-body);
-  line-height: 1.5;
-  letter-spacing: var(--track-none);
-  text-transform: none;
-}
-
-.tracks .album::before {
-  content: "· ";
-}
-
 .feed {
   display: flex;
   gap: var(--space-md);
@@ -883,8 +763,6 @@ html[data-posters="off"] .axis-across {
 }
 
 .film .name,
-.recent-label,
-.tracks .what,
 .scene-title {
   font-family: var(--display);
   font-weight: var(--weight-regular);
@@ -900,15 +778,8 @@ html[data-posters="off"] .axis-across {
   font-size: var(--type-kicker);
 }
 
-.tracks a {
-  color: inherit;
-  text-decoration: none;
-}
-
 .film-open:hover .name,
-.film-open:focus-visible .name,
-.tracks a:hover,
-.tracks a:focus-visible {
+.film-open:focus-visible .name {
   text-decoration: underline;
   text-underline-offset: 0.08em;
 }
@@ -1181,7 +1052,6 @@ html.is-locked body {
 
 @media (prefers-contrast: more) {
   .verb,
-  .tracks li,
   .site-footer {
     border-top-width: var(--line-thick);
   }
@@ -1313,13 +1183,6 @@ html.is-locked body {
     white-space: nowrap;
   }
 
-  /* A sentence, not a short film title. Full row width, one step down
-     from the verb, still clipped when the title is long. */
-  .listen-line {
-    max-width: 100%;
-    font-size: var(--type-title-desk);
-  }
-
   .feed {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -1357,8 +1220,6 @@ html.is-locked body {
   }
 
   .film .name,
-  .recent-label,
-  .tracks .what,
   .scene-title {
     font-size: var(--type-title-desk);
     overflow-wrap: break-word;
@@ -1407,41 +1268,8 @@ html.is-locked body {
     max-height: 84vh;
   }
 
-  .album-grid {
-    margin-top: var(--space-desk-block);
-  }
-
-  .album-cap {
-    font-size: var(--type-title-desk);
-  }
-
   .statement {
     max-width: 36ch;
-  }
-
-  .tracks {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
-    gap: var(--space-desk-tracks);
-    width: 100%;
-    margin-top: var(--space-desk-block);
-  }
-
-  .tracks li {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-tight);
-    padding: var(--space-0);
-    border-top: var(--line-none);
-  }
-
-  .tracks .by,
-  .tracks .album {
-    max-width: 32ch;
-  }
-
-  .tracks .album::before {
-    content: none;
   }
 
   .site-footer {

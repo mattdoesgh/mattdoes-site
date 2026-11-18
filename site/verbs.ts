@@ -2,10 +2,10 @@
 // The slug is the URL. The label is the visible words after "matt does".
 // `/` and `/404` are the shell. `/frequency/` stays out of this list.
 
-export const DATA_SOURCES = ['letterboxd', 'listening', 'static'] as const;
+export const DATA_SOURCES = ['letterboxd', 'static'] as const;
 export type DataSource = (typeof DATA_SOURCES)[number];
 
-export const RENDERERS = ['watch', 'listen', 'unshared'] as const;
+export const RENDERERS = ['watch', 'unshared'] as const;
 export type RendererName = (typeof RENDERERS)[number];
 
 export interface Verb {
@@ -20,7 +20,6 @@ export const unsharedEnabled = true;
 
 export const verbCatalog = [
   { slug: 'watching', label: 'letterboxd', source: 'letterboxd', renderer: 'watch' },
-  { slug: 'listening', label: 'last.fm', source: 'listening', renderer: 'listen' },
   { slug: 'unshared', label: 'unshared', source: 'static', renderer: 'unshared' },
 ] as const satisfies readonly Verb[];
 
@@ -42,18 +41,14 @@ export interface SocialLink {
   readonly href: string;
 }
 
-/** Set true to show the last.fm logo in the footer. The icon stays. */
-export const lastfmSocialEnabled = false;
-
 const socialCatalog = [
   { label: 'x', href: 'https://x.com/mattdoes' },
   { label: 'instagram', href: 'https://www.instagram.com/mattdoes.ig/' },
   { label: 'letterboxd', href: 'https://letterboxd.com/mattdoes/' },
-  { label: 'last.fm', href: 'https://www.last.fm/user/djverism' },
   { label: 'github', href: 'https://github.com/mattdoesgh' },
 ] as const satisfies readonly SocialLink[];
 
-export const socials = socialCatalog.filter((item) => lastfmSocialEnabled || item.label !== 'last.fm');
+export const socials = socialCatalog;
 
 /** Add '/frequency/' to publish that page. Empty keeps it offline. */
 export const SECRET_PATHS: readonly string[] = [];
@@ -78,7 +73,7 @@ export interface UnsharedContact {
 
 export const unsharedContact: UnsharedContact = {};
 
-const REQUIRED_SLUGS = ['watching', 'listening'] as const;
+const REQUIRED_SLUGS = ['watching'] as const;
 
 /** The one visible name. Nav links and each verb's h1 use this. */
 export function verbHeading(label: string): string {

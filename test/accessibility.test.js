@@ -1,6 +1,6 @@
 // axe-core on the generated pages, WCAG A/AA. color-contrast is disabled
 // here because jsdom does not lay out; test/contrast.test.js covers the tokens.
-// Smoke targets: home, watch, listen.
+// Smoke targets: home and watch.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -16,7 +16,6 @@ const AXE_SRC = fs.readFileSync(
 const SMOKE = [
   'index.html',
   'watching/index.html',
-  'listening/index.html',
 ];
 
 let distDir;
@@ -35,7 +34,7 @@ function doc(rel) {
   return new JSDOM(fs.readFileSync(path.join(distDir, rel), 'utf8')).window.document;
 }
 
-test('home, watch, and listen have zero WCAG A/AA axe violations', async (t) => {
+test('home and watch have zero WCAG A/AA axe violations', async (t) => {
   for (const rel of SMOKE) {
     await t.test(rel, async () => {
       const results = await axeScan(fs.readFileSync(path.join(distDir, rel), 'utf8'));
@@ -77,7 +76,7 @@ test('the active verb is marked and the secret stays off the public pages', () =
   assert.equal(watch.querySelector('nav.verb-nav'), null);
   assert.equal(watch.querySelector('h1 a')?.getAttribute('href'), '/');
   assert.equal(watch.querySelector('h1')?.textContent, 'matt does letterboxd');
-  for (const rel of ['index.html', 'watching/index.html', 'listening/index.html', '404.html']) {
+  for (const rel of ['index.html', 'watching/index.html', '404.html']) {
     const text = fs.readFileSync(path.join(distDir, rel), 'utf8');
     assert.doesNotMatch(text, /lucia|frequency|transmission|luciadoes/i, rel);
   }

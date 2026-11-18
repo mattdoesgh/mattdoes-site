@@ -19,7 +19,7 @@
     "intel:hook": "node scripts/intel.js --hook",
     "test:visual": "playwright test -c playwright.config.js",
     "scan:secrets": "npx --yes gitleaks detect --source . --verbose",
-    "pretest": "NODE_ENV=production LISTENING_OFFLINE=1 LETTERBOXD_OFFLINE=1 SITE_URL=https://mattdoes.online node build.js",
+    "pretest": "NODE_ENV=production LETTERBOXD_OFFLINE=1 SITE_URL=https://mattdoes.online node build.js",
     "test": "node --test \"test/**/*.test.js\"",
     "deploy:workers": "node scripts/deploy-workers.js",
     "suno:sync": "node scripts/suno-sync.js",
