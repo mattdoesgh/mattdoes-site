@@ -38,8 +38,8 @@
     },
     {
       "path": ".github/workflows/build.yml",
-      "sha256": "1106386bb8be8c5d8948d6734be1b3a20db64e1c9dec87cc833314354e9923e9",
-      "gitBlob": "7400e00b3da41223f296eda86582fd787c95d658"
+      "sha256": "75cb93f1738134000169b706f24164c11274e725868dcfe00dfd0f377232071a",
+      "gitBlob": "54d6c1d48001e50cd43cff2e88ba2d54a8c784d9"
     },
     {
       "path": ".gitignore",
@@ -113,7 +113,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "f3a80c72bd574e552626ab2fa98f279cf46afe806ed96de013f68840bb5f2cba",
+      "sha256": "7acd1ec613aece0999199241ed6b481a8e5156dfcfaa8eb2c6b70fa234cc7e13",
       "gitBlob": null
     },
     {
@@ -588,23 +588,23 @@
     },
     {
       "path": "test/visual/axe.spec.js",
-      "sha256": "38be5e9fdbbf41269581934b622044a6c4803ceed9036f124b89d97e0f6ee03b",
-      "gitBlob": "b2ed659258c415cb7461e91cd4179f134b2016a7"
+      "sha256": "488229c08d9568198c2fb0472f8b82377959be77cc87b8826361835708f503a6",
+      "gitBlob": "232818681767bb91987383a323cada3eaff534d8"
     },
     {
       "path": "test/visual/pages.spec.js",
-      "sha256": "b65c934b6972d4a931628979732d41b3c987129e5f2d5b5fed386d9e98a3961f",
-      "gitBlob": "b49227c39d62c28b312d67ad8ccbbb1ee2ba213a"
+      "sha256": "a9647991064309398a38d4002018a65c63c2b55688334494fb4e5fc69899817e",
+      "gitBlob": "4e4d8342b905663ba678671025cc8643654b9ea6"
     },
     {
       "path": "test/visual/prepare.js",
-      "sha256": "35869e5132eedec5c2d2027e8b1b731702c3f29719b8f501afd9c34021227b40",
-      "gitBlob": "c8a3bfe94e87970476a12ae2277658a529251174"
+      "sha256": "44c3836cae9997e94157c24353daaaab70c26cbcd690137047428cb230239d4c",
+      "gitBlob": "297b3ba4ed86a67c3f2440f56e5d6bd8c6a36cfa"
     },
     {
       "path": "test/visual/scale.spec.js",
-      "sha256": "1f42e7876205bfcf68c73603c83ddf29205945eb444bed44d2343b61b4d26054",
-      "gitBlob": "767a7acad613131809a9c0463bfd0d1e813fcb49"
+      "sha256": "fca6300a25f530bbd9ae13b384ec1802d4d0595dc7a607ace70ef866e7bf464c",
+      "gitBlob": "5f1db7a362cdb4c45c3f8995bcccabbc11beaf83"
     },
     {
       "path": "test/w3c-coverage.test.js",
