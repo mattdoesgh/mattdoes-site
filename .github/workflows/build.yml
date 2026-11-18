@@ -158,15 +158,6 @@ jobs:
       - name: Compare screenshots and run axe
         run: npm run test:visual
 
-      - name: TEMP print actual screenshots
-        if: failure()
-        run: |
-          for f in $(find test/visual/test-results -name '*-actual.png' | sort); do
-            echo "BEGINPNG $f"
-            base64 -w 76 "$f"
-            echo "ENDPNG"
-          done
-
       - name: Upload visual diffs
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
