@@ -33,11 +33,11 @@ test('query facts that agents rely on stay true', () => {
   const frequency = index.sections.routes.entries.find((entry) => entry.path === '/frequency/');
   assert.equal(frequency.published, false);
   assert.equal(frequency.inSitemap, false);
-  const listening = index.sections.workers.entries.find((entry) => entry.name === 'mattdoes-listening');
-  assert.ok(listening.crons.includes('0 11 * * 1'));
+  assert.equal(index.sections.workers.entries.some((entry) => entry.name === 'mattdoes-listening'), false);
   const names = index.sections.workers.entries.flatMap((entry) => entry.bindings.map((binding) => binding.name));
-  for (const name of ['CSP_RL', 'LISTEN_RL', 'LASTFM_CACHE', 'LISTENING_POLLER', 'REBUILD']) {
-    assert.ok(names.includes(name), name);
+  assert.ok(names.includes('CSP_RL'), 'CSP_RL');
+  for (const name of ['LISTEN_RL', 'LASTFM_CACHE', 'LISTENING_POLLER']) {
+    assert.equal(names.includes(name), false, name);
   }
   const text = serializeIndex(index);
   assert.equal(text.includes('a6ea68e07a764aeba929a865d1d33a58'), false);

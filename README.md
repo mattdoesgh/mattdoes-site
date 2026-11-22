@@ -22,6 +22,5 @@ npm run deploy:workers
 
 ## workers
 
-- `mattdoes-listening` — `/api/listening/now`, `/api/listening/recent`, `/api/listening/charts`. No page calls it. Its secrets are `LASTFM_USERNAME` and `LASTFM_API_KEY`.
 - `mattdoes-csp-report` — `/api/csp-report`
-- `mattdoes-rebuild` — no route. A six-hour cron POSTs the Pages deploy hook. Listening asks for that rebuild after the Monday 11:00 UTC chart refresh.
+- `mattdoes-rebuild` — no route. A six-hour cron POSTs the Pages deploy hook.

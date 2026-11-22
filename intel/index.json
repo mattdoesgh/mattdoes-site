@@ -38,8 +38,8 @@
     },
     {
       "path": ".github/workflows/build.yml",
-      "sha256": "75cb93f1738134000169b706f24164c11274e725868dcfe00dfd0f377232071a",
-      "gitBlob": "54d6c1d48001e50cd43cff2e88ba2d54a8c784d9"
+      "sha256": "7c8a3f3546b3e71625ac9df1f42d65b1931c35870c205dd3c89fb7b061550613",
+      "gitBlob": "d6ae7766f3133ffb56433eb830cb169921629b57"
     },
     {
       "path": ".gitignore",
@@ -113,7 +113,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "7acd1ec613aece0999199241ed6b481a8e5156dfcfaa8eb2c6b70fa234cc7e13",
+      "sha256": "5979d71453c2326d6737db9fefd58a6f3221f1c586543213b78aadb95f918711",
       "gitBlob": null
     },
     {
@@ -233,8 +233,8 @@
     },
     {
       "path": "scripts/deploy-workers.js",
-      "sha256": "98d9e4b36ff3713edaac0c4557f94322770dda40588514b72382b2f0822d76fc",
-      "gitBlob": "52d5f2c6c23234386f166e95a67eea6dc06ca3bd"
+      "sha256": "3c5cc7ae46b4a9a734ec2f6096a99ebcd8006426545c0ada21da3c15bd588240",
+      "gitBlob": "6bc13aeaabd5b7c594c8a9402ce2d73e6b66be5b"
     },
     {
       "path": "scripts/git-hooks/pre-commit",
@@ -408,8 +408,8 @@
     },
     {
       "path": "test/csp-headers.test.js",
-      "sha256": "3b580203f76ec530803b32fc8f6ebc002e67c41716cdaa0a77fff5fdc06a5f83",
-      "gitBlob": "970a33fe9a2efd9e37442ef38f1f8c5ac8d3e6ef"
+      "sha256": "26c7ff7453f5c76047e7836a7251debe410f59066216d4078abf32588bfb935f",
+      "gitBlob": "358cd9f499d0c5050c4700c45a3aa0b099376a3d"
     },
     {
       "path": "test/design-tokens.test.js",
@@ -468,8 +468,8 @@
     },
     {
       "path": "test/helpers/worker-env.js",
-      "sha256": "74b39c7b7114569cf78d744d7f2d2e49df9c5c63149269a52d608194dc27b00a",
-      "gitBlob": "2f682df121a64704eafb1c3d60a37c599deed1ef"
+      "sha256": "69414627023476e2e023f5c85ad0b9cdb66c1563219c74b37ebd7d6838ce4ca8",
+      "gitBlob": "82ab29240ff018d0c21b88b82d2962eef3c11273"
     },
     {
       "path": "test/home-preview.test.js",
@@ -478,8 +478,8 @@
     },
     {
       "path": "test/intel.test.js",
-      "sha256": "5d2c3db147aa5fd8d1222cac1e3e6367d9cbc795976bbb8b00d222b3de6e271f",
-      "gitBlob": "bfb975e3a3c0aab98df52712e34055ee91be6c9e"
+      "sha256": "17af90e7159d93e86d086f53191ddab896d2c29eb79798d545c3cbc281d6b113",
+      "gitBlob": "d719a64d949d5c602c09240cc3912d75899d69bf"
     },
     {
       "path": "test/lastfm-codec.test.js",
@@ -568,8 +568,8 @@
     },
     {
       "path": "test/sync-media-wrangler.test.js",
-      "sha256": "1d18b2ccc499ccb0d20b7d70043efabcf34c9afaf304e39e43842e0545651289",
-      "gitBlob": "1b8e3d247dcb677b9e04eb1591b47dc7d85a15df"
+      "sha256": "b73019a30bd315a47abf008fcd859634e3545a7cd276af4e3fe177c8a1c889a6",
+      "gitBlob": "56805fc047d768544f510eaa737d1c83f19feab1"
     },
     {
       "path": "test/unshared.test.js",
@@ -618,18 +618,13 @@
     },
     {
       "path": "test/worker-config.test.js",
-      "sha256": "aafea1d00e468548494c190805c8010e8daaf4b199be147111410ec281b89eaf",
-      "gitBlob": "e4a31df7e0c6f85e78e4776c01ee93ca93e973d3"
+      "sha256": "4c2104f1bbac283d1795df2d5d3b11124aabcd4f6e446c581b7a9619d06b3e67",
+      "gitBlob": "d200a3830b1742d7a9255d618709152b3bedb15b"
     },
     {
       "path": "test/worker-csp-report.test.js",
       "sha256": "da4b47266fc07d284f71fc1021e60f498b57819295d29ce2ff3db7e6ad2d6f9a",
       "gitBlob": "10f3dc8bf3c3f343a99576d6ae713c86b2cb5789"
-    },
-    {
-      "path": "test/worker-listening.test.js",
-      "sha256": "01b00f823d42cd3c0d5f77bee6f337b3bd4fee7e32cae42100b840f8726b3156",
-      "gitBlob": "e2670f55496603b651a25f86f51782f46bbb81e5"
     },
     {
       "path": "test/worker-rebuild.test.js",
@@ -658,33 +653,23 @@
     },
     {
       "path": "workers/lib/transport.js",
-      "sha256": "cec82a4cf96fe51d0df8293dd79c12b1cca41855cc5770012c4701e4c1159adb",
-      "gitBlob": "04ce73ce1d018bf343ef20ff716b67c51098d639"
-    },
-    {
-      "path": "workers/listening/src/index.js",
-      "sha256": "b23becb99ff82cee507b10ce0f41e9d51eef7c39f26293f3dc33ae10b1473dab",
-      "gitBlob": "52090905448d090ec3b89538b175cd74949931c3"
-    },
-    {
-      "path": "workers/listening/wrangler.toml",
-      "sha256": "6ce26a4e8aceca615321ae14620a51c6c091d3f442d7db6075a5f2354d1ab27e",
-      "gitBlob": "6afe9b391745159e3393e4e53e100ea4b2139baf"
+      "sha256": "013dd50b00b658c3c4e406c13674e4b06b2924be0d2798229f0a9eb53759a9cc",
+      "gitBlob": "bc42891f5c3829dabd1fcbf9628b6564e1b25dc5"
     },
     {
       "path": "workers/package.json",
-      "sha256": "f61c73a14e6d49cdbfaecffd5cae66f1b79d7cd8b535658812ba5e9e547d4c3b",
-      "gitBlob": "5f752db1a68b3a520da17eb80af218e812e5ce8a"
+      "sha256": "48f2e6ce064ea6ca5d067f3b565b192fdcf3a7677d12886704cb0ed59b7e3b01",
+      "gitBlob": "3c4850d4d366c35c1e9f50506b225ed2d891e3d5"
     },
     {
       "path": "workers/rebuild/src/index.js",
-      "sha256": "759d15e1e9bff27ce33f20b131c1683829130e84f0308dc5169a523d17eb79f0",
-      "gitBlob": "ba89cce15afb93bde9d1a766d32021030c467853"
+      "sha256": "6cac66f11beb6cef4d87820ba297660a330d7350cb0448d7085cea7e387b07a0",
+      "gitBlob": "1a614b418b9c0de803ab5e4b18f6a1357074dddc"
     },
     {
       "path": "workers/rebuild/wrangler.toml",
-      "sha256": "38e527bd3877312b2c625d5be300deaefca33ae90ed11824760386a74bdd8347",
-      "gitBlob": "f53aa77ef782fd33ab1a792dc5fca88faf2b1afd"
+      "sha256": "d35a6ead75873fa61844fd5070d6e1283920bb87591919c732c3ad4a8759a484",
+      "gitBlob": "46033b333d8377fdb0c675ff9d2cdde7c760bc39"
     }
   ],
   "sections": {
@@ -950,13 +935,11 @@
         "test/wave-scope.test.js",
         "test/worker-config.test.js",
         "test/worker-csp-report.test.js",
-        "test/worker-listening.test.js",
         "test/worker-rebuild.test.js",
         "test/worker-transport.test.js",
         "test/workflow-permissions.test.js",
         "workers/csp-report/src/index.js",
         "workers/lib/transport.js",
-        "workers/listening/src/index.js",
         "workers/rebuild/src/index.js"
       ],
       "edges": [
@@ -1445,18 +1428,6 @@
           "to": "workers/csp-report/src/index.js"
         },
         {
-          "from": "test/worker-listening.test.js",
-          "to": "lib/lastfm.js"
-        },
-        {
-          "from": "test/worker-listening.test.js",
-          "to": "test/helpers/worker-env.js"
-        },
-        {
-          "from": "test/worker-listening.test.js",
-          "to": "workers/listening/src/index.js"
-        },
-        {
           "from": "test/worker-rebuild.test.js",
           "to": "workers/rebuild/src/index.js"
         },
@@ -1470,18 +1441,6 @@
         },
         {
           "from": "workers/csp-report/src/index.js",
-          "to": "workers/lib/transport.js"
-        },
-        {
-          "from": "workers/listening/src/index.js",
-          "to": "lib/covers.js"
-        },
-        {
-          "from": "workers/listening/src/index.js",
-          "to": "lib/lastfm.js"
-        },
-        {
-          "from": "workers/listening/src/index.js",
           "to": "workers/lib/transport.js"
         },
         {
@@ -1525,8 +1484,7 @@
         ],
         "lib/covers.js": [
           "lib/cover-settle.js",
-          "test/covers.test.js",
-          "workers/listening/src/index.js"
+          "test/covers.test.js"
         ],
         "lib/csp-policy.js": [
           "lib/emit/csp.js",
@@ -1565,9 +1523,7 @@
           "lib/cover-settle.js",
           "lib/covers.js",
           "test/covers.test.js",
-          "test/lastfm-codec.test.js",
-          "test/worker-listening.test.js",
-          "workers/listening/src/index.js"
+          "test/lastfm-codec.test.js"
         ],
         "lib/letterboxd.js": [
           "lib/watches.js",
@@ -1676,7 +1632,6 @@
         "test/helpers/worker-env.js": [
           "test/film-count.test.js",
           "test/worker-csp-report.test.js",
-          "test/worker-listening.test.js",
           "test/worker-transport.test.js"
         ],
         "test/visual/prepare.js": [
@@ -1690,11 +1645,7 @@
         "workers/lib/transport.js": [
           "test/worker-transport.test.js",
           "workers/csp-report/src/index.js",
-          "workers/listening/src/index.js",
           "workers/rebuild/src/index.js"
-        ],
-        "workers/listening/src/index.js": [
-          "test/worker-listening.test.js"
         ],
         "workers/rebuild/src/index.js": [
           "test/worker-rebuild.test.js"
@@ -1707,8 +1658,6 @@
         "workers/csp-report/src/index.js",
         "workers/csp-report/wrangler.toml",
         "workers/lib/transport.js",
-        "workers/listening/src/index.js",
-        "workers/listening/wrangler.toml",
         "workers/package.json",
         "workers/rebuild/src/index.js",
         "workers/rebuild/wrangler.toml"
@@ -1733,50 +1682,6 @@
           "env": [
             "CSP_REPORTS",
             "CSP_RL"
-          ]
-        },
-        {
-          "name": "mattdoes-listening",
-          "main": "src/index.js",
-          "routes": [
-            "mattdoes.online/api/listening/now",
-            "mattdoes.online/api/listening/recent",
-            "mattdoes.online/api/listening/charts"
-          ],
-          "crons": [
-            "* * * * *",
-            "0 11 * * 1"
-          ],
-          "bindings": [
-            {
-              "name": "LASTFM_CACHE",
-              "kind": "kv_namespaces"
-            },
-            {
-              "name": "LISTEN_RL",
-              "kind": "ratelimits"
-            },
-            {
-              "name": "LISTENING_POLLER",
-              "kind": "durable_objects.bindings",
-              "className": "ListeningPoller"
-            },
-            {
-              "name": "REBUILD",
-              "kind": "services",
-              "service": "mattdoes-rebuild"
-            }
-          ],
-          "secrets": [],
-          "file": "workers/listening/wrangler.toml",
-          "source": "workers/listening/src/index.js",
-          "env": [
-            "LASTFM_API_KEY",
-            "LASTFM_CACHE",
-            "LASTFM_USERNAME",
-            "LISTENING_POLLER",
-            "LISTEN_RL",
-            "REBUILD"
           ]
         },
         {
@@ -1895,15 +1800,12 @@
         "test/wave-scope.test.js",
         "test/worker-config.test.js",
         "test/worker-csp-report.test.js",
-        "test/worker-listening.test.js",
         "test/worker-rebuild.test.js",
         "test/worker-transport.test.js",
         "test/workflow-permissions.test.js",
         "workers/csp-report/src/index.js",
         "workers/csp-report/wrangler.toml",
         "workers/lib/transport.js",
-        "workers/listening/src/index.js",
-        "workers/listening/wrangler.toml",
         "workers/rebuild/src/index.js",
         "workers/rebuild/wrangler.toml"
       ],
@@ -1981,25 +1883,6 @@
           ]
         },
         {
-          "name": "LASTFM_API_KEY",
-          "files": [
-            "workers/listening/src/index.js"
-          ]
-        },
-        {
-          "name": "LASTFM_CACHE",
-          "files": [
-            "test/worker-listening.test.js",
-            "workers/listening/src/index.js"
-          ]
-        },
-        {
-          "name": "LASTFM_USERNAME",
-          "files": [
-            "workers/listening/src/index.js"
-          ]
-        },
-        {
           "name": "LETTERBOXD_OFFLINE",
           "files": [
             "lib/posters.js",
@@ -2009,28 +1892,9 @@
           ]
         },
         {
-          "name": "LISTEN_RL",
-          "files": [
-            "test/worker-listening.test.js",
-            "workers/listening/src/index.js"
-          ]
-        },
-        {
-          "name": "LISTENING_POLLER",
-          "files": [
-            "workers/listening/src/index.js"
-          ]
-        },
-        {
           "name": "MEDIA_BUCKET",
           "files": [
             "scripts/sync-media.js"
-          ]
-        },
-        {
-          "name": "REBUILD",
-          "files": [
-            "workers/listening/src/index.js"
           ]
         },
         {
@@ -2173,13 +2037,11 @@
         "test/wave-scope.test.js",
         "test/worker-config.test.js",
         "test/worker-csp-report.test.js",
-        "test/worker-listening.test.js",
         "test/worker-rebuild.test.js",
         "test/worker-transport.test.js",
         "test/workflow-permissions.test.js",
         "workers/csp-report/src/index.js",
         "workers/lib/transport.js",
-        "workers/listening/src/index.js",
         "workers/rebuild/src/index.js"
       ],
       "entries": [
@@ -3524,15 +3386,12 @@
         "test/wave-scope.test.js",
         "test/worker-config.test.js",
         "test/worker-csp-report.test.js",
-        "test/worker-listening.test.js",
         "test/worker-rebuild.test.js",
         "test/worker-transport.test.js",
         "test/workflow-permissions.test.js",
         "workers/csp-report/src/index.js",
         "workers/csp-report/wrangler.toml",
         "workers/lib/transport.js",
-        "workers/listening/src/index.js",
-        "workers/listening/wrangler.toml",
         "workers/package.json",
         "workers/rebuild/src/index.js",
         "workers/rebuild/wrangler.toml"
@@ -4258,15 +4117,12 @@
         "test/wave-scope.test.js",
         "test/worker-config.test.js",
         "test/worker-csp-report.test.js",
-        "test/worker-listening.test.js",
         "test/worker-rebuild.test.js",
         "test/worker-transport.test.js",
         "test/workflow-permissions.test.js",
         "workers/csp-report/src/index.js",
         "workers/csp-report/wrangler.toml",
         "workers/lib/transport.js",
-        "workers/listening/src/index.js",
-        "workers/listening/wrangler.toml",
         "workers/package.json",
         "workers/rebuild/src/index.js",
         "workers/rebuild/wrangler.toml"
@@ -4750,15 +4606,6 @@
           "features": []
         },
         {
-          "file": "test/worker-listening.test.js",
-          "imports": [
-            "lib/lastfm.js",
-            "test/helpers/worker-env.js",
-            "workers/listening/src/index.js"
-          ],
-          "features": []
-        },
-        {
           "file": "test/worker-rebuild.test.js",
           "imports": [
             "workers/rebuild/src/index.js"
@@ -4901,15 +4748,12 @@
         "test/wave-scope.test.js",
         "test/worker-config.test.js",
         "test/worker-csp-report.test.js",
-        "test/worker-listening.test.js",
         "test/worker-rebuild.test.js",
         "test/worker-transport.test.js",
         "test/workflow-permissions.test.js",
         "workers/csp-report/src/index.js",
         "workers/csp-report/wrangler.toml",
         "workers/lib/transport.js",
-        "workers/listening/src/index.js",
-        "workers/listening/wrangler.toml",
         "workers/package.json",
         "workers/rebuild/src/index.js",
         "workers/rebuild/wrangler.toml"
