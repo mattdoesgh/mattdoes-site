@@ -7,8 +7,8 @@
 //
 // ⚠ Deploy coupling: this file is bundled into every Worker that imports it.
 // Editing it (or any other module a Worker bundles) means redeploying ALL
-// workers. From the repo root, `npm run deploy:workers` deploys listening,
-// csp-report, and rebuild with the wrangler pin in
+// workers. From the repo root, `npm run deploy:workers` deploys csp-report
+// and rebuild with the wrangler pin in
 // workers/package-lock.json.
 
 export const ALLOWED_ORIGIN = 'https://mattdoes.online';
@@ -58,8 +58,7 @@ export function securityHeaders() {
     // Host-wide, so this must match static/_headers: max-age only.
     // includeSubDomains waits until every hostname is HTTPS, and preload
     // is omitted because submitting it is effectively irreversible. A
-    // response from /api/listening/recent would otherwise set both for
-    // the whole site.
+    // Worker response would otherwise set both for the whole site.
     'strict-transport-security':     'max-age=31536000',
     'cross-origin-opener-policy':    'same-origin',
     'cross-origin-resource-policy':  'same-origin',
@@ -143,7 +142,7 @@ export function withCache(response, cacheControl, origin = ALLOWED_ORIGIN) {
  * CORS preflight response (OPTIONS).
  *
  * @param {string} [origin]
- * @param {string} [methods] allowed methods. Listening is GET;
+ * @param {string} [methods] allowed methods. The default is GET;
  *   the CSP report collector allows POST.
  * @returns {Response}
  */

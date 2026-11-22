@@ -1,8 +1,7 @@
-// Cron rebuild, plus an internal POST /rebuild for the listening Worker.
+// Cron rebuild, plus an internal POST /rebuild for a service binding.
 // Every six hours, POST the Pages deploy hook so the static build refetches
 // Letterboxd — the diary RSS and the films-watched count (lib/watches.js).
-// The Monday album-chart cron calls the same hook through the service
-// binding. DEPLOY_HOOK is a secret set outside the repo. There is no public
+// DEPLOY_HOOK is a secret set outside the repo. There is no public
 // route. A request that carries a client IP is a 404.
 //
 // The hook URL is the secret. It is posted only when it is an https URL on
@@ -95,8 +94,8 @@ function internalRebuild(request) {
 
 export default {
   /**
-   * No public route. POST /rebuild from the listening Worker's service
-   * binding runs the hook. A client IP means the request is not that
+   * No public route. POST /rebuild from a service binding runs
+   * the hook. A client IP means the request is not that
    * binding, so it is a 404 and the hook is not called.
    *
    * @param {Request} request

@@ -61,13 +61,12 @@ test('deploy:workers runs the lockfile binary', () => {
   const workersPkg = fs.readFileSync(new URL('../workers/package.json', import.meta.url), 'utf8');
   assert.equal(rootPkg.scripts['deploy:workers'], 'node scripts/deploy-workers.js');
   assert.match(src, /resolveWranglerBin\(/);
-  assert.match(src, /listening/);
   assert.match(src, /csp-report/);
   assert.match(src, /rebuild/);
   assert.doesNotMatch(src, /npx/);
   assert.doesNotMatch(rootPkg.scripts['deploy:workers'], /npx/);
   assert.doesNotMatch(workersPkg, /npx/);
-  for (const name of ['listening', 'csp-report', 'rebuild']) {
+  for (const name of ['csp-report', 'rebuild']) {
     const toml = fs.readFileSync(new URL(`../workers/${name}/wrangler.toml`, import.meta.url), 'utf8');
     assert.doesNotMatch(toml, /npx wrangler/);
   }

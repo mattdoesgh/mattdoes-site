@@ -28,18 +28,10 @@ function source(worker) {
 
 test('deployed bindings stay declared', () => {
   assert.match(toml('csp-report'), /name\s*=\s*"CSP_RL"/);
-
-  const listening = toml('listening');
-  assert.match(listening, /binding\s*=\s*"LASTFM_CACHE"/);
-  assert.match(listening, /name\s*=\s*"LISTEN_RL"/);
-  assert.match(listening, /name\s*=\s*"LISTENING_POLLER"/);
-  assert.match(listening, /binding\s*=\s*"REBUILD"/);
-  assert.match(listening, /service\s*=\s*"mattdoes-rebuild"/);
-  assert.match(listening, /crons\s*=\s*\[\s*"\* \* \* \* \*"\s*,\s*"0 11 \* \* 1"\s*\]/);
 });
 
 test('a worker that reads the query string uses a wildcard route', () => {
-  for (const worker of ['listening', 'csp-report']) {
+  for (const worker of ['csp-report']) {
     const routes = patterns(toml(worker));
     assert.ok(routes.length > 0, `${worker} has no route`);
     if (!source(worker).includes('searchParams')) continue;
@@ -66,11 +58,4 @@ test('rebuild is a six-hour cron that expects the DEPLOY_HOOK secret', () => {
   assert.doesNotMatch(src, /https?:\/\/[a-z0-9.-]+\./i, 'the deploy hook URL must not be committed');
   assert.match(cfg, /\[observability\.traces\]\s+enabled\s*=\s*false/);
   assert.match(cfg, /redact_query_string\s*=\s*true/);
-});
-
-test('listening traces stay off so the Last.fm query string is not recorded', () => {
-  const cfg = toml('listening');
-  assert.match(cfg, /redact_query_string\s*=\s*true/);
-  assert.match(cfg, /\[observability\.traces\]\s+enabled\s*=\s*false/);
-  assert.doesNotMatch(cfg, /LASTFM_API_KEY\s*=\s*"[^"]+"/);
 });

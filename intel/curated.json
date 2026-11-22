@@ -99,8 +99,8 @@
     {
       "id": "charts-cron",
       "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
-      "paths": ["workers/listening/wrangler.toml", "workers/rebuild/wrangler.toml"],
-      "text": "The listening worker refreshes its monthly album chart Monday 11:00 UTC and asks mattdoes-rebuild for a Pages rebuild after it. No page reads the chart. mattdoes-rebuild posts the Pages deploy hook every six hours."
+      "paths": ["workers/rebuild/wrangler.toml"],
+      "text": "mattdoes-rebuild posts the Pages deploy hook every six hours. There is no Last.fm worker and no weekly album-chart cron."
     },
     {
       "id": "comment-lint",
@@ -156,8 +156,8 @@
     {
       "id": "bindings",
       "verified-at": "af14486dc5d1747d44990fcf6cdbc59e87314646",
-      "paths": ["workers/csp-report/wrangler.toml", "workers/listening/wrangler.toml"],
-      "text": "CSP_RL, LISTEN_RL, LASTFM_CACHE, and LISTENING_POLLER stay. A missing rate-limit binding fails the worker closed."
+      "paths": ["workers/csp-report/wrangler.toml"],
+      "text": "CSP_RL stays. A missing rate-limit binding fails the worker closed."
     },
     {
       "id": "offline-flags",

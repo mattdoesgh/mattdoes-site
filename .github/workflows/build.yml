@@ -36,7 +36,7 @@ jobs:
       - name: Audit (root, prod + dev)
         run: npm run audit
 
-      # All three Workers share one tooling package root (workers/package.json,
+      # Both Workers share one tooling package root (workers/package.json,
       # wrangler devDep) — audit it once, same threshold.
       - name: Audit (workers)
         working-directory: workers
