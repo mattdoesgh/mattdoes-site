@@ -27,6 +27,14 @@
       {
         "label": "github",
         "href": "https://github.com/mattdoesgh"
+      },
+      {
+        "label": "medium",
+        "href": "https://medium.com/@mattdoesonline/"
+      },
+      {
+        "label": "tk",
+        "href": "https://tk.xyz/shared/notes/74cf1d76-0ad5-4ad6-bb2f-c24d3240f797"
       }
     ]
   },
@@ -113,7 +121,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "5979d71453c2326d6737db9fefd58a6f3221f1c586543213b78aadb95f918711",
+      "sha256": "11b1021ab678e078cd32454aac70ff44bdca0708e1dc42d0e9edc45da5c92b28",
       "gitBlob": null
     },
     {
@@ -293,8 +301,8 @@
     },
     {
       "path": "site/social-icons.js",
-      "sha256": "e12d9d8c30d8c9f3541ad492c5274e32a45a30901ce8f56988d39e57c829ef6e",
-      "gitBlob": "14b162c9db4d26747e21dcbdb47df04df7179c79"
+      "sha256": "f93499df40549374fabacc07662bd5dcbb3c92952800525730e18d426ad1d301",
+      "gitBlob": "f768ea3c1b7824419e126d1a8cf51558d928d575"
     },
     {
       "path": "site/tokens.css",
@@ -308,8 +316,8 @@
     },
     {
       "path": "site/verbs.ts",
-      "sha256": "0a5582dd38540914bc114378c435027ea03a857e88f07ddaf8079f692c5fbcf6",
-      "gitBlob": "64b3382ed18e82c509c54b3b67056e4a6bfe39a2"
+      "sha256": "141138d7fdcf60b0a5e446e5cd9c9f183069b2711667f76770321eba6cecddab",
+      "gitBlob": "133212d7d12af50738f563e2616187be1bbea1ae"
     },
     {
       "path": "static/_headers",
@@ -558,8 +566,8 @@
     },
     {
       "path": "test/socials.test.js",
-      "sha256": "8215cebbbbe397748a9e842e3b067ca87342bed04d7536614a3333da5fd95278",
-      "gitBlob": "a9cb1a33deae71a3166ea108a32f877ea8db8a95"
+      "sha256": "8f895ac835f87c00a329ea946012cd3f9c590ff9c0facb715d834724f6d76b68",
+      "gitBlob": "305f3dda6eb19d9a50b1ba79b34440706f01f719"
     },
     {
       "path": "test/suno-songs.test.js",
@@ -3989,8 +3997,8 @@
             },
             {
               "path": "site/verbs.ts",
-              "sha256": "0a5582dd38540914bc114378c435027ea03a857e88f07ddaf8079f692c5fbcf6",
-              "gitBlob": "64b3382ed18e82c509c54b3b67056e4a6bfe39a2"
+              "sha256": "141138d7fdcf60b0a5e446e5cd9c9f183069b2711667f76770321eba6cecddab",
+              "gitBlob": "133212d7d12af50738f563e2616187be1bbea1ae"
             }
           ]
         }

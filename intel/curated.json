@@ -22,13 +22,13 @@
     },
     {
       "id": "registry",
-      "verified-at": "818067da82f45dc58184c4c14beef824133eb4cc",
+      "verified-at": "5007aac24b78b33f4080659132e7c35f99d2b365",
       "paths": ["site/verbs.ts"],
       "text": "site/verbs.ts is the registry. An unknown source or a missing renderer fails the build. /unshared/ stays off the home menu. Old paths are not redirected."
     },
     {
       "id": "frequency-offline",
-      "verified-at": "818067da82f45dc58184c4c14beef824133eb4cc",
+      "verified-at": "5007aac24b78b33f4080659132e7c35f99d2b365",
       "paths": ["site/verbs.ts", "site/render.js", "lib/emit/index.js"],
       "text": "/frequency/ is a noindex secret. It stays out of the registry and the sitemap, and it stays offline while SECRET_PATHS is empty. The prize mailto lives only in renderFrequency. Do not copy that address into docs, the index, or a public page."
     },
@@ -167,7 +167,7 @@
     },
     {
       "id": "home-menu",
-      "verified-at": "818067da82f45dc58184c4c14beef824133eb4cc",
+      "verified-at": "5007aac24b78b33f4080659132e7c35f99d2b365",
       "paths": ["site/verbs.ts"],
       "text": "The home menu is verbCatalog minus unshared. Publishing /unshared/ does not put it on the home list."
     }
@@ -313,7 +313,7 @@
     },
     {
       "id": "social-footer",
-      "verified-at": "818067da82f45dc58184c4c14beef824133eb4cc",
+      "verified-at": "34128522f532fedf7c22fefab928613c80ea8274",
       "route": "/",
       "anchors": ["rel=\"me noopener\"", "socialCatalog"],
       "text": "The footer is a row of social marks, one per socialCatalog entry, each with an icon in site/social-icons.js. Links are https profile URLs and do not point at unshared.",
