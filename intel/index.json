@@ -106,8 +106,8 @@
     },
     {
       "path": "concepts/hub.css",
-      "sha256": "97e3fea7bd30233b1d162e858f08a14332ee34082ecf6670284d7497d321abd1",
-      "gitBlob": "3bd384df86a5cd466a36a5180477dc4f6221660e"
+      "sha256": "bcd739ec9300906616591d327b1e6e39b02d8d0938bbb87ca42035aa953e71df",
+      "gitBlob": "a81dce0658f770c3876debd2ce22cde5948c5523"
     },
     {
       "path": "concepts/hub.js",
@@ -121,7 +121,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "72c15a5d47b09b60fde756e76979ca8db110ebf58a106d4435483538709ab124",
+      "sha256": "40fc24f65f7c090ada1d35f345556e3264bcce9ab77e52e584658bdebd06ead4",
       "gitBlob": null
     },
     {
@@ -306,8 +306,8 @@
     },
     {
       "path": "site/tokens.css",
-      "sha256": "bdd0d5f396af5b429f074a50ed9a9107e0064ff8f5ac1f956b0cef5b8eca0a48",
-      "gitBlob": "2c93892edc440b6ac02c75ed6e4b1bd0d7738f83"
+      "sha256": "c16e9f2ef64fc87c3aa8a74aee3cd2f3bad9c335ac2aa7da9e8dc370139ee51f",
+      "gitBlob": "ff35594d01cc5f48ee2d4e91c8e40c2f110bf2ad"
     },
     {
       "path": "site/tsconfig.json",
@@ -3166,6 +3166,16 @@
           ]
         },
         {
+          "name": "--type-ether-title",
+          "value": "clamp(1.1rem, 0.9rem + 1vw, 1.6rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "concepts/hub.css"
+          ]
+        },
+        {
           "name": "--type-flag",
           "value": "clamp(0.85rem, 0.762rem + 0.36vw, 1.088rem)",
           "live": false,
@@ -4021,8 +4031,8 @@
             },
             {
               "path": "concepts/hub.css",
-              "sha256": "97e3fea7bd30233b1d162e858f08a14332ee34082ecf6670284d7497d321abd1",
-              "gitBlob": "3bd384df86a5cd466a36a5180477dc4f6221660e"
+              "sha256": "bcd739ec9300906616591d327b1e6e39b02d8d0938bbb87ca42035aa953e71df",
+              "gitBlob": "a81dce0658f770c3876debd2ce22cde5948c5523"
             },
             {
               "path": "concepts/hub.js",
