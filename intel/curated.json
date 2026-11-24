@@ -313,7 +313,7 @@
     },
     {
       "id": "social-footer",
-      "verified-at": "818067da82f45dc58184c4c14beef824133eb4cc",
+      "verified-at": "34128522f532fedf7c22fefab928613c80ea8274",
       "route": "/",
       "anchors": ["rel=\"me noopener\"", "socialCatalog"],
       "text": "The footer is a row of social marks, one per socialCatalog entry, each with an icon in site/social-icons.js. Links are https profile URLs and do not point at unshared.",
