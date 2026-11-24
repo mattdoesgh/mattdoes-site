@@ -60,3 +60,11 @@ test('the field has no background grid', () => {
   assert.doesNotMatch(tokens, /linear-gradient|repeating-linear-gradient|background-image/);
   assert.match(css, /background-color:\s*var\(--field\)/);
 });
+
+test('the ether glyph colors clear AA on black', () => {
+  for (const name of ['--mint', '--violet', '--bone', '--dim']) {
+    const value = resolve(root, root, name);
+    assert.ok(value, name);
+    assert.ok(wcagContrast(value, '#000000') >= 4.5, `${name} on black`);
+  }
+});

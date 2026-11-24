@@ -66,8 +66,8 @@
     },
     {
       "path": "asset-budget.json",
-      "sha256": "95b183d3dfc0ae10246eceaee109285f47f35f53758f381684410c07e8fb4dba",
-      "gitBlob": "72975305bc76e489915910d88048a1980c211302"
+      "sha256": "599383dfe2830d536c69ad3dfdc53be93c3356dcf443e43ff00025dbc10af2de",
+      "gitBlob": "25af42da1ea839fe269cd381a7bb6dc1f0471dec"
     },
     {
       "path": "build.js",
@@ -121,7 +121,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "11b1021ab678e078cd32454aac70ff44bdca0708e1dc42d0e9edc45da5c92b28",
+      "sha256": "812324f3c3e6fc36b62aacd265a91027a705aa4f18654a3f7476fb8a7af585d4",
       "gitBlob": null
     },
     {
@@ -296,8 +296,8 @@
     },
     {
       "path": "site/render.js",
-      "sha256": "175eeb2bbac409a55df915e38ea5f4051880e8380a644c62a950b4fd5f2a84fe",
-      "gitBlob": "b8b59d340f854f17d2caeca6e0a009a085dbb83a"
+      "sha256": "82ae0831b79a5c5d8ff8fc901aa3a39b4a6998fe75586a5fdd35c5c547dc6b0e",
+      "gitBlob": "3732c87f72c69fade91a8ebd911ca9233d3e396f"
     },
     {
       "path": "site/social-icons.js",
@@ -306,8 +306,8 @@
     },
     {
       "path": "site/tokens.css",
-      "sha256": "cfe996fc8ebb8aa193db970ac781b309550f54ff419d2dd92acae8c7609c79bf",
-      "gitBlob": "1732b6baf6cc83b873cb465ee7e3bc82b98b3027"
+      "sha256": "5125a4cd05960feed19cc662cf506227cfe47db255981951514ed225569151c1",
+      "gitBlob": "e90234e1e64ed3fab65139de0e7d17b40bfcf686"
     },
     {
       "path": "site/tsconfig.json",
@@ -341,13 +341,13 @@
     },
     {
       "path": "static/hero.css",
-      "sha256": "3dee22646f188fc59f25fb63a7be310e458ce5cca177080f225fc543a74d1a12",
-      "gitBlob": "db4bd09e587d084fa8eb2a0fba90546a1beec718"
+      "sha256": "63891c9f6563490b6652d61bf2ec46d4cc99ce4fc703861d4dea9131e298b194",
+      "gitBlob": "9bfac9a4411ce7d0de1c6b04442ab24c3b465bb5"
     },
     {
       "path": "static/hero.js",
-      "sha256": "996e503551b447d5eb1342c65c867e11cf26211359fae15534c7633aaeb7fa4b",
-      "gitBlob": "4229b8bc2b121c9c38245bd81ff3b62c00e87602"
+      "sha256": "ab997bae8a6dacce2de89c8f51fcbcd339cdad2d28d7872df9c296aa233cb7cd",
+      "gitBlob": "c25e90cb6938b4e9bfca5821ba4d5cab2116ec65"
     },
     {
       "path": "static/poster-prefs.js",
@@ -2075,7 +2075,28 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "static/hero.css",
             "static/station.css"
+          ]
+        },
+        {
+          "name": "--bone",
+          "value": "#f1eef8",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/hero.css"
+          ]
+        },
+        {
+          "name": "--dim",
+          "value": "#8a96a2",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/hero.css"
           ]
         },
         {
@@ -2123,7 +2144,7 @@
         },
         {
           "name": "--hero-line",
-          "value": "58%",
+          "value": "46%",
           "live": false,
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
@@ -2171,7 +2192,9 @@
           "live": false,
           "definedIn": "site/tokens.css",
           "referencedInTokens": true,
-          "files": []
+          "files": [
+            "static/hero.css"
+          ]
         },
         {
           "name": "--icon",
@@ -2214,6 +2237,7 @@
           "referencedInTokens": false,
           "files": [
             "concepts/birds1/birds1.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -2260,12 +2284,24 @@
           ]
         },
         {
+          "name": "--mint",
+          "value": "#cdeee2",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/hero.css"
+          ]
+        },
+        {
           "name": "--mono",
           "value": "ui-monospace, \"Cascadia Mono\", \"Segoe UI Mono\", Menlo, Consolas, monospace",
           "live": true,
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
-          "files": []
+          "files": [
+            "static/hero.css"
+          ]
         },
         {
           "name": "--motion",
@@ -2298,6 +2334,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -2310,6 +2347,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -2322,6 +2360,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -2394,6 +2433,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -2519,6 +2559,7 @@
           "files": [
             "concepts/birds1/birds1.css",
             "concepts/hub.css",
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -2701,7 +2742,6 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
-            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -2812,6 +2852,7 @@
           "definedIn": "site/tokens.css",
           "referencedInTokens": true,
           "files": [
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -3026,12 +3067,23 @@
           ]
         },
         {
+          "name": "--type-ether",
+          "value": "clamp(0.5625rem, 0.45rem + 0.35vw, 0.75rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/hero.css"
+          ]
+        },
+        {
           "name": "--type-flag",
           "value": "clamp(0.85rem, 0.762rem + 0.36vw, 1.088rem)",
           "live": false,
           "definedIn": "site/tokens.css",
           "referencedInTokens": false,
           "files": [
+            "static/hero.css",
             "static/station.css"
           ]
         },
@@ -3126,6 +3178,16 @@
           "referencedInTokens": false,
           "files": [
             "static/station.css"
+          ]
+        },
+        {
+          "name": "--type-prompt",
+          "value": "clamp(0.9rem, 0.82rem + 0.33vw, 1.1rem)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/hero.css"
           ]
         },
         {
@@ -3235,6 +3297,26 @@
           ]
         },
         {
+          "name": "--veil",
+          "value": "rgba(0, 0, 0, 0.8)",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/hero.css"
+          ]
+        },
+        {
+          "name": "--violet",
+          "value": "#a99bff",
+          "live": false,
+          "definedIn": "site/tokens.css",
+          "referencedInTokens": false,
+          "files": [
+            "static/hero.css"
+          ]
+        },
+        {
           "name": "--wave-period",
           "value": "2.5s",
           "live": false,
@@ -3269,9 +3351,7 @@
           ]
         }
       ],
-      "unused": [
-        "--mono"
-      ]
+      "unused": []
     },
     "features": {
       "provenance": [
@@ -3440,13 +3520,13 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "175eeb2bbac409a55df915e38ea5f4051880e8380a644c62a950b4fd5f2a84fe",
-              "gitBlob": "b8b59d340f854f17d2caeca6e0a009a085dbb83a"
+              "sha256": "82ae0831b79a5c5d8ff8fc901aa3a39b4a6998fe75586a5fdd35c5c547dc6b0e",
+              "gitBlob": "3732c87f72c69fade91a8ebd911ca9233d3e396f"
             },
             {
               "path": "static/hero.js",
-              "sha256": "996e503551b447d5eb1342c65c867e11cf26211359fae15534c7633aaeb7fa4b",
-              "gitBlob": "4229b8bc2b121c9c38245bd81ff3b62c00e87602"
+              "sha256": "ab997bae8a6dacce2de89c8f51fcbcd339cdad2d28d7872df9c296aa233cb7cd",
+              "gitBlob": "c25e90cb6938b4e9bfca5821ba4d5cab2116ec65"
             }
           ]
         },
@@ -3493,8 +3573,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "175eeb2bbac409a55df915e38ea5f4051880e8380a644c62a950b4fd5f2a84fe",
-              "gitBlob": "b8b59d340f854f17d2caeca6e0a009a085dbb83a"
+              "sha256": "82ae0831b79a5c5d8ff8fc901aa3a39b4a6998fe75586a5fdd35c5c547dc6b0e",
+              "gitBlob": "3732c87f72c69fade91a8ebd911ca9233d3e396f"
             }
           ]
         },
@@ -3533,8 +3613,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "175eeb2bbac409a55df915e38ea5f4051880e8380a644c62a950b4fd5f2a84fe",
-              "gitBlob": "b8b59d340f854f17d2caeca6e0a009a085dbb83a"
+              "sha256": "82ae0831b79a5c5d8ff8fc901aa3a39b4a6998fe75586a5fdd35c5c547dc6b0e",
+              "gitBlob": "3732c87f72c69fade91a8ebd911ca9233d3e396f"
             },
             {
               "path": "static/station.js",
@@ -3608,8 +3688,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "175eeb2bbac409a55df915e38ea5f4051880e8380a644c62a950b4fd5f2a84fe",
-              "gitBlob": "b8b59d340f854f17d2caeca6e0a009a085dbb83a"
+              "sha256": "82ae0831b79a5c5d8ff8fc901aa3a39b4a6998fe75586a5fdd35c5c547dc6b0e",
+              "gitBlob": "3732c87f72c69fade91a8ebd911ca9233d3e396f"
             },
             {
               "path": "static/poster-prefs.js",
@@ -3658,8 +3738,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "175eeb2bbac409a55df915e38ea5f4051880e8380a644c62a950b4fd5f2a84fe",
-              "gitBlob": "b8b59d340f854f17d2caeca6e0a009a085dbb83a"
+              "sha256": "82ae0831b79a5c5d8ff8fc901aa3a39b4a6998fe75586a5fdd35c5c547dc6b0e",
+              "gitBlob": "3732c87f72c69fade91a8ebd911ca9233d3e396f"
             },
             {
               "path": "static/station.js",
@@ -3715,8 +3795,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "175eeb2bbac409a55df915e38ea5f4051880e8380a644c62a950b4fd5f2a84fe",
-              "gitBlob": "b8b59d340f854f17d2caeca6e0a009a085dbb83a"
+              "sha256": "82ae0831b79a5c5d8ff8fc901aa3a39b4a6998fe75586a5fdd35c5c547dc6b0e",
+              "gitBlob": "3732c87f72c69fade91a8ebd911ca9233d3e396f"
             }
           ]
         },
@@ -3753,8 +3833,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "175eeb2bbac409a55df915e38ea5f4051880e8380a644c62a950b4fd5f2a84fe",
-              "gitBlob": "b8b59d340f854f17d2caeca6e0a009a085dbb83a"
+              "sha256": "82ae0831b79a5c5d8ff8fc901aa3a39b4a6998fe75586a5fdd35c5c547dc6b0e",
+              "gitBlob": "3732c87f72c69fade91a8ebd911ca9233d3e396f"
             }
           ]
         },
@@ -3952,8 +4032,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "175eeb2bbac409a55df915e38ea5f4051880e8380a644c62a950b4fd5f2a84fe",
-              "gitBlob": "b8b59d340f854f17d2caeca6e0a009a085dbb83a"
+              "sha256": "82ae0831b79a5c5d8ff8fc901aa3a39b4a6998fe75586a5fdd35c5c547dc6b0e",
+              "gitBlob": "3732c87f72c69fade91a8ebd911ca9233d3e396f"
             },
             {
               "path": "static/station.js",
@@ -3992,8 +4072,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "175eeb2bbac409a55df915e38ea5f4051880e8380a644c62a950b4fd5f2a84fe",
-              "gitBlob": "b8b59d340f854f17d2caeca6e0a009a085dbb83a"
+              "sha256": "82ae0831b79a5c5d8ff8fc901aa3a39b4a6998fe75586a5fdd35c5c547dc6b0e",
+              "gitBlob": "3732c87f72c69fade91a8ebd911ca9233d3e396f"
             },
             {
               "path": "site/verbs.ts",
@@ -4766,10 +4846,21 @@
         "workers/rebuild/src/index.js",
         "workers/rebuild/wrangler.toml"
       ],
-      "classesOnlyInCss": [],
-      "unusedTokens": [
-        "--mono"
+      "classesOnlyInCss": [
+        {
+          "class": "spell-fate",
+          "files": [
+            "static/hero.css"
+          ]
+        },
+        {
+          "class": "spell-omen",
+          "files": [
+            "static/hero.css"
+          ]
+        }
       ],
+      "unusedTokens": [],
       "unreferencedModules": [],
       "testOnlyModules": []
     }

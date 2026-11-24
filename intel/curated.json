@@ -224,18 +224,18 @@
       "verified-at": "818067da82f45dc58184c4c14beef824133eb4cc",
       "route": "/",
       "anchors": ["data-hero", "class=\"hero-water\"", "data-words="],
-      "text": "Home opens on the name sitting on a water line. Above the line it is solid pink; below it is an outline bent by the water. surfaceWords in site/verbs.ts rise through the line and sink back; crossing it and the pointer both ripple the surface. Every few seconds one word surfaces into the phrase, so it reads matt does plus that word; the name shrinks and slides to fit, then the word sinks back out. Scrolling the pinned hero raises the water over everything, then the verb list follows. hero.js draws into the canvas and reads its colors from the computed style. Without the script, or with reduced motion before it runs, hero.css cuts the heading at the same line.",
-      "risks": ["The water line is --hero-line in tokens.css and the same fraction in hero.js. Change both.", "Reduced motion draws one still frame and does not pin the hero."],
-      "devices": ["The name is one line at 22.5vw. Check 390 and 1280. The visual suite runs with reduced motion, so it only sees the still frame."]
+      "text": "Home is the ether: one screen of glyphs on the void. The name floats half under a water line; surfaceWords in site/verbs.ts drift through it. A summoning circle turns around the name: two rings of the surface words, a star polygon {n/k} and a mirrored thorned sigil, all drawn as characters. Every summoning is random (crypto.getRandomValues): a new sigil, a new star, new ring order and spin, on each load and each invocation. The verb menu sits inside the scene as the prompt. A verb link summons for about two seconds, then opens its page. hero.js adds a spell line: a typed word that names a verb summons and opens it, return or home summons the name again, and anything else summons in place and answers bound, unstable or unanswered with an omen from surfaceWords. Typed words stay in the page. hero.js reads its colors from the computed style of the heading, the canvas (color, outline-color, border-color) and the log. Without the script the spell line does not exist and hero.css cuts the heading at the same line.",
+      "risks": ["The water line is --hero-line in tokens.css and the same fraction in hero.js. Change both.", "Reduced motion draws one still frame, links open at once, and a spell redraws the still frame.", "The glyph pass is per cell per frame at about 30fps; it pauses off screen and in a hidden tab."],
+      "devices": ["The cell size is --type-ether, 9px on a phone to 12px wide. Check 390 and 1280. The visual suite runs with reduced motion, so it only sees the still frame."]
     },
     {
       "id": "home-rows",
       "verified-at": "818067da82f45dc58184c4c14beef824133eb4cc",
       "route": "/",
       "anchors": ["aria-label=\"verbs\"", "class=\"verb-kicker\"", "class=\"verb-row home-suno\""],
-      "text": "Under the hero, home is the verb list. The visible words are matt does plus the registry label. Unshared is not in that list. The unshared row below them uses the same size and gap as the verbs. Its heading unshared opens /unshared/. Song titles stay on that page. The latest film sits on the letterboxd row, with no underline.",
+      "text": "The verb list is the prompt along the bottom of the hero. The DOM keeps matt does plus the registry label for readers; hero.css hides the prefix and draws > invoke before each label in mono. Unshared is not in that list. The unshared row is the same kind of line; its heading unshared opens /unshared/. The latest film follows the letterboxd row as a comment, with no underline.",
       "risks": ["Adding a verb puts it on the home menu unless it is filtered out like unshared."],
-      "devices": ["The kicker is hidden at the 800px hover window. Check 390 and 1280 before moving it."]
+      "devices": ["The kicker is hidden inside the hero at every width. Check 390 and 1280 before moving the prompt."]
     },
     {
       "id": "watching-strip",
