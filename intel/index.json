@@ -331,8 +331,8 @@
     },
     {
       "path": "static/ether.css",
-      "sha256": "28b180861cac59c5c27bfc5aca66762a7cf21bf2565458bfaa4b31bc68268e3b",
-      "gitBlob": "485ce5047c3a41207567edd1238299e87391c5a9"
+      "sha256": "a1705a8e654398f11f52450986f48988b0ea2f0ccb752760fe087bd83c19099f",
+      "gitBlob": "a8ac23a8b669f158270e808e46224623981101b0"
     },
     {
       "path": "static/ether.js",
