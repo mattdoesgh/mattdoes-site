@@ -1,7 +1,8 @@
 // Pin body and mono to the vendored DejaVu subsets and answer every image
 // with a fixture so host fonts and live art cannot move the pixels. The
 // ether draws from crypto.getRandomValues, Math.random, and
-// performance.now, so those are seeded and held still as well.
+// performance.now, so those are seeded and held still as well. The home
+// hero prints the wall clock, so the date is fixed too.
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -96,6 +97,7 @@ export async function prepare(page, { pinFonts = true, phone = false } = {}) {
     return route.abort();
   });
 
+  await page.clock.setFixedTime(new Date('2026-01-01T12:00:00Z'));
   await page.addInitScript(STILL);
 
   if (!pinFonts) return;
