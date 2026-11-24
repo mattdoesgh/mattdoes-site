@@ -121,7 +121,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "abc80101937bc6421b526a4623ccac8be6555ca2f7d393c52bf0bc6b1e4e1f3f",
+      "sha256": "fbbb3db9992110402884f6f720bbcac3e342a045e288cd6ad008439f42429c3d",
       "gitBlob": null
     },
     {
@@ -130,24 +130,9 @@
       "gitBlob": "1ba268dbeb69b1b8eff04d0288da949b0c76dfb2"
     },
     {
-      "path": "lib/cover-mirror.js",
-      "sha256": "83d301b057bf1ea5bf9a3ae0119ec3e50c803dc23db8f573afa88737ae755ebf",
-      "gitBlob": "166560532879ca4fc4619f71e636be3a93b418c6"
-    },
-    {
-      "path": "lib/cover-pixels.js",
-      "sha256": "f5c9f0f5c46e72c563d367511e161007624bd07d691c11c6960a8dcae629b4c1",
-      "gitBlob": "955d917edd779b4f7945db5161d6f005fa9dfa8a"
-    },
-    {
-      "path": "lib/cover-settle.js",
-      "sha256": "519057bb4a53d0b3631472cbd40caf8a1fafa309b3ed74d87935f0a7f49fe642",
-      "gitBlob": "1647f6eaf347b96c9f25ec20dda21e7a18ec6ab6"
-    },
-    {
-      "path": "lib/covers.js",
-      "sha256": "c6355cdf4cd3d0a555b012275e1431ae8810e149d576db0fa3ff5b0a84ab3219",
-      "gitBlob": "8f7e30c5f146fc48be30182e6a6a1a18eecf354d"
+      "path": "lib/cover-encode.js",
+      "sha256": "b92c642124e0f872ed268b2e0d26b968daa590b6f6ad33b65a4ab5976a9d264b",
+      "gitBlob": "830a63c5ce5c15cb401a3b12bd5b9710cd2d9324"
     },
     {
       "path": "lib/csp-policy.js",
@@ -178,16 +163,6 @@
       "path": "lib/emit/index.js",
       "sha256": "43b0b61c0e3b876cc7dcafd362b091a255dc14b08fdd07c28dcd792f0f23c995",
       "gitBlob": "9378da08cee7b23ab2481bc9e3a45043c6539248"
-    },
-    {
-      "path": "lib/format.js",
-      "sha256": "f4972dc986399f59602a81a17fd294fa808dbd27cc84abcdd039c45fccbfd81a",
-      "gitBlob": "a2cb1e11c42622dec8a4edeeb1a293b53244b48f"
-    },
-    {
-      "path": "lib/lastfm.js",
-      "sha256": "a4894ecc2ed19e43743541cfebb680cf8622a0a5e7c7bb0d586cb350c2ea3f47",
-      "gitBlob": "cab9757248fb9698ffc9d582c1b7c5bae54b6012"
     },
     {
       "path": "lib/letterboxd.js",
@@ -221,8 +196,8 @@
     },
     {
       "path": "package.json",
-      "sha256": "710bc60cb64f9db9382157e534f4c9b775cb0d9d36df0e46f8b805afa7ad427b",
-      "gitBlob": "b168468302910fb06ca29bebc2abdcbef1053770"
+      "sha256": "6d4467fb9ff048a076847b77bb17dde6ced1f4e14aec7757d79d5500cb6c18df",
+      "gitBlob": "2a6c96696fc60846676994ce26e6c1d88e7b013e"
     },
     {
       "path": "playwright.config.js",
@@ -260,24 +235,14 @@
       "gitBlob": "bea49a954dd3ec0737e58702ea27d2d63f8c5dfb"
     },
     {
-      "path": "scripts/optimize-media.js",
-      "sha256": "cdbef474cda0e90182c3f7a9391fa20c7d737b18c42dab5fd11bbd8543f32101",
-      "gitBlob": "c358a28c284225cdda54e3826d67f0fb5b1d6392"
-    },
-    {
       "path": "scripts/pages-prebuild.sh",
-      "sha256": "329aa41ef464a2e7f6c190e358ffbec5a803cfd800da83daa19cacad6f978bc0",
-      "gitBlob": "4340a35ab2b94425dfc09f3bde704a9da3b4b70d"
+      "sha256": "7f4631cadc3512ca82aeee90a705ecd8acbbcffa8070957397323cf1d0e2c541",
+      "gitBlob": "eb36961d48df0d72c4c7c76568f054056c9fe8d1"
     },
     {
       "path": "scripts/suno-sync.js",
-      "sha256": "038e8d6f719e8e17bd8f78bd5cf795da7fe36c8fdaf8375faf02f98456884bdc",
-      "gitBlob": "797c8f8ea92baf1b2810f58cd357880233b33a43"
-    },
-    {
-      "path": "scripts/sync-media.js",
-      "sha256": "0ec97e0c260bc6032e3305ba78881bac2de8e6c48338ff30502e213d55865df3",
-      "gitBlob": "03987f72ffe969a573dbb23f567030818519e495"
+      "sha256": "15a3b80b8e8a6ddb5c7037e045e85a7fca693cdb2b8a0fd5bb8efa8f743d5580",
+      "gitBlob": "c0540e3de2facbf31ba4e58d1c366d17b8378669"
     },
     {
       "path": "scripts/visual-serve.js",
@@ -296,8 +261,8 @@
     },
     {
       "path": "site/render.js",
-      "sha256": "db33ed1fe5bd65e70f7eeb7cedbc50d1d44bbe97213d8bf07f8793c6c1dafb9b",
-      "gitBlob": "1785b4d83fd01dbf0320c26de98f55ce487dd35e"
+      "sha256": "07636b8427f8f976f73b94417d1ebd33c269669c731c53de303467ffb11bf0f0",
+      "gitBlob": "667e9897b3eb613aca3e0a55b185fa15a5a19c56"
     },
     {
       "path": "site/social-icons.js",
@@ -395,34 +360,14 @@
       "gitBlob": "b69650a5e65a20a21b233db2f9d3cfb3cf45a8e5"
     },
     {
-      "path": "test/build-validation.test.js",
-      "sha256": "6dffcb5a19b4c24e4c0baa69c7aa66a9ed44c0d0ca5109968374922ec70a2676",
-      "gitBlob": "2ade64ef63e284ca7a4d4a3d59128733975d1139"
-    },
-    {
       "path": "test/client-hardening.test.js",
-      "sha256": "d22635e68106f97b1c3d98d117c7ce2951bcf27ddde8d0bddb615d7e0bb6b2c4",
-      "gitBlob": "2d0c3f982f447c8026456893cef6909e6decefcf"
+      "sha256": "06016708f76f528e369849c2cf8860ca26689e30199e79ca5ff4499eef97fe0d",
+      "gitBlob": "71ee9b27227282b183cbea59388ce7f252acd989"
     },
     {
       "path": "test/contrast.test.js",
       "sha256": "7f25eb4dbb4b3145d3167b1352dfc60fce53eca654bdcf27b843723c2b8b5927",
       "gitBlob": "a9118750b477ab8814b07d61cf8a7c3321b66b7d"
-    },
-    {
-      "path": "test/cover-pixels.test.js",
-      "sha256": "a5cd38df1aff9a2d5de36b302c73142339cada79d1e397f7efed1f3098d51f71",
-      "gitBlob": "3491294f6079cab9f09fa83d17ae50f5e7111104"
-    },
-    {
-      "path": "test/cover-settle.test.js",
-      "sha256": "9eaf5e5f4b512de4addfc857da8bcf5d8b7ec4d561aebe8c59b1960c7499a25c",
-      "gitBlob": "a50a69a5d2dfc74d601603b8db387e1d76771e62"
-    },
-    {
-      "path": "test/covers.test.js",
-      "sha256": "cabcf0a10dfd47139f012959b72582dc1c704b7867df651fc9511c14a29428ef",
-      "gitBlob": "0d4c3155a1f2fdb31fcea736e65198304e9a0bdc"
     },
     {
       "path": "test/csp-headers.test.js",
@@ -443,11 +388,6 @@
       "path": "test/ether-band.test.js",
       "sha256": "c42a54d31722457a09d7702e021cd79d630d6b0d36191c6a5292973c5c0f6548",
       "gitBlob": "068a10cf049d5594709b9d27ed93d997d48875cb"
-    },
-    {
-      "path": "test/feed-standards.test.js",
-      "sha256": "995f1682e02f98943cddf93699d9fa325df2eaf2747f3fb2a140d21502f0d4d1",
-      "gitBlob": "8f323410e40211fd9385b616ffccb887ed014e7f"
     },
     {
       "path": "test/film-count.test.js",
@@ -510,11 +450,6 @@
       "gitBlob": "d719a64d949d5c602c09240cc3912d75899d69bf"
     },
     {
-      "path": "test/lastfm-codec.test.js",
-      "sha256": "333914187f9c15f6129191c152f93e82512583330422a0a5d5d90bdf53db7579",
-      "gitBlob": "d02e5c11a379171c3fa13f09913d080fb2bce8fd"
-    },
-    {
       "path": "test/letterboxd.test.js",
       "sha256": "0487291ca70297cbe30307748eb83385a2dee73042b26e3efc8fd4ecb424433d",
       "gitBlob": "b29adcf2fde107165dfd369bf5525e7619e81899"
@@ -535,11 +470,6 @@
       "gitBlob": "715a199d261b41ab362c01d33f696bd73528693a"
     },
     {
-      "path": "test/pages-prebuild.test.js",
-      "sha256": "f8dd2142d5538599e497da7a877e6cbaed965559e897c11c33783fcf2c277062",
-      "gitBlob": "240b294be42a649773043cc7a4f1f4a04ce24744"
-    },
-    {
       "path": "test/poster-controls.test.js",
       "sha256": "02dde2039beabe8087eaa6e6b3bf1740360c5bb6e1f8881b4203ad0b36e0e9b0",
       "gitBlob": "ce8f2df51964ab0111f2b686d451344b5d8a0acc"
@@ -550,19 +480,9 @@
       "gitBlob": "5270fc8de2ea5dfcac3795c2a498fce1ccbf95d0"
     },
     {
-      "path": "test/prerender-safety.test.js",
-      "sha256": "0488f76895e1bb70225b4c227d0d97fe6556614f4a7eddb6df1b49380f4a9d4c",
-      "gitBlob": "ec37b46a7e5637da20146c538beadf452b5ad84e"
-    },
-    {
-      "path": "test/privacy.test.js",
-      "sha256": "1068de7e15888bf0dd776fc2741e7ea1a8b648789667365bb49725cc3e24ea24",
-      "gitBlob": "4af471f37f8bcf1be8c23d035b32d51e4f080d29"
-    },
-    {
       "path": "test/progressive-enhancement.test.js",
-      "sha256": "c07d1bc20049b025317efcd6f7f33334db7a48530a41e43ccbd0f69d845b11d5",
-      "gitBlob": "fc1e80b1ebee2fbad6321716255eba58a2b43d3a"
+      "sha256": "36ac0ec27ac5a19b07819a38e60a7dcc1652eb66d51af6b93d8458f95a6abb35",
+      "gitBlob": "3ee6a8f6073f53dfa433c41f51fff915adc18237"
     },
     {
       "path": "test/publish-unshared.test.js",
@@ -570,34 +490,19 @@
       "gitBlob": "0ef2cd4c9318dbf7220cf03b4a8a0aa1c201f29c"
     },
     {
-      "path": "test/scrobble-count-parity.test.js",
-      "sha256": "8d8524395e69c6538007bcf6bcd2be6e530b0c06e150e0d8204f0312b0fb94a7",
-      "gitBlob": "de93af56cbba4ca6f391f3d4c12450a8c8f9487e"
-    },
-    {
       "path": "test/secrets-history.test.js",
       "sha256": "bf1b7cc6301a4514b7ea1ea3e082c597b191970b737385e216da34913b5ac2b2",
       "gitBlob": "d4ca69a93ec7070f0f68cf8f09faf09485a618f6"
     },
     {
-      "path": "test/security-remediation.test.js",
-      "sha256": "e5ca55aa6bf013490de10358db471da4581e9a325ecdb430e076fcb1c274cc96",
-      "gitBlob": "cc06c0a807452e1a0731b19f17813f5ebcf7ad05"
-    },
-    {
       "path": "test/socials.test.js",
-      "sha256": "8f895ac835f87c00a329ea946012cd3f9c590ff9c0facb715d834724f6d76b68",
-      "gitBlob": "305f3dda6eb19d9a50b1ba79b34440706f01f719"
+      "sha256": "607806fd5e1c9e4916b0b27457e5b7c90a50f00d779b10d73fe70aabaff69731",
+      "gitBlob": "5a09e0c6d151a9869e33a461fc5286674ebb40b6"
     },
     {
       "path": "test/suno-songs.test.js",
       "sha256": "64e583e3619f90dcd078b72a3c4372325057991e5563328816c199d66b75a326",
       "gitBlob": "0019b9ded93a85e1e56b561deb90d95964edc806"
-    },
-    {
-      "path": "test/sync-media-wrangler.test.js",
-      "sha256": "b73019a30bd315a47abf008fcd859634e3545a7cd276af4e3fe177c8a1c889a6",
-      "gitBlob": "56805fc047d768544f510eaa737d1c83f19feab1"
     },
     {
       "path": "test/unshared.test.js",
@@ -636,8 +541,8 @@
     },
     {
       "path": "test/w3c-coverage.test.js",
-      "sha256": "ab739c890b9cff53ac7b89ecf49ea0cae6fe0ec0b7a36cc8a70f3cb12c319277",
-      "gitBlob": "bb5c20294c1d2da6db18c383c4cb4a04e60dd16a"
+      "sha256": "d63a1938b35526a6b706ae5ccf785ca273bc8df7df080460af5ebc57cb55c53b",
+      "gitBlob": "86b2e196f25423245ee8287b7a671cd660d9cb9c"
     },
     {
       "path": "test/wave-scope.test.js",
@@ -876,18 +781,13 @@
         "concepts/hub.js",
         "intel/curated.json",
         "lib/asset-budget.js",
-        "lib/cover-mirror.js",
-        "lib/cover-pixels.js",
-        "lib/cover-settle.js",
-        "lib/covers.js",
+        "lib/cover-encode.js",
         "lib/csp-policy.js",
         "lib/design-tokens.js",
         "lib/emit/assets.js",
         "lib/emit/csp.js",
         "lib/emit/feeds.js",
         "lib/emit/index.js",
-        "lib/format.js",
-        "lib/lastfm.js",
         "lib/letterboxd.js",
         "lib/posters.js",
         "lib/publish-unshared.js",
@@ -900,9 +800,7 @@
         "scripts/deploy-workers.js",
         "scripts/intel.js",
         "scripts/lint-comments.js",
-        "scripts/optimize-media.js",
         "scripts/suno-sync.js",
-        "scripts/sync-media.js",
         "scripts/visual-serve.js",
         "scripts/wrangler-bin.js",
         "site.config.js",
@@ -917,17 +815,12 @@
         "test/asset-budget.test.js",
         "test/asset-contract.test.js",
         "test/asset-headers.test.js",
-        "test/build-validation.test.js",
         "test/client-hardening.test.js",
         "test/contrast.test.js",
-        "test/cover-pixels.test.js",
-        "test/cover-settle.test.js",
-        "test/covers.test.js",
         "test/csp-headers.test.js",
         "test/design-tokens.test.js",
         "test/emit-units.test.js",
         "test/ether-band.test.js",
-        "test/feed-standards.test.js",
         "test/film-count.test.js",
         "test/flock-model.test.js",
         "test/headers-golden.test.js",
@@ -937,24 +830,17 @@
         "test/home-ether.test.js",
         "test/home-preview.test.js",
         "test/intel.test.js",
-        "test/lastfm-codec.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
         "test/lint-comments.test.js",
         "test/media.test.js",
-        "test/pages-prebuild.test.js",
         "test/poster-controls.test.js",
         "test/posters.test.js",
-        "test/prerender-safety.test.js",
-        "test/privacy.test.js",
         "test/progressive-enhancement.test.js",
         "test/publish-unshared.test.js",
-        "test/scrobble-count-parity.test.js",
         "test/secrets-history.test.js",
-        "test/security-remediation.test.js",
         "test/socials.test.js",
         "test/suno-songs.test.js",
-        "test/sync-media-wrangler.test.js",
         "test/unshared.test.js",
         "test/url-safety.test.js",
         "test/verbs.test.js",
@@ -1013,26 +899,6 @@
         {
           "from": "concepts/hub.js",
           "to": "site.config.js"
-        },
-        {
-          "from": "lib/cover-settle.js",
-          "to": "lib/cover-mirror.js"
-        },
-        {
-          "from": "lib/cover-settle.js",
-          "to": "lib/cover-pixels.js"
-        },
-        {
-          "from": "lib/cover-settle.js",
-          "to": "lib/covers.js"
-        },
-        {
-          "from": "lib/cover-settle.js",
-          "to": "lib/lastfm.js"
-        },
-        {
-          "from": "lib/covers.js",
-          "to": "lib/lastfm.js"
         },
         {
           "from": "lib/emit/assets.js",
@@ -1124,23 +990,15 @@
         },
         {
           "from": "scripts/suno-sync.js",
-          "to": "lib/cover-settle.js"
+          "to": "lib/cover-encode.js"
         },
         {
           "from": "scripts/suno-sync.js",
           "to": "lib/suno-songs.js"
         },
         {
-          "from": "scripts/sync-media.js",
-          "to": "scripts/wrangler-bin.js"
-        },
-        {
           "from": "site/render.js",
           "to": "concepts/hub.js"
-        },
-        {
-          "from": "site/render.js",
-          "to": "lib/format.js"
         },
         {
           "from": "site/render.js",
@@ -1183,36 +1041,8 @@
           "to": "lib/emit/assets.js"
         },
         {
-          "from": "test/build-validation.test.js",
-          "to": "site/verbs.ts"
-        },
-        {
-          "from": "test/build-validation.test.js",
-          "to": "test/helpers/run-build.js"
-        },
-        {
           "from": "test/client-hardening.test.js",
           "to": "test/helpers/run-build.js"
-        },
-        {
-          "from": "test/cover-pixels.test.js",
-          "to": "lib/cover-pixels.js"
-        },
-        {
-          "from": "test/cover-settle.test.js",
-          "to": "lib/cover-mirror.js"
-        },
-        {
-          "from": "test/cover-settle.test.js",
-          "to": "lib/cover-settle.js"
-        },
-        {
-          "from": "test/covers.test.js",
-          "to": "lib/covers.js"
-        },
-        {
-          "from": "test/covers.test.js",
-          "to": "lib/lastfm.js"
         },
         {
           "from": "test/csp-headers.test.js",
@@ -1252,10 +1082,6 @@
         },
         {
           "from": "test/ether-band.test.js",
-          "to": "test/helpers/run-build.js"
-        },
-        {
-          "from": "test/feed-standards.test.js",
           "to": "test/helpers/run-build.js"
         },
         {
@@ -1315,10 +1141,6 @@
           "to": "scripts/intel.js"
         },
         {
-          "from": "test/lastfm-codec.test.js",
-          "to": "lib/lastfm.js"
-        },
-        {
           "from": "test/letterboxd.test.js",
           "to": "lib/letterboxd.js"
         },
@@ -1355,18 +1177,6 @@
           "to": "site/render.js"
         },
         {
-          "from": "test/prerender-safety.test.js",
-          "to": "lib/csp-policy.js"
-        },
-        {
-          "from": "test/prerender-safety.test.js",
-          "to": "test/helpers/run-build.js"
-        },
-        {
-          "from": "test/privacy.test.js",
-          "to": "test/helpers/run-build.js"
-        },
-        {
           "from": "test/progressive-enhancement.test.js",
           "to": "test/helpers/run-build.js"
         },
@@ -1391,14 +1201,6 @@
           "to": "site/verbs.ts"
         },
         {
-          "from": "test/scrobble-count-parity.test.js",
-          "to": "lib/format.js"
-        },
-        {
-          "from": "test/security-remediation.test.js",
-          "to": "test/helpers/run-build.js"
-        },
-        {
           "from": "test/socials.test.js",
           "to": "site/social-icons.js"
         },
@@ -1413,10 +1215,6 @@
         {
           "from": "test/suno-songs.test.js",
           "to": "lib/suno-songs.js"
-        },
-        {
-          "from": "test/sync-media-wrangler.test.js",
-          "to": "scripts/wrangler-bin.js"
         },
         {
           "from": "test/unshared.test.js",
@@ -1522,27 +1320,13 @@
           "scripts/check-asset-budget.js",
           "test/asset-budget.test.js"
         ],
-        "lib/cover-mirror.js": [
-          "lib/cover-settle.js",
-          "test/cover-settle.test.js"
-        ],
-        "lib/cover-pixels.js": [
-          "lib/cover-settle.js",
-          "test/cover-pixels.test.js"
-        ],
-        "lib/cover-settle.js": [
-          "scripts/suno-sync.js",
-          "test/cover-settle.test.js"
-        ],
-        "lib/covers.js": [
-          "lib/cover-settle.js",
-          "test/covers.test.js"
+        "lib/cover-encode.js": [
+          "scripts/suno-sync.js"
         ],
         "lib/csp-policy.js": [
           "lib/emit/csp.js",
           "test/csp-headers.test.js",
-          "test/headers-golden.test.js",
-          "test/prerender-safety.test.js"
+          "test/headers-golden.test.js"
         ],
         "lib/design-tokens.js": [
           "lib/emit/assets.js",
@@ -1566,16 +1350,6 @@
         ],
         "lib/emit/index.js": [
           "build.js"
-        ],
-        "lib/format.js": [
-          "site/render.js",
-          "test/scrobble-count-parity.test.js"
-        ],
-        "lib/lastfm.js": [
-          "lib/cover-settle.js",
-          "lib/covers.js",
-          "test/covers.test.js",
-          "test/lastfm-codec.test.js"
         ],
         "lib/letterboxd.js": [
           "lib/watches.js",
@@ -1615,9 +1389,7 @@
           "test/lint-comments.test.js"
         ],
         "scripts/wrangler-bin.js": [
-          "scripts/deploy-workers.js",
-          "scripts/sync-media.js",
-          "test/sync-media-wrangler.test.js"
+          "scripts/deploy-workers.js"
         ],
         "site.config.js": [
           "build.js",
@@ -1648,7 +1420,6 @@
           "lib/emit/index.js",
           "scripts/intel.js",
           "site/render.js",
-          "test/build-validation.test.js",
           "test/publish-unshared.test.js",
           "test/socials.test.js",
           "test/unshared.test.js",
@@ -1663,22 +1434,17 @@
           "test/accessibility.test.js",
           "test/asset-budget.test.js",
           "test/asset-contract.test.js",
-          "test/build-validation.test.js",
           "test/client-hardening.test.js",
           "test/csp-headers.test.js",
           "test/design-tokens.test.js",
           "test/ether-band.test.js",
-          "test/feed-standards.test.js",
           "test/film-count.test.js",
           "test/headers-golden.test.js",
           "test/home-ether.test.js",
           "test/home-preview.test.js",
           "test/links.test.js",
           "test/poster-controls.test.js",
-          "test/prerender-safety.test.js",
-          "test/privacy.test.js",
           "test/progressive-enhancement.test.js",
-          "test/security-remediation.test.js",
           "test/socials.test.js",
           "test/unshared.test.js",
           "test/verbs.test.js",
@@ -1768,18 +1534,13 @@
         "concepts/hub.js",
         "intel/curated.json",
         "lib/asset-budget.js",
-        "lib/cover-mirror.js",
-        "lib/cover-pixels.js",
-        "lib/cover-settle.js",
-        "lib/covers.js",
+        "lib/cover-encode.js",
         "lib/csp-policy.js",
         "lib/design-tokens.js",
         "lib/emit/assets.js",
         "lib/emit/csp.js",
         "lib/emit/feeds.js",
         "lib/emit/index.js",
-        "lib/format.js",
-        "lib/lastfm.js",
         "lib/letterboxd.js",
         "lib/posters.js",
         "lib/publish-unshared.js",
@@ -1792,10 +1553,8 @@
         "scripts/deploy-workers.js",
         "scripts/intel.js",
         "scripts/lint-comments.js",
-        "scripts/optimize-media.js",
         "scripts/pages-prebuild.sh",
         "scripts/suno-sync.js",
-        "scripts/sync-media.js",
         "scripts/visual-serve.js",
         "scripts/wrangler-bin.js",
         "site.config.js",
@@ -1810,17 +1569,12 @@
         "test/asset-budget.test.js",
         "test/asset-contract.test.js",
         "test/asset-headers.test.js",
-        "test/build-validation.test.js",
         "test/client-hardening.test.js",
         "test/contrast.test.js",
-        "test/cover-pixels.test.js",
-        "test/cover-settle.test.js",
-        "test/covers.test.js",
         "test/csp-headers.test.js",
         "test/design-tokens.test.js",
         "test/emit-units.test.js",
         "test/ether-band.test.js",
-        "test/feed-standards.test.js",
         "test/film-count.test.js",
         "test/flock-model.test.js",
         "test/headers-golden.test.js",
@@ -1830,24 +1584,17 @@
         "test/home-ether.test.js",
         "test/home-preview.test.js",
         "test/intel.test.js",
-        "test/lastfm-codec.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
         "test/lint-comments.test.js",
         "test/media.test.js",
-        "test/pages-prebuild.test.js",
         "test/poster-controls.test.js",
         "test/posters.test.js",
-        "test/prerender-safety.test.js",
-        "test/privacy.test.js",
         "test/progressive-enhancement.test.js",
         "test/publish-unshared.test.js",
-        "test/scrobble-count-parity.test.js",
         "test/secrets-history.test.js",
-        "test/security-remediation.test.js",
         "test/socials.test.js",
         "test/suno-songs.test.js",
-        "test/sync-media-wrangler.test.js",
         "test/unshared.test.js",
         "test/url-safety.test.js",
         "test/verbs.test.js",
@@ -1896,24 +1643,13 @@
         {
           "name": "CLOUDFLARE_ACCOUNT_ID",
           "files": [
-            "lib/cover-mirror.js",
-            "lib/posters.js",
-            "scripts/sync-media.js"
+            "lib/posters.js"
           ]
         },
         {
           "name": "CLOUDFLARE_API_TOKEN",
           "files": [
-            "lib/cover-mirror.js",
-            "lib/posters.js",
-            "scripts/sync-media.js"
-          ]
-        },
-        {
-          "name": "CONTENT_DIR",
-          "files": [
-            "scripts/optimize-media.js",
-            "scripts/sync-media.js"
+            "lib/posters.js"
           ]
         },
         {
@@ -1951,33 +1687,9 @@
           ]
         },
         {
-          "name": "MEDIA_BUCKET",
-          "files": [
-            "scripts/sync-media.js"
-          ]
-        },
-        {
           "name": "SITE_URL",
           "files": [
             "build.js"
-          ]
-        },
-        {
-          "name": "VAULT_BRANCH",
-          "files": [
-            "test/pages-prebuild.test.js"
-          ]
-        },
-        {
-          "name": "VAULT_DIR",
-          "files": [
-            "test/pages-prebuild.test.js"
-          ]
-        },
-        {
-          "name": "VAULT_TOKEN",
-          "files": [
-            "test/pages-prebuild.test.js"
           ]
         },
         {
@@ -2007,18 +1719,13 @@
         "concepts/hub.js",
         "intel/curated.json",
         "lib/asset-budget.js",
-        "lib/cover-mirror.js",
-        "lib/cover-pixels.js",
-        "lib/cover-settle.js",
-        "lib/covers.js",
+        "lib/cover-encode.js",
         "lib/csp-policy.js",
         "lib/design-tokens.js",
         "lib/emit/assets.js",
         "lib/emit/csp.js",
         "lib/emit/feeds.js",
         "lib/emit/index.js",
-        "lib/format.js",
-        "lib/lastfm.js",
         "lib/letterboxd.js",
         "lib/posters.js",
         "lib/publish-unshared.js",
@@ -2031,9 +1738,7 @@
         "scripts/deploy-workers.js",
         "scripts/intel.js",
         "scripts/lint-comments.js",
-        "scripts/optimize-media.js",
         "scripts/suno-sync.js",
-        "scripts/sync-media.js",
         "scripts/visual-serve.js",
         "scripts/wrangler-bin.js",
         "site.config.js",
@@ -2051,17 +1756,12 @@
         "test/asset-budget.test.js",
         "test/asset-contract.test.js",
         "test/asset-headers.test.js",
-        "test/build-validation.test.js",
         "test/client-hardening.test.js",
         "test/contrast.test.js",
-        "test/cover-pixels.test.js",
-        "test/cover-settle.test.js",
-        "test/covers.test.js",
         "test/csp-headers.test.js",
         "test/design-tokens.test.js",
         "test/emit-units.test.js",
         "test/ether-band.test.js",
-        "test/feed-standards.test.js",
         "test/film-count.test.js",
         "test/flock-model.test.js",
         "test/headers-golden.test.js",
@@ -2071,24 +1771,17 @@
         "test/home-ether.test.js",
         "test/home-preview.test.js",
         "test/intel.test.js",
-        "test/lastfm-codec.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
         "test/lint-comments.test.js",
         "test/media.test.js",
-        "test/pages-prebuild.test.js",
         "test/poster-controls.test.js",
         "test/posters.test.js",
-        "test/prerender-safety.test.js",
-        "test/privacy.test.js",
         "test/progressive-enhancement.test.js",
         "test/publish-unshared.test.js",
-        "test/scrobble-count-parity.test.js",
         "test/secrets-history.test.js",
-        "test/security-remediation.test.js",
         "test/socials.test.js",
         "test/suno-songs.test.js",
-        "test/sync-media-wrangler.test.js",
         "test/unshared.test.js",
         "test/url-safety.test.js",
         "test/verbs.test.js",
@@ -3475,18 +3168,13 @@
         "concepts/suno/songs.json",
         "intel/curated.json",
         "lib/asset-budget.js",
-        "lib/cover-mirror.js",
-        "lib/cover-pixels.js",
-        "lib/cover-settle.js",
-        "lib/covers.js",
+        "lib/cover-encode.js",
         "lib/csp-policy.js",
         "lib/design-tokens.js",
         "lib/emit/assets.js",
         "lib/emit/csp.js",
         "lib/emit/feeds.js",
         "lib/emit/index.js",
-        "lib/format.js",
-        "lib/lastfm.js",
         "lib/letterboxd.js",
         "lib/posters.js",
         "lib/publish-unshared.js",
@@ -3501,10 +3189,8 @@
         "scripts/git-hooks/pre-commit",
         "scripts/intel.js",
         "scripts/lint-comments.js",
-        "scripts/optimize-media.js",
         "scripts/pages-prebuild.sh",
         "scripts/suno-sync.js",
-        "scripts/sync-media.js",
         "scripts/visual-serve.js",
         "scripts/wrangler-bin.js",
         "site.config.js",
@@ -3528,17 +3214,12 @@
         "test/asset-budget.test.js",
         "test/asset-contract.test.js",
         "test/asset-headers.test.js",
-        "test/build-validation.test.js",
         "test/client-hardening.test.js",
         "test/contrast.test.js",
-        "test/cover-pixels.test.js",
-        "test/cover-settle.test.js",
-        "test/covers.test.js",
         "test/csp-headers.test.js",
         "test/design-tokens.test.js",
         "test/emit-units.test.js",
         "test/ether-band.test.js",
-        "test/feed-standards.test.js",
         "test/film-count.test.js",
         "test/fixtures/letterboxd-rss.xml",
         "test/fixtures/visual/fonts/LICENSE",
@@ -3551,24 +3232,17 @@
         "test/home-ether.test.js",
         "test/home-preview.test.js",
         "test/intel.test.js",
-        "test/lastfm-codec.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
         "test/lint-comments.test.js",
         "test/media.test.js",
-        "test/pages-prebuild.test.js",
         "test/poster-controls.test.js",
         "test/posters.test.js",
-        "test/prerender-safety.test.js",
-        "test/privacy.test.js",
         "test/progressive-enhancement.test.js",
         "test/publish-unshared.test.js",
-        "test/scrobble-count-parity.test.js",
         "test/secrets-history.test.js",
-        "test/security-remediation.test.js",
         "test/socials.test.js",
         "test/suno-songs.test.js",
-        "test/sync-media-wrangler.test.js",
         "test/unshared.test.js",
         "test/url-safety.test.js",
         "test/verbs.test.js",
@@ -3630,8 +3304,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "db33ed1fe5bd65e70f7eeb7cedbc50d1d44bbe97213d8bf07f8793c6c1dafb9b",
-              "gitBlob": "1785b4d83fd01dbf0320c26de98f55ce487dd35e"
+              "sha256": "07636b8427f8f976f73b94417d1ebd33c269669c731c53de303467ffb11bf0f0",
+              "gitBlob": "667e9897b3eb613aca3e0a55b185fa15a5a19c56"
             },
             {
               "path": "static/hero.js",
@@ -3686,8 +3360,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "db33ed1fe5bd65e70f7eeb7cedbc50d1d44bbe97213d8bf07f8793c6c1dafb9b",
-              "gitBlob": "1785b4d83fd01dbf0320c26de98f55ce487dd35e"
+              "sha256": "07636b8427f8f976f73b94417d1ebd33c269669c731c53de303467ffb11bf0f0",
+              "gitBlob": "667e9897b3eb613aca3e0a55b185fa15a5a19c56"
             }
           ]
         },
@@ -3726,8 +3400,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "db33ed1fe5bd65e70f7eeb7cedbc50d1d44bbe97213d8bf07f8793c6c1dafb9b",
-              "gitBlob": "1785b4d83fd01dbf0320c26de98f55ce487dd35e"
+              "sha256": "07636b8427f8f976f73b94417d1ebd33c269669c731c53de303467ffb11bf0f0",
+              "gitBlob": "667e9897b3eb613aca3e0a55b185fa15a5a19c56"
             },
             {
               "path": "static/station.js",
@@ -3801,8 +3475,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "db33ed1fe5bd65e70f7eeb7cedbc50d1d44bbe97213d8bf07f8793c6c1dafb9b",
-              "gitBlob": "1785b4d83fd01dbf0320c26de98f55ce487dd35e"
+              "sha256": "07636b8427f8f976f73b94417d1ebd33c269669c731c53de303467ffb11bf0f0",
+              "gitBlob": "667e9897b3eb613aca3e0a55b185fa15a5a19c56"
             },
             {
               "path": "static/poster-prefs.js",
@@ -3851,8 +3525,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "db33ed1fe5bd65e70f7eeb7cedbc50d1d44bbe97213d8bf07f8793c6c1dafb9b",
-              "gitBlob": "1785b4d83fd01dbf0320c26de98f55ce487dd35e"
+              "sha256": "07636b8427f8f976f73b94417d1ebd33c269669c731c53de303467ffb11bf0f0",
+              "gitBlob": "667e9897b3eb613aca3e0a55b185fa15a5a19c56"
             },
             {
               "path": "static/station.js",
@@ -3908,8 +3582,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "db33ed1fe5bd65e70f7eeb7cedbc50d1d44bbe97213d8bf07f8793c6c1dafb9b",
-              "gitBlob": "1785b4d83fd01dbf0320c26de98f55ce487dd35e"
+              "sha256": "07636b8427f8f976f73b94417d1ebd33c269669c731c53de303467ffb11bf0f0",
+              "gitBlob": "667e9897b3eb613aca3e0a55b185fa15a5a19c56"
             }
           ]
         },
@@ -3946,8 +3620,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "db33ed1fe5bd65e70f7eeb7cedbc50d1d44bbe97213d8bf07f8793c6c1dafb9b",
-              "gitBlob": "1785b4d83fd01dbf0320c26de98f55ce487dd35e"
+              "sha256": "07636b8427f8f976f73b94417d1ebd33c269669c731c53de303467ffb11bf0f0",
+              "gitBlob": "667e9897b3eb613aca3e0a55b185fa15a5a19c56"
             }
           ]
         },
@@ -4146,8 +3820,8 @@
             },
             {
               "path": "site/render.js",
-              "sha256": "db33ed1fe5bd65e70f7eeb7cedbc50d1d44bbe97213d8bf07f8793c6c1dafb9b",
-              "gitBlob": "1785b4d83fd01dbf0320c26de98f55ce487dd35e"
+              "sha256": "07636b8427f8f976f73b94417d1ebd33c269669c731c53de303467ffb11bf0f0",
+              "gitBlob": "667e9897b3eb613aca3e0a55b185fa15a5a19c56"
             },
             {
               "path": "static/station.js",
@@ -4186,8 +3860,8 @@
           "provenance": [
             {
               "path": "site/render.js",
-              "sha256": "db33ed1fe5bd65e70f7eeb7cedbc50d1d44bbe97213d8bf07f8793c6c1dafb9b",
-              "gitBlob": "1785b4d83fd01dbf0320c26de98f55ce487dd35e"
+              "sha256": "07636b8427f8f976f73b94417d1ebd33c269669c731c53de303467ffb11bf0f0",
+              "gitBlob": "667e9897b3eb613aca3e0a55b185fa15a5a19c56"
             },
             {
               "path": "site/verbs.ts",
@@ -4218,18 +3892,13 @@
         "concepts/suno/songs.json",
         "intel/curated.json",
         "lib/asset-budget.js",
-        "lib/cover-mirror.js",
-        "lib/cover-pixels.js",
-        "lib/cover-settle.js",
-        "lib/covers.js",
+        "lib/cover-encode.js",
         "lib/csp-policy.js",
         "lib/design-tokens.js",
         "lib/emit/assets.js",
         "lib/emit/csp.js",
         "lib/emit/feeds.js",
         "lib/emit/index.js",
-        "lib/format.js",
-        "lib/lastfm.js",
         "lib/letterboxd.js",
         "lib/posters.js",
         "lib/publish-unshared.js",
@@ -4244,10 +3913,8 @@
         "scripts/git-hooks/pre-commit",
         "scripts/intel.js",
         "scripts/lint-comments.js",
-        "scripts/optimize-media.js",
         "scripts/pages-prebuild.sh",
         "scripts/suno-sync.js",
-        "scripts/sync-media.js",
         "scripts/visual-serve.js",
         "scripts/wrangler-bin.js",
         "site.config.js",
@@ -4271,17 +3938,12 @@
         "test/asset-budget.test.js",
         "test/asset-contract.test.js",
         "test/asset-headers.test.js",
-        "test/build-validation.test.js",
         "test/client-hardening.test.js",
         "test/contrast.test.js",
-        "test/cover-pixels.test.js",
-        "test/cover-settle.test.js",
-        "test/covers.test.js",
         "test/csp-headers.test.js",
         "test/design-tokens.test.js",
         "test/emit-units.test.js",
         "test/ether-band.test.js",
-        "test/feed-standards.test.js",
         "test/film-count.test.js",
         "test/fixtures/letterboxd-rss.xml",
         "test/fixtures/visual/fonts/LICENSE",
@@ -4294,24 +3956,17 @@
         "test/home-ether.test.js",
         "test/home-preview.test.js",
         "test/intel.test.js",
-        "test/lastfm-codec.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
         "test/lint-comments.test.js",
         "test/media.test.js",
-        "test/pages-prebuild.test.js",
         "test/poster-controls.test.js",
         "test/posters.test.js",
-        "test/prerender-safety.test.js",
-        "test/privacy.test.js",
         "test/progressive-enhancement.test.js",
         "test/publish-unshared.test.js",
-        "test/scrobble-count-parity.test.js",
         "test/secrets-history.test.js",
-        "test/security-remediation.test.js",
         "test/socials.test.js",
         "test/suno-songs.test.js",
-        "test/sync-media-wrangler.test.js",
         "test/unshared.test.js",
         "test/url-safety.test.js",
         "test/verbs.test.js",
@@ -4365,16 +4020,6 @@
           "features": []
         },
         {
-          "file": "test/build-validation.test.js",
-          "imports": [
-            "site/verbs.ts",
-            "test/helpers/run-build.js"
-          ],
-          "features": [
-            "social-footer"
-          ]
-        },
-        {
           "file": "test/client-hardening.test.js",
           "imports": [
             "test/helpers/run-build.js"
@@ -4384,29 +4029,6 @@
         {
           "file": "test/contrast.test.js",
           "imports": [],
-          "features": []
-        },
-        {
-          "file": "test/cover-pixels.test.js",
-          "imports": [
-            "lib/cover-pixels.js"
-          ],
-          "features": []
-        },
-        {
-          "file": "test/cover-settle.test.js",
-          "imports": [
-            "lib/cover-mirror.js",
-            "lib/cover-settle.js"
-          ],
-          "features": []
-        },
-        {
-          "file": "test/covers.test.js",
-          "imports": [
-            "lib/covers.js",
-            "lib/lastfm.js"
-          ],
           "features": []
         },
         {
@@ -4460,13 +4082,6 @@
             "watching-toggles",
             "wave-counts"
           ]
-        },
-        {
-          "file": "test/feed-standards.test.js",
-          "imports": [
-            "test/helpers/run-build.js"
-          ],
-          "features": []
         },
         {
           "file": "test/film-count.test.js",
@@ -4550,13 +4165,6 @@
           "features": []
         },
         {
-          "file": "test/lastfm-codec.test.js",
-          "imports": [
-            "lib/lastfm.js"
-          ],
-          "features": []
-        },
-        {
           "file": "test/letterboxd.test.js",
           "imports": [
             "lib/letterboxd.js",
@@ -4601,11 +4209,6 @@
           ]
         },
         {
-          "file": "test/pages-prebuild.test.js",
-          "imports": [],
-          "features": []
-        },
-        {
           "file": "test/poster-controls.test.js",
           "imports": [
             "site/render.js",
@@ -4642,21 +4245,6 @@
           ]
         },
         {
-          "file": "test/prerender-safety.test.js",
-          "imports": [
-            "lib/csp-policy.js",
-            "test/helpers/run-build.js"
-          ],
-          "features": []
-        },
-        {
-          "file": "test/privacy.test.js",
-          "imports": [
-            "test/helpers/run-build.js"
-          ],
-          "features": []
-        },
-        {
           "file": "test/progressive-enhancement.test.js",
           "imports": [
             "test/helpers/run-build.js"
@@ -4690,22 +4278,8 @@
           ]
         },
         {
-          "file": "test/scrobble-count-parity.test.js",
-          "imports": [
-            "lib/format.js"
-          ],
-          "features": []
-        },
-        {
           "file": "test/secrets-history.test.js",
           "imports": [],
-          "features": []
-        },
-        {
-          "file": "test/security-remediation.test.js",
-          "imports": [
-            "test/helpers/run-build.js"
-          ],
           "features": []
         },
         {
@@ -4729,13 +4303,6 @@
             "home-rows",
             "unshared-hub"
           ]
-        },
-        {
-          "file": "test/sync-media-wrangler.test.js",
-          "imports": [
-            "scripts/wrangler-bin.js"
-          ],
-          "features": []
         },
         {
           "file": "test/unshared.test.js",
@@ -4892,18 +4459,13 @@
         "concepts/suno/songs.json",
         "intel/curated.json",
         "lib/asset-budget.js",
-        "lib/cover-mirror.js",
-        "lib/cover-pixels.js",
-        "lib/cover-settle.js",
-        "lib/covers.js",
+        "lib/cover-encode.js",
         "lib/csp-policy.js",
         "lib/design-tokens.js",
         "lib/emit/assets.js",
         "lib/emit/csp.js",
         "lib/emit/feeds.js",
         "lib/emit/index.js",
-        "lib/format.js",
-        "lib/lastfm.js",
         "lib/letterboxd.js",
         "lib/posters.js",
         "lib/publish-unshared.js",
@@ -4918,10 +4480,8 @@
         "scripts/git-hooks/pre-commit",
         "scripts/intel.js",
         "scripts/lint-comments.js",
-        "scripts/optimize-media.js",
         "scripts/pages-prebuild.sh",
         "scripts/suno-sync.js",
-        "scripts/sync-media.js",
         "scripts/visual-serve.js",
         "scripts/wrangler-bin.js",
         "site.config.js",
@@ -4945,17 +4505,12 @@
         "test/asset-budget.test.js",
         "test/asset-contract.test.js",
         "test/asset-headers.test.js",
-        "test/build-validation.test.js",
         "test/client-hardening.test.js",
         "test/contrast.test.js",
-        "test/cover-pixels.test.js",
-        "test/cover-settle.test.js",
-        "test/covers.test.js",
         "test/csp-headers.test.js",
         "test/design-tokens.test.js",
         "test/emit-units.test.js",
         "test/ether-band.test.js",
-        "test/feed-standards.test.js",
         "test/film-count.test.js",
         "test/fixtures/letterboxd-rss.xml",
         "test/fixtures/visual/fonts/LICENSE",
@@ -4968,24 +4523,17 @@
         "test/home-ether.test.js",
         "test/home-preview.test.js",
         "test/intel.test.js",
-        "test/lastfm-codec.test.js",
         "test/letterboxd.test.js",
         "test/links.test.js",
         "test/lint-comments.test.js",
         "test/media.test.js",
-        "test/pages-prebuild.test.js",
         "test/poster-controls.test.js",
         "test/posters.test.js",
-        "test/prerender-safety.test.js",
-        "test/privacy.test.js",
         "test/progressive-enhancement.test.js",
         "test/publish-unshared.test.js",
-        "test/scrobble-count-parity.test.js",
         "test/secrets-history.test.js",
-        "test/security-remediation.test.js",
         "test/socials.test.js",
         "test/suno-songs.test.js",
-        "test/sync-media-wrangler.test.js",
         "test/unshared.test.js",
         "test/url-safety.test.js",
         "test/verbs.test.js",

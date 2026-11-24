@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { encodeCoverFiles } from '../lib/cover-settle.js';
+import { encodeCoverFiles } from '../lib/cover-encode.js';
 import { selectPublicSongs } from '../lib/suno-songs.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');

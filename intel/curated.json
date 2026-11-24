@@ -28,7 +28,7 @@
     },
     {
       "id": "frequency-offline",
-      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
+      "verified-at": "cc92ef9aba50ab8ec22ece9250916347a07e3701",
       "paths": ["site/verbs.ts", "site/render.js", "lib/emit/index.js"],
       "text": "/frequency/ is a noindex secret. It stays out of the registry and the sitemap, and it stays offline while SECRET_PATHS is empty. The prize mailto lives only in renderFrequency. Do not copy that address into docs, the index, or a public page."
     },
@@ -40,7 +40,7 @@
     },
     {
       "id": "wave-words",
-      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
+      "verified-at": "cc92ef9aba50ab8ec22ece9250916347a07e3701",
       "paths": ["site/render.js", "static/station.css"],
       "text": "The wave sits only on the word that labels the big count: films. The numbers are outline only. Stars are black fill with a pink outline."
     },
@@ -70,7 +70,7 @@
     },
     {
       "id": "zero-spend",
-      "verified-at": "818067da82f45dc58184c4c14beef824133eb4cc",
+      "verified-at": "cc92ef9aba50ab8ec22ece9250916347a07e3701",
       "paths": ["package.json"],
       "text": "Zero spend. No new runtime dependency. Dev-only tooling has to be a plain Node script."
     },
@@ -83,7 +83,7 @@
     },
     {
       "id": "safe-area",
-      "verified-at": "73b064f2b752f193738bc8aaf7f8f82e4afcf04e",
+      "verified-at": "cc92ef9aba50ab8ec22ece9250916347a07e3701",
       "paths": [
         "site/tokens.css",
         "site/render.js",
@@ -104,7 +104,7 @@
     },
     {
       "id": "comment-lint",
-      "verified-at": "3f3bb2cba2802c52838c1e5656bf91976b9ec53a",
+      "verified-at": "cc92ef9aba50ab8ec22ece9250916347a07e3701",
       "paths": [
         "scripts/lint-comments.js",
         "package.json",
@@ -117,7 +117,7 @@
   "rejected": [
     {
       "id": "vault",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "cc92ef9aba50ab8ec22ece9250916347a07e3701",
       "paths": ["scripts/pages-prebuild.sh"],
       "text": "The Obsidian vault and VAULT_TOKEN were removed. The prebuild must not clone. There is no content/ tree. Do not bring the vault back."
     },
@@ -221,7 +221,7 @@
   "features": [
     {
       "id": "home-hero",
-      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
+      "verified-at": "cc92ef9aba50ab8ec22ece9250916347a07e3701",
       "route": "/",
       "anchors": ["data-hero", "class=\"hero-water\"", "data-words="],
       "text": "Home is the ether: one screen of glyphs on the void. The name floats half under a water line; surfaceWords in site/verbs.ts drift through it. A summoning circle turns around the name: two rings of the surface words, a star polygon {n/k} and a mirrored thorned sigil, all drawn as characters. Every summoning is random (crypto.getRandomValues): a new sigil, a new star, new ring order and spin, on each load and each invocation. The verb menu sits inside the scene as the prompt. A verb link summons for about two seconds, then opens its page. hero.js adds a spell line: a typed word that names a verb summons and opens it, return or home summons the name again, and anything else summons in place and answers bound, unstable or unanswered with an omen from surfaceWords. Typed words stay in the page. hero.js reads its colors from the computed style of the heading, the canvas (color, outline-color, border-color) and the log. Without the script the spell line does not exist and hero.css cuts the heading at the same line.",
@@ -230,7 +230,7 @@
     },
     {
       "id": "home-rows",
-      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
+      "verified-at": "cc92ef9aba50ab8ec22ece9250916347a07e3701",
       "route": "/",
       "anchors": ["aria-label=\"verbs\"", "class=\"verb-kicker\"", "class=\"verb-row home-suno\""],
       "text": "The verb list is the prompt along the bottom of the hero. The DOM keeps matt does plus the registry label for readers; hero.css hides the prefix and draws > invoke before each label in mono. Unshared is not in that list. The unshared row is the same kind of line; its heading unshared opens /unshared/. The latest film follows the letterboxd row as a comment, with no underline.",
@@ -239,7 +239,7 @@
     },
     {
       "id": "watching-strip",
-      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
+      "verified-at": "cc92ef9aba50ab8ec22ece9250916347a07e3701",
       "route": "/watching/",
       "anchors": ["class=\"film-open\"", "data-scene"],
       "text": "Recent films are a strip. The first image is eager. The rest are lazy. src stays off the img until posters are on, so an off preference does not fetch. A poster that was not mirrored is omitted.",
@@ -248,7 +248,7 @@
     },
     {
       "id": "watching-toggles",
-      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
+      "verified-at": "cc92ef9aba50ab8ec22ece9250916347a07e3701",
       "route": "/watching/",
       "anchors": ["data-posters-toggle", "data-axis-toggle", "data-pull"],
       "storageKeys": ["mattdoes-posters", "mattdoes-poster-axis"],
@@ -259,7 +259,7 @@
     },
     {
       "id": "watching-scene",
-      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
+      "verified-at": "cc92ef9aba50ab8ec22ece9250916347a07e3701",
       "route": "/watching/",
       "anchors": ["id=\"scene\"", "data-review"],
       "text": "Opening a film uses a dialog. The wide poster is not in the tree until the scene opens. The review is a data attribute, not card text.",
@@ -268,7 +268,7 @@
     },
     {
       "id": "watching-count",
-      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
+      "verified-at": "cc92ef9aba50ab8ec22ece9250916347a07e3701",
       "route": "/watching/",
       "anchors": ["countLine(ctx.filmCount", "parseFilmCount"],
       "text": "The films count is the public Letterboxd total, not the length of the RSS window. A missing count hides the line and does not fail the build. The word films is the wave. The page is in the ether: the number is mint mono and the word reads as a // comment.",
@@ -277,7 +277,7 @@
     },
     {
       "id": "wave-counts",
-      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
+      "verified-at": "cc92ef9aba50ab8ec22ece9250916347a07e3701",
       "route": "",
       "anchors": ["WAVE_WORDS", "class=\"wave\""],
       "text": "Only films takes the wave. Spoken text stays in the accessibility tree. The painted letters are aria-hidden. Reduced motion stops the animation and keeps a static sine.",
@@ -304,7 +304,7 @@
     },
     {
       "id": "frequency",
-      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
+      "verified-at": "cc92ef9aba50ab8ec22ece9250916347a07e3701",
       "route": "/frequency/",
       "anchors": ["function renderFrequency", "frequency-key"],
       "text": "The secret page is offline while SECRET_PATHS is empty. Emit cuts the key hook out of the shipped station.js and fails if the word frequency remains. The prize mailto stays in renderFrequency only.",
@@ -313,7 +313,7 @@
     },
     {
       "id": "social-footer",
-      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
+      "verified-at": "cc92ef9aba50ab8ec22ece9250916347a07e3701",
       "route": "/",
       "anchors": ["rel=\"me noopener\"", "socialCatalog"],
       "text": "The footer is a row of social marks, one per socialCatalog entry, each with an icon in site/social-icons.js. Links are https profile URLs and do not point at unshared.",

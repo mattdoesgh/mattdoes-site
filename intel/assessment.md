@@ -10,8 +10,6 @@ That split is fine. What is not fine is the residue of the previous site. `site.
 
 `workers/geo` was retired on Oct 25 2026 with Matt's approval. No page called `/api/geo/lookup`, and the Permissions-Policy denies geolocation. The worker, its KV binding, and its tests are gone.
 
-`scripts/optimize-media.js` and `scripts/sync-media.js` still walk `content/attachments/` and no-op when it is missing. Poster bytes go through `lib/posters.js`, not those scripts. Do not point a new media task at them.
-
 ## Data flow
 
 Home and `/listening/` bake Last.fm at build time (`lib/listening.js`). The browser then polls `/api/listening/now` (home) and `/api/listening/recent` (`/listening/`). `/api/listening/charts` is build-only. The Monday cron `0 11 * * 1` refreshes `charts:week` and asks `mattdoes-rebuild` to POST the Pages deploy hook. A six-hour cron on rebuild refetches Letterboxd. Posters and covers land on R2 (`mattdoes-media`) and are served from `media.mattdoes.online`. A poster that is not mirrored is omitted.

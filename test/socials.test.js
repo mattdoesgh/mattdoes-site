@@ -44,13 +44,6 @@ test('the registry lists the footer socials without last.fm', () => {
   ]), /must not point at unshared/);
 });
 
-test('the home has no last.fm verb and /listening/ is not built', () => {
-  const home = new JSDOM(fs.readFileSync(path.join(distDir, 'index.html'), 'utf8')).window.document;
-  assert.equal(home.querySelector('a.verb[href="/listening/"]'), null);
-  assert.equal(home.querySelector('.listen-line'), null);
-  assert.equal(fs.existsSync(path.join(distDir, 'listening', 'index.html')), false);
-});
-
 test('every built page footer has the social hrefs and names', () => {
   const files = listDistHtml(distDir);
   assert.ok(files.length >= 4);
