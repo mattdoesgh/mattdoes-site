@@ -4,7 +4,7 @@
   "decisions": [
     {
       "id": "tokens-only",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "f376a94ac2496c82843fc9e9e5da4c9117089f7a",
       "paths": ["site/tokens.css", "lib/design-tokens.js", "STYLE.md"],
       "text": "site/tokens.css is the only place a raw color, font stack, or font size is written. Pages use var(--token). The build keeps the polarity colors, the font stacks, and --row-size live and inlines the rest. Pink is #F7C8D8."
     },
@@ -129,7 +129,7 @@
     },
     {
       "id": "chrome-habits",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "f376a94ac2496c82843fc9e9e5da4c9117089f7a",
       "paths": ["STYLE.md"],
       "text": "No grid lines, no chips, no unfold or wipe animations, no flavor text, no numbering. No subheading or standfirst under a page title or a section heading. Lowercase labels."
     },
@@ -221,7 +221,7 @@
   "features": [
     {
       "id": "home-hero",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "f376a94ac2496c82843fc9e9e5da4c9117089f7a",
       "route": "/",
       "anchors": ["data-hero", "class=\"hero-water\"", "data-words="],
       "text": "Home is the ether: one screen of glyphs on the void. The name floats half under a water line; surfaceWords in site/verbs.ts drift through it. A summoning circle turns around the name: two rings of the surface words, a star polygon {n/k} and a mirrored thorned sigil, all drawn as characters. Every summoning is random (crypto.getRandomValues): a new sigil, a new star, new ring order and spin, on each load and each invocation. The verb menu sits inside the scene as the prompt. A verb link summons for about two seconds, then opens its page. hero.js adds a spell line: a typed word that names a verb summons and opens it, return or home summons the name again, and anything else summons in place and answers bound, unstable or unanswered with an omen from surfaceWords. Typed words stay in the page. hero.js reads its colors from the computed style of the heading, the canvas (color, outline-color, border-color) and the log. Without the script the spell line does not exist and hero.css cuts the heading at the same line.",
