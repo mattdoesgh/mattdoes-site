@@ -1,6 +1,6 @@
 /* Station tokens. This file is the only place a raw color, font stack,
    or font size is written. Pages use var(--token).
-   Field, ink, focus, and rule swap when a verb page flips.
+   Field, ink, focus, and rule swap when a page flips or joins the ether.
    The build keeps field, ink, focus, rule, the font stacks,
    --row-size, and the safe-area edges live, and inlines every other token. */
 
@@ -61,6 +61,8 @@
   /* The home water line, from the top of the hero. static/hero.js uses
      the same fraction. */
   --hero-line: 46%;
+  /* Height of the glyph band that crowns a verb page. */
+  --ether-band: clamp(9rem, 6.5rem + 9vw, 15rem);
   /* One cell of the home ether, 9px on a phone up to 12px wide. */
   --type-ether: clamp(0.5625rem, 0.45rem + 0.35vw, 0.75rem);
   /* The prompt under the ether. */
@@ -169,4 +171,14 @@ body[data-polarity="flip"] {
   --focus: var(--black);
   --rule: rgba(0, 0, 0, 0.18);
   color-scheme: light;
+}
+
+/* The verb pages carry the home ether: bone type on the void, a violet
+   focus ring, mint hairlines. */
+body[data-polarity="ether"] {
+  --field: var(--black);
+  --ink: var(--bone);
+  --focus: var(--violet);
+  --rule: rgba(205, 238, 226, 0.22);
+  color-scheme: dark;
 }

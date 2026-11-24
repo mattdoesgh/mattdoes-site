@@ -37,6 +37,7 @@ function resolve(primary, fallback, name) {
 
 const root = props(block(tokens, ':root'));
 const flip = props(block(tokens, 'body[data-polarity="flip"]'));
+const ether = props(block(tokens, 'body[data-polarity="ether"]'));
 
 test('field and ink clear AA on both polarities', () => {
   const field = resolve(root, root, '--field');
@@ -59,6 +60,13 @@ test('the field has no background grid', () => {
   assert.doesNotMatch(css, /linear-gradient|repeating-linear-gradient|background-image/);
   assert.doesNotMatch(tokens, /linear-gradient|repeating-linear-gradient|background-image/);
   assert.match(css, /background-color:\s*var\(--field\)/);
+});
+
+test('the ether polarity is bone on black with a violet ring', () => {
+  const field = resolve(ether, root, '--field');
+  assert.equal(field.toLowerCase(), '#000000');
+  assert.ok(wcagContrast(resolve(ether, root, '--ink'), field) >= 4.5, 'bone on black');
+  assert.ok(wcagContrast(resolve(ether, root, '--focus'), field) >= 3, 'violet ring on black');
 });
 
 test('the ether glyph colors clear AA on black', () => {

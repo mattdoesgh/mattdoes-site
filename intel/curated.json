@@ -271,7 +271,7 @@
       "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
       "route": "/watching/",
       "anchors": ["countLine(ctx.filmCount", "parseFilmCount"],
-      "text": "The films count is the public Letterboxd total, not the length of the RSS window. A missing count hides the line and does not fail the build. The word films is the wave. The number is an outline.",
+      "text": "The films count is the public Letterboxd total, not the length of the RSS window. A missing count hides the line and does not fail the build. The word films is the wave. The page is in the ether: the number is mint mono and the word reads as a // comment.",
       "risks": ["LETTERBOXD_OFFLINE hides the live total. The preview is the check."],
       "devices": ["The count and the switches share a row and wrap. Check 390 so they do not collide."]
     },
@@ -289,7 +289,7 @@
       "verified-at": "c3c10f31c75de8118e5ceba5262eaafbd633ac4d",
       "route": "/unshared/",
       "anchors": ["aria-label=\"unshared\"", "unsharedEntries", "https://suno.com/song/", "class=\"song-wave\"", "animation-name: song-wave"],
-      "text": "The hub heading is unshared does suno and links home. The first row is birds1, with no unshared does prefix on that row. Published Suno songs are a five-column cover grid, the same markup as the listening chart and without a caption, then a lowercase title list. Each title is a song-wave: letters sit flat and wrap only between words, the link aria-label is the full title, and the letters are aria-hidden. The sine plays while the link is hovered on a device that hovers, while it is focus-visible, and while it is pressed. Reduced motion keeps the letters flat. Each cover and title links to https://suno.com/song/<id>. The art is the committed snapshot from npm run suno:sync. The page is in the sitemap and off the home verb list. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
+      "text": "The hub is in the ether, crowned by the glyph band that static/ether.js draws; emit passes the asset map so the hub loads that script. The heading is unshared does suno, pink, and links home. The first row is birds1, with no unshared does prefix on that row; it reads as > invoke birds1 in mono. Published Suno songs are a five-column cover grid, the same markup as the listening chart and without a caption, then a lowercase title list. Each title is a song-wave: letters sit flat and wrap only between words, the link aria-label is the full title, and the letters are aria-hidden. The sine plays while the link is hovered on a device that hovers, while it is focus-visible, and while it is pressed. Reduced motion keeps the letters flat. Each cover and title links to https://suno.com/song/<id>. The art is the committed snapshot from npm run suno:sync. The page is in the sitemap and off the home verb list. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
       "risks": ["Publish fails when the page or the stylesheet is missing.", "A song without a committed cover is omitted. The page does not fetch Suno.", "The count wave stays scrobbles and films. Song titles use song-wave."],
       "devices": ["The row hit target is at least 44px. Cover slots follow the listening chart, about 72 CSS px on a phone. The wave is transform only and must not shift layout. Check the grid at 390 and 1280."]
     },

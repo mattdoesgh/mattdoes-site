@@ -359,7 +359,7 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
   await expect(page.locator('.axis-down')).toBeVisible();
   const chosen = await page.locator('.poster-on').evaluate((el) => getComputedStyle(el).backgroundColor);
   const idle = await page.locator('.poster-off').evaluate((el) => getComputedStyle(el).backgroundColor);
-  expect(chosen).toBe('rgb(0, 0, 0)');
+  expect(chosen).toBe('rgb(205, 238, 226)');
   expect(idle).not.toBe(chosen);
 
   const width = info.project.use.viewport.width;
@@ -432,7 +432,7 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
   await expect(page.locator('.poster-off')).toBeVisible();
   const offFill = await page.locator('.poster-off').evaluate((el) => getComputedStyle(el).backgroundColor);
   const onFill = await page.locator('.poster-on').evaluate((el) => getComputedStyle(el).backgroundColor);
-  expect(offFill).toBe('rgb(0, 0, 0)');
+  expect(offFill).toBe('rgb(205, 238, 226)');
   expect(onFill).not.toBe(offFill);
   await expect(feed).toBeVisible();
   await expect(axis).toHaveAttribute('aria-disabled', 'true');
@@ -478,7 +478,7 @@ test('poster toggles persist and turn the strip', async ({ page }, info) => {
   await expect(page.locator('.axis-across')).toBeVisible();
   const downFill = await page.locator('.axis-down').evaluate((el) => getComputedStyle(el).backgroundColor);
   const acrossFill = await page.locator('.axis-across').evaluate((el) => getComputedStyle(el).backgroundColor);
-  expect(downFill).toBe('rgb(0, 0, 0)');
+  expect(downFill).toBe('rgb(205, 238, 226)');
   expect(acrossFill).not.toBe(downFill);
   const axisDownWidth = await axis.evaluate((el) => el.getBoundingClientRect().width);
   expect(Math.abs(axisDownWidth - axisWidth)).toBeLessThan(1);

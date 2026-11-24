@@ -373,3 +373,89 @@ main {
     overflow-wrap: break-word;
   }
 }
+
+/* The ether, as on the other verb pages. A glyph band crowns the page and
+   ether.js paints it, reading colors and the cell font from the canvas.
+   The rows read as the home prompt; song titles are commands. */
+.ether-band {
+  display: block;
+  flex: 0 0 auto;
+  width: calc(100% + var(--space-page-left) + var(--space-page-right));
+  height: var(--ether-band);
+  margin: calc(-1 * var(--space-page-top)) calc(-1 * var(--space-page-right)) var(--space-0) calc(-1 * var(--space-page-left));
+  color: var(--mint);
+  outline-color: var(--violet);
+  border-top-color: var(--bone);
+  text-decoration-color: var(--pink);
+  font-family: var(--mono);
+  font-size: var(--type-ether);
+  cursor: crosshair;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body[data-polarity="ether"] .sign {
+  color: var(--pink);
+}
+
+body[data-polarity="ether"] .album-tile {
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+
+body[data-polarity="ether"] .tracks .what,
+body[data-polarity="ether"] .verb {
+  font-family: var(--mono);
+  color: var(--bone);
+}
+
+body[data-polarity="ether"] .tracks a::before {
+  content: ">\00a0" / "";
+  flex: 0 0 auto;
+  color: var(--dim);
+}
+
+body[data-polarity="ether"] .verb {
+  font-size: var(--type-prompt);
+}
+
+body[data-polarity="ether"] .verb-label::before {
+  content: ">\00a0invoke\00a0" / "";
+  color: var(--dim);
+}
+
+body[data-polarity="ether"] .verb:hover,
+body[data-polarity="ether"] .verb:focus-visible,
+body[data-polarity="ether"] .verb:active {
+  background: var(--mint);
+  color: var(--black);
+  outline-color: var(--black);
+}
+
+body[data-polarity="ether"] .verb:hover .verb-label::before,
+body[data-polarity="ether"] .verb:focus-visible .verb-label::before,
+body[data-polarity="ether"] .verb:active .verb-label::before {
+  color: inherit;
+}
+
+body[data-polarity="ether"] .skip-link {
+  background: var(--mint);
+  color: var(--black);
+}
+
+@media (min-width: 1024px) {
+  .ether-band {
+    width: calc(100% + var(--space-page-desk-left) + var(--space-page-desk-right));
+    margin: calc(-1 * var(--space-page-desk-top)) calc(-1 * var(--space-page-desk-right)) var(--space-0) calc(-1 * var(--space-page-desk-left));
+  }
+
+  body[data-polarity="ether"] .verb {
+    font-size: var(--type-prompt);
+    height: auto;
+    min-height: var(--hit);
+  }
+}
+
+@media (min-width: 1024px) {
+  body[data-polarity="ether"] .verb-row {
+    flex: 0 0 auto;
+  }
+}

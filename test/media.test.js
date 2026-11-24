@@ -9,7 +9,7 @@ import { renderWatch } from '../site/render.js';
 
 const ctx = {
   siteUrl: 'https://mattdoes.online',
-  assets: { 'station.css': 'station.abc12345.css', 'station.js': 'station.abc12345.js' },
+  assets: { 'station.css': 'station.abc12345.css', 'station.js': 'station.abc12345.js', 'ether.css': 'ether.abc12345.css', 'ether.js': 'ether.abc12345.js' },
   tracks: [],
   playcount: 0,
   builtAt: '2026-10-20T00:00:00.000Z',

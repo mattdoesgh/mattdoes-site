@@ -9,7 +9,7 @@
 - `--pink` `#F7C8D8`
 - `--mint` `#CDEEE2`, `--violet` `#A99BFF`, `--bone` `#F1EEF8`, `--dim` `#8A96A2`, `--veil` black at 0.8
 
-Home is the ether: glyphs on black. Mint is the field of characters, pink the name, the water line and the outer ring, violet the inner ring and the star, bone the sigil and the prompt, dim the log and the prompt's comments. A verb page flips to black type on a pink field (`--field`, `--ink`, `--focus`, `--rule`).
+Home is the ether: glyphs on black. Mint is the field of characters, pink the name, the water line and the outer ring, violet the inner ring and the star, bone the sigil and the prompt, dim the log and the prompt's comments. Letterboxd and Unshared join the ether (`data-polarity="ether"`): bone type on black, a violet focus ring, mint hairlines. birds1 still flips to black type on a pink field (`--field`, `--ink`, `--focus`, `--rule`).
 
 ## Type
 
@@ -31,6 +31,7 @@ Spacing is the `--space-*` scale, fluid `clamp()` values of rem and vw. Borders 
 - No explanation on the page. The prompt is `> invoke` and the words; a visitor finds the spell line by typing.
 - Typed spells pass a ward first. Slurs, severe profanity and sexual words are refused: the circle summons noise and the line reads `✗ refused`. The word never reaches the log.
 - What a visitor types stays in the page.
+- A verb page is crowned by a glyph band: a smaller circle ringed by the page's word, a new star and sigil each visit, a press summons another. `static/ether.js` draws it. The name stays the pink cut word, everything else is mono terminal lines: `>` before a title or a setting, `//` before a comment, `[ ]` around a flag.
 
 ## Standing rules
 
