@@ -65,6 +65,8 @@
   --ether-band: clamp(9rem, 6.5rem + 9vw, 15rem);
   /* One cell of the home ether, 9px on a phone up to 12px wide. */
   --type-ether: clamp(0.5625rem, 0.45rem + 0.35vw, 0.75rem);
+  /* A song title in the ether: mono is wider than Anton, so it steps down. */
+  --type-ether-title: clamp(1.1rem, 0.9rem + 1vw, 1.6rem);
   /* The prompt under the ether. */
   --type-prompt: clamp(0.9rem, 0.82rem + 0.33vw, 1.1rem);
   --type-prize: clamp(1.6rem, 4vw, 2.4rem);

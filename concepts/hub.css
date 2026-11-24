@@ -376,8 +376,9 @@ main {
 
 /* The ether, as on the other verb pages. A glyph band crowns the page and
    ether.js paints it, reading colors and the cell font from the canvas.
-   The row reads as the home prompt. Song titles take no prefix: a word
-   never breaks, so at 320px and 200% text the longest one fills the line. */
+   The row reads as the home prompt. A song word never breaks, so titles
+   take no prefix and step down to a mono size that fits at 320px and
+   200% text. */
 .ether-band {
   display: block;
   flex: 0 0 auto;
@@ -406,6 +407,10 @@ body[data-polarity="ether"] .tracks .what,
 body[data-polarity="ether"] .verb {
   font-family: var(--mono);
   color: var(--bone);
+}
+
+body[data-polarity="ether"] .tracks .what {
+  font-size: var(--type-ether-title);
 }
 
 body[data-polarity="ether"] .verb {
