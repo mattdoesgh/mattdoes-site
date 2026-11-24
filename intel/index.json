@@ -121,7 +121,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "79308c447045ec3153c955bdee84b334a8819cb5cb7bc9679025c4afcc2350b9",
+      "sha256": "fbbb3db9992110402884f6f720bbcac3e342a045e288cd6ad008439f42429c3d",
       "gitBlob": null
     },
     {
@@ -201,8 +201,8 @@
     },
     {
       "path": "playwright.config.js",
-      "sha256": "dd4b5e0b29bb5a2db7245c895b271426465f3a15292971e5932bcf3d466c2274",
-      "gitBlob": "bb2902e8a059cfc98bd12eb8c8ae3af970a4064c"
+      "sha256": "a8ed918e5f63713cb0deec00708a4b183081f28fce08a86f4557cd0c89d3bf8d",
+      "gitBlob": "036fada527f56164acf53f3dcba3cb11c089870e"
     },
     {
       "path": "scripts/check-asset-budget.js",
@@ -531,8 +531,8 @@
     },
     {
       "path": "test/visual/prepare.js",
-      "sha256": "44c3836cae9997e94157c24353daaaab70c26cbcd690137047428cb230239d4c",
-      "gitBlob": "297b3ba4ed86a67c3f2440f56e5d6bd8c6a36cfa"
+      "sha256": "c6d558b0b22d120b58d2d8250cdbc08619b301fafb2ec25f6d0257267fa183e7",
+      "gitBlob": "dc448be76b9668a6bce662e49845b65da34ae700"
     },
     {
       "path": "test/visual/scale.spec.js",

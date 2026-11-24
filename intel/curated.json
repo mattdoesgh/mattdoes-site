@@ -201,7 +201,7 @@
   "conventions": [
     {
       "id": "viewports",
-      "verified-at": "ae5523b9e7a119fb88f0fd7918d9417b322caf61",
+      "verified-at": "3348caddee8c0d4cc311fe5670d6ef9b3d4a4997",
       "paths": ["playwright.config.js"],
       "text": "Check 390×844 and 1280×800. The visual suite also has an 800-wide home shot. Phone project is hasTouch."
     },
