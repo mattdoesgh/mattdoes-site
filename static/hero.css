@@ -1,7 +1,8 @@
-/* Home hero. The name sits on a water line: the top of each letter in the
-   air, the rest under the surface. hero.js paints the moving scene into
-   the canvas and sets data-drawn; without it the heading is drawn here,
-   cut at the same line, still. */
+/* Home hero: the ether. One screen of glyphs on the void, the name half
+   under the water line, the verb menu as a prompt along the bottom.
+   hero.js paints the scene into the canvas and sets data-drawn; without it
+   the heading is drawn here, cut at the same line, still. The canvas
+   carries the ether's colors and cell font so the script can read them. */
 
 .hero {
   position: relative;
@@ -12,18 +13,9 @@
   margin-left: calc(-1 * var(--space-page-left));
 }
 
-/* Motion allowed: extra scroll while the scene is pinned, so the reader
-   can sink under the line before the verbs arrive. */
-.hero[data-live] {
-  height: 180vh;
-  height: 180svh;
-}
-
 .hero-pin {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100svh;
+  position: relative;
+  height: 100%;
   overflow: clip;
   background: var(--black);
 }
@@ -35,6 +27,11 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
+  color: var(--mint);
+  outline-color: var(--violet);
+  border-color: var(--bone);
+  font-family: var(--mono);
+  font-size: var(--type-ether);
 }
 
 .hero-word {
@@ -94,8 +91,197 @@
   display: none;
 }
 
-.hero + nav {
-  padding: var(--space-phone-main) var(--space-0);
+.hero-log {
+  position: absolute;
+  top: var(--space-page-top);
+  left: var(--space-page-left);
+  margin: var(--space-0);
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: var(--type-flag);
+  line-height: 1.6;
+  white-space: pre;
+  pointer-events: none;
+}
+
+/* The prompt. The verb rows are terminal lines here, not the big menu. */
+.hero-prompt {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: var(--space-section) var(--space-page-right) var(--space-md) var(--space-page-left);
+  background: var(--veil);
+  color: var(--bone);
+  font-family: var(--mono);
+  font-size: var(--type-prompt);
+  line-height: 1.4;
+}
+
+.hero .verb-kicker {
+  display: none;
+}
+
+.hero .verbs {
+  display: grid;
+  gap: var(--space-0);
+  margin: var(--space-0);
+  padding: var(--space-0);
+}
+
+.hero .verb-row {
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: var(--space-0) var(--space-1);
+  padding: var(--space-0);
+  border-top: var(--line-none);
+}
+
+.hero .verb,
+.hero .home-suno-sign,
+.hero .home-suno-sign a {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  height: auto;
+  min-height: var(--hit-setting);
+  padding: var(--space-0);
+  overflow: visible;
+  background: none;
+  color: var(--bone);
+  font-family: var(--mono);
+  font-size: var(--type-prompt);
+  line-height: 1.4;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.hero .verb-prefix {
+  display: none;
+}
+
+.hero .verb::before,
+.hero .home-suno-sign a::before {
+  content: "> invoke\00a0" / "";
+  color: var(--bone);
+}
+
+.hero .verb-label,
+.hero .home-suno-sign a {
+  color: var(--pink);
+}
+
+.hero .home-suno-sign a::before {
+  color: var(--bone);
+}
+
+.hero .verb:hover,
+.hero .verb:focus-visible,
+.hero .home-suno-sign a:hover,
+.hero .home-suno-sign a:focus-visible {
+  background: none;
+  color: var(--bone);
+  outline-color: var(--pink);
+}
+
+.hero .verb:hover .verb-label,
+.hero .verb:focus-visible .verb-label,
+.hero .home-suno-sign a:hover,
+.hero .home-suno-sign a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.hero .verb:active {
+  background: none;
+  color: var(--bone);
+}
+
+.hero .preview,
+.hero .preview a,
+.hero .preview .stars {
+  align-self: auto;
+  max-width: none;
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: var(--type-prompt);
+  line-height: 1.4;
+  text-align: left;
+}
+
+.hero .preview .stars {
+  font-family: var(--body);
+}
+
+.hero .preview::before {
+  content: "//\00a0" / "";
+}
+
+/* The spell line and its answer. hero.js adds both. */
+.hero .spell {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--hit-setting);
+  color: var(--bone);
+  cursor: text;
+}
+
+.hero .spell input {
+  width: 24ch;
+  max-width: 70vw;
+  margin: var(--space-0);
+  padding: var(--space-0);
+  border: var(--line-none);
+  background: none;
+  color: var(--pink);
+  caret-color: var(--pink);
+  font: inherit;
+}
+
+.hero .spell input:focus,
+.hero .spell input:focus-visible {
+  outline: var(--outline-none);
+}
+
+.hero .spell:focus-within {
+  outline: var(--outline-focus);
+  outline-offset: var(--outline-offset);
+}
+
+.hero .spell input::placeholder {
+  color: var(--pink);
+  opacity: 1;
+}
+
+.hero .spell-out {
+  min-height: 1.4em;
+  margin: var(--space-0);
+  color: var(--dim);
+  white-space: pre;
+}
+
+.hero .spell-fate {
+  color: var(--violet);
+}
+
+.hero .spell-omen {
+  color: var(--pink);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero .spell input:placeholder-shown:not(:focus) {
+    animation: hero-blink 1.1s steps(1) infinite;
+  }
+}
+
+@keyframes hero-blink {
+  50% {
+    opacity: 0;
+  }
 }
 
 body:has(.hero) main {
@@ -109,9 +295,12 @@ body:has(.hero) main {
     margin-left: calc(-1 * var(--space-page-desk-left));
   }
 
-  body:has(.hero) main > nav {
-    min-height: 100vh;
-    min-height: 100svh;
-    padding: var(--space-0);
+  .hero-log {
+    top: var(--space-page-desk-top);
+    left: var(--space-page-desk-left);
+  }
+
+  .hero-prompt {
+    padding: var(--space-section) var(--space-page-desk-right) var(--space-md) var(--space-page-desk-left);
   }
 }

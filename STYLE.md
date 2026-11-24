@@ -7,8 +7,9 @@
 - `--black` `#000000`
 - `--white` `#ffffff`
 - `--pink` `#F7C8D8`
+- `--mint` `#CDEEE2`, `--violet` `#A99BFF`, `--bone` `#F1EEF8`, `--dim` `#8A96A2`, `--veil` black at 0.8
 
-Home is pink on black. A verb page flips to black type on a pink field (`--field`, `--ink`, `--focus`, `--rule`).
+Home is the ether: glyphs on black. Mint is the field of characters, pink the name, the water line and the outer ring, violet the inner ring and the star, bone the sigil and the prompt, dim the log and the prompt's comments. A verb page flips to black type on a pink field (`--field`, `--ink`, `--focus`, `--rule`).
 
 ## Type
 
@@ -23,11 +24,19 @@ Home is pink on black. A verb page flips to black type on a pink field (`--field
 
 Spacing is the `--space-*` scale, fluid `clamp()` values of rem and vw. Borders are `--line-*`. Focus rings are `--outline-*`. Radius is `--radius` (0). Hit targets are `--hit` (44px floor) and `--hit-phone` (48px floor); both grow on a wide window. Page edges are `max()` of that padding and `env(safe-area-inset-*)`. Those `env()` calls stay in `site/tokens.css`. A device with no inset keeps the padding it had.
 
+## The ether
+
+- Everything on home is characters on the void. The scene is drawn in glyphs, not shapes.
+- Every summoning is random: a new sigil and a new star each time. Nothing is seeded by the word.
+- No explanation on the page. The prompt is `> invoke` and the words; a visitor finds the spell line by typing.
+- Typed spells pass a ward first. Slurs, severe profanity and sexual words are refused: the circle summons noise and the line reads `✗ refused`. The word never reaches the log.
+- What a visitor types stays in the page.
+
 ## Standing rules
 
 - Pink `#F7C8D8` on black.
 - Lowercase `matt does <verb>` labels. The data source is named plainly.
-- No grid lines. No flavor text. No numbering.
+- No grid lines. No numbering. No flavor text outside the ether.
 - No subheading or standfirst under a page title or a section heading. `h1.sign` goes straight into the content.
 - No unfold or wipe animations.
 - Hover hit areas stay stable.

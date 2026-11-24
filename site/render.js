@@ -272,18 +272,22 @@ function homeDescription() {
 }
 
 /**
- * The name on a water line. hero.js draws the scene into the canvas: the
- * name and the surface words rise above the line and sink below it. The
- * heading stays the name for readers and for a page without the script.
+ * The ether. hero.js draws the scene into the canvas: the name half under a
+ * water line, the surface words drifting through it, and a summoning circle
+ * around it. The heading stays the name for readers and for a page without
+ * the script. The verb menu sits inside the scene as the prompt.
  *
+ * @param {string} menu
  * @returns {string}
  */
-function renderHero() {
+function renderHero(menu) {
   const words = esc(surfaceWords.join('|'));
   return `<section class="hero" data-hero>
         <div class="hero-pin">
           <h1 class="hero-word"><span class="hero-above">matt does</span><span class="hero-below" aria-hidden="true">matt does</span></h1>
           <canvas class="hero-water" aria-hidden="true" data-words="${words}"></canvas>
+          <p class="hero-log" aria-hidden="true"></p>
+          ${menu}
         </div>
       </section>`;
 }
@@ -316,13 +320,12 @@ export function renderHome(ctx) {
     robots: '',
     extraStyles: ['hero.css'],
     extraScripts: ['hero.js'],
-    main: `${renderHero()}
-      <nav aria-label="verbs">
-        <p class="verb-kicker" aria-hidden="true">${esc(kicker)}</p>
-        <ol class="verbs">
-        ${menuRows}
-        </ol>
-      </nav>`,
+    main: renderHero(`<nav aria-label="verbs" class="hero-prompt">
+            <p class="verb-kicker" aria-hidden="true">${esc(kicker)}</p>
+            <ol class="verbs">
+            ${menuRows}
+            </ol>
+          </nav>`),
   });
 }
 

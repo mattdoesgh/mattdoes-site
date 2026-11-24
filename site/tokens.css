@@ -8,6 +8,15 @@
   --black: #000000;
   --white: #ffffff;
   --pink: #f7c8d8;
+  /* The home ether. static/hero.js reads these from the computed style of
+     the canvas: mint is the field of glyphs, violet the circle, bone the
+     sigil. dim is the log and the prompt's comments. veil sits behind the
+     prompt so it reads over the moving glyphs. */
+  --mint: #cdeee2;
+  --violet: #a99bff;
+  --bone: #f1eef8;
+  --dim: #8a96a2;
+  --veil: rgba(0, 0, 0, 0.8);
 
   --field: var(--black);
   --ink: var(--white);
@@ -51,7 +60,11 @@
   --type-hero: min(22.5vw, 58vh);
   /* The home water line, from the top of the hero. static/hero.js uses
      the same fraction. */
-  --hero-line: 58%;
+  --hero-line: 46%;
+  /* One cell of the home ether, 9px on a phone up to 12px wide. */
+  --type-ether: clamp(0.5625rem, 0.45rem + 0.35vw, 0.75rem);
+  /* The prompt under the ether. */
+  --type-prompt: clamp(0.9rem, 0.82rem + 0.33vw, 1.1rem);
   --type-prize: clamp(1.6rem, 4vw, 2.4rem);
   --type-verb-phone: clamp(3.25rem, calc((100vw - 3rem) / 4.5), 14rem);
   --type-contact-heading: clamp(1.8rem, 4vw, 2.4rem);
