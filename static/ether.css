@@ -41,8 +41,15 @@ body[data-polarity="ether"] .total-label::before {
 
 /* Settings read as a terminal switch. The chosen side is lit mint. */
 body[data-polarity="ether"] .poster-switch {
+  gap: 1ch;
   font-family: var(--mono);
   color: var(--bone);
+}
+
+/* Mono letters run wider than the Anton they replace, so "across" filled
+   its cell edge to edge. Each cell and the key get a character of air. */
+body[data-polarity="ether"] .poster-seg {
+  padding-inline: 0.75ch;
 }
 
 body[data-polarity="ether"] .poster-key::before {
@@ -95,6 +102,14 @@ body[data-polarity="ether"] .film .name::before {
 }
 
 body[data-polarity="ether"] .stars {
+  -webkit-text-stroke-color: var(--violet);
+}
+
+/* The half star's cut line is its own glyph with a pink stroke from
+   station.css; in the ether it takes the same violet as the rest. */
+body[data-polarity="ether"] .stars .star-half::after {
+  color: var(--violet);
+  -webkit-text-fill-color: var(--violet);
   -webkit-text-stroke-color: var(--violet);
 }
 
