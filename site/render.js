@@ -212,7 +212,7 @@ function shell({
     return `\n    <script src="/${esc(file)}" defer></script>`;
   }).join('');
   const canonical = `${siteUrl}${path}`;
-  const polarityAttr = polarity === 'flip' ? ' data-polarity="flip"' : '';
+  const polarityAttr = polarity === 'flip' || polarity === 'ether' ? ` data-polarity="${polarity}"` : '';
   const robotsMeta = robots ? `\n    <meta name="robots" content="${esc(robots)}">` : '';
   return `<!DOCTYPE html>
 <html lang="en">
@@ -471,6 +471,17 @@ function posterControls() {
  * @param {string} count
  * @returns {string}
  */
+/**
+ * The glyph band that crowns a verb page. static/ether.js draws a summoning
+ * circle into it, ringed by the page's word. Decoration only.
+ *
+ * @param {string} word
+ * @returns {string}
+ */
+export function etherBand(word) {
+  return `<canvas class="ether-band" aria-hidden="true" data-word="${esc(word)}"></canvas>`;
+}
+
 function watchHead(count) {
   const line = count ? `\n        ${count}` : '';
   return `<div class="watch-head">${line}
@@ -502,12 +513,15 @@ export function renderWatch(ctx) {
     path: verbPath(verb.slug),
     title: `${heading} · mattdoes.online`,
     description: heading,
-    polarity: 'flip',
+    polarity: 'ether',
     current: verb.slug,
     showVerbNav: true,
     robots: '',
     blocking: posterPrefsTag(ctx.assets),
-    main: `<h1 class="sign"><a href="/">${esc(heading)}</a></h1>
+    extraStyles: ['ether.css'],
+    extraScripts: ['ether.js'],
+    main: `${etherBand(verb.label)}
+      <h1 class="sign"><a href="/">${esc(heading)}</a></h1>
       ${watchHead(count)}
       ${feed}
       ${scene(watches)}
@@ -547,7 +561,7 @@ function countLine(count, word) {
 
 /** The published hub. Song art is the committed Suno snapshot. No mailbox or player. */
 export function renderUnshared(ctx) {
-  return renderHubDocument(ctx && ctx.siteUrl);
+  return renderHubDocument(ctx && ctx.siteUrl, ctx && ctx.assets);
 }
 
 /**

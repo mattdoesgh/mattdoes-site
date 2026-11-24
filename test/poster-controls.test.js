@@ -18,6 +18,8 @@ const assets = {
   'hero.css': 'hero.abc12345.css',
   'hero.js': 'hero.abc12345.js',
   'poster-prefs.js': 'poster-prefs.abc12345.js',
+  'ether.css': 'ether.abc12345.css',
+  'ether.js': 'ether.abc12345.js',
 };
 
 const ctx = {

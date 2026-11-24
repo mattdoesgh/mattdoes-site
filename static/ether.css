@@ -1,0 +1,152 @@
+/* The ether on a verb page. A glyph band crowns the page, the name stays
+   the pink cut word from home, and everything else reads as terminal
+   lines: mono type, bone on the void, mint hairlines, violet stars.
+   ether.js paints the band and reads its colors and cell font from the
+   canvas. Without the script the band is an empty strip of void. */
+
+.ether-band {
+  display: block;
+  width: calc(100% + var(--space-page-left) + var(--space-page-right));
+  height: var(--ether-band);
+  margin: calc(-1 * var(--space-page-top)) calc(-1 * var(--space-page-right)) var(--space-0) calc(-1 * var(--space-page-left));
+  color: var(--mint);
+  outline-color: var(--violet);
+  border-top-color: var(--bone);
+  text-decoration-color: var(--pink);
+  font-family: var(--mono);
+  font-size: var(--type-ether);
+  cursor: crosshair;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body[data-polarity="ether"] .sign {
+  color: var(--pink);
+}
+
+/* The count: a mint number, the word a prompt comment. */
+body[data-polarity="ether"] .total-num {
+  color: var(--mint);
+  font-family: var(--mono);
+  letter-spacing: var(--track-none);
+}
+
+body[data-polarity="ether"] .total-label {
+  color: var(--dim);
+  font-family: var(--mono);
+}
+
+body[data-polarity="ether"] .total-label::before {
+  content: "//\00a0" / "";
+}
+
+/* Settings read as a terminal switch. The chosen side is lit mint. */
+body[data-polarity="ether"] .poster-switch {
+  font-family: var(--mono);
+  color: var(--bone);
+}
+
+body[data-polarity="ether"] .poster-key::before {
+  content: ">\00a0" / "";
+  color: var(--dim);
+}
+
+body[data-polarity="ether"] .poster-track,
+body[data-polarity="ether"] .poster-seg + .poster-seg {
+  border-color: var(--rule);
+}
+
+body[data-polarity="ether"] .poster-on,
+body[data-polarity="ether"] .axis-across,
+html[data-posters="off"] body[data-polarity="ether"] .poster-off,
+html[data-poster-axis="down"] body[data-polarity="ether"] .axis-down,
+html[data-posters="off"] body[data-polarity="ether"] .axis-down {
+  background: var(--mint);
+  color: var(--black);
+}
+
+html[data-posters="off"] body[data-polarity="ether"] .poster-on,
+html[data-poster-axis="down"] body[data-polarity="ether"] .axis-across,
+html[data-posters="off"] body[data-polarity="ether"] .axis-across {
+  background: transparent;
+  color: inherit;
+}
+
+/* A film is a line: the poster in a mint hairline, the title a command. */
+body[data-polarity="ether"] .film-open img {
+  box-shadow: 0 0 0 1px var(--rule);
+}
+
+body[data-polarity="ether"] .film-open:hover img,
+body[data-polarity="ether"] .film-open:focus-visible img {
+  box-shadow: 0 0 0 1px var(--violet);
+}
+
+body[data-polarity="ether"] .film .name,
+body[data-polarity="ether"] .scene-title {
+  font-family: var(--mono);
+  text-transform: none;
+  line-height: 1.2;
+  color: var(--bone);
+}
+
+body[data-polarity="ether"] .film .name::before {
+  content: ">\00a0" / "";
+  color: var(--dim);
+}
+
+body[data-polarity="ether"] .stars {
+  -webkit-text-stroke-color: var(--violet);
+}
+
+body[data-polarity="ether"] .flag {
+  color: var(--dim);
+  font-family: var(--mono);
+  text-transform: none;
+}
+
+body[data-polarity="ether"] .flag::before {
+  content: "[" / "";
+}
+
+body[data-polarity="ether"] .flag::after {
+  content: "]" / "";
+}
+
+/* The scene opens over the void with the same voice. */
+body[data-polarity="ether"] .scene {
+  color: var(--bone);
+}
+
+body[data-polarity="ether"] .scene-close,
+body[data-polarity="ether"] .scene-source a {
+  font-family: var(--mono);
+}
+
+body[data-polarity="ether"] .scene-close::before {
+  content: "[" / "";
+  color: var(--dim);
+}
+
+body[data-polarity="ether"] .scene-close::after {
+  content: "]" / "";
+  color: var(--dim);
+}
+
+body[data-polarity="ether"] .scene-close:hover,
+body[data-polarity="ether"] .scene-close:focus-visible,
+body[data-polarity="ether"] .socials a:hover,
+body[data-polarity="ether"] .socials a:focus-visible {
+  background: var(--mint);
+  color: var(--black);
+}
+
+body[data-polarity="ether"] .socials a {
+  color: var(--dim);
+}
+
+@media (min-width: 1024px) {
+  .ether-band {
+    width: calc(100% + var(--space-page-desk-left) + var(--space-page-desk-right));
+    margin: calc(-1 * var(--space-page-desk-top)) calc(-1 * var(--space-page-desk-right)) var(--space-0) calc(-1 * var(--space-page-desk-left));
+  }
+}

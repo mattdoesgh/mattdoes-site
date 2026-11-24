@@ -4,7 +4,7 @@
   "decisions": [
     {
       "id": "tokens-only",
-      "verified-at": "f376a94ac2496c82843fc9e9e5da4c9117089f7a",
+      "verified-at": "73b064f2b752f193738bc8aaf7f8f82e4afcf04e",
       "paths": ["site/tokens.css", "lib/design-tokens.js", "STYLE.md"],
       "text": "site/tokens.css is the only place a raw color, font stack, or font size is written. Pages use var(--token). The build keeps the polarity colors, the font stacks, and --row-size live and inlines the rest. Pink is #F7C8D8."
     },
@@ -28,7 +28,7 @@
     },
     {
       "id": "frequency-offline",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
       "paths": ["site/verbs.ts", "site/render.js", "lib/emit/index.js"],
       "text": "/frequency/ is a noindex secret. It stays out of the registry and the sitemap, and it stays offline while SECRET_PATHS is empty. The prize mailto lives only in renderFrequency. Do not copy that address into docs, the index, or a public page."
     },
@@ -40,13 +40,13 @@
     },
     {
       "id": "wave-words",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
       "paths": ["site/render.js", "static/station.css"],
       "text": "The wave sits only on the word that labels the big count: films. The numbers are outline only. Stars are black fill with a pink outline."
     },
     {
       "id": "fluid-type",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "73b064f2b752f193738bc8aaf7f8f82e4afcf04e",
       "paths": ["site/tokens.css"],
       "text": "Type and spacing scale with clamp() tokens. Poster settings are about half the films numeral (--type-setting) and still grow a 44px tap target by padding and a negative margin."
     },
@@ -83,7 +83,7 @@
     },
     {
       "id": "safe-area",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "73b064f2b752f193738bc8aaf7f8f82e4afcf04e",
       "paths": [
         "site/tokens.css",
         "site/render.js",
@@ -129,7 +129,7 @@
     },
     {
       "id": "chrome-habits",
-      "verified-at": "f376a94ac2496c82843fc9e9e5da4c9117089f7a",
+      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
       "paths": ["STYLE.md"],
       "text": "No grid lines, no chips, no unfold or wipe animations, no flavor text, no numbering. No subheading or standfirst under a page title or a section heading. Lowercase labels."
     },
@@ -147,7 +147,7 @@
     },
     {
       "id": "fixture-only-preview",
-      "verified-at": "5bb46f286f7c9e743d903d47acd29c2602d3ec54",
+      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
       "paths": ["test/visual/pages.spec.js"],
       "text": "CI can pass while the real Pages preview has no posters, because the visual suite uses fixtures. A user-visible change is confirmed on the preview, at 390×844 and 1280×800."
     }
@@ -175,7 +175,7 @@
   "lessons": [
     {
       "id": "posters-missing-on-preview",
-      "verified-at": "5bb46f286f7c9e743d903d47acd29c2602d3ec54",
+      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
       "paths": ["lib/posters.js", "test/visual/pages.spec.js"],
       "text": "The poster strip's CI passed with fixtures while the real preview had zero posters. Black boxes in a screenshot were the fixture, not the page. Compare a preview capture that was not scrolled."
     },
@@ -187,7 +187,7 @@
     },
     {
       "id": "toggle-size",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "73b064f2b752f193738bc8aaf7f8f82e4afcf04e",
       "paths": ["site/tokens.css", "static/station.css"],
       "text": "Poster settings were resized four times. The settled target is compact, about half the films numeral, still tappable, and fluid. Do not reopen that size without a preview at both viewports."
     },
@@ -207,7 +207,7 @@
     },
     {
       "id": "hit-targets",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "73b064f2b752f193738bc8aaf7f8f82e4afcf04e",
       "paths": ["site/tokens.css"],
       "text": "--hit floors at 44px and --hit-phone at 48px. Poster settings use --hit-setting (44px) via padding, not a covering pseudo-element."
     },
@@ -221,7 +221,7 @@
   "features": [
     {
       "id": "home-hero",
-      "verified-at": "f376a94ac2496c82843fc9e9e5da4c9117089f7a",
+      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
       "route": "/",
       "anchors": ["data-hero", "class=\"hero-water\"", "data-words="],
       "text": "Home is the ether: one screen of glyphs on the void. The name floats half under a water line; surfaceWords in site/verbs.ts drift through it. A summoning circle turns around the name: two rings of the surface words, a star polygon {n/k} and a mirrored thorned sigil, all drawn as characters. Every summoning is random (crypto.getRandomValues): a new sigil, a new star, new ring order and spin, on each load and each invocation. The verb menu sits inside the scene as the prompt. A verb link summons for about two seconds, then opens its page. hero.js adds a spell line: a typed word that names a verb summons and opens it, return or home summons the name again, and anything else summons in place and answers bound, unstable or unanswered with an omen from surfaceWords. Typed words stay in the page. hero.js reads its colors from the computed style of the heading, the canvas (color, outline-color, border-color) and the log. Without the script the spell line does not exist and hero.css cuts the heading at the same line.",
@@ -230,7 +230,7 @@
     },
     {
       "id": "home-rows",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
       "route": "/",
       "anchors": ["aria-label=\"verbs\"", "class=\"verb-kicker\"", "class=\"verb-row home-suno\""],
       "text": "The verb list is the prompt along the bottom of the hero. The DOM keeps matt does plus the registry label for readers; hero.css hides the prefix and draws > invoke before each label in mono. Unshared is not in that list. The unshared row is the same kind of line; its heading unshared opens /unshared/. The latest film follows the letterboxd row as a comment, with no underline.",
@@ -239,7 +239,7 @@
     },
     {
       "id": "watching-strip",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
       "route": "/watching/",
       "anchors": ["class=\"film-open\"", "data-scene"],
       "text": "Recent films are a strip. The first image is eager. The rest are lazy. src stays off the img until posters are on, so an off preference does not fetch. A poster that was not mirrored is omitted.",
@@ -248,7 +248,7 @@
     },
     {
       "id": "watching-toggles",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
       "route": "/watching/",
       "anchors": ["data-posters-toggle", "data-axis-toggle", "data-pull"],
       "storageKeys": ["mattdoes-posters", "mattdoes-poster-axis"],
@@ -259,7 +259,7 @@
     },
     {
       "id": "watching-scene",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
       "route": "/watching/",
       "anchors": ["id=\"scene\"", "data-review"],
       "text": "Opening a film uses a dialog. The wide poster is not in the tree until the scene opens. The review is a data attribute, not card text.",
@@ -268,16 +268,16 @@
     },
     {
       "id": "watching-count",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
       "route": "/watching/",
       "anchors": ["countLine(ctx.filmCount", "parseFilmCount"],
-      "text": "The films count is the public Letterboxd total, not the length of the RSS window. A missing count hides the line and does not fail the build. The word films is the wave. The number is an outline.",
+      "text": "The films count is the public Letterboxd total, not the length of the RSS window. A missing count hides the line and does not fail the build. The word films is the wave. The page is in the ether: the number is mint mono and the word reads as a // comment.",
       "risks": ["LETTERBOXD_OFFLINE hides the live total. The preview is the check."],
       "devices": ["The count and the switches share a row and wrap. Check 390 so they do not collide."]
     },
     {
       "id": "wave-counts",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
       "route": "",
       "anchors": ["WAVE_WORDS", "class=\"wave\""],
       "text": "Only films takes the wave. Spoken text stays in the accessibility tree. The painted letters are aria-hidden. Reduced motion stops the animation and keeps a static sine.",
@@ -286,10 +286,10 @@
     },
     {
       "id": "unshared-hub",
-      "verified-at": "c3c10f31c75de8118e5ceba5262eaafbd633ac4d",
+      "verified-at": "73b064f2b752f193738bc8aaf7f8f82e4afcf04e",
       "route": "/unshared/",
       "anchors": ["aria-label=\"unshared\"", "unsharedEntries", "https://suno.com/song/", "class=\"song-wave\"", "animation-name: song-wave"],
-      "text": "The hub heading is unshared does suno and links home. The first row is birds1, with no unshared does prefix on that row. Published Suno songs are a five-column cover grid, the same markup as the listening chart and without a caption, then a lowercase title list. Each title is a song-wave: letters sit flat and wrap only between words, the link aria-label is the full title, and the letters are aria-hidden. The sine plays while the link is hovered on a device that hovers, while it is focus-visible, and while it is pressed. Reduced motion keeps the letters flat. Each cover and title links to https://suno.com/song/<id>. The art is the committed snapshot from npm run suno:sync. The page is in the sitemap and off the home verb list. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
+      "text": "The hub is in the ether, crowned by the glyph band that static/ether.js draws; emit passes the asset map so the hub loads that script. The heading is unshared does suno, pink, and links home. The first row is birds1, with no unshared does prefix on that row; it reads as > invoke birds1 in mono. Published Suno songs are a five-column cover grid, the same markup as the listening chart and without a caption, then a lowercase title list. Each title is a song-wave: letters sit flat and wrap only between words, the link aria-label is the full title, and the letters are aria-hidden. The sine plays while the link is hovered on a device that hovers, while it is focus-visible, and while it is pressed. Reduced motion keeps the letters flat. Each cover and title links to https://suno.com/song/<id>. The art is the committed snapshot from npm run suno:sync. The page is in the sitemap and off the home verb list. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
       "risks": ["Publish fails when the page or the stylesheet is missing.", "A song without a committed cover is omitted. The page does not fetch Suno.", "The count wave stays scrobbles and films. Song titles use song-wave."],
       "devices": ["The row hit target is at least 44px. Cover slots follow the listening chart, about 72 CSS px on a phone. The wave is transform only and must not shift layout. Check the grid at 390 and 1280."]
     },
@@ -304,7 +304,7 @@
     },
     {
       "id": "frequency",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
       "route": "/frequency/",
       "anchors": ["function renderFrequency", "frequency-key"],
       "text": "The secret page is offline while SECRET_PATHS is empty. Emit cuts the key hook out of the shipped station.js and fails if the word frequency remains. The prize mailto stays in renderFrequency only.",
@@ -313,7 +313,7 @@
     },
     {
       "id": "social-footer",
-      "verified-at": "4a2ad398f4483f4a60cec0e4a0c630d1d9b7b60e",
+      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
       "route": "/",
       "anchors": ["rel=\"me noopener\"", "socialCatalog"],
       "text": "The footer is a row of social marks, one per socialCatalog entry, each with an icon in site/social-icons.js. Links are https profile URLs and do not point at unshared.",

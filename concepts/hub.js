@@ -13,9 +13,10 @@ const SONGS = path.join(path.dirname(fileURLToPath(import.meta.url)), 'suno', 's
 
 /**
  * @param {string} [siteUrl]
+ * @param {Record<string, string>} [assets] hashed names; ether.js draws the band
  * @returns {string}
  */
-export function renderHubDocument(siteUrl = siteConfig.url) {
+export function renderHubDocument(siteUrl = siteConfig.url, assets = {}) {
   const origin = String(siteUrl || siteConfig.url || 'https://mattdoes.online').replace(/\/$/, '');
   const canonical = `${origin}/unshared/`;
   const rows = unsharedEntries.map((entry) => {
@@ -24,6 +25,7 @@ export function renderHubDocument(siteUrl = siteConfig.url) {
     return `<li class="verb-row"><a class="verb" href="${href}"><span class="verb-label">${label}</span></a></li>`;
   }).join('\n          ');
   const songs = renderSunoSongs(loadSunoSongs(SONGS));
+  const ether = assets && assets['ether.js'] ? `\n    <script src="/${esc(assets['ether.js'])}" defer></script>` : '';
   return `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -38,9 +40,10 @@ export function renderHubDocument(siteUrl = siteConfig.url) {
     <meta property="og:type" content="website">
     <link rel="stylesheet" href="./hub.css">
   </head>
-  <body data-polarity="flip">
+  <body data-polarity="ether">
     <a class="skip-link" href="#main">Skip to content</a>
     <main id="main">
+      <canvas class="ether-band" aria-hidden="true" data-word="unshared"></canvas>
       <h1 class="sign"><a href="/">unshared does suno</a></h1>
       ${songs}
       <nav aria-label="unshared">
@@ -48,7 +51,7 @@ export function renderHubDocument(siteUrl = siteConfig.url) {
           ${rows}
         </ol>
       </nav>
-    </main>
+    </main>${ether}
   </body>
 </html>
 `;
