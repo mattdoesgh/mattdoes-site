@@ -29,6 +29,8 @@ export default defineConfig({
     deviceScaleFactor: 1,
     reducedMotion: 'reduce',
     colorScheme: 'dark',
+    locale: 'en-US',
+    timezoneId: 'UTC',
     launchOptions: { args: chromiumArgs },
   },
   webServer: {

@@ -1,5 +1,8 @@
 // Pin body and mono to the vendored DejaVu subsets and answer every image
-// with a fixture so host fonts and live art cannot move the pixels.
+// with a fixture so host fonts and live art cannot move the pixels. The
+// ether draws from crypto.getRandomValues, Math.random, and
+// performance.now, so those are seeded and held still as well. The home
+// hero prints the wall clock, so the date is fixed too.
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -33,6 +36,25 @@ const PIN = `
   --mono: "Fixture Mono", monospace;
 }
 `;
+
+// birds1 keeps the real clock and real randomness: the flock runs on them.
+const STILL = () => {
+  if (window.location.pathname.startsWith('/unshared/birds1')) return;
+  let state = 0x9e3779b9;
+  const next = () => {
+    state = (state + 0x6d2b79f5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  Math.random = next;
+  window.crypto.getRandomValues = (array) => {
+    const max = 2 ** (array.BYTES_PER_ELEMENT * 8);
+    for (let i = 0; i < array.length; i += 1) array[i] = Math.floor(next() * max);
+    return array;
+  };
+  window.performance.now = () => 4000;
+};
 
 /**
  * @param {import('playwright').Page} page
@@ -74,6 +96,9 @@ export async function prepare(page, { pinFonts = true, phone = false } = {}) {
     }
     return route.abort();
   });
+
+  await page.clock.setFixedTime(new Date('2026-01-01T12:00:00Z'));
+  await page.addInitScript(STILL);
 
   if (!pinFonts) return;
 
