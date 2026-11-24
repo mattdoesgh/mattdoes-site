@@ -423,6 +423,57 @@
     run();
   }
 
+  /* The ward. Slurs, severe profanity and sexual words are refused before
+     they reach the circle, the same three kinds of word Discord's AutoMod
+     presets cover. The list is base64 so the source does not spell it out.
+     A term with ~ matches inside a word, and a long one across the whole
+     spell; the rest match a whole word, because each sits inside innocent
+     words. Spelling tricks are undone first: accents, digits and symbols for
+     letters, dots and stars inside a word, spaced letters, repeats. */
+  var WARD = [];
+  try { WARD = window.atob('fm5pZ2dlcix+bmlnZ2Esfm5pZ2xldCx+ZmFnZ290LH5raWtlLH53ZXRiYWNrLH5iZWFuZXIsfnJhZ2hlYWQsfnRvd2VsaGVhZCx+dHJhbm55LH50cmFubmllLH5tb3RoZXJmdWNrZXIsfmZ1Y2ssfnNoaXQsfndob3JlLH5zbHV0LH5tb2xlc3QsfnBhZWRvLH5wZWRvcGhpbGUsfmppenosfmJsb3dqb2IsfmhhbmRqb2IsfnJpbWpvYix+ZGlsZG8sfmFzc2hvbGUsfmFyc2Vob2xlLH5iaXRjaCx+YmFzdGFyZCx+aGl0bGVyLH5raWxseW91cnNlbGYsfndoaXRlcG93ZXIsfnNpZWdoZWlsLH5zaGVtYWxlLH5pbmNlc3QsfmJlc3RpYWxpdHksfnNrYW5rLH5wb3JuLH5nYW5nYmFuZyx+Y29ja3N1Y2tlcix+ZGlja2hlYWQsfmJvbGxvY2ssfndhbmtlcix+cXVlZWYsfnppcHBlcmhlYWQsfmdvbGxpd29nLH5qaWdhYm9vLH5wb3JjaG1vbmtleSx+anVuZ2xlYnVubnksfmNhbWVsam9ja2V5LH5zdWJodW1hbixyYXBpc3QsY29vbixkeWtlLHBha2ksc3BpYyxzcGljayxjaGluayxnb29rLGZhZyxyYXBlLHJhcGVkLHJhcGluZyxwZWRvLGNvY2ssZGljayxwdXNzeSxwdXNzaWVzLGN1bSxhbmFsLGFudXMsdHdhdCx3YW5rLGFzcyxreXMsaGVpbCxjdWNrLHRpdCx0aXRzLGJvb2IsYm9vYnMsaG9lLHRob3QsbmVncm8samFwLGd5cCxub25jZSxzbGFnLGJlbGxlbmQsc3BheixzcGFzdGljLG1vbmcsdGFyZCxyZXRhcmQscmV0YXJkZWQsY3VudCxjbGl0LHBlbmlzLHZhZ2luYSxuYXppLG1pbGYsbGVzYm8sbnVkZXM=').split(','); } catch (e) { WARD = []; }
+  var LEET = { '0': 'o', '3': 'e', '4': 'a', '5': 's', '7': 't', '8': 'b', '9': 'g', '@': 'a', '$': 's', '!': 'i', '+': 't' };
+  var SPARED = ['shiitake', 'shiitakes', 'shitake', 'shitakes', 'snigger', 'sniggers', 'sniggered', 'sniggering'];
+  /* Each run of a letter may stretch, so fuuuck finds fuck and niiigger
+     finds its term, while niger, a country, stays clear. */
+  function stretch(t) {
+    return t.replace(/(.)\1*/g, function (run) { return run.charAt(0) + (run.length > 1 ? '{' + run.length + ',}' : '+'); });
+  }
+  var WARDS = WARD.map(function (term) {
+    if (term.charAt(0) === '~') {
+      var t = term.slice(1);
+      return { inside: new RegExp(stretch(t)), across: t.length >= 8 };
+    }
+    return { whole: new RegExp('^' + stretch(term) + '(es|s)?$') };
+  });
+  function tokensOf(n) {
+    var out = [];
+    var run = '';
+    n.replace(/[*._'\-]/g, '').split(/[^a-z]+/).forEach(function (t) {
+      if (t.length === 1) { run += t; return; }
+      if (run) out.push(run);
+      run = '';
+      if (t) out.push(t);
+    });
+    if (run) out.push(run);
+    return out.filter(function (t) { return SPARED.indexOf(t) === -1; });
+  }
+  function cursed(word) {
+    var base = word.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[0345789@$!+]/g, function (c) { return LEET[c]; });
+    return ['i', 'l'].some(function (one) {
+      var n = base.replace(/[1|]/g, one);
+      var compact = n.replace(/[^a-z]/g, '');
+      var tokens = tokensOf(n);
+      return WARDS.some(function (w) {
+        if (w.inside) {
+          if (w.across && w.inside.test(compact)) return true;
+          return tokens.some(function (tok) { return w.inside.test(tok); });
+        }
+        return tokens.some(function (tok) { return w.whole.test(tok); });
+      });
+    });
+  }
+
   /* The verb links summon, then open. */
   var links = Array.prototype.slice.call(list.querySelectorAll('a.verb, .home-suno-sign a'));
   function wordOf(a) {
@@ -468,7 +519,7 @@
 
   function answer(r) {
     out.textContent = '';
-    var mark = r.fate === 'bound' ? '✓ bound' : r.fate === 'unstable' ? '~ unstable' : '✗ unanswered';
+    var mark = r.refused ? '✗ refused' : r.fate === 'bound' ? '✓ bound' : r.fate === 'unstable' ? '~ unstable' : '✗ unanswered';
     [[mark, 'spell-fate'], ['  {' + r.n + '/' + r.k + '}  ', 'spell-mark'], [r.fate === 'unanswered' ? '. . .' : '<- ' + r.omen, 'spell-omen']].forEach(function (part) {
       var span = document.createElement('span');
       span.className = part[1];
@@ -487,7 +538,15 @@
     var target = links.filter(function (a) { return wordOf(a) === word; })[0];
     if (target) { if (still.matches) window.location.assign(target.href); else follow(target); return; }
     if (word === 'return' || word === 'home' || word === 'matt does') { invoke(rite('matt does', 'home')); return; }
-    var r = rite(word, 'spell');
+    var r;
+    if (cursed(word)) {
+      /* A refused word never reaches the scene: the circle summons noise. */
+      r = rite(word.replace(/\S/g, function () { return GLITCH[Math.floor(rnd() * GLITCH.length)]; }), 'spell');
+      r.fate = 'unanswered';
+      r.refused = true;
+    } else {
+      r = rite(word, 'spell');
+    }
     invoke(r, function () { answer(r); });
   });
 

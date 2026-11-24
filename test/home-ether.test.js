@@ -43,3 +43,30 @@ test('the water line fraction matches the token', () => {
   const line = Number(tokens.match(/--hero-line:\s*([\d.]+)%/)[1]) / 100;
   assert.match(src, new RegExp(`var LINE = ${line};`));
 });
+
+function ward() {
+  const src = fs.readFileSync(path.join(REPO_ROOT, 'static', 'hero.js'), 'utf8');
+  const from = src.indexOf('  /* The ward.');
+  const to = src.indexOf('  /* The verb links summon, then open. */');
+  assert.ok(from > 0 && to > from);
+  const atob = (s) => Buffer.from(s, 'base64').toString('binary');
+  return new Function('window', src.slice(from, to) + '; return cursed;')({ atob });
+}
+
+test('the ward refuses slurs and profanity, tricks included', () => {
+  const cursed = ward();
+  const refused = ["bjFnZzNy","Zi51LmMuaw==","ZnV1dXVjaw==","cyBoIGkgdA==","Y8O6bnQ=","QjFUQ0hFUw==","cjRwaXN0","c2ghdGhlYWQ=","bW90aGVyZnVja2Vycw==","d2gwcmU="].map((s) => Buffer.from(s, 'base64').toString());
+  for (const word of refused) assert.equal(cursed(word), true);
+});
+
+test('the ward lets innocent words through', () => {
+  const cursed = ward();
+  const spared = ['class', 'scunthorpe', 'grape', 'torpedo', 'analysis', 'japan', 'montenegro', 'shoe', 'ashkenazi', 'assess', 'niger', 'shiitake', 'therapist', 'cocktail', 'pakistan', 'raccoon', 'summon', 'take me home'];
+  for (const word of spared) assert.equal(cursed(word), false, word);
+});
+
+test('a refused word never reaches the scene', () => {
+  const src = fs.readFileSync(path.join(REPO_ROOT, 'static', 'hero.js'), 'utf8');
+  assert.match(src, /if \(cursed\(word\)\)/);
+  assert.match(src, /r\.refused = true;/);
+});
