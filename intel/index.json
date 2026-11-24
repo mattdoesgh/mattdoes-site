@@ -121,7 +121,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "812324f3c3e6fc36b62aacd265a91027a705aa4f18654a3f7476fb8a7af585d4",
+      "sha256": "c7cad90e4430231eb076848ba0a69f01f81363831c9f80561c7b333840ae2575",
       "gitBlob": null
     },
     {
@@ -396,8 +396,8 @@
     },
     {
       "path": "test/contrast.test.js",
-      "sha256": "3b512d944b314c7359351234c17622900af48448a17925bdaa388411aff4068b",
-      "gitBlob": "43ab8516ba859f6898b9227f7a3d4af1f5d44aa6"
+      "sha256": "db873072a02cf6b457ca03164a758b667c93d7908f4408e21e22154f8e07cd16",
+      "gitBlob": "00e1f2eaccfee86df3aa08f537eed2253e4cbe9d"
     },
     {
       "path": "test/cover-pixels.test.js",
@@ -478,6 +478,11 @@
       "path": "test/helpers/worker-env.js",
       "sha256": "69414627023476e2e023f5c85ad0b9cdb66c1563219c74b37ebd7d6838ce4ca8",
       "gitBlob": "82ab29240ff018d0c21b88b82d2962eef3c11273"
+    },
+    {
+      "path": "test/home-ether.test.js",
+      "sha256": "0ad71283463b8c38e25f73daa06ec8a55149a229d610dbe810a806bdd596a239",
+      "gitBlob": "948d5572d269551e7182e7385ada4f215fbad782"
     },
     {
       "path": "test/home-preview.test.js",
@@ -912,6 +917,7 @@
         "test/helpers/parse-headers.js",
         "test/helpers/run-build.js",
         "test/helpers/worker-env.js",
+        "test/home-ether.test.js",
         "test/home-preview.test.js",
         "test/intel.test.js",
         "test/lastfm-codec.test.js",
@@ -1260,6 +1266,14 @@
           "to": "test/helpers/run-build.js"
         },
         {
+          "from": "test/home-ether.test.js",
+          "to": "site/render.js"
+        },
+        {
+          "from": "test/home-ether.test.js",
+          "to": "test/helpers/run-build.js"
+        },
+        {
           "from": "test/home-preview.test.js",
           "to": "site/render.js"
         },
@@ -1584,6 +1598,7 @@
         "site/render.js": [
           "lib/emit/index.js",
           "test/film-count.test.js",
+          "test/home-ether.test.js",
           "test/home-preview.test.js",
           "test/media.test.js",
           "test/poster-controls.test.js",
@@ -1624,6 +1639,7 @@
           "test/feed-standards.test.js",
           "test/film-count.test.js",
           "test/headers-golden.test.js",
+          "test/home-ether.test.js",
           "test/home-preview.test.js",
           "test/links.test.js",
           "test/poster-controls.test.js",
@@ -1777,6 +1793,7 @@
         "test/helpers/parse-headers.js",
         "test/helpers/run-build.js",
         "test/helpers/worker-env.js",
+        "test/home-ether.test.js",
         "test/home-preview.test.js",
         "test/intel.test.js",
         "test/lastfm-codec.test.js",
@@ -2014,6 +2031,7 @@
         "test/helpers/parse-headers.js",
         "test/helpers/run-build.js",
         "test/helpers/worker-env.js",
+        "test/home-ether.test.js",
         "test/home-preview.test.js",
         "test/intel.test.js",
         "test/lastfm-codec.test.js",
@@ -3443,6 +3461,7 @@
         "test/helpers/parse-headers.js",
         "test/helpers/run-build.js",
         "test/helpers/worker-env.js",
+        "test/home-ether.test.js",
         "test/home-preview.test.js",
         "test/intel.test.js",
         "test/lastfm-codec.test.js",
@@ -3496,7 +3515,8 @@
           "anchorFiles": {
             "data-hero": [
               "site/render.js",
-              "static/hero.js"
+              "static/hero.js",
+              "test/home-ether.test.js"
             ],
             "class=\"hero-water\"": [
               "site/render.js"
@@ -3510,13 +3530,16 @@
           "constants": {},
           "files": [
             "site/render.js",
-            "static/hero.js"
+            "static/hero.js",
+            "test/home-ether.test.js"
           ],
           "sources": [
             "site/render.js",
             "static/hero.js"
           ],
-          "tests": [],
+          "tests": [
+            "test/home-ether.test.js"
+          ],
           "provenance": [
             {
               "path": "site/render.js",
@@ -3541,6 +3564,7 @@
           "anchorFiles": {
             "aria-label=\"verbs\"": [
               "site/render.js",
+              "test/home-ether.test.js",
               "test/verbs.test.js"
             ],
             "class=\"verb-kicker\"": [
@@ -3556,6 +3580,7 @@
           "files": [
             "lib/suno-songs.js",
             "site/render.js",
+            "test/home-ether.test.js",
             "test/verbs.test.js"
           ],
           "sources": [
@@ -3563,6 +3588,7 @@
             "site/render.js"
           ],
           "tests": [
+            "test/home-ether.test.js",
             "test/verbs.test.js"
           ],
           "provenance": [
@@ -3898,6 +3924,7 @@
           "tests": [
             "test/csp-headers.test.js",
             "test/emit-units.test.js",
+            "test/home-ether.test.js",
             "test/links.test.js",
             "test/progressive-enhancement.test.js",
             "test/publish-unshared.test.js",
@@ -4174,6 +4201,7 @@
         "test/helpers/parse-headers.js",
         "test/helpers/run-build.js",
         "test/helpers/worker-env.js",
+        "test/home-ether.test.js",
         "test/home-preview.test.js",
         "test/intel.test.js",
         "test/lastfm-codec.test.js",
@@ -4366,6 +4394,25 @@
             "test/helpers/run-build.js"
           ],
           "features": []
+        },
+        {
+          "file": "test/home-ether.test.js",
+          "imports": [
+            "site/render.js",
+            "test/helpers/run-build.js"
+          ],
+          "features": [
+            "frequency",
+            "home-hero",
+            "home-rows",
+            "social-footer",
+            "unshared-hub",
+            "watching-count",
+            "watching-scene",
+            "watching-strip",
+            "watching-toggles",
+            "wave-counts"
+          ]
         },
         {
           "file": "test/home-preview.test.js",
@@ -4805,6 +4852,7 @@
         "test/helpers/parse-headers.js",
         "test/helpers/run-build.js",
         "test/helpers/worker-env.js",
+        "test/home-ether.test.js",
         "test/home-preview.test.js",
         "test/intel.test.js",
         "test/lastfm-codec.test.js",
