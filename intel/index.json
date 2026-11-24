@@ -606,8 +606,8 @@
     },
     {
       "path": "test/visual/pages.spec.js",
-      "sha256": "a9647991064309398a38d4002018a65c63c2b55688334494fb4e5fc69899817e",
-      "gitBlob": "4e4d8342b905663ba678671025cc8643654b9ea6"
+      "sha256": "74cf5326afd3c90b06549550ac3ce229656b31da2c2a8c8fc05aaf90ac4adf0e",
+      "gitBlob": "dec43e12d85514e24f2a2d462072bf575e14277f"
     },
     {
       "path": "test/visual/prepare.js",
