@@ -15,6 +15,8 @@ const EXPECTED = [
   { label: 'instagram', href: 'https://www.instagram.com/mattdoes.ig/' },
   { label: 'letterboxd', href: 'https://letterboxd.com/mattdoes/' },
   { label: 'github', href: 'https://github.com/mattdoesgh' },
+  { label: 'medium', href: 'https://medium.com/@mattdoesonline/' },
+  { label: 'tk', href: 'https://tk.xyz/shared/notes/74cf1d76-0ad5-4ad6-bb2f-c24d3240f797' },
 ];
 
 let distDir;
