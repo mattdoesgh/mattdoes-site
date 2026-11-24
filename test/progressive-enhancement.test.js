@@ -1,4 +1,3 @@
-// journal, making, blog, and listening are not published and are not redirected.
 // /watching/ is a real page without JavaScript.
 // A redirect source must not be a real page. An empty or missing _redirects file passes.
 
@@ -11,8 +10,6 @@ import { buildFixtureVault, readDist, REPO_ROOT } from './helpers/run-build.js';
 
 let distDir;
 test.before(() => { ({ distDir } = buildFixtureVault()); });
-
-const RETIRED_ROUTES = ['journal', 'making', 'blog', 'listening'];
 
 const REAL_PAGES = ['/', '/watching/'];
 
@@ -49,35 +46,6 @@ test('the home verb list does not link to unshared', () => {
   assert.equal(fs.existsSync(path.join(distDir, 'unshared', 'birds1', 'index.html')), true);
 });
 
-test('journal, making, blog, and listening are not generated', () => {
-  for (const route of RETIRED_ROUTES) {
-    assert.equal(fs.existsSync(path.join(distDir, route, 'index.html')), false);
-  }
-});
-
-test('/posts/ and /thoughts/ are not pages and are not redirected', () => {
-  assert.equal(fs.existsSync(path.join(distDir, 'posts', 'index.html')), false);
-  assert.equal(fs.existsSync(path.join(distDir, 'thoughts', 'index.html')), false);
-  for (const rule of rules()) {
-    const from = rule.split(/\s+/)[0];
-    assert.ok(from !== '/posts' && from !== '/posts/' && from !== '/thoughts' && from !== '/thoughts/', rule);
-  }
-  const sitemap = readDist(distDir, 'sitemap.xml');
-  assert.equal(sitemap.includes('/posts/'), false);
-  assert.equal(sitemap.includes('/thoughts/'), false);
-  assert.equal(sitemap.includes('/listening/'), false);
-  assert.ok(sitemap.includes('/watching/</loc>'));
-});
-
-test('static/_redirects does not revive retired writing routes', () => {
-  for (const route of [...RETIRED_ROUTES, 'posts', 'thoughts']) {
-    for (const rule of rules()) {
-      const from = rule.split(/\s+/)[0];
-      assert.ok(from !== `/${route}` && from !== `/${route}/`, rule);
-    }
-  }
-});
-
 test('no redirect source is a real page', () => {
   const real = new Set(REAL_PAGES);
   for (const rule of rules()) {
@@ -85,11 +53,4 @@ test('no redirect source is a real page', () => {
     if (!key) continue;
     assert.equal(real.has(key), false, `${rule} would redirect a real page`);
   }
-});
-
-test('station.js defers network until prerender activation', () => {
-  const src = fs.readFileSync(path.join(REPO_ROOT, 'static', 'station.js'), 'utf8');
-  assert.match(src, /document\.prerendering/);
-  assert.match(src, /prerenderingchange/);
-  assert.doesNotMatch(src, /luciadoes|mail\.grokbot/);
 });

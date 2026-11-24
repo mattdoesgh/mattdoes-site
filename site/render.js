@@ -4,7 +4,6 @@ import { verbs, verbCatalog, socials, verbPath, verbHeading, surfaceWords } from
 import { renderHubDocument } from '../concepts/hub.js';
 import { socialIcon } from './social-icons.js';
 import { esc, relFor, safeUrl } from '../lib/safe-url.js';
-import { formatScrobbleCount } from '../lib/format.js';
 import { renderHomeSuno } from '../lib/suno-songs.js';
 
 const LUCIA_MAIL = 'mailto:luciadoes@mail.grokbot.com';
@@ -556,7 +555,7 @@ function waveLabel(word) {
  */
 function countLine(count, word) {
   if (!(Number(count) > 0)) return '';
-  return `<p class="total"><span class="total-num">${esc(formatScrobbleCount(count))}</span> ${waveLabel(word)}</p>`;
+  return `<p class="total"><span class="total-num">${esc(Number(count || 0).toLocaleString('en-US'))}</span> ${waveLabel(word)}</p>`;
 }
 
 /** The published hub. Song art is the committed Suno snapshot. No mailbox or player. */

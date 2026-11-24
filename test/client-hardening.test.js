@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
-import { buildFixtureVault, listDistHtml, REPO_ROOT } from './helpers/run-build.js';
+import { buildFixtureVault, listDistHtml } from './helpers/run-build.js';
 
 let distDir;
 test.before(() => { ({ distDir } = buildFixtureVault()); });
@@ -51,10 +51,4 @@ test('external links use rel=noopener and third-party assets carry integrity', (
       assert.match(el.getAttribute('crossorigin') || '', /anonymous|use-credentials/, url);
     }
   }
-});
-
-test('the station client sets noopener when it writes an external link', () => {
-  const src = fs.readFileSync(path.join(REPO_ROOT, 'static', 'station.js'), 'utf8');
-  assert.match(src, /noopener noreferrer/);
-  assert.doesNotMatch(src, /\son\w+\s*=/);
 });

@@ -8,10 +8,6 @@
 #
 # Pages build command:
 #   bash scripts/pages-prebuild.sh && npm run build
-#
-# Media optimize/sync is not part of the Pages build. `npm run sync-media`
-# still refuses any wrangler other than the version pinned in
-# workers/package-lock.json.
 
 set -euo pipefail
 
