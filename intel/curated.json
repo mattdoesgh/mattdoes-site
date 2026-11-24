@@ -147,7 +147,7 @@
     },
     {
       "id": "fixture-only-preview",
-      "verified-at": "dfd249e0bbec1cb0cecbda33e31ce2e884a4fafc",
+      "verified-at": "5bb46f286f7c9e743d903d47acd29c2602d3ec54",
       "paths": ["test/visual/pages.spec.js"],
       "text": "CI can pass while the real Pages preview has no posters, because the visual suite uses fixtures. A user-visible change is confirmed on the preview, at 390×844 and 1280×800."
     }
@@ -175,7 +175,7 @@
   "lessons": [
     {
       "id": "posters-missing-on-preview",
-      "verified-at": "dfd249e0bbec1cb0cecbda33e31ce2e884a4fafc",
+      "verified-at": "5bb46f286f7c9e743d903d47acd29c2602d3ec54",
       "paths": ["lib/posters.js", "test/visual/pages.spec.js"],
       "text": "The poster strip's CI passed with fixtures while the real preview had zero posters. Black boxes in a screenshot were the fixture, not the page. Compare a preview capture that was not scrolled."
     },
