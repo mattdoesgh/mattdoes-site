@@ -376,7 +376,8 @@ main {
 
 /* The ether, as on the other verb pages. A glyph band crowns the page and
    ether.js paints it, reading colors and the cell font from the canvas.
-   The rows read as the home prompt; song titles are commands. */
+   The row reads as the home prompt. Song titles take no prefix: a word
+   never breaks, so at 320px and 200% text the longest one fills the line. */
 .ether-band {
   display: block;
   flex: 0 0 auto;
@@ -405,12 +406,6 @@ body[data-polarity="ether"] .tracks .what,
 body[data-polarity="ether"] .verb {
   font-family: var(--mono);
   color: var(--bone);
-}
-
-body[data-polarity="ether"] .tracks a::before {
-  content: ">\00a0" / "";
-  flex: 0 0 auto;
-  color: var(--dim);
 }
 
 body[data-polarity="ether"] .verb {
