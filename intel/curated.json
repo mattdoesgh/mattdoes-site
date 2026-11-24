@@ -83,7 +83,7 @@
     },
     {
       "id": "safe-area",
-      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
+      "verified-at": "46909881075d1ec2099390ebe59faae53f99842f",
       "paths": [
         "site/tokens.css",
         "site/render.js",
@@ -286,7 +286,7 @@
     },
     {
       "id": "unshared-hub",
-      "verified-at": "9e4ef273e26801c670b393200027ed9785271c71",
+      "verified-at": "46909881075d1ec2099390ebe59faae53f99842f",
       "route": "/unshared/",
       "anchors": ["aria-label=\"unshared\"", "unsharedEntries", "https://suno.com/song/", "class=\"song-wave\"", "animation-name: song-wave"],
       "text": "The hub is in the ether, crowned by the glyph band that static/ether.js draws; emit passes the asset map so the hub loads that script. The heading is unshared does suno, pink, and links home. The first row is birds1, with no unshared does prefix on that row; it reads as > invoke birds1 in mono. Published Suno songs are a five-column cover grid, the same markup as the listening chart and without a caption, then a lowercase title list. Each title is a song-wave: letters sit flat and wrap only between words, the link aria-label is the full title, and the letters are aria-hidden. The sine plays while the link is hovered on a device that hovers, while it is focus-visible, and while it is pressed. Reduced motion keeps the letters flat. Each cover and title links to https://suno.com/song/<id>. The art is the committed snapshot from npm run suno:sync. The page is in the sitemap and off the home verb list. Adding a row is an entry, a concepts/<slug>/ page with a stylesheet, and that path in sitemapPaths().",
