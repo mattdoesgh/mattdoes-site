@@ -34,7 +34,7 @@
       },
       {
         "label": "tk",
-        "href": "https://tk.xyz/shared/notes/74cf1d76-0ad5-4ad6-bb2f-c24d3240f797"
+        "href": "https://tk.xyz/@mattdoesonline"
       }
     ]
   },
@@ -121,7 +121,7 @@
     },
     {
       "path": "intel/curated.json",
-      "sha256": "40fc24f65f7c090ada1d35f345556e3264bcce9ab77e52e584658bdebd06ead4",
+      "sha256": "1565a17a7c270603aa0416c6ee7f9bf642d32385b43603f9416ded42236108f5",
       "gitBlob": null
     },
     {
@@ -316,8 +316,8 @@
     },
     {
       "path": "site/verbs.ts",
-      "sha256": "141138d7fdcf60b0a5e446e5cd9c9f183069b2711667f76770321eba6cecddab",
-      "gitBlob": "133212d7d12af50738f563e2616187be1bbea1ae"
+      "sha256": "c14efb619e83cb699430b79466e124fe85dd4b47c51a603490873820ebf46a73",
+      "gitBlob": "bdb76dd83f7d283f644fd0b508ce9b541f5626ea"
     },
     {
       "path": "static/_headers",
@@ -586,8 +586,8 @@
     },
     {
       "path": "test/socials.test.js",
-      "sha256": "8f895ac835f87c00a329ea946012cd3f9c590ff9c0facb715d834724f6d76b68",
-      "gitBlob": "305f3dda6eb19d9a50b1ba79b34440706f01f719"
+      "sha256": "2fff410002295afbe03802861176dc9bddecb5f8f66fb19bb7891a74783e08f4",
+      "gitBlob": "feb8bcbc806d86e3b0bf0963e9f0da3c18a8a6cb"
     },
     {
       "path": "test/suno-songs.test.js",
@@ -4191,8 +4191,8 @@
             },
             {
               "path": "site/verbs.ts",
-              "sha256": "141138d7fdcf60b0a5e446e5cd9c9f183069b2711667f76770321eba6cecddab",
-              "gitBlob": "133212d7d12af50738f563e2616187be1bbea1ae"
+              "sha256": "c14efb619e83cb699430b79466e124fe85dd4b47c51a603490873820ebf46a73",
+              "gitBlob": "bdb76dd83f7d283f644fd0b508ce9b541f5626ea"
             }
           ]
         }
