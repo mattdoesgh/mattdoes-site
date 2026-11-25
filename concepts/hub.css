@@ -375,10 +375,10 @@ main {
 }
 
 /* The ether, as on the other verb pages. A glyph band crowns the page and
-   ether.js paints it, reading colors and the cell font from the canvas.
-   The row reads as the home prompt. A song word never breaks, so titles
-   take no prefix and step down to a mono size that fits at 320px and
-   200% text. */
+   thins into the void, and ether.js paints it, reading colors and the cell
+   font from the canvas. Under the covers the titles run as one litany,
+   each a link with a violet star between. A song word never breaks, so
+   titles step down to a mono size that fits at 320px and 200% text. */
 .ether-band {
   display: block;
   flex: 0 0 auto;
@@ -393,6 +393,8 @@ main {
   font-size: var(--type-ether);
   cursor: crosshair;
   -webkit-tap-highlight-color: transparent;
+  -webkit-mask-image: linear-gradient(to bottom, var(--black) 55%, transparent);
+  mask-image: linear-gradient(to bottom, var(--black) 55%, transparent);
 }
 
 body[data-polarity="ether"] .sign {
@@ -409,17 +411,37 @@ body[data-polarity="ether"] .verb {
   color: var(--bone);
 }
 
-body[data-polarity="ether"] .tracks .what {
+body[data-polarity="ether"] .tracks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+body[data-polarity="ether"] .tracks li {
+  padding: var(--space-0);
+  border-top: var(--line-none);
+}
+
+body[data-polarity="ether"] .tracks li + li::before {
+  content: "✶" / "";
+  align-self: center;
+  margin-inline: 0.75ch;
+  color: var(--violet);
   font-size: var(--type-ether-title);
+}
+
+body[data-polarity="ether"] .tracks .what {
+  width: auto;
+  font-size: var(--type-ether-title);
+}
+
+body[data-polarity="ether"] .tracks a,
+body[data-polarity="ether"] .song-wave {
+  width: auto;
 }
 
 body[data-polarity="ether"] .verb {
   font-size: var(--type-prompt);
-}
-
-body[data-polarity="ether"] .verb-label::before {
-  content: ">\00a0invoke\00a0" / "";
-  color: var(--dim);
 }
 
 body[data-polarity="ether"] .verb:hover,
@@ -430,10 +452,18 @@ body[data-polarity="ether"] .verb:active {
   outline-color: var(--black);
 }
 
-body[data-polarity="ether"] .verb:hover .verb-label::before,
-body[data-polarity="ether"] .verb:focus-visible .verb-label::before,
-body[data-polarity="ether"] .verb:active .verb-label::before {
-  color: inherit;
+/* A cover or a title that ether.js has not shown yet. It waits blurred and
+   grey, then condenses as it scrolls into view. Only the script adds these
+   classes, and only when motion is allowed. */
+.ether-veil {
+  opacity: 0;
+  filter: blur(0.4em) grayscale(1);
+  transform: translateY(0.5em);
+}
+
+.ether-rise {
+  transition: opacity 0.9s ease-out, filter 0.9s ease-out, transform 0.9s ease-out;
+  transition-delay: var(--rise-delay, 0s);
 }
 
 body[data-polarity="ether"] .skip-link {

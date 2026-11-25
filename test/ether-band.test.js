@@ -71,3 +71,46 @@ test('ether.js draws a frame into the band', async () => {
   assert.ok(drawn.length > 50);
   assert.ok(drawn.includes('l'));
 });
+
+test('the ether pages carry no prompt marks', () => {
+  const ether = fs.readFileSync(path.join(REPO_ROOT, 'static', 'ether.css'), 'utf8');
+  const hub = fs.readFileSync(path.join(REPO_ROOT, 'concepts', 'hub.css'), 'utf8');
+  for (const css of [ether, hub]) {
+    assert.doesNotMatch(css, /content:\s*">|content:\s*"\/\/|content:\s*"\[|invoke/);
+  }
+});
+
+test('the half star cut line is violet in the ether', () => {
+  const css = fs.readFileSync(path.join(REPO_ROOT, 'static', 'ether.css'), 'utf8');
+  assert.match(css, /body\[data-polarity="ether"\] \.stars \.star-half::after \{[^}]*-webkit-text-stroke-color:\s*var\(--violet\)/);
+});
+
+test('ether.js veils nothing when motion is reduced', () => {
+  const src = fs.readFileSync(path.join(REPO_ROOT, 'static', 'ether.js'), 'utf8');
+  const dom = new JSDOM('<body><ul class="feed"><li>a</li><li>b</li></ul></body>', { runScripts: 'outside-only' });
+  const { window } = dom;
+  window.matchMedia = () => ({ matches: false, addEventListener() {} });
+  window.IntersectionObserver = class { observe() { throw new Error('observed'); } unobserve() {} };
+  window.eval(src);
+  assert.equal(window.document.querySelectorAll('.ether-veil').length, 0);
+});
+
+test('ether.js veils films until they enter the viewport', () => {
+  const src = fs.readFileSync(path.join(REPO_ROOT, 'static', 'ether.js'), 'utf8');
+  const dom = new JSDOM('<body><ul class="feed"><li>a</li><li>b</li></ul></body>', { runScripts: 'outside-only' });
+  const { window } = dom;
+  let fire;
+  window.matchMedia = () => ({ matches: true, addEventListener() {} });
+  window.IntersectionObserver = class {
+    constructor(cb) { fire = cb; }
+    observe() {}
+    unobserve() {}
+  };
+  window.eval(src);
+  const items = [...window.document.querySelectorAll('.feed > li')];
+  assert.equal(items.every((li) => li.classList.contains('ether-veil')), true);
+  fire([{ isIntersecting: true, target: items[0] }]);
+  assert.equal(items[0].classList.contains('ether-veil'), false);
+  assert.equal(items[0].classList.contains('ether-rise'), true);
+  assert.equal(items[1].classList.contains('ether-veil'), true);
+});

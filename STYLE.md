@@ -31,7 +31,7 @@ Spacing is the `--space-*` scale, fluid `clamp()` values of rem and vw. Borders 
 - No explanation on the page. The prompt is `> invoke` and the words; a visitor finds the spell line by typing.
 - Typed spells pass a ward first. Slurs, severe profanity and sexual words are refused: the circle summons noise and the line reads `✗ refused`. The word never reaches the log.
 - What a visitor types stays in the page.
-- A verb page is crowned by a glyph band: a smaller circle ringed by the page's word, a new star and sigil each visit, a press summons another. `static/ether.js` draws it. The name stays the pink cut word, everything else is mono terminal lines: `>` before a title or a setting, `//` before a comment, `[ ]` around a flag.
+- A verb page is crowned by a glyph band: a smaller circle ringed by the page's word, a new star and sigil each visit, a press summons another. `static/ether.js` draws it, and the band thins into the void at its foot. The name stays the pink cut word, everything else is quiet mono with no prompt marks. Films, covers and titles condense out of the field as they scroll into view, unless motion is reduced. On Unshared the song titles run as one litany, a violet star between each.
 
 ## Standing rules
 
