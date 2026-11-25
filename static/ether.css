@@ -1,8 +1,9 @@
-/* The ether on a verb page. A glyph band crowns the page, the name stays
-   the pink cut word from home, and everything else reads as terminal
-   lines: mono type, bone on the void, mint hairlines, violet stars.
-   ether.js paints the band and reads its colors and cell font from the
-   canvas. Without the script the band is an empty strip of void. */
+/* The ether on a verb page. A glyph band crowns the page and thins into
+   the void below it, the name stays the pink cut word from home, and the
+   rest is quiet mono: bone on the void, mint hairlines, violet stars.
+   ether.js paints the band, reading its colors and cell font from the
+   canvas, and condenses each film out of the field as it comes into
+   view. Without the script the band is an empty strip of void. */
 
 .ether-band {
   display: block;
@@ -17,13 +18,15 @@
   font-size: var(--type-ether);
   cursor: crosshair;
   -webkit-tap-highlight-color: transparent;
+  -webkit-mask-image: linear-gradient(to bottom, var(--black) 55%, transparent);
+  mask-image: linear-gradient(to bottom, var(--black) 55%, transparent);
 }
 
 body[data-polarity="ether"] .sign {
   color: var(--pink);
 }
 
-/* The count: a mint number, the word a prompt comment. */
+/* The count: a mint number, the word dim beside it. */
 body[data-polarity="ether"] .total-num {
   color: var(--mint);
   font-family: var(--mono);
@@ -35,19 +38,20 @@ body[data-polarity="ether"] .total-label {
   font-family: var(--mono);
 }
 
-body[data-polarity="ether"] .total-label::before {
-  content: "//\00a0" / "";
-}
-
-/* Settings read as a terminal switch. The chosen side is lit mint. */
+/* The chosen side of a switch is lit mint. Mono letters run wider than
+   the Anton they replace, so each cell and the key get a character of air. */
 body[data-polarity="ether"] .poster-switch {
+  gap: 1ch;
   font-family: var(--mono);
   color: var(--bone);
 }
 
-body[data-polarity="ether"] .poster-key::before {
-  content: ">\00a0" / "";
+body[data-polarity="ether"] .poster-key {
   color: var(--dim);
+}
+
+body[data-polarity="ether"] .poster-seg {
+  padding-inline: 0.75ch;
 }
 
 body[data-polarity="ether"] .poster-track,
@@ -71,7 +75,7 @@ html[data-posters="off"] body[data-polarity="ether"] .axis-across {
   color: inherit;
 }
 
-/* A film is a line: the poster in a mint hairline, the title a command. */
+/* A film: the poster in a mint hairline, the title plain beneath it. */
 body[data-polarity="ether"] .film-open img {
   box-shadow: 0 0 0 1px var(--rule);
 }
@@ -89,12 +93,15 @@ body[data-polarity="ether"] .scene-title {
   color: var(--bone);
 }
 
-body[data-polarity="ether"] .film .name::before {
-  content: ">\00a0" / "";
-  color: var(--dim);
+body[data-polarity="ether"] .stars {
+  -webkit-text-stroke-color: var(--violet);
 }
 
-body[data-polarity="ether"] .stars {
+/* The half star's cut line is its own glyph with a pink stroke from
+   station.css. In the ether it takes the same violet as the rest. */
+body[data-polarity="ether"] .stars .star-half::after {
+  color: var(--violet);
+  -webkit-text-fill-color: var(--violet);
   -webkit-text-stroke-color: var(--violet);
 }
 
@@ -102,14 +109,6 @@ body[data-polarity="ether"] .flag {
   color: var(--dim);
   font-family: var(--mono);
   text-transform: none;
-}
-
-body[data-polarity="ether"] .flag::before {
-  content: "[" / "";
-}
-
-body[data-polarity="ether"] .flag::after {
-  content: "]" / "";
 }
 
 /* The scene opens over the void with the same voice. */
@@ -122,22 +121,26 @@ body[data-polarity="ether"] .scene-source a {
   font-family: var(--mono);
 }
 
-body[data-polarity="ether"] .scene-close::before {
-  content: "[" / "";
-  color: var(--dim);
-}
-
-body[data-polarity="ether"] .scene-close::after {
-  content: "]" / "";
-  color: var(--dim);
-}
-
 body[data-polarity="ether"] .scene-close:hover,
 body[data-polarity="ether"] .scene-close:focus-visible,
 body[data-polarity="ether"] .socials a:hover,
 body[data-polarity="ether"] .socials a:focus-visible {
   background: var(--mint);
   color: var(--black);
+}
+
+/* A film that ether.js has not shown yet. It waits blurred and grey, then
+   condenses as it scrolls into view. Only the script adds these classes,
+   and only when motion is allowed. */
+.ether-veil {
+  opacity: 0;
+  filter: blur(0.4em) grayscale(1);
+  transform: translateY(0.5em);
+}
+
+.ether-rise {
+  transition: opacity 0.9s ease-out, filter 0.9s ease-out, transform 0.9s ease-out;
+  transition-delay: var(--rise-delay, 0s);
 }
 
 body[data-polarity="ether"] .socials a {

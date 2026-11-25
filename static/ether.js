@@ -3,9 +3,37 @@
    faint glyphs drift through the field. Every visit draws a new star and a
    new sigil, and a press on the band summons another. Colors and the cell
    font come from the canvas's computed style, so the palette stays in
-   site/tokens.css. Reduced motion draws one still frame. */
+   site/tokens.css. Below the band, each film, cover and title condenses
+   out of the field as it comes into view. Reduced motion draws one still
+   frame and shows everything at once. */
 (function () {
   'use strict';
+
+  var motion = window.matchMedia('(prefers-reduced-motion: no-preference)');
+
+  /* Items start veiled and lose the veil as they enter the viewport, a few
+     at a time, so the page settles in sequence. el.style is the CSSOM, which
+     the style-src policy allows. */
+  function veil() {
+    if (!motion.matches || !('IntersectionObserver' in window)) return;
+    var items = document.querySelectorAll('.feed > li, .album-tile, .tracks > li');
+    var seen = new IntersectionObserver(function (entries) {
+      var n = 0;
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        seen.unobserve(el);
+        el.style.setProperty('--rise-delay', Math.min(n++, 10) * 0.06 + 's');
+        el.classList.add('ether-rise');
+        el.classList.remove('ether-veil');
+      });
+    }, { rootMargin: '0px 0px -4% 0px' });
+    Array.prototype.forEach.call(items, function (el) {
+      el.classList.add('ether-veil');
+      seen.observe(el);
+    });
+  }
+  veil();
 
   var band = document.querySelector('canvas.ether-band');
   if (!band || !band.getContext || !window.crypto || !window.crypto.getRandomValues) return;
@@ -25,8 +53,6 @@
   var GLITCH = '#%&@$?!/\\|<>=';
   var FRAME_MS = 50;
   var SUMMON_MS = 700;
-  var motion = window.matchMedia('(prefers-reduced-motion: no-preference)');
-
   function rnd() {
     var a = new Uint32Array(1);
     window.crypto.getRandomValues(a);
