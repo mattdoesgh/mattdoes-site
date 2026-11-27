@@ -3,11 +3,29 @@ name: build
 on:
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - '.gitignore'
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - '.gitignore'
+  # Weekly audit, so a new advisory surfaces even when the lockfile is quiet.
+  # Only the audit job runs on this trigger.
+  schedule:
+    - cron: '0 9 * * 1'
 
 permissions:
   contents: read
+
+# A new push to a PR cancels that PR's older run. Runs on main get a group of
+# their own (keyed by run id), so a main run is never cancelled, queued or not.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.run_id || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   # Security + dependency hygiene. Fails on moderate+ advisories in either
@@ -42,66 +60,20 @@ jobs:
         working-directory: workers
         run: npm audit --audit-level=moderate
 
-  build:
-    name: build + html-validate
+  # One runner for the build, html-validate, budgets and the regression
+  # suite. The node:test files under test/ cover build input validation, URL
+  # output safety, Atom feed standards, structural accessibility via
+  # axe/jsdom, token-level contrast, Worker robustness, privacy storage,
+  # progressive enhancement, and W3C/lint coverage. Build-dependent tests
+  # build into their own temp dirs in before() hooks; the repo-root dist/
+  # built here is what lint and the budget checks read.
+  build-and-test:
+    name: build + tests
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
-    needs: audit
     steps:
       - name: Checkout site
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        # The build does not clone a vault. This checkout is the source.
-
-      - name: Set up Node
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-
-      - name: Install
-        env:
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
-        run: npm ci
-
-      - name: Typecheck (site)
-        run: npm run typecheck
-
-      - name: Build
-        env:
-          SITE_URL: https://mattdoes.online
-          # CI stays offline for the Letterboxd diary RSS (lib/watches.js).
-          # The production Pages build does not set this, so /watching/ is
-          # baked from the live feed there.
-          LETTERBOXD_OFFLINE: '1'
-        run: npm run build
-
-      - name: Lint (html-validate)
-        run: npm run lint
-
-      - name: Check asset budget
-        run: npm run check:assets
-
-      - name: Check design tokens
-        run: npm run check:tokens
-
-      - name: Upload dist artifact
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: dist
-          path: dist
-          retention-days: 7
-
-  # Regression suite. Runs the node:test files under test/ (build input
-  # validation, URL output safety, Atom feed standards, structural
-  # accessibility via axe/jsdom, token-level contrast, Worker robustness,
-  # privacy storage, progressive enhancement, and W3C/lint coverage).
-  # `npm test` is self-contained — its `pretest` step builds the in-repo
-  # content, and build-dependent tests rebuild in their own before() hooks.
-  test:
-    name: regression tests
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # The secret-history test scans every commit. A shallow clone would
           # hide a credential committed before this PR.
@@ -118,17 +90,36 @@ jobs:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
         run: npm ci
 
+      - name: Typecheck (site)
+        run: npm run typecheck
+
+      # CI stays offline for the Letterboxd diary RSS (lib/watches.js). The
+      # production Pages build does not set this, so /watching/ is baked from
+      # the live feed there.
+      - name: Build
+        run: npm run build:offline
+
+      - name: Lint (html-validate)
+        run: npm run lint
+
+      - name: Check asset budget
+        run: npm run check:assets
+
+      - name: Check design tokens
+        run: npm run check:tokens
+
       - name: Run regression test suite
-        run: npm test
+        run: npm run test:all
 
   # Screenshot baselines of the main pages, plus axe on every page in
-  # Chromium. Fixture watches stand in for Letterboxd so a live feed
-  # cannot move the pixels. Same job as the
+  # Chromium. scripts/visual-serve.js builds its own fixture dist, so this
+  # job needs nothing from build-and-test. Fixture watches stand in for
+  # Letterboxd so a live feed cannot move the pixels. Same job as the
   # screenshots, so the accessibility check does not add a runner.
   visual:
     name: visual regression
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
-    needs: build
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -144,7 +135,7 @@ jobs:
         run: npm ci
 
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps --only-shell chromium
 
       - name: Compare screenshots and run axe
         run: npm run test:visual

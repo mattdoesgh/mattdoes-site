@@ -17,8 +17,10 @@
 
 ## Verify
 
-- `npm test` and `npm run typecheck`.
-- `npm run test:visual` when CSS, HTML, or client JS changes. Viewports are 390×844 and 1280×800.
+- `npm run test:fast` while iterating. It needs no build.
+- Before finishing: `npm run typecheck`, `npm run build:offline`, `npm run lint`, `npm run check:assets`, `npm run check:tokens`, `npm run test:all`. `npm test` is the build and `test:all` in one.
+- `npm run test:visual` only when HTML templates, CSS, design tokens, or layout or visual JS change. Viewports are 390×844 and 1280×800.
+- A test that builds the site does not belong in `test:fast`.
 - User-visible work is confirmed on the Pages preview, not the fixture server.
 
 ## Locks the tests already enforce
