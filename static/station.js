@@ -147,33 +147,11 @@
       );
     }
 
-    function lock() {
-      if (document.documentElement.classList.contains('is-locked')) return;
-      document.documentElement.dataset.scrollY = String(window.scrollY || window.pageYOffset || 0);
-      document.documentElement.classList.add('is-locked');
-    }
-
-    function unlock() {
-      if (!document.documentElement.classList.contains('is-locked')) return;
-      var y = Number(document.documentElement.dataset.scrollY || '0');
-      document.documentElement.classList.remove('is-locked');
-      delete document.documentElement.dataset.scrollY;
-      window.scrollTo(0, y);
-    }
-
     function setExpanded(id) {
       var openers = feed.querySelectorAll('.film-open');
       for (var i = 0; i < openers.length; i += 1) {
         openers[i].setAttribute('aria-expanded', openers[i].getAttribute('data-scene') === String(id) ? 'true' : 'false');
       }
-    }
-
-    function focusables() {
-      return [].filter.call(dialog.querySelectorAll('button, a[href]'), function (el) {
-        if (el.hidden || (el.closest && el.closest('[hidden]'))) return false;
-        var style = window.getComputedStyle(el);
-        return style.display !== 'none' && style.visibility !== 'hidden';
-      });
     }
 
     function openScene(opener, push) {
@@ -182,17 +160,15 @@
       restoreEl = opener;
       currentId = opener.getAttribute('data-scene') || '';
       setExpanded(currentId);
-      lock();
       dialog.hidden = false;
       if (!dialog.open) dialog.showModal();
-      closeBtn.focus();
+      else closeBtn.focus();
       if (push) history.pushState({ scene: currentId }, '');
     }
 
     function finishClose(fromPop) {
       if (dialog.open) dialog.close();
       dialog.hidden = true;
-      unlock();
       setExpanded('');
       currentId = '';
       var backTo = restoreEl;
@@ -214,34 +190,22 @@
       finishClose(false);
     });
 
-    dialog.addEventListener('click', function (event) {
+    var pressedOutside = false;
+    dialog.addEventListener('pointerdown', function (event) {
       var target = event.target;
-      if (target && target.closest && target.closest('.scene-panel')) return;
-      finishClose(false);
+      pressedOutside = !(target && target.closest && target.closest('.scene-panel'));
+    });
+
+    dialog.addEventListener('pointerup', function (event) {
+      var target = event.target;
+      var outside = !(target && target.closest && target.closest('.scene-panel'));
+      if (pressedOutside && outside) finishClose(false);
+      pressedOutside = false;
     });
 
     dialog.addEventListener('cancel', function (event) {
       event.preventDefault();
       finishClose(false);
-    });
-
-    dialog.addEventListener('keydown', function (event) {
-      if (event.key !== 'Tab') return;
-      var items = focusables();
-      if (!items.length) return;
-      if (items.length === 1) {
-        event.preventDefault();
-        return;
-      }
-      var first = items[0];
-      var last = items[items.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
     });
 
     window.addEventListener('popstate', function () {

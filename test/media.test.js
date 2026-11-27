@@ -60,7 +60,9 @@ test('a mirrored poster is a lazy-capable strip image and the wide file stays cl
   assert.equal(doc.querySelector('#scene-img'), null);
   const scene = doc.querySelector('#scene');
   assert.equal(scene?.getAttribute('hidden'), '');
-  assert.equal(scene?.getAttribute('aria-modal'), 'true');
+  assert.equal(scene?.getAttribute('aria-modal'), null);
+  assert.equal(scene?.getAttribute('closedby'), 'any');
+  assert.equal(scene?.querySelector('.scene-close')?.hasAttribute('autofocus'), true);
   assert.equal(doc.querySelector('.feed')?.nextElementSibling, scene);
   assert.doesNotMatch(doc.body.textContent, /Evidence/);
 });

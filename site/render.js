@@ -16,7 +16,7 @@ const LUCIA_MAIL = 'mailto:luciadoes@mail.grokbot.com';
  */
 function latestWatch(watches) {
   const list = (Array.isArray(watches) ? watches : []).filter((row) => row && row.title);
-  return list.slice().sort((a, b) => String(b.watchedDate || '').localeCompare(String(a.watchedDate || '')))[0];
+  return list.toSorted((a, b) => String(b.watchedDate || '').localeCompare(String(a.watchedDate || '')))[0];
 }
 
 /**
@@ -412,9 +412,9 @@ function scene(watches) {
   const source = href
     ? `<p class="scene-source" hidden><a id="scene-link" href="${esc(href)}" rel="noopener noreferrer">letterboxd</a></p>`
     : '<p class="scene-source" hidden></p>';
-  return `<dialog id="scene" class="scene" hidden aria-modal="true" aria-labelledby="scene-title">
+  return `<dialog id="scene" class="scene" closedby="any" hidden aria-labelledby="scene-title">
       <div class="scene-panel">
-        <button type="button" class="scene-close">close</button>
+        <button type="button" class="scene-close" autofocus>close</button>
         <figure class="scene-still"></figure>
         <div class="scene-copy">
           <h2 id="scene-title" class="scene-title">${title}</h2>

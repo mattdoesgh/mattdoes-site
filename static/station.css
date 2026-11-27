@@ -828,8 +828,14 @@ html[data-posters="off"] .axis-across {
   overflow: hidden;
 }
 
+.scene:modal {
+  overscroll-behavior: contain;
+}
+
 .scene::backdrop {
   background: var(--black);
+  overflow: hidden;
+  overscroll-behavior: contain;
 }
 
 .scene-close {
@@ -965,7 +971,7 @@ html[data-posters="off"] .axis-across {
   padding: var(--space-0);
   margin: var(--space-clip);
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border: var(--line-none);
 }
@@ -1026,11 +1032,6 @@ body[data-polarity="flip"] .socials a:focus-visible {
   background: var(--black);
   color: var(--pink);
   outline-color: var(--pink);
-}
-
-html.is-locked,
-html.is-locked body {
-  overflow: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {

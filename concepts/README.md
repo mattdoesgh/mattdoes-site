@@ -4,4 +4,4 @@
 
 Add a row in `concepts/entries.js`, a `concepts/<slug>/` page (`index.html` and a stylesheet), and that path in `sitemapPaths()`. Publish fails if the page or stylesheet is missing.
 
-`npm run build` copies the hub and birds1 into `dist/unshared/` and retargets stylesheets at `/unshared/tokens.css` and `/fonts/Anton-latin.woff2`. birds1 uses live Web Audio only. There are no audio files.
+`npm run build` copies the hub and birds1 into `dist/unshared/`, inlines `site/tokens.css`, and retargets font URLs at `/fonts/Anton-latin.woff2`. birds1 uses live Web Audio only. There are no audio files.

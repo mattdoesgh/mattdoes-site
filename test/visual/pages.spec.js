@@ -243,9 +243,13 @@ test('a film scene opens and closes without motion', async ({ page }) => {
   await expect(page.locator('#scene-year')).toHaveText('1999');
   await expect(page.locator('#scene .flag')).toHaveText('rewatch');
   await expect(page.locator('.scene-close')).toBeFocused();
-  await expect(page.locator('html')).toHaveClass(/is-locked/);
-  const locked = await page.evaluate(() => getComputedStyle(document.documentElement).overflow);
-  expect(locked).toBe('hidden');
+  await expect(page.locator('html')).not.toHaveClass(/is-locked/);
+  const containment = await page.locator('#scene').evaluate((el) => ({
+    scene: getComputedStyle(el).overscrollBehavior,
+    root: getComputedStyle(document.documentElement).overflow,
+  }));
+  expect(containment.scene).toBe('contain');
+  expect(containment.root).not.toBe('hidden');
   const motion = await page.locator('#scene').evaluate((el) => {
     const style = getComputedStyle(el);
     return { animation: style.animationName, transition: style.transitionDuration };

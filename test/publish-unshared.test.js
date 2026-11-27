@@ -108,17 +108,16 @@ test('every unshared entry resolves to a built page', () => {
   assert.equal(rowHrefs[0], '/unshared/birds1/');
   assert.equal(renderUnshared({ siteUrl: 'https://mattdoes.online' }), hub);
 
+  const tokensCss = fs.readFileSync(path.join(REPO_ROOT, 'site', 'tokens.css'), 'utf8');
   for (const file of ['hub.css', path.join('birds1', 'birds1.css')]) {
     const css = fs.readFileSync(path.join(dir, 'unshared', file), 'utf8');
-    assert.match(css, /@import "\/unshared\/tokens\.css";/);
+    assert.doesNotMatch(css, /@import\b/, file);
+    assert.ok(css.includes(tokensCss), file);
     assert.match(css, /url\("\/fonts\/Anton-latin\.woff2"\)/);
     assert.equal(css.includes('../site/'), false, file);
     assert.equal(css.includes('../static/'), false, file);
   }
-  assert.equal(
-    fs.readFileSync(path.join(dir, 'unshared', 'tokens.css'), 'utf8'),
-    fs.readFileSync(path.join(REPO_ROOT, 'site', 'tokens.css'), 'utf8'),
-  );
+  assert.equal(fs.existsSync(path.join(dir, 'unshared', 'tokens.css')), false);
   const js = fs.readFileSync(path.join(dir, 'unshared', 'birds1', 'birds1.js'), 'utf8');
   assert.match(js, /AudioContext/);
   assert.match(js, /PannerNode|createPanner/);

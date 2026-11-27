@@ -23,7 +23,7 @@ export function lockedWranglerVersion(repoRoot = DEFAULT_ROOT) {
   try {
     lock = JSON.parse(fs.readFileSync(lockPath, 'utf8'));
   } catch (err) {
-    throw new Error(`Cannot read workers/package-lock.json (${err.message}).`);
+    throw new Error(`Cannot read workers/package-lock.json (${err.message}).`, { cause: err });
   }
   const version = lock.packages?.[WRANGLER_LOCK_KEY]?.version;
   if (typeof version !== 'string' || !/^\d+\.\d+\.\d+$/.test(version)) {
@@ -53,7 +53,7 @@ export function resolveWranglerBin(repoRoot = DEFAULT_ROOT) {
   try {
     installed = JSON.parse(fs.readFileSync(pkgPath, 'utf8')).version;
   } catch (err) {
-    throw new Error(`Cannot read the installed wrangler package (${err.message}).`);
+    throw new Error(`Cannot read the installed wrangler package (${err.message}).`, { cause: err });
   }
   if (installed !== version) {
     throw new Error(
