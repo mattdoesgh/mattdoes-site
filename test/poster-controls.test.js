@@ -237,7 +237,11 @@ test('posters off is a text list and down still stacks the posters', () => {
   assert.match(css, /html\[data-posters="off"\] \.axis-across\s*\{[^}]*opacity:\s*0\.35/);
   assert.doesNotMatch(script, /preventDefault/);
 
-  const sheet = css.replace(/@import[^;]+;/, '');
+  // jsdom matches @media rules against a fixed 1024×768 window, so the desktop
+  // block would apply. This checks the phone strip, so that block never matches.
+  const desktop = '@media (min-width: 1024px)';
+  assert.ok(css.includes(desktop));
+  const sheet = css.replace(/@import[^;]+;/, '').replace(desktop, '@media not all');
   const dom = new JSDOM(
     `<!DOCTYPE html><html><head><style>${sheet}</style></head><body><ol class="feed" id="feed"><li class="film"><a class="film-open"><img alt=""><span class="copy"><span class="name">Heat</span><span class="meta">★★★★</span></span></a></li></ol><button type="button" data-axis-toggle><span class="poster-seg axis-across">across</span><span class="poster-seg axis-down">down</span></button></body></html>`,
     { url: 'https://mattdoes.online/watching/' },
