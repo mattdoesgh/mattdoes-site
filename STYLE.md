@@ -27,6 +27,7 @@ Spacing is the `--space-*` scale, fluid `clamp()` values of rem and vw. Borders 
 ## The ether
 
 - Everything on home is characters on the void. The scene is drawn in glyphs, not shapes.
+- Home is one screen with the socials at its foot, above a phone's browser bar. On a narrow screen the name breaks into two lines, one on the water and one under it, so it stays readable.
 - Every summoning is random: a new sigil and a new star each time. Nothing is seeded by the word.
 - No explanation on the page. The prompt is `> invoke` and the words; a visitor finds the spell line by typing.
 - Typed spells pass a ward first. Slurs, severe profanity and sexual words are refused: the circle summons noise and the line reads `✗ refused`. The word never reaches the log.

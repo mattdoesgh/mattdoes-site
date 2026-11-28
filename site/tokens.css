@@ -61,6 +61,9 @@
   /* The home water line, from the top of the hero. static/hero.js uses
      the same fraction. */
   --hero-line: 46%;
+  /* The shortest the home hero gets: a phone on its side scrolls to the
+     footer instead of crushing the prompt into the name. */
+  --hero-min: 20rem;
   /* Height of the glyph band that crowns a verb page. */
   --ether-band: clamp(9rem, 6.5rem + 9vw, 15rem);
   /* One cell of the home ether, 9px on a phone up to 12px wide. */
