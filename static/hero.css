@@ -1,21 +1,23 @@
 /* Home hero: the ether. One screen of glyphs on the void, the name half
-   under the water line, the verb menu as a prompt along the bottom.
+   under the water line, the verb menu as a prompt along the bottom. The
+   hero fills what the footer leaves of the small viewport, so the socials
+   stay above a phone's browser bar and inside a desktop window.
    hero.js paints the scene into the canvas and sets data-drawn; without it
    the heading is drawn here, cut at the same line, still. The canvas
    carries the ether's colors and cell font so the script can read them. */
 
 .hero {
   position: relative;
-  height: 100vh;
-  height: 100svh;
+  flex: 1 1 auto;
+  min-height: var(--hero-min);
   margin-top: calc(-1 * var(--space-page-top));
   margin-right: calc(-1 * var(--space-page-right));
   margin-left: calc(-1 * var(--space-page-left));
 }
 
 .hero-pin {
-  position: relative;
-  height: 100%;
+  position: absolute;
+  inset: 0;
   overflow: clip;
   background: var(--black);
 }
@@ -284,8 +286,22 @@
   }
 }
 
+body:has(.hero) {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
 body:has(.hero) main {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: var(--space-0);
+}
+
+body:has(.hero) .site-footer {
+  margin-top: var(--space-home-footer);
+  padding-top: var(--space-0);
+  border-top: var(--line-none);
 }
 
 @media (min-width: 1024px) {

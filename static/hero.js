@@ -161,23 +161,52 @@
   var lastAdd = 0;
   var nextAuto = 0;
 
+  /* The name as a mask in cells. A cell is taller than it is wide, so
+     the type is stretched by ratio to keep its shape. On a narrow screen a
+     long name on one line shrinks to a strip a few rows tall; then it
+     breaks at the space nearest its middle, the first line resting on the
+     water and the second just under it. */
   function textMask(word) {
     var off = document.createElement('canvas');
     off.width = cols; off.height = rows;
     var o = off.getContext('2d');
-    var size = rows * 0.4;
-    o.font = size + 'px ' + NAME_FONT;
-    var tw = o.measureText(word).width * ratio;
-    if (tw > cols * 0.92) size *= (cols * 0.92) / tw;
+    var top = rows * 0.4;
+    o.font = top + 'px ' + NAME_FONT;
+    function fit(lines, cap) {
+      var w = 0;
+      lines.forEach(function (l) { w = Math.max(w, o.measureText(l).width * ratio); });
+      return Math.min(cap, w > 0 ? top * (cols * 0.92) / w : cap);
+    }
+    var lines = [word];
+    var size = fit(lines, top);
+    var mid = word.length / 2;
+    var cut = -1;
+    for (var i = 0; i < word.length; i += 1) {
+      if (word[i] === ' ' && (cut < 0 || Math.abs(i - mid) < Math.abs(cut - mid))) cut = i;
+    }
+    if (cut > 0 && size < rows * 0.2) {
+      var two = [word.slice(0, cut).trim(), word.slice(cut + 1).trim()];
+      var size2 = fit(two, rows * 0.26);
+      if (two[0] && two[1] && size2 > size * 1.3) { lines = two; size = size2; }
+    }
     o.font = size + 'px ' + NAME_FONT;
     o.fillStyle = MINT;
     o.textAlign = 'center';
-    o.translate(cols / 2, water + size * 0.3);
-    o.scale(ratio, 1);
-    o.fillText(word, 0, 0);
+    if (lines.length === 1) {
+      o.translate(cols / 2, water + size * 0.3);
+      o.scale(ratio, 1);
+      o.fillText(word, 0, 0);
+    } else {
+      var gap = Math.max(1, size * 0.06);
+      var rise = o.measureText(lines[1]).actualBoundingBoxAscent || size * 0.72;
+      o.translate(cols / 2, 0);
+      o.scale(ratio, 1);
+      o.fillText(lines[0], 0, water - gap);
+      o.fillText(lines[1], 0, water + gap + rise);
+    }
     var d = o.getImageData(0, 0, cols, rows).data;
     var m = new Float32Array(cols * rows);
-    for (var i = 0; i < m.length; i += 1) m[i] = d[i * 4 + 3] / 255;
+    for (var j = 0; j < m.length; j += 1) m[j] = d[j * 4 + 3] / 255;
     return m;
   }
 
